@@ -31,3 +31,6 @@ include = ["pyXenium*"]
 
 [tool.setuptools.package-data]
 pyXenium = ["data/**", "*.csv", "*.zarr", "*.txt"]
+
+[project.scripts]
+pyxenium-import-partial = "pyXenium.io.partial_xenium_loader:app"
