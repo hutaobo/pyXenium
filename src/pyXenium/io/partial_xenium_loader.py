@@ -180,14 +180,30 @@ def _load_mex(mex_dir: Path | str) -> AnnData:
 def _open_zarr(path: Path | str):
     if zarr is None:  # pragma: no cover
         raise ImportError("zarr is required to read *.zarr or *.zarr.zip")
+
     pstr = str(path)
     if _is_url(pstr):
         path = _fetch_to_temp(pstr)
         pstr = str(path)
+
+    # 打开 *.zarr.zip：只读 ZipStore + 只读 group
     if pstr.endswith(".zip"):
-        store = ZipStore(str(path), mode="r")
-        return zarr.group(store=store)
-    return zarr.open_group(str(path), mode="r")
+        store = ZipStore(pstr, mode="r")
+        # Zarr v3 优先
+        if hasattr(zarr, "open_group"):
+            return zarr.open_group(store=store, mode="r")
+        # 兼容旧版 Zarr v2
+        if hasattr(zarr, "open"):
+            return zarr.open(store, mode="r")
+        # 最后兜底（极旧环境）
+        return zarr.group(store=store, mode="r")
+
+    # 打开目录/文件路径：优先 v3 API，其次 v2，再兜底
+    if hasattr(zarr, "open_group"):
+        return zarr.open_group(pstr, mode="r")
+    if hasattr(zarr, "open"):
+        return zarr.open(pstr, mode="r")
+    return zarr.group(store=pstr, mode="r")
 
 
 def _first_available(root, candidates: Sequence[str]) -> Optional[np.ndarray]:

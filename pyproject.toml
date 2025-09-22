@@ -20,6 +20,7 @@ dependencies = [
   "scipy>=1.10",
   "tqdm>=4.66",
   "zarr>=2.16",
+  "requests>=2.31",
 ]
 
 [tool.setuptools]
