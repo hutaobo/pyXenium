@@ -373,12 +373,23 @@ def load_anndata_from_partial(
     analysis_zarr: Optional[os.PathLike | str] = None,
     cells_zarr: Optional[os.PathLike | str] = None,
     transcripts_zarr: Optional[os.PathLike | str] = None,
+    *,
+    base_dir: Optional[os.PathLike | str] = None,
+    analysis_name: str = "analysis.zarr",
+    cells_name: str = "cells.zarr",
+    transcripts_name: str = "transcripts.zarr",
     cluster_key: str = "Cluster",
     sample: Optional[str] = None,
     keep_unassigned: bool = True,
     build_counts_if_missing: bool = True,
 ) -> AnnData:
     """Create an AnnData from any combination of partial Xenium artifacts.
+
+    **New (2025-09-22):** You can now pass a common ``base_dir`` and just override
+    default filenames via ``analysis_name``, ``cells_name``, and ``transcripts_name``.
+    For backward compatibility, explicit path arguments (``analysis_zarr``/``cells_zarr``/``transcripts_zarr``)
+    still work and will take precedence over ``base_dir`` + names.
+
 
     Parameters
     ----------
@@ -404,9 +415,31 @@ def load_anndata_from_partial(
     AnnData
     """
     mex_dir_p = _p(mex_dir)
-    analysis_p = _p(analysis_zarr)
-    cells_p = _p(cells_zarr)
-    transcripts_p = _p(transcripts_zarr)
+
+    # Resolve zarr paths with precedence: explicit path -> base_dir + name -> try .zarr.zip fallback
+    def _resolve_zarr(explicit: Optional[os.PathLike | str], name: str) -> Optional[Path]:
+        if explicit is not None:
+            return _p(explicit)
+        if base_dir is None:
+            return None
+        base = _p(base_dir)
+        assert base is not None
+        cand = base / name
+        if cand.exists():
+            return cand
+        # if user passed e.g. "analysis.zarr", also try zipped variant automatically, and vice versa
+        alt = None
+        if name.endswith(".zarr"):
+            alt = base / f"{name}.zip"
+        elif name.endswith(".zip"):
+            alt = base / name[:-4]
+        if alt is not None and alt.exists():
+            return alt
+        return cand  # return the non-existing candidate for provenance/debugging
+
+    analysis_p = _resolve_zarr(analysis_zarr, analysis_name)
+    cells_p = _resolve_zarr(cells_zarr, cells_name)
+    transcripts_p = _resolve_zarr(transcripts_zarr, transcripts_name)
 
     if mex_dir_p is not None:
         adata = _load_mex(mex_dir_p)
