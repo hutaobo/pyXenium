@@ -1,6 +1,6 @@
 """
-pyXenium.io.partial_xenium_loader
----------------------------------
+pyXenium.io.partial_xenium_loader_v2
+------------------------------------
 
 Purpose
 =======
@@ -12,16 +12,14 @@ stitching together any subset of:
 - `cells.zarr` or `cells.zarr.zip` (cell centroids / spatial coords)
 - `transcripts.zarr` or `transcripts.zarr.zip` (per-gene transcript locations)
 
-This module is conservative and tries multiple common key paths inside the Zarr
-stores. When something isn't found, it logs a warning instead of failing.
-
-Public API
-==========
-- load_anndata_from_partial(...): AnnData
-
-Optional CLI (if Typer installed):
-----------------------------------
-`python -m pyXenium.io.partial_xenium_loader import-partial --help`
+New capabilities (2025-09-22)
+-----------------------------
+- **Common base path** support: pass `base_dir` (local folder) or `base_url` (HTTP/HTTPS)
+  plus filename knobs: `analysis_name`, `cells_name`, `transcripts_name`.
+- **Remote loading**: if a URL is provided for zarr (or via `base_url+name`), the file
+  is downloaded to a temporary location transparently before reading (so `ZipStore`
+  can seek). For MEX, you can pass a `mex_dir` URL (base) together with
+  `mex_matrix_name/mex_features_name/mex_barcodes_name`.
 
 Author: Taobo Hu (pyXenium project) — 2025-09-22
 """
@@ -31,12 +29,15 @@ import gzip
 import io
 import logging
 import os
+import tempfile
+import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Optional, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
+import requests
 from anndata import AnnData
 from scipy import sparse
 from scipy.io import mmread
@@ -61,6 +62,30 @@ logger.setLevel(logging.INFO)
 # Helpers
 # -----------------------------
 
+def _is_url(p: Optional[str | os.PathLike]) -> bool:
+    if p is None:
+        return False
+    s = str(p)
+    return s.startswith("http://") or s.startswith("https://")
+
+
+def _fetch_to_temp(src: str, suffix: Optional[str] = None) -> Path:
+    """Download a URL to a temporary file and return its Path.
+    Ensures a local, seekable file for ZipStore and mmread.
+    """
+    logger.info(f"Downloading: {src}")
+    r = requests.get(src, stream=True, timeout=60)
+    r.raise_for_status()
+    tmpdir = Path(tempfile.mkdtemp(prefix="pyxenium_"))
+    name = Path(urllib.parse.urlparse(src).path).name or ("tmp" + (suffix or ""))
+    dst = tmpdir / name
+    with open(dst, "wb") as f:
+        for chunk in r.iter_content(chunk_size=1024 * 1024):
+            if chunk:
+                f.write(chunk)
+    return dst
+
+
 def _p(x: Optional[os.PathLike | str]) -> Optional[Path]:
     return None if x is None else Path(x).expanduser().resolve()
 
@@ -73,37 +98,31 @@ def _open_text_maybe_gz(p: Path) -> io.TextIOBase:
 
 @dataclass
 class PartialInputs:
-    mex_dir: Optional[Path] = None
-    analysis_zarr: Optional[Path] = None
-    cells_zarr: Optional[Path] = None
-    transcripts_zarr: Optional[Path] = None
+    mex_dir: Optional[Path | str] = None
+    analysis_zarr: Optional[Path | str] = None
+    cells_zarr: Optional[Path | str] = None
+    transcripts_zarr: Optional[Path | str] = None
 
 
 # -----------------------------
 # MEX loader
 # -----------------------------
 
-def _load_mex(mex_dir: Path) -> AnnData:
-    """Load counts from a 10x-style MEX directory.
-
-    Expected files (gz or not):
-      matrix.mtx[.gz], features.tsv[.gz], barcodes.tsv[.gz]
-    """
+def _load_mex(mex_dir: Path | str) -> AnnData:
     logger.info(f"Reading MEX from {mex_dir}")
+    base = Path(mex_dir) if not _is_url(mex_dir) else Path(mex_dir)  # URL case is pre-downloaded
+
     candidates = {
         "matrix": ["matrix.mtx", "matrix.mtx.gz"],
         "features": ["features.tsv", "features.tsv.gz", "genes.tsv", "genes.tsv.gz"],
         "barcodes": ["barcodes.tsv", "barcodes.tsv.gz"],
     }
 
-    def _find(
-        names: Sequence[str], base: Path
-    ) -> Optional[Path]:  # search either directly or in nested single subdir
+    def _find(names: Sequence[str], base: Path) -> Optional[Path]:
         for name in names:
             p = base / name
             if p.exists():
                 return p
-        # handle case where MEX is in a nested directory (e.g. mex_dir/filtered_feature_bc_matrix)
         for child in base.iterdir():
             if child.is_dir():
                 for name in names:
@@ -112,23 +131,20 @@ def _load_mex(mex_dir: Path) -> AnnData:
                         return p
         return None
 
-    mtx_p = _find(candidates["matrix"], mex_dir)
-    feat_p = _find(candidates["features"], mex_dir)
-    barc_p = _find(candidates["barcodes"], mex_dir)
+    mtx_p = _find(candidates["matrix"], base)
+    feat_p = _find(candidates["features"], base)
+    barc_p = _find(candidates["barcodes"], base)
 
     if not (mtx_p and feat_p and barc_p):
         missing = [k for k, v in {"matrix": mtx_p, "features": feat_p, "barcodes": barc_p}.items() if v is None]
-        raise FileNotFoundError(f"MEX missing files: {', '.join(missing)} under {mex_dir}")
+        raise FileNotFoundError(f"MEX missing files: {', '.join(missing)} under {base}")
 
     logger.info(f"  using {mtx_p.name}, {feat_p.name}, {barc_p.name}")
-    # matrix
     with (gzip.open(mtx_p, "rb") if str(mtx_p).endswith(".gz") else open(mtx_p, "rb")) as f:
         X = mmread(f).tocsr().astype(np.float32)
 
-    # features
     with _open_text_maybe_gz(feat_p) as f:
         rows = [line.rstrip("\n").split("\t") for line in f]
-    # 10x: feature_id, gene_name, feature_type
     feat_df = pd.DataFrame(rows)
     if feat_df.shape[1] == 1:
         feat_df[[1]] = ""
@@ -136,7 +152,6 @@ def _load_mex(mex_dir: Path) -> AnnData:
     feat_df.columns = ["feature_id", "gene_name", "feature_type"]
     feat_df.index = feat_df["feature_id"].astype(str)
 
-    # barcodes
     with _open_text_maybe_gz(barc_p) as f:
         barcodes = [line.strip() for line in f]
     obs = pd.DataFrame(index=pd.Index(barcodes, name="cell_id"))
@@ -153,8 +168,7 @@ def _load_mex(mex_dir: Path) -> AnnData:
         )
 
     adata = AnnData(X=X, obs=obs, var=var)
-    adata.uns.setdefault("io", {})["mex_dir"] = str(mex_dir)
-    # raw counts
+    adata.uns.setdefault("io", {})["mex_dir"] = str(base)
     adata.layers["counts"] = adata.X.copy()
     return adata
 
@@ -163,10 +177,14 @@ def _load_mex(mex_dir: Path) -> AnnData:
 # Zarr helpers
 # -----------------------------
 
-def _open_zarr(path: Path):
+def _open_zarr(path: Path | str):
     if zarr is None:  # pragma: no cover
         raise ImportError("zarr is required to read *.zarr or *.zarr.zip")
-    if str(path).endswith(".zip"):
+    pstr = str(path)
+    if _is_url(pstr):
+        path = _fetch_to_temp(pstr)
+        pstr = str(path)
+    if pstr.endswith(".zip"):
         store = ZipStore(str(path), mode="r")
         return zarr.group(store=store)
     return zarr.open_group(str(path), mode="r")
@@ -189,11 +207,10 @@ def _first_available(root, candidates: Sequence[str]) -> Optional[np.ndarray]:
 # Attach spatial from cells.zarr
 # -----------------------------
 
-def _attach_spatial(adata: AnnData, cells_zarr: Path) -> None:
+def _attach_spatial(adata: AnnData, cells_zarr: Path | str) -> None:
     logger.info(f"Attaching spatial from {cells_zarr}")
     root = _open_zarr(cells_zarr)
 
-    # Try to find centroids and (optionally) cell_ids inside the store
     x = _first_available(
         root,
         [
@@ -219,8 +236,7 @@ def _attach_spatial(adata: AnnData, cells_zarr: Path) -> None:
         ],
     )
     z = _first_available(root, ["cells/centroids/z", "centroids/z", "cells/centroid_z", "z"])  # optional
-    cell_ids = _first_available(root, ["cells/cell_id", "cells/ids", "cell_ids", "ids", "barcodes"])
-    # Normalize cell_ids to str
+    cell_ids = _first_available(root, ["cells/cell_id", "cells/ids", "cell_ids", "ids", "barcodes"])  # optional
     if cell_ids is not None:
         cell_ids = cell_ids.astype(str)
 
@@ -230,10 +246,8 @@ def _attach_spatial(adata: AnnData, cells_zarr: Path) -> None:
 
     coords = np.column_stack([x, y]) if z is None else np.column_stack([x, y, z])
 
-    # Align to adata.obs by cell_id if provided, else assume same order/length
     if cell_ids is not None:
         df = pd.DataFrame(coords, index=pd.Index(cell_ids, name="cell_id"))
-        # reindex to adata.obs order
         try:
             coords_df = df.reindex(adata.obs.index)
         except Exception:
@@ -255,7 +269,7 @@ def _attach_spatial(adata: AnnData, cells_zarr: Path) -> None:
 # Attach cluster labels from analysis.zarr
 # -----------------------------
 
-def _attach_clusters(adata: AnnData, analysis_zarr: Path, cluster_key: str = "Cluster") -> None:
+def _attach_clusters(adata: AnnData, analysis_zarr: Path | str, cluster_key: str = "Cluster") -> None:
     logger.info(f"Attaching clusters from {analysis_zarr}")
     root = _open_zarr(analysis_zarr)
 
@@ -280,7 +294,6 @@ def _attach_clusters(adata: AnnData, analysis_zarr: Path, cluster_key: str = "Cl
         logger.warning("No cluster labels found in analysis.zarr; skipping.")
         return
 
-    # map numerical IDs to names if available
     labels = label_arr.astype(str)
     if ids is not None and names is not None and len(ids) == len(names):
         mapping = {str(i): str(n) for i, n in zip(ids, names)}
@@ -307,56 +320,37 @@ def _attach_clusters(adata: AnnData, analysis_zarr: Path, cluster_key: str = "Cl
 # Build counts from transcripts if MEX missing
 # -----------------------------
 
-def _counts_from_transcripts(transcripts_zarr: Path, cell_id_index: pd.Index) -> Tuple[sparse.csr_matrix, pd.Index]:
-    """Build a gene x cell sparse count matrix from transcripts.zarr.
-
-    We try common layouts:
-      - transcripts/{gene, cell_id}
-      - transcripts/{genes, cells}
-      - /gene, /cell
-      - gene_names at /genes/name or /gene_names
-
-    Returns (X, gene_index)
-    """
+def _counts_from_transcripts(transcripts_zarr: Path | str, cell_id_index: pd.Index) -> Tuple[sparse.csr_matrix, pd.Index]:
     logger.info(f"Aggregating counts from {transcripts_zarr} (this may be slow)")
     root = _open_zarr(transcripts_zarr)
 
-    gene = _first_available(root, ["transcripts/gene", "transcripts/genes", "gene", "genes"])  # usually int or str
-    cell = _first_available(root, ["transcripts/cell_id", "transcripts/cells", "cell_id", "cell"])  # usually str or int
+    gene = _first_available(root, ["transcripts/gene", "transcripts/genes", "gene", "genes"])  # num or str
+    cell = _first_available(root, ["transcripts/cell_id", "transcripts/cells", "cell_id", "cell"])  # str or num
 
     if gene is None or cell is None:
         raise KeyError("Could not locate transcript gene/cell arrays in transcripts.zarr")
 
-    # normalize to string cell ids
     cell = cell.astype(str)
 
-    # map genes to names if there's a dictionary
     gene_names = _first_available(root, ["genes/name", "genes/names", "gene_names", "gene/name"])  # optional
     if gene_names is not None and gene.dtype.kind in ("i", "u"):
-        # treat `gene` as indices into gene_names
         gene = gene_names[gene.astype(int)].astype(str)
     else:
         gene = gene.astype(str)
 
-    # Build a crosstab: counts per (gene, cell)
     df = pd.DataFrame({"gene": pd.Categorical(gene), "cell": pd.Categorical(cell)})
-    # Align cells to provided index, drop cells not present
     df = df[df["cell"].isin(cell_id_index)]
 
-    # categorical codes give us compressed sparse matrix quickly
     gi = df["gene"].cat.codes.to_numpy()
     ci = df["cell"].cat.codes.to_numpy()
     data = np.ones_like(gi, dtype=np.int32)
 
     n_genes = int(df["gene"].cat.categories.size)
-    n_cells = int(df["cell"].cat.categories.size)
-    X = sparse.coo_matrix((data, (gi, ci)), shape=(n_genes, n_cells)).tocsr()
+    X = sparse.coo_matrix((data, (gi, ci)), shape=(n_genes, int(df["cell"].cat.categories.size))).tocsr()
 
     gene_index = pd.Index(df["gene"].cat.categories.astype(str), name="feature_id")
-    # The cell categories are a subset of the provided order; we'll later reindex columns
     cell_cats = pd.Index(df["cell"].cat.categories.astype(str), name="cell_id")
 
-    # Reindex cells to the provided order (column-wise)
     column_reindexer = pd.Series(range(len(cell_cats)), index=cell_cats).reindex(cell_id_index)
     take = column_reindexer.dropna().astype(int).to_numpy()
     X = X[:, take]
@@ -375,9 +369,13 @@ def load_anndata_from_partial(
     transcripts_zarr: Optional[os.PathLike | str] = None,
     *,
     base_dir: Optional[os.PathLike | str] = None,
+    base_url: Optional[str] = None,
     analysis_name: str = "analysis.zarr",
     cells_name: str = "cells.zarr",
     transcripts_name: str = "transcripts.zarr",
+    mex_matrix_name: str = "matrix.mtx.gz",
+    mex_features_name: str = "features.tsv.gz",
+    mex_barcodes_name: str = "barcodes.tsv.gz",
     cluster_key: str = "Cluster",
     sample: Optional[str] = None,
     keep_unassigned: bool = True,
@@ -385,98 +383,76 @@ def load_anndata_from_partial(
 ) -> AnnData:
     """Create an AnnData from any combination of partial Xenium artifacts.
 
-    **New (2025-09-22):** You can now pass a common ``base_dir`` and just override
-    default filenames via ``analysis_name``, ``cells_name``, and ``transcripts_name``.
-    For backward compatibility, explicit path arguments (``analysis_zarr``/``cells_zarr``/``transcripts_zarr``)
-    still work and will take precedence over ``base_dir`` + names.
-
-
-    Parameters
-    ----------
-    mex_dir : path-like, optional
-        Directory containing 10x MEX (matrix.mtx[.gz], features.tsv[.gz], barcodes.tsv[.gz]).
-    analysis_zarr : path-like, optional
-        Zarr store with cluster labels (e.g., `analysis.zarr` or `analysis.zarr.zip`).
-    cells_zarr : path-like, optional
-        Zarr store with cell centroid coordinates.
-    transcripts_zarr : path-like, optional
-        Zarr store with per-transcript gene + cell mapping (and optionally coordinates).
-    cluster_key : str
-        Column name in `adata.obs` to store cluster labels.
-    sample : str, optional
-        Stored in `adata.uns['sample']` for provenance.
-    keep_unassigned : bool
-        If False, drop cells with cluster label in {"-1", "NA", "None", "Unassigned"}.
-    build_counts_if_missing : bool
-        If True and `mex_dir` is None, try to build a counts matrix from transcripts.
-
-    Returns
-    -------
-    AnnData
+    You can pass explicit paths, or a common ``base_dir`` / ``base_url`` plus the
+    default filenames. Explicit paths take precedence over base resolution.
     """
-    mex_dir_p = _p(mex_dir)
+    # Resolve MEX
+    if mex_dir is not None and _is_url(mex_dir):
+        # Download the triplet next to each other and point to that temp dir
+        url_base = str(mex_dir).rstrip("/")
+        m_p = _fetch_to_temp(url_base + "/" + mex_matrix_name)
+        _ = _fetch_to_temp(url_base + "/" + mex_features_name)
+        _ = _fetch_to_temp(url_base + "/" + mex_barcodes_name)
+        mex_dir_p: Optional[Path] = m_p.parent
+    else:
+        mex_dir_p = _p(mex_dir)
 
-    # Resolve zarr paths with precedence: explicit path -> base_dir + name -> try .zarr.zip fallback
-    def _resolve_zarr(explicit: Optional[os.PathLike | str], name: str) -> Optional[Path]:
+    def _resolve_zarr(explicit: Optional[os.PathLike | str], name: str) -> Optional[Path | str]:
         if explicit is not None:
-            return _p(explicit)
-        if base_dir is None:
+            return explicit
+        if base_dir is None and base_url is None:
             return None
-        base = _p(base_dir)
-        assert base is not None
-        cand = base / name
-        if cand.exists():
-            return cand
-        # if user passed e.g. "analysis.zarr", also try zipped variant automatically, and vice versa
-        alt = None
-        if name.endswith(".zarr"):
-            alt = base / f"{name}.zip"
-        elif name.endswith(".zip"):
-            alt = base / name[:-4]
-        if alt is not None and alt.exists():
-            return alt
-        return cand  # return the non-existing candidate for provenance/debugging
+        if base_dir is not None:
+            base = _p(base_dir)
+            assert base is not None
+            cand = base / name
+            if cand.exists():
+                return cand
+            alt = None
+            if name.endswith(".zarr"):
+                alt = base / f"{name}.zip"
+            elif name.endswith(".zip"):
+                alt = base / name[:-4]
+            if alt is not None and alt.exists():
+                return alt
+        if base_url is not None:
+            return base_url.rstrip("/") + "/" + name
+        return None
 
     analysis_p = _resolve_zarr(analysis_zarr, analysis_name)
     cells_p = _resolve_zarr(cells_zarr, cells_name)
     transcripts_p = _resolve_zarr(transcripts_zarr, transcripts_name)
 
+    # Start with counts
     if mex_dir_p is not None:
         adata = _load_mex(mex_dir_p)
     else:
-        # create empty adata with cell index discovered from any available source
-        # Prefer cells.zarr -> cell_ids; else analysis.zarr -> cell_ids; else transcripts.zarr -> cells
+        # create obs index from any available source
         cell_ids: Optional[pd.Index] = None
-        for src in [(cells_p, "cells"), (analysis_p, "analysis"), (transcripts_p, "transcripts")]:
-            p, tag = src
+        for p in (cells_p, analysis_p, transcripts_p):
             if p is None:
                 continue
             try:
                 root = _open_zarr(p)
             except Exception:
                 continue
-            arr = _first_available(root, ["cells/cell_id", "cell_ids", "barcodes", "cells/ids", "cell"])
+            arr = _first_available(root, ["cells/cell_id", "cell_ids", "barcodes", "cells/ids", "cell"])  # type: ignore
             if arr is not None:
                 cell_ids = pd.Index(pd.Series(arr).astype(str), name="cell_id")
-                logger.info(f"Discovered {len(cell_ids)} cells from {tag}.zarr")
                 break
         if cell_ids is None and transcripts_p is not None:
-            # As last resort, take unique from transcripts
             root = _open_zarr(transcripts_p)
             c = _first_available(root, ["transcripts/cell_id", "transcripts/cells", "cell_id", "cell"])  # type: ignore
             if c is not None:
                 cell_ids = pd.Index(pd.unique(pd.Series(c).astype(str)), name="cell_id")
-                logger.info(f"Discovered {len(cell_ids)} cells from transcripts.zarr")
-
         if cell_ids is None:
-            raise ValueError("Could not determine cell IDs without MEX; please provide cells.zarr/analysis.zarr/transcripts.zarr")
+            raise ValueError("Could not determine cell IDs; provide MEX or any zarr with cell ids.")
 
-        # X from transcripts if requested
         if build_counts_if_missing and transcripts_p is not None:
             X, gene_index = _counts_from_transcripts(transcripts_p, cell_ids)
             obs = pd.DataFrame(index=cell_ids)
             var = pd.DataFrame(index=gene_index)
-            var["gene_name"] = var.index  # best-effort
+            var["gene_name"] = var.index
             adata = AnnData(X=X, obs=obs, var=var)
             adata.layers["counts"] = adata.X.copy()
         else:
@@ -484,7 +460,7 @@ def load_anndata_from_partial(
             var = pd.DataFrame(index=pd.Index([], name="feature_id"))
             adata = AnnData(X=sparse.csr_matrix((len(cell_ids), 0)), obs=obs, var=var)
 
-    # Attach extras if available
+    # Attach extras
     if analysis_p is not None:
         try:
             _attach_clusters(adata, analysis_p, cluster_key=cluster_key)
@@ -504,7 +480,6 @@ def load_anndata_from_partial(
         except Exception as e:
             logger.warning(f"Failed attaching spatial coordinates: {e}")
 
-    # Provenance
     adata.uns.setdefault("io", {})["analysis_zarr"] = str(analysis_p) if analysis_p else None
     adata.uns.setdefault("io", {})["cells_zarr"] = str(cells_p) if cells_p else None
     adata.uns.setdefault("io", {})["transcripts_zarr"] = str(transcripts_p) if transcripts_p else None
@@ -520,14 +495,22 @@ def load_anndata_from_partial(
 try:  # pragma: no cover
     import typer
 
-    app = typer.Typer(help="Import AnnData from partial Xenium artifacts")
+    app = typer.Typer(help="Import AnnData from partial Xenium artifacts (local or remote)")
 
     @app.command("import-partial")
     def cli_import_partial(
-        mex_dir: Optional[str] = typer.Option(None, help="Path to 10x MEX directory"),
-        analysis_zarr: Optional[str] = typer.Option(None, help="Path to analysis.zarr or .zarr.zip"),
-        cells_zarr: Optional[str] = typer.Option(None, help="Path to cells.zarr or .zarr.zip"),
-        transcripts_zarr: Optional[str] = typer.Option(None, help="Path to transcripts.zarr or .zarr.zip"),
+        mex_dir: Optional[str] = typer.Option(None, help="Path or URL to 10x MEX directory (URL = base)"),
+        analysis_zarr: Optional[str] = typer.Option(None, help="Path/URL to analysis.zarr or .zarr.zip"),
+        cells_zarr: Optional[str] = typer.Option(None, help="Path/URL to cells.zarr or .zarr.zip"),
+        transcripts_zarr: Optional[str] = typer.Option(None, help="Path/URL to transcripts.zarr or .zarr.zip"),
+        base_dir: Optional[str] = typer.Option(None, help="Common local folder for default names"),
+        base_url: Optional[str] = typer.Option(None, help="Common HTTP(S) base for default names"),
+        analysis_name: str = typer.Option("analysis.zarr", help="Filename for analysis store"),
+        cells_name: str = typer.Option("cells.zarr", help="Filename for cells store"),
+        transcripts_name: str = typer.Option("transcripts.zarr", help="Filename for transcripts store"),
+        mex_matrix_name: str = typer.Option("matrix.mtx.gz", help="MEX matrix filename under mex_dir"),
+        mex_features_name: str = typer.Option("features.tsv.gz", help="MEX features filename under mex_dir"),
+        mex_barcodes_name: str = typer.Option("barcodes.tsv.gz", help="MEX barcodes filename under mex_dir"),
         cluster_key: str = typer.Option("Cluster", help="Obs column name for cluster labels"),
         sample: Optional[str] = typer.Option(None, help="Sample name for provenance"),
         keep_unassigned: bool = typer.Option(True, help="Keep cells with unassigned cluster"),
@@ -539,6 +522,14 @@ try:  # pragma: no cover
             analysis_zarr=analysis_zarr,
             cells_zarr=cells_zarr,
             transcripts_zarr=transcripts_zarr,
+            base_dir=base_dir,
+            base_url=base_url,
+            analysis_name=analysis_name,
+            cells_name=cells_name,
+            transcripts_name=transcripts_name,
+            mex_matrix_name=mex_matrix_name,
+            mex_features_name=mex_features_name,
+            mex_barcodes_name=mex_barcodes_name,
             cluster_key=cluster_key,
             sample=sample,
             keep_unassigned=keep_unassigned,
