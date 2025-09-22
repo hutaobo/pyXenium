@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 import click
-from .io import load_toy
+from src.pyXenium.io.io import load_toy
 
 @click.group()
 def app():
