@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyXenium"
-version = "0.1.0"
+version = "0.1.1"
 description = "Tools for reading and analyzing 10x Xenium data (toy dataset included)"
 readme = "README.md"
 authors = [{ name = "Taobo Hu", email = "taobo.hu@dbb.su.se" }]
