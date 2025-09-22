@@ -1,2 +1,2 @@
 from ._version import __version__
-from src.pyXenium.io.io import load_anndata_from_partial
+from .io.partial_xenium_loader import load_anndata_from_partial
