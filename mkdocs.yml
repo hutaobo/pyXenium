@@ -1,0 +1,4 @@
+site_name: pyXenium
+nav:
+  - Home: index.md
+  - Usage: usage.md
