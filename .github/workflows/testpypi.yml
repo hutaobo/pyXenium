@@ -1,13 +1,12 @@
-name: Release to PyPI
+name: Publish to TestPyPI
 
 on:
   push:
-    tags:
-      - 'v*'          # 例如 v0.1.1
+    branches: [ main ]
   workflow_dispatch: {}   # 允许手动触发
 
 jobs:
-  build-and-upload-pypi:
+  build-and-upload-testpypi:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,8 +27,8 @@ jobs:
       - name: Twine check
         run: python -m twine check dist/*
 
-      - name: Upload to PyPI
+      - name: Upload to TestPyPI
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: python -m twine upload dist/*
+          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        run: python -m twine upload --repository testpypi dist/*
