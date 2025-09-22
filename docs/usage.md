@@ -1,4 +1,4 @@
 ```bash
 pip install pyXenium
-pyxenium demo
+pyXenium demo
 ```

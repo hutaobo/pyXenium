@@ -6,7 +6,7 @@ def open_zarr_zip(zip_path):
     return zarr.group(store=store)
 
 def load_toy():
-    base = resources.files("pyxenium.datasets.toy_slide")
+    base = resources.files("pyXenium.datasets.toy_slide")
     return {
         "cells": open_zarr_zip(base / "cells.zarr.zip"),
         "transcripts": open_zarr_zip(base / "transcripts.zarr.zip"),
