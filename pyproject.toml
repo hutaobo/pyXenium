@@ -35,3 +35,8 @@ pyXenium = ["data/**", "*.csv", "*.zarr", "*.txt"]
 
 [project.scripts]
 pyxenium-import-partial = "pyXenium.io.partial_xenium_loader:app"
+
+# pytest.ini
+[pytest]
+addopts = -q
+doctest_glob = docs/**/*.md
