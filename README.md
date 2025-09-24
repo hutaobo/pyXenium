@@ -14,6 +14,7 @@ pip install -U "pyXenium>=0.2.0"
 
 The snippet below uses the **public demo dataset** and the **v2 loader** that supports `base_url`.
 
+<!-- START load_partial_example -->
 ```python
 from pyXenium.io.partial_xenium_loader import load_anndata_from_partial
 
@@ -33,6 +34,7 @@ adata = load_anndata_from_partial(
 )
 print(adata)
 ```
+<!-- END load_partial_example -->
 
 > **Note:** Requires `pyXenium>=0.2.0`.
 > The demo dataset is hosted at:
