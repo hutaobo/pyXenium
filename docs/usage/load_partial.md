@@ -20,3 +20,7 @@ adata = load_anndata_from_partial(
     build_counts_if_missing=True,
 )
 print(adata)
+```
+
+> **Requires** `pyXenium >= 0.2.0`.  
+> Demo dataset: `hutaobo/pyxenium-gsm9116572` on Hugging Face.

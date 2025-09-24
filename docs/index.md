@@ -1,7 +1,10 @@
-# pyXenium 文档
+# pyXenium documentation
+
+Welcome to **pyXenium**!
 
 ```{toctree}
 :maxdepth: 2
-:hidden:
+:caption: User Guide
 
-api
+usage/load_partial
+```
