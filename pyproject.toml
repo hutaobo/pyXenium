@@ -1,42 +1,42 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyXenium"
-version = "0.1.2"
-description = "Tools for reading and analyzing 10x Xenium data"
+version = "0.2.0"
+description = "A toy Python package for analyzing 10x Xenium data."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
-authors = [{ name = "Taobo Hu", email = "taobo.hu@dbb.su.se" }]
+authors = [{ name = "Taobo Hu" }]
+
+# 运行时依赖（按你项目真实需要填写；示例）
 dependencies = [
   "anndata>=0.10",
-  "click>=8.1",
-  "matplotlib>=3.8",
-  "numpy>=1.24",
+  "numpy>=1.23",
   "pandas>=2.0",
-  "scikit-learn>=1.3",
   "scipy>=1.10",
-  "tqdm>=4.66",
-  "zarr>=2.16",
+  "scikit-learn>=1.3",
+  "zarr>=2.15",
   "requests>=2.31",
 ]
 
+[project.optional-dependencies]
+# ★ 新增：CI 里用到的 .[dev]（pytest、构建/发布、文档等常见开发依赖）
+dev = [
+  "pytest>=7",
+  "pytest-cov",
+  "build",
+  "twine",
+  "mkdocs",
+  "mkdocs-material",
+]
+
 [tool.setuptools]
+# ★ 明确 src 布局
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["pyXenium*"]
-
-[tool.setuptools.package-data]
-pyXenium = ["data/**", "*.csv", "*.zarr", "*.txt"]
-
-[project.scripts]
-pyxenium-import-partial = "pyXenium.io.partial_xenium_loader:app"
-
-# pytest.ini
-[pytest]
-addopts = -q
-doctest_glob = docs/**/*.md
