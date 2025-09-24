@@ -254,7 +254,10 @@ def _attach_spatial(adata: AnnData, cells_zarr: Path | str) -> None:
     z = _first_available(root, ["cells/centroids/z", "centroids/z", "cells/centroid_z", "z"])  # optional
     cell_ids = _first_available(root, ["cells/cell_id", "cells/ids", "cell_ids", "ids", "barcodes"])  # optional
     if cell_ids is not None:
-        cell_ids = cell_ids.astype(str)
+        if cell_ids.dtype.kind in ("i", "u"):
+            cell_ids = np.char.add("cell_", cell_ids.astype(str))
+        else:
+            cell_ids = cell_ids.astype(str)
 
     if x is None or y is None:
         logger.warning("Could not locate centroid x/y in cells.zarr; skipping spatial attach.")
@@ -304,7 +307,10 @@ def _attach_clusters(adata: AnnData, analysis_zarr: Path | str, cluster_key: str
     ids = _first_available(root, ["clusters/ids", "clustering/ids", "ids", "cluster_ids"])
     cell_ids = _first_available(root, ["cells/cell_id", "cell_ids", "barcodes", "cells/ids"])  # optional
     if cell_ids is not None:
-        cell_ids = cell_ids.astype(str)
+        if cell_ids.dtype.kind in ("i", "u"):
+            cell_ids = np.char.add("cell_", cell_ids.astype(str))
+        else:
+            cell_ids = cell_ids.astype(str)
 
     if label_arr is None:
         logger.warning("No cluster labels found in analysis.zarr; skipping.")
@@ -346,7 +352,10 @@ def _counts_from_transcripts(transcripts_zarr: Path | str, cell_id_index: pd.Ind
     if gene is None or cell is None:
         raise KeyError("Could not locate transcript gene/cell arrays in transcripts.zarr")
 
-    cell = cell.astype(str)
+    if cell.dtype.kind in ("i", "u"):
+        cell = np.char.add("cell_", cell.astype(str))
+    else:
+        cell = cell.astype(str)
 
     gene_names = _first_available(root, ["genes/name", "genes/names", "gene_names", "gene/name"])  # optional
     if gene_names is not None and gene.dtype.kind in ("i", "u"):
@@ -454,13 +463,25 @@ def load_anndata_from_partial(
                 continue
             arr = _first_available(root, ["cells/cell_id", "cell_ids", "barcodes", "cells/ids", "cell"])  # type: ignore
             if arr is not None:
-                cell_ids = pd.Index(pd.Series(arr).astype(str), name="cell_id")
+                if arr.dtype.kind in ("i", "u"):
+                    if arr.ndim == 2:
+                        ids_numeric = arr[:, 0]
+                    else:
+                        ids_numeric = arr
+                    cell_ids = pd.Index([f"cell_{int(x)}" for x in ids_numeric], name="cell_id")
+                else:
+                    cell_ids = pd.Index(pd.Series(arr).astype(str), name="cell_id")
                 break
         if cell_ids is None and transcripts_p is not None:
             root = _open_zarr(transcripts_p)
             c = _first_available(root, ["transcripts/cell_id", "transcripts/cells", "cell_id", "cell"])  # type: ignore
             if c is not None:
-                cell_ids = pd.Index(pd.unique(pd.Series(c).astype(str)), name="cell_id")
+                if c.dtype.kind in ("i", "u"):
+                    unique_nums = pd.unique(pd.Series(c))
+                    cell_ids_list = [f"cell_{int(x)}" for x in unique_nums]
+                    cell_ids = pd.Index(cell_ids_list, name="cell_id")
+                else:
+                    cell_ids = pd.Index(pd.unique(pd.Series(c).astype(str)), name="cell_id")
         if cell_ids is None:
             raise ValueError("Could not determine cell IDs; provide MEX or any zarr with cell ids.")
 
