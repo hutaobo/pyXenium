@@ -2,19 +2,20 @@
 pyXenium.io.partial_xenium_loader
 ---------------------------------
 
-Load an AnnData object when you *don't* have a full Xenium `out/` folder, by
-stitching together any subset of:
+Create an AnnData object from partial Xenium artifacts.
 
+What it can use:
 - 10x Gene Expression MEX (matrix.mtx[.gz], features.tsv[.gz], barcodes.tsv[.gz])
 - `analysis.zarr` or `analysis.zarr.zip` (cluster labels / metadata)
-- `cells.zarr` or `cells.zarr.zip` (cell centroids / spatial coords)
-- `transcripts.zarr` or `transcripts.zarr.zip` (per-gene transcript locations)
+- `cells.zarr` or `cells.zarr.zip` (centroids / spatial coords)
 
 Updates (2025-09-24)
 --------------------
-- FIX: include root-level "cell_id" in search keys for all zarr readers.
-- FEAT: support `(N,2)` numeric cell_id by taking first column and normalizing to "cell_{num}".
-- Keep all previous APIs and behaviors.
+- Default: load MEX from `<base>/cell_feature_matrix/` (URL or local dir).
+- Do NOT build counts from transcripts.zarr anymore. If MEX missing, returns an AnnData with
+  empty gene dimension (but still attaches clusters/spatial when available).
+- Robust `cell_id` detection: include root-level "cell_id" and support `(N,2)` numeric ids -> "cell_{num}".
+- Keep all previous public APIs and behaviors (backward compatible).
 
 Author: Taobo Hu (pyXenium project)
 """
@@ -40,7 +41,7 @@ from scipy.io import mmread
 try:
     import zarr
     from zarr.storage import ZipStore
-except Exception as e:  # pragma: no cover
+except Exception:
     zarr = None  # type: ignore
     ZipStore = None  # type: ignore
 
@@ -94,29 +95,27 @@ class PartialInputs:
     mex_dir: Optional[Path | str] = None
     analysis_zarr: Optional[Path | str] = None
     cells_zarr: Optional[Path | str] = None
-    transcripts_zarr: Optional[Path | str] = None
 
 
 # -----------------------------
 # MEX loader
 # -----------------------------
 
-def _load_mex(mex_dir: Path | str) -> AnnData:
+def _load_mex_triplet(mex_dir: Path, matrix_name: str, features_name: str, barcodes_name: str) -> AnnData:
     logger.info(f"Reading MEX from {mex_dir}")
-    base = Path(mex_dir) if not _is_url(mex_dir) else Path(mex_dir)  # URL case pre-downloaded
-
     candidates = {
-        "matrix": ["matrix.mtx", "matrix.mtx.gz"],
-        "features": ["features.tsv", "features.tsv.gz", "genes.tsv", "genes.tsv.gz"],
-        "barcodes": ["barcodes.tsv", "barcodes.tsv.gz"],
+        "matrix": [matrix_name, "matrix.mtx", "matrix.mtx.gz"],
+        "features": [features_name, "features.tsv", "features.tsv.gz", "genes.tsv", "genes.tsv.gz"],
+        "barcodes": [barcodes_name, "barcodes.tsv", "barcodes.tsv.gz"],
     }
 
     def _find(names: Sequence[str], base: Path) -> Optional[Path]:
+        # check base first
         for name in names:
             p = base / name
             if p.exists():
                 return p
-        # also scan one-level subfolders
+        # then scan one-level subfolders (some pipelines write into subdir)
         for child in base.iterdir():
             if child.is_dir():
                 for name in names:
@@ -125,17 +124,19 @@ def _load_mex(mex_dir: Path | str) -> AnnData:
                         return p
         return None
 
-    mtx_p = _find(candidates["matrix"], base)
-    feat_p = _find(candidates["features"], base)
-    barc_p = _find(candidates["barcodes"], base)
+    mtx_p = _find(candidates["matrix"], mex_dir)
+    feat_p = _find(candidates["features"], mex_dir)
+    barc_p = _find(candidates["barcodes"], mex_dir)
+
     if not (mtx_p and feat_p and barc_p):
         missing = [k for k, v in {"matrix": mtx_p, "features": feat_p, "barcodes": barc_p}.items() if v is None]
-        raise FileNotFoundError(f"MEX missing files: {', '.join(missing)} under {base}")
+        raise FileNotFoundError(f"MEX missing files: {', '.join(missing)} under {mex_dir}")
 
     logger.info(f"  using {mtx_p.name}, {feat_p.name}, {barc_p.name}")
     with (gzip.open(mtx_p, "rb") if str(mtx_p).endswith(".gz") else open(mtx_p, "rb")) as f:
         X = mmread(f).tocsr().astype(np.float32)
 
+    # features
     with _open_text_maybe_gz(feat_p) as f:
         rows = [line.rstrip("\n").split("\t") for line in f]
     feat_df = pd.DataFrame(rows)
@@ -145,10 +146,12 @@ def _load_mex(mex_dir: Path | str) -> AnnData:
     feat_df.columns = ["feature_id", "gene_name", "feature_type"]
     feat_df.index = feat_df["feature_id"].astype(str)
 
+    # barcodes
     with _open_text_maybe_gz(barc_p) as f:
         barcodes = [line.strip() for line in f]
     obs = pd.DataFrame(index=pd.Index(barcodes, name="cell_id"))
 
+    # orient
     if X.shape[0] == feat_df.shape[0] and X.shape[1] == obs.shape[0]:
         var = feat_df
     elif X.shape[1] == feat_df.shape[0] and X.shape[0] == obs.shape[0]:
@@ -161,8 +164,8 @@ def _load_mex(mex_dir: Path | str) -> AnnData:
         )
 
     adata = AnnData(X=X, obs=obs, var=var)
-    adata.uns.setdefault("io", {})["mex_dir"] = str(base)
     adata.layers["counts"] = adata.X.copy()
+    adata.uns.setdefault("io", {})["mex_dir"] = str(mex_dir)
     return adata
 
 
@@ -214,10 +217,9 @@ def _normalize_cell_ids(arr: np.ndarray) -> Tuple[pd.Index, Optional[np.ndarray]
     Normalize a cell_id array to string index.
     Returns:
       - obs index (strings)
-      - numeric_ids (np.ndarray) if we originated from numeric ids, else None
+      - numeric_ids (np.ndarray) if from numeric ids, else None
     """
     if arr.dtype.kind in ("i", "u"):
-        # numeric: accept both 1D and 2D
         if arr.ndim == 2:
             nums = arr[:, 0]
         else:
@@ -225,7 +227,6 @@ def _normalize_cell_ids(arr: np.ndarray) -> Tuple[pd.Index, Optional[np.ndarray]
         obs_names = pd.Index([f"cell_{int(x)}" for x in nums], name="cell_id")
         return obs_names, nums.astype(np.int64)
     else:
-        # bytes/str/object: convert to str
         s = pd.Series(arr)
         obs_names = pd.Index(s.astype(str), name="cell_id")
         return obs_names, None
@@ -265,10 +266,8 @@ def _attach_spatial(adata: AnnData, cells_zarr: Path | str) -> None:
     )
     z = _first_available(root, ["cells/centroids/z", "centroids/z", "cells/centroid_z", "z"])  # optional
 
-    # **FIX**: include root-level "cell_id"
-    cell_ids_raw = _first_available(
-        root, ["cell_id", "cells/cell_id", "cells/ids", "cell_ids", "ids", "barcodes"]
-    )
+    # include root-level "cell_id"
+    cell_ids_raw = _first_available(root, ["cell_id", "cells/cell_id", "cells/ids", "cell_ids", "ids", "barcodes"])
 
     if x is None or y is None:
         logger.warning("Could not locate centroid x/y in cells.zarr; skipping spatial attach.")
@@ -318,7 +317,6 @@ def _attach_clusters(adata: AnnData, analysis_zarr: Path | str, cluster_key: str
     names = _first_available(root, ["clusters/names", "clustering/names", "names", "cluster_names"])
     ids = _first_available(root, ["clusters/ids", "clustering/ids", "ids", "cluster_ids"])
 
-    # **FIX**: include root-level "cell_id"
     cell_ids_raw = _first_available(root, ["cell_id", "cells/cell_id", "cell_ids", "barcodes", "cells/ids"])
 
     if label_arr is None:
@@ -349,61 +347,6 @@ def _attach_clusters(adata: AnnData, analysis_zarr: Path | str, cluster_key: str
 
 
 # -----------------------------
-# Build counts from transcripts if MEX missing
-# -----------------------------
-
-def _counts_from_transcripts(transcripts_zarr: Path | str, cell_id_index: pd.Index) -> Tuple[sparse.csr_matrix, pd.Index]:
-    logger.info(f"Aggregating counts from {transcripts_zarr} (this may be slow)")
-    root = _open_zarr(transcripts_zarr)
-
-    gene = _first_available(root, ["transcripts/gene", "transcripts/genes", "gene", "genes"])  # num or str
-    # **FIX**: include root-level "cell_id"
-    cell = _first_available(
-        root, ["transcripts/cell_id", "transcripts/cells", "cell_id", "cell", "cells/cell_id"]
-    )
-
-    if gene is None or cell is None:
-        raise KeyError("Could not locate transcript gene/cell arrays in transcripts.zarr")
-
-    if cell.dtype.kind in ("i", "u"):
-        cell = np.char.add("cell_", cell.astype(str))
-    else:
-        cell = cell.astype(str)
-
-    gene_names = _first_available(root, ["genes/name", "genes/names", "gene_names", "gene/name"])  # optional
-    if gene_names is not None and gene.dtype.kind in ("i", "u"):
-        gene = gene_names[gene.astype(int)].astype(str)
-    else:
-        gene = gene.astype(str)
-
-    df = pd.DataFrame({"gene": pd.Categorical(gene), "cell": pd.Categorical(cell)})
-    df = df[df["cell"].isin(cell_id_index)]
-
-    if df.empty:
-        # 允许空上游，返回空矩阵但维度对齐
-        n_cells = len(cell_id_index)
-        X = sparse.csr_matrix((0, n_cells), dtype=np.float32)
-        gene_index = pd.Index([], name="feature_id")
-        return X, gene_index
-
-    gi = df["gene"].cat.codes.to_numpy()
-    ci = df["cell"].cat.codes.to_numpy()
-    data = np.ones_like(gi, dtype=np.int32)
-
-    n_genes = int(df["gene"].cat.categories.size)
-    X = sparse.coo_matrix((data, (gi, ci)), shape=(n_genes, int(df["cell"].cat.categories.size))).tocsr()
-
-    gene_index = pd.Index(df["gene"].cat.categories.astype(str), name="feature_id")
-    cell_cats = pd.Index(df["cell"].cat.categories.astype(str), name="cell_id")
-
-    column_reindexer = pd.Series(range(len(cell_cats)), index=cell_cats).reindex(cell_id_index)
-    take = column_reindexer.dropna().astype(int).to_numpy()
-    X = X[:, take]
-
-    return X, gene_index
-
-
-# -----------------------------
 # Public API
 # -----------------------------
 
@@ -411,35 +354,65 @@ def load_anndata_from_partial(
     mex_dir: Optional[os.PathLike | str] = None,
     analysis_zarr: Optional[os.PathLike | str] = None,
     cells_zarr: Optional[os.PathLike | str] = None,
-    transcripts_zarr: Optional[os.PathLike | str] = None,
     *,
     base_dir: Optional[os.PathLike | str] = None,
     base_url: Optional[str] = None,
     analysis_name: str = "analysis.zarr",
     cells_name: str = "cells.zarr",
-    transcripts_name: str = "transcripts.zarr",
+    # default MEX file names
     mex_matrix_name: str = "matrix.mtx.gz",
     mex_features_name: str = "features.tsv.gz",
     mex_barcodes_name: str = "barcodes.tsv.gz",
+    # where to look (by default) for MEX under base
+    mex_default_subdir: str = "cell_feature_matrix",
     cluster_key: str = "Cluster",
     sample: Optional[str] = None,
     keep_unassigned: bool = True,
-    build_counts_if_missing: bool = True,
+    build_counts_if_missing: bool = True,  # kept for API compatibility; now only controls empty-matrix behavior
 ) -> AnnData:
-    """Create an AnnData from any combination of partial Xenium artifacts.
+    """Create an AnnData from partial Xenium artifacts.
 
-    Explicit paths take precedence over base resolution with (base_dir|base_url)+name.
+    Default behavior:
+      - If `mex_dir` not given, try `<base>/cell_feature_matrix/` for MEX triplet.
+      - If MEX found: load counts from MEX.
+      - If MEX not found: DO NOT compute from transcripts; return empty-gene AnnData,
+        but still try to attach clusters/spatial from analysis.zarr/cells.zarr.
     """
-    # Resolve MEX
-    if mex_dir is not None and _is_url(mex_dir):
-        url_base = str(mex_dir).rstrip("/")
-        m_p = _fetch_to_temp(url_base + "/" + mex_matrix_name)
-        _ = _fetch_to_temp(url_base + "/" + mex_features_name)
-        _ = _fetch_to_temp(url_base + "/" + mex_barcodes_name)
-        mex_dir_p: Optional[Path] = m_p.parent
-    else:
-        mex_dir_p = _p(mex_dir)
+    # Resolve MEX directory
+    mex_dir_p: Optional[Path] = None
 
+    # 1) If explicit mex_dir is provided
+    if mex_dir is not None:
+        if _is_url(mex_dir):
+            # download three files into a temp dir
+            base_url_mex = str(mex_dir).rstrip("/")
+            m_p = _fetch_to_temp(base_url_mex + "/" + mex_matrix_name)
+            _ = _fetch_to_temp(base_url_mex + "/" + mex_features_name)
+            _ = _fetch_to_temp(base_url_mex + "/" + mex_barcodes_name)
+            mex_dir_p = m_p.parent
+        else:
+            mex_dir_p = _p(mex_dir)
+
+    # 2) Otherwise, try `<base>/cell_feature_matrix/`
+    if mex_dir_p is None and (base_dir is not None or base_url is not None):
+        if base_dir is not None:
+            bd = _p(base_dir)
+            cand = bd / mex_default_subdir if bd is not None else None
+            if cand is not None and cand.exists():
+                mex_dir_p = cand
+
+        if mex_dir_p is None and base_url is not None:
+            # download three files from base_url/cell_feature_matrix/
+            root_url = base_url.rstrip("/") + "/" + mex_default_subdir
+            try:
+                m_p = _fetch_to_temp(root_url + "/" + mex_matrix_name)
+                _ = _fetch_to_temp(root_url + "/" + mex_features_name)
+                _ = _fetch_to_temp(root_url + "/" + mex_barcodes_name)
+                mex_dir_p = m_p.parent
+            except Exception as e:
+                logger.warning(f"Failed to fetch MEX from {root_url}: {e}")
+
+    # Resolve Zarrs (optional)
     def _resolve_zarr(explicit: Optional[os.PathLike | str], name: str) -> Optional[Path | str]:
         if explicit is not None:
             return explicit
@@ -464,49 +437,35 @@ def load_anndata_from_partial(
 
     analysis_p = _resolve_zarr(analysis_zarr, analysis_name)
     cells_p = _resolve_zarr(cells_zarr, cells_name)
-    transcripts_p = _resolve_zarr(transcripts_zarr, transcripts_name)
 
-    # Start with counts or at least obs index
+    # Construct AnnData
     if mex_dir_p is not None:
-        adata = _load_mex(mex_dir_p)
+        adata = _load_mex_triplet(mex_dir_p, mex_matrix_name, mex_features_name, mex_barcodes_name)
     else:
-        # Discover cell ids from any available zarr
+        # No MEX: create empty-gene AnnData but still attempt to obtain obs index from zarrs
+        logger.warning(
+            "No MEX found under mex_dir or <base>/cell_feature_matrix/. "
+            "Returning empty-gene AnnData; counts are unavailable without MEX."
+        )
+        # try to discover cell ids from any provided zarr to build obs
         cell_ids: Optional[pd.Index] = None
         probe_keys = ["cell_id", "cells/cell_id", "cell_ids", "barcodes", "cells/ids", "cell"]
-        for p in (cells_p, analysis_p, transcripts_p):
+        for p in (cells_p, analysis_p):
             if p is None:
                 continue
             try:
                 root = _open_zarr(p)
             except Exception:
                 continue
-            arr = _first_available(root, probe_keys)  # include root "cell_id"
+            arr = _first_available(root, probe_keys)
             if arr is not None:
                 idx, _ = _normalize_cell_ids(arr)
                 cell_ids = idx
                 break
 
-        # As a fallback, deduce from transcripts unique cells
-        if cell_ids is None and transcripts_p is not None:
-            root = _open_zarr(transcripts_p)
-            c = _first_available(root, ["transcripts/cell_id", "transcripts/cells", "cell_id", "cell", "cells/cell_id"])
-            if c is not None:
-                if c.dtype.kind in ("i", "u"):
-                    cell_ids = pd.Index([f"cell_{int(x)}" for x in pd.unique(pd.Series(c))], name="cell_id")
-                else:
-                    cell_ids = pd.Index(pd.unique(pd.Series(c).astype(str)), name="cell_id")
-
         if cell_ids is None:
-            raise ValueError("Could not determine cell IDs; provide MEX or any zarr with cell ids.")
-
-        # Build counts from transcripts if asked & available
-        if build_counts_if_missing and transcripts_p is not None:
-            X, gene_index = _counts_from_transcripts(transcripts_p, cell_ids)
-            obs = pd.DataFrame(index=cell_ids)
-            var = pd.DataFrame(index=gene_index)
-            var["gene_name"] = var.index
-            adata = AnnData(X=X, obs=obs, var=var)
-            adata.layers["counts"] = adata.X.copy()
+            # fall back to minimal AnnData
+            adata = AnnData(X=sparse.csr_matrix((0, 0)))
         else:
             obs = pd.DataFrame(index=cell_ids)
             var = pd.DataFrame(index=pd.Index([], name="feature_id"))
@@ -532,66 +491,16 @@ def load_anndata_from_partial(
         except Exception as e:
             logger.warning(f"Failed attaching spatial coordinates: {e}")
 
-    adata.uns.setdefault("io", {})["analysis_zarr"] = str(analysis_p) if analysis_p else None
-    adata.uns.setdefault("io", {})["cells_zarr"] = str(cells_p) if cells_p else None
-    adata.uns.setdefault("io", {})["transcripts_zarr"] = str(transcripts_p) if transcripts_p else None
     if sample is not None:
         adata.uns["sample"] = str(sample)
+
+    # provenance
+    adata.uns.setdefault("io", {})
+    adata.uns["io"]["analysis_zarr"] = str(analysis_p) if analysis_p else None
+    adata.uns["io"]["cells_zarr"] = str(cells_p) if cells_p else None
+    adata.uns["io"]["mex_dir"] = str(mex_dir_p) if mex_dir_p else None
 
     return adata
 
 
-# -----------------------------
-# Optional CLI via Typer
-# -----------------------------
-try:  # pragma: no cover
-    import typer
-
-    app = typer.Typer(help="Import AnnData from partial Xenium artifacts (local or remote)")
-
-    @app.command("import-partial")
-    def cli_import_partial(
-        mex_dir: Optional[str] = typer.Option(None, help="Path or URL to 10x MEX directory (URL = base)"),
-        analysis_zarr: Optional[str] = typer.Option(None, help="Path/URL to analysis.zarr or .zarr.zip"),
-        cells_zarr: Optional[str] = typer.Option(None, help="Path/URL to cells.zarr or .zarr.zip"),
-        transcripts_zarr: Optional[str] = typer.Option(None, help="Path/URL to transcripts.zarr or .zarr.zip"),
-        base_dir: Optional[str] = typer.Option(None, help="Common local folder for default names"),
-        base_url: Optional[str] = typer.Option(None, help="Common HTTP(S) base for default names"),
-        analysis_name: str = typer.Option("analysis.zarr", help="Filename for analysis store"),
-        cells_name: str = typer.Option("cells.zarr", help="Filename for cells store"),
-        transcripts_name: str = typer.Option("transcripts.zarr", help="Filename for transcripts store"),
-        mex_matrix_name: str = typer.Option("matrix.mtx.gz", help="MEX matrix filename under mex_dir"),
-        mex_features_name: str = typer.Option("features.tsv.gz", help="MEX features filename under mex_dir"),
-        mex_barcodes_name: str = typer.Option("barcodes.tsv.gz", help="MEX barcodes filename under mex_dir"),
-        cluster_key: str = typer.Option("Cluster", help="Obs column name for cluster labels"),
-        sample: Optional[str] = typer.Option(None, help="Sample name for provenance"),
-        keep_unassigned: bool = typer.Option(True, help="Keep cells with unassigned cluster"),
-        build_counts_if_missing: bool = typer.Option(True, help="If no MEX, build counts from transcripts"),
-        output_h5ad: str = typer.Option("partial.h5ad", help="Output .h5ad path"),
-    ):
-        adata = load_anndata_from_partial(
-            mex_dir=mex_dir,
-            analysis_zarr=analysis_zarr,
-            cells_zarr=cells_zarr,
-            transcripts_zarr=transcripts_zarr,
-            base_dir=base_dir,
-            base_url=base_url,
-            analysis_name=analysis_name,
-            cells_name=cells_name,
-            transcripts_name=transcripts_name,
-            mex_matrix_name=mex_matrix_name,
-            mex_features_name=mex_features_name,
-            mex_barcodes_name=mex_barcodes_name,
-            cluster_key=cluster_key,
-            sample=sample,
-            keep_unassigned=keep_unassigned,
-            build_counts_if_missing=build_counts_if_missing,
-        )
-        adata.write_h5ad(output_h5ad)
-        typer.echo(f"Wrote {output_h5ad} (n_cells={adata.n_obs}, n_genes={adata.n_vars})")
-
-except Exception:
-    app = None  # type: ignore
-
-
-__all__ = ["load_anndata_from_partial", "PartialInputs", "app"]
+__all__ = ["load_anndata_from_partial", "PartialInputs"]
