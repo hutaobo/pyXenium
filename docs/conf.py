@@ -1,11 +1,15 @@
-# -- Project information -----------------------------------------------------
 project = "pyXenium"
 author = "Taobo Hu"
 
-# -- General configuration ---------------------------------------------------
 extensions = [
     "myst_parser",
 ]
+
+# Treat .md as MyST markdown explicitly
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "myst",
+}
 
 myst_enable_extensions = [
     "colon_fence",
@@ -14,13 +18,12 @@ myst_enable_extensions = [
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = []
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-# -- Options for HTML output -------------------------------------------------
 html_theme = "furo"
 html_static_path = ["_static"]
 
-# Copy README.md from repo root into docs/_includes so it can be safely included
+# Copy README.md into docs/_includes for safe include
 import os
 from pathlib import Path
 import shutil
