@@ -6,6 +6,7 @@ A toy Python package for analyzing 10x Xenium data.
 
 ```bash
 pip install -U "pyXenium>=0.2.0"
+pip install "git+https://github.com/hutaobo/pyXenium.git@main"
 ```
 
 ## Quickstart
