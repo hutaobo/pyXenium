@@ -208,8 +208,8 @@ def _load_mex_triplet(
         X = sparse.coo_matrix(X)
 
     # Read features & barcodes
-    feat_df = pd.read_csv(features_path, sep="\t", header=None)
-    bc_df = pd.read_csv(barcodes_path, sep="\t", header=None)
+    feat_df = pd.read_csv(features_path, sep="\t", header=None, engine="c")
+    bc_df   = pd.read_csv(barcodes_path,  sep="\t", header=None, engine="c")
 
     # Build var/obs
     # Prefer feature name (2nd column) as index if present
