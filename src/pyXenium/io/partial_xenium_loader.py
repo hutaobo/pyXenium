@@ -156,16 +156,25 @@ def _find_zarr_root_in_zip(zip_path: str) -> Tuple[str, str]:
 def _open_zarr_zip(zip_path: str):
     """Open a zipped Zarr (v2 or v3) **without extraction** and return a zarr Group.
     The Zarr root may be inside a subfolder of the ZIP.
+    Uses zarr.storage.ZipStore to avoid fsspec path quirks in certain envs.
     """
+    if os.path.isdir(zip_path):
+        raise IsADirectoryError(f"Expected a .zip file, got directory: {zip_path}")
+
     root_prefix, zv = _find_zarr_root_in_zip(zip_path)
-    mapper = fsspec.get_mapper(f"zip://{zip_path}")
-    # zarr.open_group works for both v2/v3 stores; specify path when non-root
+
+    # Prefer ZipStore for local file paths; it's robust and avoids cwd confusion
+    try:
+        store = zarr.storage.ZipStore(zip_path, mode="r")
+    except Exception as e:
+        raise RuntimeError(f"Failed to open ZipStore for {zip_path}: {e}") from e
+
     path = root_prefix.rstrip('/')
     try:
-        grp = zarr.open_group(store=mapper, path=path, mode="r")
+        grp = zarr.open_group(store=store, path=path, mode="r")
     except TypeError:
         # very old zarr fallback
-        grp = zarr.open_group(mapper, mode="r")
+        grp = zarr.open_group(store, mode="r")
         if path:
             grp = grp[path]
     return grp
