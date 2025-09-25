@@ -1,8 +1,16 @@
 """
 partial_xenium_loader.py
 
-A lightweight, robust loader for assembling an AnnData object from partial
-10x/Xenium outputs, with automatic MEX orientation correction.
+A robust loader for assembling an AnnData object from partial
+10x/Xenium outputs, with:
+  * Automatic MEX orientation fix (features×barcodes -> cells×genes)
+  * Optional enrichment from analysis.zarr(.zip):
+      - Parse `cell_groups/<group_id>` (CSR by indices/indptr) -> cluster labels
+        (group 0 = graph-based clustering by convention)
+  * Optional enrichment from cells.zarr(.zip):
+      - Read cell_summary -> centroid (x, y) into adata.obs
+      - Heuristic reconstruction of string cell_id from 2-col numeric array
+  * Per-gene totals for Gene Expression features: adata.var['total_counts']
 
 Drop-in replacement for pyXenium.io.partial_xenium_loader.
 
@@ -12,12 +20,14 @@ Requirements:
   - pandas
 Optional:
   - requests (for HTTP downloads)
-  - zarr (to enrich obs from cells/analysis zarr bundles, best-effort)
+  - zarr, fsspec (to enrich from zipped zarr via HTTP/local paths)
+
 """
 
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import tempfile
 import logging
@@ -36,11 +46,16 @@ try:
 except Exception as e:  # pragma: no cover
     raise RuntimeError("AnnData is required. Please install `anndata`.") from e
 
-# Optional: zarr support (best-effort)
+# Optional: zarr & fsspec for zipped-remote stores
 try:
     import zarr  # type: ignore
 except Exception:
     zarr = None  # type: ignore
+
+try:
+    import fsspec  # type: ignore
+except Exception:
+    fsspec = None  # type: ignore
 
 # Optional: requests for HTTP downloads
 try:
@@ -69,15 +84,28 @@ def _ensure_dir(p: pathlib.Path) -> None:
 
 
 def _is_url(s: str) -> bool:
-    return s.startswith("http://") or s.startswith("https://")
+    return isinstance(s, str) and (s.startswith("http://") or s.startswith("https://"))
+
+
+def _hf_to_resolve(url: str) -> str:
+    """
+    Normalize Hugging Face URLs:
+      - .../blob/<branch>/... -> .../resolve/<branch>/...
+      - .../tree/<branch>/... -> .../resolve/<branch>/...
+    """
+    if "huggingface.co" in url:
+        url = re.sub(r"/blob/", "/resolve/", url)
+        url = re.sub(r"/tree/", "/resolve/", url)
+    return url
 
 
 def _download(url: str, dest: pathlib.Path) -> pathlib.Path:
     if requests is None:
         raise RuntimeError("`requests` is required to download from URLs.")
+    url = _hf_to_resolve(url)
     _ensure_dir(dest.parent)
     logger.info(f"Downloading: {url}")
-    with requests.get(url, stream=True, timeout=60) as r:
+    with requests.get(url, stream=True, timeout=120) as r:
         r.raise_for_status()
         with open(dest, "wb") as f:
             shutil.copyfileobj(r.raw, f)
@@ -88,7 +116,7 @@ def _resolve_from_base(base: str | None, *parts: str) -> str:
     if base is None:
         raise ValueError("Base is None when resolving a path/URL.")
     if _is_url(base):
-        return "/".join([base.rstrip("/")] + [p.strip("/") for p in parts])
+        return "/".join([base.rstrip("/") ] + [p.strip("/") for p in parts])
     else:
         return str(pathlib.Path(base, *parts))
 
@@ -180,8 +208,8 @@ def _load_mex_triplet(
         X = sparse.coo_matrix(X)
 
     # Read features & barcodes
-    feat_df = pd.read_csv(features_path, sep="\\t", header=None)
-    bc_df = pd.read_csv(barcodes_path, sep="\\t", header=None)
+    feat_df = pd.read_csv(features_path, sep="\t", header=None)
+    bc_df = pd.read_csv(barcodes_path, sep="\t", header=None)
 
     # Build var/obs
     # Prefer feature name (2nd column) as index if present
@@ -192,7 +220,12 @@ def _load_mex_triplet(
     var = pd.DataFrame(index=pd.Index(var_index, name="feature_name"))
     var["feature_id"] = feat_df.iloc[:, 0].astype(str).values
     if feat_df.shape[1] >= 3:
+        # standard 10x column stores e.g. "Gene Expression"
         var["feature_type"] = feat_df.iloc[:, 2].astype(str).values
+        var["feature_types"] = var["feature_type"]  # compatibility alias
+    else:
+        var["feature_type"] = "Gene Expression"
+        var["feature_types"] = "Gene Expression"
 
     obs = pd.DataFrame(index=pd.Index(bc_df.iloc[:, 0].astype(str).values, name="barcode"))
 
@@ -224,164 +257,197 @@ def _load_mex_triplet(
     return adata
 
 
-def _try_load_cells_metadata_from_zarr(
-    adata: AnnData,
-    cells_zarr: str | None = None,
-    base_dir: str | None = None,
-    base_url: str | None = None,
-    cells_name: str = "cells.zarr.zip",
-) -> None:
-    """
-    Best-effort: if a cells.zarr(.zip) is available, try to enrich adata.obs with
-    cell-level information (e.g., centroid coordinates) when keys are recognizable.
-    This function won't raise if zarr is unavailable or structure is unknown.
-    """
-    if zarr is None:
-        return
+# ---------- analysis.zarr(.zip) helpers ----------
 
-    # Resolve path or download
-    path: str | None = None
+def _open_zip_store(path_or_url: str) -> tuple[object, str | None]:
+    """
+    Open a local/remote ZIP path via fsspec+zarr ZipStore (read-only).
+    Returns (store, tmp_dir) where tmp_dir should be cleaned by caller if not None.
+    """
+    if zarr is None or fsspec is None:
+        raise RuntimeError("Parsing zipped zarr requires both `zarr` and `fsspec`.")
+
     tmp_dir: str | None = None
-
-    if cells_zarr is not None:
-        path = cells_zarr
-    elif base_dir is not None:
-        maybe = os.path.join(base_dir, cells_name)
-        if os.path.exists(maybe):
-            path = maybe
-    elif base_url is not None:
-        if requests is None:
-            return
-        tmp_dir = tempfile.mkdtemp(prefix="pyxenium_cells_")
-        url = _resolve_from_base(base_url, cells_name)
-        logger.info(f"Downloading: {url}")
-        local = os.path.join(tmp_dir, cells_name)
-        with requests.get(url, stream=True, timeout=60) as r:
-            r.raise_for_status()
-            with open(local, "wb") as f:
-                shutil.copyfileobj(r.raw, f)
-        path = local
-
-    if path is None or not os.path.exists(path):
-        return
-
-    try:
-        store = zarr.DirectoryStore(path) if os.path.isdir(path) else zarr.ZipStore(path, mode="r")
-        root = zarr.open(store=store, mode="r")
-
-        # Heuristic keys commonly seen in Xenium/SpaceRanger-like cells.zarr
-        obs_keys = {}
-        for k in ("cell_id", "barcode"):
-            if k in root:
-                obs_keys["cell_id"] = np.asarray(root[k])
-                break
-        if "cell_id" in obs_keys:
-            cid = pd.Index(obs_keys["cell_id"].astype(str), name="cell_id")
-            if adata.obs.index.equals(cid):
-                pass
-            else:
-                if cid.is_unique and adata.obs.index.is_unique:
-                    adata.obs["cell_id"] = cid
-                else:
-                    adata.uns.setdefault("cells_zarr", {})["cell_id_preview"] = cid[:10].tolist()
-
-        # Common centroid arrays
-        for xk, yk in (("cell_centroids/x", "cell_centroids/y"), ("centroids/x", "centroids/y")):
-            if xk in root and yk in root:
-                x = np.asarray(root[xk]).astype(float)
-                y = np.asarray(root[yk]).astype(float)
-                if len(x) == adata.n_obs and len(y) == adata.n_obs:
-                    adata.obs["x"] = x
-                    adata.obs["y"] = y
-                break
-
-        try:
-            store.close()  # type: ignore[attr-defined]
-        except Exception:
-            pass
-
-        if tmp_dir and os.path.isdir(tmp_dir):
-            shutil.rmtree(tmp_dir, ignore_errors=True)
-
-    except Exception as e:
-        logger.warning(f"Failed to parse cells zarr: {e}")
+    if _is_url(path_or_url):
+        url = _hf_to_resolve(path_or_url)
+        # Use fsspec's zip::https://... mapper (no local temp needed)
+        mapper = f"zip::{url}"
+        store = fsspec.get_mapper(mapper)
+        return store, tmp_dir
+    else:
+        # Local file
+        from zarr.storage import ZipStore  # type: ignore
+        store = ZipStore(path_or_url, mode="r")
+        return store, tmp_dir
 
 
-def _try_load_analysis_from_zarr(
+def _load_cell_groups_to_clusters(
     adata: AnnData,
-    analysis_zarr: str | None = None,
-    base_dir: str | None = None,
-    base_url: str | None = None,
-    analysis_name: str = "analysis.zarr.zip",
+    analysis_zip: str | None,
     cluster_key: str = "Cluster",
     keep_unassigned: bool = True,
 ) -> None:
     """
-    Best-effort: if an analysis.zarr(.zip) is available, try to add clustering labels
-    into adata.obs[cluster_key]. This is schema-dependent; we try a few common conventions.
+    From analysis.zarr(.zip), load `cell_groups/<group_id>` CSR matrices and
+    assign cluster labels from group 0 (graph-based clustering).
     """
-    if zarr is None:
+    if analysis_zip is None:
         return
-
-    # Resolve path or download
-    path: str | None = None
-    tmp_dir: str | None = None
-
-    if analysis_zarr is not None:
-        path = analysis_zarr
-    elif base_dir is not None:
-        maybe = os.path.join(base_dir, analysis_name)
-        if os.path.exists(maybe):
-            path = maybe
-    elif base_url is not None:
-        if requests is None:
-            return
-        tmp_dir = tempfile.mkdtemp(prefix="pyxenium_analysis_")
-        url = _resolve_from_base(base_url, analysis_name)
-        logger.info(f"Downloading: {url}")
-        local = os.path.join(tmp_dir, analysis_name)
-        with requests.get(url, stream=True, timeout=60) as r:
-            r.raise_for_status()
-            with open(local, "wb") as f:
-                shutil.copyfileobj(r.raw, f)
-        path = local
-
-    if path is None or not os.path.exists(path):
+    if zarr is None or fsspec is None:
+        logger.warning("zarr/fsspec not available; skip analysis.zarr.zip parsing.")
         return
 
     try:
-        store = zarr.DirectoryStore(path) if os.path.isdir(path) else zarr.ZipStore(path, mode="r")
-        root = zarr.open(store=store, mode="r")
+        store, tmp = _open_zip_store(analysis_zip)
+        root = zarr.open(store, mode="r")
+        if "cell_groups" not in root:
+            return
+        cg = root["cell_groups"]
 
-        candidate_keys = [
-            "clusters/labels",
-            "clusters/names",
-            "cluster_labels",
-            "leiden",
-            "louvain",
-        ]
-        for k in candidate_keys:
-            if k in root:
-                arr = np.asarray(root[k]).astype(str)
-                if len(arr) == adata.n_obs:
-                    adata.obs[cluster_key] = pd.Categorical(arr)
-                    if not keep_unassigned:
-                        mask = adata.obs[cluster_key].astype(str).str.lower().isin(
-                            ["unassigned", "unknown", "na", "nan", "none", ""]
-                        )
-                        adata._inplace_subset_obs(~mask.values)
-                    break
+        # Choose group 0 by convention (graph-based clustering)
+        if "0" not in cg.group_keys():
+            # pick the smallest numeric key as fallback
+            keys = sorted([k for k in cg.group_keys() if k.isdigit()], key=lambda s: int(s))
+            if not keys:
+                return
+            use = keys[0]
+        else:
+            use = "0"
 
-        try:
-            store.close()  # type: ignore[attr-defined]
-        except Exception:
-            pass
+        grp = cg[use]
+        idx = grp["indices"][:].astype(np.int64)
+        indptr = grp["indptr"][:].astype(np.int64)
+        n_rows = len(indptr) - 1
+        # columns = cells
+        n_cols = adata.n_obs
 
-        if tmp_dir and os.path.isdir(tmp_dir):
-            shutil.rmtree(tmp_dir, ignore_errors=True)
+        data = np.ones_like(idx, dtype=np.uint8)
+        M = sparse.csr_matrix((data, idx, indptr), shape=(n_rows, n_cols))
+
+        # Nonzero per cell -> assigned?
+        nz_per_cell = np.asarray(M.sum(axis=0)).ravel()
+        labels = np.array(M.argmax(axis=0)).ravel()
+        labels[nz_per_cell == 0] = -1  # unassigned
+        labels = np.where(labels == -1, -1, labels + 1)  # 1-based cluster ids
+
+        cluster_names = np.where(
+            labels == -1, "Unassigned", np.array([f"Cluster {x}" for x in labels], dtype=object)
+        )
+        adata.obs[cluster_key] = pd.Categorical(cluster_names)
+
+        if not keep_unassigned:
+            mask = adata.obs[cluster_key].astype(str).str.lower() == "unassigned"
+            adata._inplace_subset_obs(~mask.values)
+
+        # provenance
+        adata.uns.setdefault("analysis", {})["cell_groups_from"] = str(analysis_zip)
 
     except Exception as e:
-        logger.warning(f"Failed to parse analysis zarr: {e}")
+        logger.warning(f"Failed to parse analysis cell_groups: {e}")
+
+
+# ---------- cells.zarr(.zip) helpers ----------
+
+_HEX2AP = str.maketrans("0123456789abcdef", "abcdefghijklmnop")
+
+def _numeric_cell_id_to_str(prefix: int, suffix: int) -> str:
+    """Rebuild a compact string cell_id from numeric pair (prefix, suffix)."""
+    h = f"{int(prefix):08x}"
+    return h.translate(_HEX2AP) + "-" + str(int(suffix))
+
+
+def _load_cells_summary_and_xy(
+    adata: AnnData,
+    cells_zip: str | None,
+) -> None:
+    """
+    From cells.zarr(.zip), read cell_summary and write centroid (x,y) into adata.obs.
+    Also try to align by reconstructed string cell_id if necessary.
+    """
+    if cells_zip is None:
+        return
+    if zarr is None or fsspec is None:
+        logger.warning("zarr/fsspec not available; skip cells.zarr.zip parsing.")
+        return
+
+    try:
+        store, tmp = _open_zip_store(cells_zip)
+        root = zarr.open(store, mode="r")
+
+        # cell_summary
+        if "cell_summary" in root:
+            A = np.asarray(root["cell_summary"][:])
+            attrs = dict(root["cell_summary"].attrs.items())
+            cols = (
+                attrs.get("columns")
+                or attrs.get("col_names")
+                or ["cell_centroid_x", "cell_centroid_y"]
+            )
+            cols = list(cols)[: A.shape[1]]
+            df = pd.DataFrame(A, columns=cols)
+        else:
+            df = pd.DataFrame()
+
+        # cell_id reconstruction from two-column numeric array
+        cell_ids = None
+        if "cell_id" in root:
+            cid = np.asarray(root["cell_id"][:])
+            if cid.ndim == 2 and cid.shape[1] >= 2:
+                prefix, suffix = cid[:, 0], cid[:, 1]
+                cell_ids = [_numeric_cell_id_to_str(p, s) for p, s in zip(prefix, suffix)]
+
+        if cell_ids is not None:
+            if not df.empty:
+                df.insert(0, "cell_id", cell_ids)
+                xy = (
+                    df.set_index("cell_id")[["cell_centroid_x", "cell_centroid_y"]]
+                    .rename(columns={"cell_centroid_x": "x", "cell_centroid_y": "y"})
+                )
+                xy_aligned = xy.reindex(adata.obs_names)
+                adata.obs["x"] = xy_aligned["x"].to_numpy()
+                adata.obs["y"] = xy_aligned["y"].to_numpy()
+            else:
+                # no summary; still record reconstructed ids for users
+                adata.obs["cell_id_reconstructed"] = cell_ids
+
+        else:
+            # fallback: map by row order if shapes match
+            if not df.empty and {"cell_centroid_x", "cell_centroid_y"}.issubset(df.columns):
+                adata.obs["x"] = df["cell_centroid_x"].to_numpy()[: adata.n_obs]
+                adata.obs["y"] = df["cell_centroid_y"].to_numpy()[: adata.n_obs]
+
+        adata.uns.setdefault("cells", {})["cells_from"] = str(cells_zip)
+
+    except Exception as e:
+        logger.warning(f"Failed to parse cells.zarr.zip: {e}")
+
+
+def _populate_total_counts(adata: AnnData) -> None:
+    """
+    Compute per-gene totals for feature_types == 'Gene Expression' and store in
+    `adata.var['total_counts']`. Uses layers['counts'] if present.
+    """
+    M = adata.layers["counts"] if "counts" in adata.layers else adata.X
+    is_sparse = sparse.issparse(M)
+    if "feature_types" in adata.var:
+        mask = (adata.var["feature_types"] == "Gene Expression").to_numpy()
+    elif "feature_type" in adata.var:
+        mask = (adata.var["feature_type"] == "Gene Expression").to_numpy()
+    else:
+        # assume all are gene expression
+        mask = np.ones(adata.n_vars, dtype=bool)
+
+    cols = np.flatnonzero(mask)
+    if cols.size == 0:
+        return
+
+    if is_sparse:
+        totals = np.asarray(M[:, cols].sum(axis=0)).ravel()
+    else:
+        totals = M[:, cols].sum(axis=0)
+
+    out = pd.Series(totals, index=adata.var_names[cols], name="total_counts")
+    adata.var.loc[out.index, "total_counts"] = out.values
 
 
 def load_anndata_from_partial(
@@ -412,8 +478,9 @@ def load_anndata_from_partial(
     mex_dir
         Directory containing the three MEX files.
     analysis_zarr, cells_zarr
-        Optional paths (or URLs when used with base_url) to zarr(.zip) bundles to
+        Optional local paths or HTTP(S) URLs to zipped zarr bundles to
         augment obs (e.g., cluster labels, centroid coordinates). Best-effort only.
+        Hugging Face URLs like .../blob/main/*.zip or .../tree/main/* are supported.
     base_dir, base_url
         A local base directory or a remote base URL that contains the default layout.
     analysis_name, cells_name
@@ -421,11 +488,11 @@ def load_anndata_from_partial(
     mex_* names and mex_default_subdir
         Control the filenames and subdirectory for the MEX triplet discovery.
     cluster_key
-        Column name to store cluster labels loaded from analysis.zarr.
+        Column name to store cluster labels loaded from analysis.zarr (group 0).
     sample
         Optional sample name recorded in `adata.uns["sample"]`.
     keep_unassigned
-        Whether to keep rows labeled as unassigned/unknown when cluster labels are loaded.
+        Whether to keep rows labeled as Unassigned when cluster labels are loaded.
     build_counts_if_missing
         Kept for backward compatibility; counts are always read from MEX here.
 
@@ -459,26 +526,35 @@ def load_anndata_from_partial(
             barcodes_name=paths.barcodes.name,
         )
 
-        # 2) Best-effort enrichment from zarr bundles
-        _try_load_cells_metadata_from_zarr(
-            adata,
-            cells_zarr=cells_zarr,
-            base_dir=base_dir,
-            base_url=base_url,
-            cells_name=cells_name,
-        )
+        # 2) Enrichment from zipped zarr bundles (best-effort)
+        # Normalize HF URLs if provided
+        az = _hf_to_resolve(analysis_zarr) if isinstance(analysis_zarr, str) else analysis_zarr
+        cz = _hf_to_resolve(cells_zarr) if isinstance(cells_zarr, str) else cells_zarr
 
-        _try_load_analysis_from_zarr(
+        _load_cell_groups_to_clusters(
             adata,
-            analysis_zarr=analysis_zarr,
-            base_dir=base_dir,
-            base_url=base_url,
-            analysis_name=analysis_name,
+            analysis_zip=az if az is not None else (
+                _resolve_from_base(base_url, analysis_name) if base_url else (
+                    os.path.join(base_dir, analysis_name) if base_dir else None
+                )
+            ),
             cluster_key=cluster_key,
             keep_unassigned=keep_unassigned,
         )
 
-        # 3) Record provenance
+        _load_cells_summary_and_xy(
+            adata,
+            cells_zip=cz if cz is not None else (
+                _resolve_from_base(base_url, cells_name) if base_url else (
+                    os.path.join(base_dir, cells_name) if base_dir else None
+                )
+            ),
+        )
+
+        # 3) Per-gene totals
+        _populate_total_counts(adata)
+
+        # 4) Record provenance
         adata.uns.setdefault("io", {})
         if base_url:
             adata.uns["io"]["base_url"] = base_url
