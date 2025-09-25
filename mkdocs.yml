@@ -2,3 +2,5 @@ site_name: pyXenium
 nav:
   - Home: index.md
   - Usage: usage.md
+  - Guide:
+      - Partial Loading: guide/partial-loading.md

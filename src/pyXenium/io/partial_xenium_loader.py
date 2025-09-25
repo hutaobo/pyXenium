@@ -15,6 +15,8 @@ Updates (2025-09-24)
 - Do NOT build counts from transcripts.zarr anymore. If MEX missing, returns an AnnData with
   empty gene dimension (but still attaches clusters/spatial when available).
 - Robust `cell_id` detection: include root-level "cell_id" and support `(N,2)` numeric ids -> "cell_{num}".
+- Fix: when downloading MEX from URLs, download all three files into the SAME temporary directory
+  to avoid "MEX missing files" errors.
 - Keep all previous public APIs and behaviors (backward compatible).
 
 Author: Taobo Hu (pyXenium project)
@@ -66,7 +68,7 @@ def _is_url(p: Optional[str | os.PathLike]) -> bool:
 
 
 def _fetch_to_temp(src: str, suffix: Optional[str] = None) -> Path:
-    """Download a URL to a temporary file and return its Path."""
+    """Download a single URL to a temporary file and return its Path."""
     logger.info(f"Downloading: {src}")
     r = requests.get(src, stream=True, timeout=120)
     r.raise_for_status()
@@ -78,6 +80,24 @@ def _fetch_to_temp(src: str, suffix: Optional[str] = None) -> Path:
             if chunk:
                 f.write(chunk)
     return dst
+
+
+def _download_many_to_same_temp(urls: Sequence[str]) -> Path:
+    """Download multiple URLs into the SAME temporary directory.
+    Returns the temp directory Path containing all files (base names preserved).
+    """
+    tmpdir = Path(tempfile.mkdtemp(prefix="pyxenium_"))
+    for u in urls:
+        logger.info(f"Downloading: {u}")
+        r = requests.get(u, stream=True, timeout=120)
+        r.raise_for_status()
+        name = Path(urllib.parse.urlparse(u).path).name or "tmp"
+        dst = tmpdir / name
+        with open(dst, "wb") as f:
+            for chunk in r.iter_content(chunk_size=1024 * 1024):
+                if chunk:
+                    f.write(chunk)
+    return tmpdir
 
 
 def _p(x: Optional[os.PathLike | str]) -> Optional[Path]:
@@ -384,12 +404,14 @@ def load_anndata_from_partial(
     # 1) If explicit mex_dir is provided
     if mex_dir is not None:
         if _is_url(mex_dir):
-            # download three files into a temp dir
+            # download three files into the SAME temp dir
             base_url_mex = str(mex_dir).rstrip("/")
-            m_p = _fetch_to_temp(base_url_mex + "/" + mex_matrix_name)
-            _ = _fetch_to_temp(base_url_mex + "/" + mex_features_name)
-            _ = _fetch_to_temp(base_url_mex + "/" + mex_barcodes_name)
-            mex_dir_p = m_p.parent
+            tmpdir = _download_many_to_same_temp([
+                base_url_mex + "/" + mex_matrix_name,
+                base_url_mex + "/" + mex_features_name,
+                base_url_mex + "/" + mex_barcodes_name,
+            ])
+            mex_dir_p = tmpdir
         else:
             mex_dir_p = _p(mex_dir)
 
@@ -402,13 +424,15 @@ def load_anndata_from_partial(
                 mex_dir_p = cand
 
         if mex_dir_p is None and base_url is not None:
-            # download three files from base_url/cell_feature_matrix/
+            # download three files from base_url/cell_feature_matrix/ into SAME temp dir
             root_url = base_url.rstrip("/") + "/" + mex_default_subdir
             try:
-                m_p = _fetch_to_temp(root_url + "/" + mex_matrix_name)
-                _ = _fetch_to_temp(root_url + "/" + mex_features_name)
-                _ = _fetch_to_temp(root_url + "/" + mex_barcodes_name)
-                mex_dir_p = m_p.parent
+                tmpdir = _download_many_to_same_temp([
+                    root_url + "/" + mex_matrix_name,
+                    root_url + "/" + mex_features_name,
+                    root_url + "/" + mex_barcodes_name,
+                ])
+                mex_dir_p = tmpdir
             except Exception as e:
                 logger.warning(f"Failed to fetch MEX from {root_url}: {e}")
 
