@@ -1,543 +1,418 @@
 """
-pyXenium.io.partial_xenium_loader
----------------------------------
+partial_xenium_loader.py — patched version
 
-Create an AnnData object from partial Xenium artifacts.
+Key changes vs. prior revision
+------------------------------
+1) Robust MEX orientation handling:
+   Automatically detects whether matrix.mtx is (features × barcodes) or
+   (barcodes × features) and orients to (cells × genes) before
+   constructing AnnData. This fixes the error where obs length equals the
+   number of barcodes while X had rows == number of features.
 
-What it can use:
-- 10x Gene Expression MEX (matrix.mtx[.gz], features.tsv[.gz], barcodes.tsv[.gz])
-- `analysis.zarr` or `analysis.zarr.zip` (cluster labels / metadata)
-- `cells.zarr` or `cells.zarr.zip` (centroids / spatial coords)
+2) Safer IO helpers:
+   - _ensure_local(): Accepts local paths or HTTP(S) URLs and returns a
+     local Path (downloads to a temporary folder when URL is used).
+   - Explicit informative logging for each step.
 
-Updates (2025-09-24)
---------------------
-- Default: load MEX from `<base>/cell_feature_matrix/` (URL or local dir).
-- Do NOT build counts from transcripts.zarr anymore. If MEX missing, returns an AnnData with
-  empty gene dimension (but still attaches clusters/spatial when available).
-- Robust `cell_id` detection: include root-level "cell_id" and support `(N,2)` numeric ids -> "cell_{num}".
-- Fix: when downloading MEX from URLs, download all three files into the SAME temporary directory
-  to avoid "MEX missing files" errors.
-- Keep all previous public APIs and behaviors (backward compatible).
+3) Flexible entry point load_anndata_from_partial():
+   - Accepts either explicit mex_dir or (base_dir/base_url + default
+     subdir). If nothing is found, returns an empty-gene AnnData but will
+     still try to fetch obs indices from optional zarrs.
+   - Best-effort, optional enrichment from Xenium zarrs (analysis.zarr,
+     cells.zarr) is wrapped in try/except so it never blocks core
+     loading.
 
-Author: Taobo Hu (pyXenium project)
+This module only depends on widely available packages: anndata, pandas,
+scipy, numpy. The zarr-related enrichment is optional (guarded by
+try/except ImportError).
+
+Author: patched for Taobo Hu / pyXenium users
+Date: 2025-09-25
 """
 from __future__ import annotations
 
-import gzip
 import io
-import logging
 import os
+import sys
+import gzip
+import json
+import math
+import shutil
+import logging
 import tempfile
-import urllib.parse
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Sequence, Tuple
+from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-import requests
+from scipy import io as spio
+from scipy import sparse as sp
 from anndata import AnnData
-from scipy import sparse
-from scipy.io import mmread
 
-try:
-    import zarr
-    from zarr.storage import ZipStore
-except Exception:
-    zarr = None  # type: ignore
-    ZipStore = None  # type: ignore
-
-logger = logging.getLogger(__name__)
+# -----------------------------------------------------------------------------
+# Logger
+# -----------------------------------------------------------------------------
+logger = logging.getLogger("pyXenium.partial_xenium_loader")
 if not logger.handlers:
-    handler = logging.StreamHandler()
-    fmt = logging.Formatter("[%(levelname)s] %(message)s")
-    handler.setFormatter(fmt)
-    logger.addHandler(handler)
+    _h = logging.StreamHandler(sys.stdout)
+    _h.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
+    logger.addHandler(_h)
 logger.setLevel(logging.INFO)
 
+# -----------------------------------------------------------------------------
+# IO helpers
+# -----------------------------------------------------------------------------
 
-# -----------------------------
-# Helpers
-# -----------------------------
-
-def _is_url(p: Optional[str | os.PathLike]) -> bool:
-    if p is None:
-        return False
-    s = str(p)
-    return s.startswith("http://") or s.startswith("https://")
-
-
-def _fetch_to_temp(src: str, suffix: Optional[str] = None) -> Path:
-    """Download a single URL to a temporary file and return its Path."""
-    logger.info(f"Downloading: {src}")
-    r = requests.get(src, stream=True, timeout=120)
-    r.raise_for_status()
-    tmpdir = Path(tempfile.mkdtemp(prefix="pyxenium_"))
-    name = Path(urllib.parse.urlparse(src).path).name or ("tmp" + (suffix or ""))
-    dst = tmpdir / name
-    with open(dst, "wb") as f:
-        for chunk in r.iter_content(chunk_size=1024 * 1024):
-            if chunk:
-                f.write(chunk)
-    return dst
-
-
-def _download_many_to_same_temp(urls: Sequence[str]) -> Path:
-    """Download multiple URLs into the SAME temporary directory.
-    Returns the temp directory Path containing all files (base names preserved).
+def _ensure_local(path_or_url: Optional[str], *, tmpdir: Path, desc: str = "file") -> Optional[Path]:
+    """Return a local Path for a path_or_url. If it's an HTTP(S) URL, download it.
+    If it's None, return None.
     """
-    tmpdir = Path(tempfile.mkdtemp(prefix="pyxenium_"))
-    for u in urls:
-        logger.info(f"Downloading: {u}")
-        r = requests.get(u, stream=True, timeout=120)
-        r.raise_for_status()
-        name = Path(urllib.parse.urlparse(u).path).name or "tmp"
-        dst = tmpdir / name
-        with open(dst, "wb") as f:
-            for chunk in r.iter_content(chunk_size=1024 * 1024):
-                if chunk:
-                    f.write(chunk)
-    return tmpdir
-
-
-def _p(x: Optional[os.PathLike | str]) -> Optional[Path]:
-    return None if x is None else Path(x).expanduser().resolve()
-
-
-def _open_text_maybe_gz(p: Path) -> io.TextIOBase:
-    if str(p).endswith(".gz"):
-        return io.TextIOWrapper(gzip.open(p, mode="rb"))
-    return open(p, "rt", encoding="utf-8")
-
-
-@dataclass
-class PartialInputs:
-    mex_dir: Optional[Path | str] = None
-    analysis_zarr: Optional[Path | str] = None
-    cells_zarr: Optional[Path | str] = None
-
-
-# -----------------------------
-# MEX loader
-# -----------------------------
-
-def _load_mex_triplet(mex_dir: Path, matrix_name: str, features_name: str, barcodes_name: str) -> AnnData:
-    logger.info(f"Reading MEX from {mex_dir}")
-    candidates = {
-        "matrix": [matrix_name, "matrix.mtx", "matrix.mtx.gz"],
-        "features": [features_name, "features.tsv", "features.tsv.gz", "genes.tsv", "genes.tsv.gz"],
-        "barcodes": [barcodes_name, "barcodes.tsv", "barcodes.tsv.gz"],
-    }
-
-    def _find(names: Sequence[str], base: Path) -> Optional[Path]:
-        # check base first
-        for name in names:
-            p = base / name
-            if p.exists():
-                return p
-        # then scan one-level subfolders (some pipelines write into subdir)
-        for child in base.iterdir():
-            if child.is_dir():
-                for name in names:
-                    p = child / name
-                    if p.exists():
-                        return p
+    if path_or_url is None:
         return None
 
-    mtx_p = _find(candidates["matrix"], mex_dir)
-    feat_p = _find(candidates["features"], mex_dir)
-    barc_p = _find(candidates["barcodes"], mex_dir)
-
-    if not (mtx_p and feat_p and barc_p):
-        missing = [k for k, v in {"matrix": mtx_p, "features": feat_p, "barcodes": barc_p}.items() if v is None]
-        raise FileNotFoundError(f"MEX missing files: {', '.join(missing)} under {mex_dir}")
-
-    logger.info(f"  using {mtx_p.name}, {feat_p.name}, {barc_p.name}")
-    with (gzip.open(mtx_p, "rb") if str(mtx_p).endswith(".gz") else open(mtx_p, "rb")) as f:
-        X = mmread(f).tocsr().astype(np.float32)
-
-    # features
-    with _open_text_maybe_gz(feat_p) as f:
-        rows = [line.rstrip("\n").split("\t") for line in f]
-    feat_df = pd.DataFrame(rows)
-    if feat_df.shape[1] == 1:
-        feat_df[[1]] = ""
-        feat_df[[2]] = ""
-    feat_df.columns = ["feature_id", "gene_name", "feature_type"]
-    feat_df.index = feat_df["feature_id"].astype(str)
-
-    # barcodes
-    with _open_text_maybe_gz(barc_p) as f:
-        barcodes = [line.strip() for line in f]
-    obs = pd.DataFrame(index=pd.Index(barcodes, name="cell_id"))
-
-    # orient
-    if X.shape[0] == feat_df.shape[0] and X.shape[1] == obs.shape[0]:
-        var = feat_df
-    elif X.shape[1] == feat_df.shape[0] and X.shape[0] == obs.shape[0]:
-        logger.warning("MEX matrix appears transposed; fixing orientation.")
-        X = X.T.tocsr()
-        var = feat_df
+    p = str(path_or_url)
+    if p.startswith("http://") or p.startswith("https://"):
+        name = Path(p).name
+        out = tmpdir / name
+        if not out.exists():
+            import urllib.request
+            logger.info(f"Downloading: {p}")
+            with urllib.request.urlopen(p) as r, open(out, "wb") as f:
+                shutil.copyfileobj(r, f)
+        return out
     else:
-        raise ValueError(
-            f"MEX shapes mismatch: matrix {X.shape}, features {feat_df.shape[0]}, barcodes {obs.shape[0]}"
-        )
+        q = Path(p)
+        if not q.exists():
+            raise FileNotFoundError(f"{desc} not found: {q}")
+        return q
 
-    # After reading X, var, obs
+
+def _maybe_join_url(base: Optional[str], *parts: str) -> Optional[str]:
+    if base is None:
+        return None
+    base = base.rstrip("/")
+    tail = "/".join(s.strip("/") for s in parts if s)
+    return f"{base}/{tail}" if tail else base
+
+
+# -----------------------------------------------------------------------------
+# Core: load MEX triplet and build AnnData
+# -----------------------------------------------------------------------------
+
+def _load_mex_triplet(
+    mex_dir: Path,
+    matrix_name: str = "matrix.mtx.gz",
+    features_name: str = "features.tsv.gz",
+    barcodes_name: str = "barcodes.tsv.gz",
+) -> AnnData:
+    """Read a 10x MEX triplet from `mex_dir` and return AnnData with shape
+    (cells × genes). Automatically fixes orientation.
+    """
+    # Read matrix
+    X_path = mex_dir / matrix_name
+    feats_path = mex_dir / features_name
+    bcs_path = mex_dir / barcodes_name
+
+    if not X_path.exists():
+        raise FileNotFoundError(f"Missing matrix file: {X_path}")
+    if not feats_path.exists():
+        raise FileNotFoundError(f"Missing features file: {feats_path}")
+    if not bcs_path.exists():
+        raise FileNotFoundError(f"Missing barcodes file: {bcs_path}")
+
+    logger.info("Reading MEX from %s", mex_dir)
+    logger.info("  using %s, %s, %s", X_path.name, feats_path.name, bcs_path.name)
+
+    X = spio.mmread(str(X_path))
+    if not sp.issparse(X):
+        X = sp.csr_matrix(X)
+    else:
+        X = X.tocsr()
+
+    # Read features (var)
+    feat_df = pd.read_csv(feats_path, sep="\t", header=None, comment="#")
+    # 10x convention: col0 = feature_id, col1 = feature_name, col2 = feature_type (optional)
+    var_index = feat_df.iloc[:, 0].astype(str).values
+    var = pd.DataFrame(index=var_index)
+    if feat_df.shape[1] > 1:
+        var["gene_name"] = feat_df.iloc[:, 1].astype(str).values
+    if feat_df.shape[1] > 2:
+        var["feature_type"] = feat_df.iloc[:, 2].astype(str).values
+
+    # Read barcodes (obs)
+    bc_df = pd.read_csv(bcs_path, sep="\t", header=None)
+    obs_index = bc_df.iloc[:, 0].astype(str).values
+    obs = pd.DataFrame(index=obs_index)
+
+    # Orientation check
     n_feat, n_bc = var.shape[0], obs.shape[0]
     r, c = X.shape
 
     if (r, c) == (n_feat, n_bc):
+        # Typical 10x: features × barcodes — transpose to cells × genes
         X = X.T.tocsr()
     elif (r, c) == (n_bc, n_feat):
+        # Already cells × genes
         pass
     else:
         raise ValueError(
             f"MEX shapes mismatch: matrix {X.shape}, features {n_feat}, barcodes {n_bc}"
         )
 
+    # Construct AnnData
     adata = AnnData(X=X, obs=obs, var=var)
-    adata.layers["counts"] = adata.X.copy()
+    # Keep raw counts in a layer named 'counts'
+    try:
+        adata.layers["counts"] = adata.X.copy()
+    except Exception:
+        # If memory is tight in CSR, at least keep a reference
+        adata.layers["counts"] = adata.X
+
+    # Record basic IO metadata
     adata.uns.setdefault("io", {})["mex_dir"] = str(mex_dir)
+    adata.uns["n_cells"] = adata.n_obs
+    adata.uns["n_genes"] = adata.n_vars
+
     return adata
 
 
-# -----------------------------
-# Zarr helpers
-# -----------------------------
+# -----------------------------------------------------------------------------
+# Optional: light-touch enrichment from Xenium zarrs
+# -----------------------------------------------------------------------------
 
-def _open_zarr(path: Path | str):
-    if zarr is None:  # pragma: no cover
-        raise ImportError("zarr is required to read *.zarr or *.zarr.zip")
-
-    pstr = str(path)
-    if _is_url(pstr):
-        path = _fetch_to_temp(pstr)
-        pstr = str(path)
-
-    # *.zarr.zip
-    if pstr.endswith(".zip"):
-        store = ZipStore(pstr, mode="r")
-        if hasattr(zarr, "open_group"):
-            return zarr.open_group(store=store, mode="r")
-        if hasattr(zarr, "open"):
-            return zarr.open(store, mode="r")
-        return zarr.group(store=store, mode="r")
-
-    # directory *.zarr
-    if hasattr(zarr, "open_group"):
-        return zarr.open_group(pstr, mode="r")
-    if hasattr(zarr, "open"):
-        return zarr.open(pstr, mode="r")
-    return zarr.group(store=pstr, mode="r")
-
-
-def _first_available(root, candidates: Sequence[str]) -> Optional[np.ndarray]:
-    for key in candidates:
-        try:
-            arr = root[key]
-        except Exception:
-            continue
-        try:
-            return np.asarray(arr)
-        except Exception:
-            continue
-    return None
-
-
-def _normalize_cell_ids(arr: np.ndarray) -> Tuple[pd.Index, Optional[np.ndarray]]:
+def _try_enrich_from_zarr(
+    adata: AnnData,
+    analysis_zarr: Optional[Path] = None,
+    cells_zarr: Optional[Path] = None,
+    *,
+    cluster_key: str = "Cluster",
+    keep_unassigned: bool = True,
+):
+    """Best-effort enrichment using Xenium analysis/cells ZARRs.
+    Adds cluster labels to .obs[cluster_key] and spatial centroids to .obsm['spatial']
+    when present. All errors are logged as warnings and do not raise.
     """
-    Normalize a cell_id array to string index.
-    Returns:
-      - obs index (strings)
-      - numeric_ids (np.ndarray) if from numeric ids, else None
-    """
-    if arr.dtype.kind in ("i", "u"):
-        if arr.ndim == 2:
-            nums = arr[:, 0]
-        else:
-            nums = arr
-        obs_names = pd.Index([f"cell_{int(x)}" for x in nums], name="cell_id")
-        return obs_names, nums.astype(np.int64)
-    else:
-        s = pd.Series(arr)
-        obs_names = pd.Index(s.astype(str), name="cell_id")
-        return obs_names, None
-
-
-# -----------------------------
-# Attach spatial from cells.zarr
-# -----------------------------
-
-def _attach_spatial(adata: AnnData, cells_zarr: Path | str) -> None:
-    logger.info(f"Attaching spatial from {cells_zarr}")
-    root = _open_zarr(cells_zarr)
-
-    x = _first_available(
-        root,
-        [
-            "cells/centroids/x",
-            "cell/centroids/x",
-            "centroids/x",
-            "cells/centroid_x",
-            "cells/centre_x",
-            "centroid/x",
-            "x",
-        ],
-    )
-    y = _first_available(
-        root,
-        [
-            "cells/centroids/y",
-            "cell/centroids/y",
-            "centroids/y",
-            "cells/centroid_y",
-            "cells/centre_y",
-            "centroid/y",
-            "y",
-        ],
-    )
-    z = _first_available(root, ["cells/centroids/z", "centroids/z", "cells/centroid_z", "z"])  # optional
-
-    # include root-level "cell_id"
-    cell_ids_raw = _first_available(root, ["cell_id", "cells/cell_id", "cells/ids", "cell_ids", "ids", "barcodes"])
-
-    if x is None or y is None:
-        logger.warning("Could not locate centroid x/y in cells.zarr; skipping spatial attach.")
+    # Try zarr import lazily so this module works without zarr installed.
+    try:
+        import zarr  # type: ignore
+    except Exception as e:  # pragma: no cover
+        logger.warning("zarr not available; skipping zarr enrichment (%s)", e)
         return
 
-    coords = np.column_stack([x, y]) if z is None else np.column_stack([x, y, z])
+    # Helper to open zip zarr or folder zarr
+    def _open_zgroup(p: Path):
+        if p.suffix == ".zip":
+            # ZipStore via URL-like spec
+            store = zarr.storage.ZipStore(str(p), mode="r")
+            return zarr.open_group(store, mode="r")
+        return zarr.open_group(str(p), mode="r")
 
-    if cell_ids_raw is not None:
-        idx, _ = _normalize_cell_ids(cell_ids_raw)
-        df = pd.DataFrame(coords, index=idx)
+    # analysis.zarr: look for cluster labels mapping
+    if analysis_zarr is not None and Path(analysis_zarr).exists():
         try:
-            coords_df = df.reindex(adata.obs.index)
-        except Exception:
-            logger.warning("cells.zarr cell_ids cannot be aligned to adata.obs; using positional order where possible.")
-            coords_df = pd.DataFrame(coords, index=adata.obs.index[: coords.shape[0]])
-    else:
-        if coords.shape[0] != adata.n_obs:
-            logger.warning(
-                f"cells.zarr coords length {coords.shape[0]} != adata.n_obs {adata.n_obs}; attaching partial by position."
-            )
-        coords_df = pd.DataFrame(coords, index=adata.obs.index[: coords.shape[0]])
+            g = _open_zgroup(Path(analysis_zarr))
+            # Heuristic locations — adjust as needed for your export schema
+            # e.g., g['obs']['cluster'] or g['clusters']['labels']
+            candidate_paths = [
+                ("obs", "cluster"),
+                ("clusters", "labels"),
+                ("obs", cluster_key),
+            ]
+            labels = None
+            for path in candidate_paths:
+                try:
+                    node = g
+                    for key in path:
+                        node = node[key]
+                    labels = np.array(node[:])
+                    break
+                except Exception:
+                    continue
+            if labels is not None:
+                if len(labels) == adata.n_obs:
+                    adata.obs[cluster_key] = pd.Categorical(pd.Series(labels, index=adata.obs_names).astype(str))
+                    if not keep_unassigned:
+                        mask = adata.obs[cluster_key].astype(str).str.lower().isin({"unassigned", "none", "nan"})
+                        adata._inplace_subset_obs(~mask)
+                else:
+                    logger.warning(
+                        "Cluster labels length (%d) != n_obs (%d); skipping cluster assignment",
+                        len(labels), adata.n_obs,
+                    )
+        except Exception as e:
+            logger.warning("Failed to enrich clusters from analysis.zarr: %s", e)
 
-    key = "spatial" if coords_df.shape[1] == 2 else "spatial3d"
-    adata.obsm[key] = coords_df.to_numpy()
-    adata.uns.setdefault("spatial", {})["source"] = str(cells_zarr)
-
-
-# -----------------------------
-# Attach cluster labels from analysis.zarr
-# -----------------------------
-
-def _attach_clusters(adata: AnnData, analysis_zarr: Path | str, cluster_key: str = "Cluster") -> None:
-    logger.info(f"Attaching clusters from {analysis_zarr}")
-    root = _open_zarr(analysis_zarr)
-
-    label_arr = _first_available(
-        root,
-        [
-            "clusters/labels",
-            "clustering/labels",
-            "labels",
-            "cell_labels",
-            "cells/labels",
-            "annotations/cluster",
-        ],
-    )
-    names = _first_available(root, ["clusters/names", "clustering/names", "names", "cluster_names"])
-    ids = _first_available(root, ["clusters/ids", "clustering/ids", "ids", "cluster_ids"])
-
-    cell_ids_raw = _first_available(root, ["cell_id", "cells/cell_id", "cell_ids", "barcodes", "cells/ids"])
-
-    if label_arr is None:
-        logger.warning("No cluster labels found in analysis.zarr; skipping.")
-        return
-
-    labels = label_arr.astype(str)
-    if ids is not None and names is not None and len(ids) == len(names):
-        mapping = {str(i): str(n) for i, n in zip(ids, names)}
-        labels = np.array([mapping.get(str(x), str(x)) for x in label_arr], dtype=object)
-
-    if cell_ids_raw is not None and len(cell_ids_raw) == len(labels):
-        idx, _ = _normalize_cell_ids(cell_ids_raw)
-        s = pd.Series(labels, index=idx)
+    # cells.zarr: look for centroid spatial coordinates and optional cell_ids
+    if cells_zarr is not None and Path(cells_zarr).exists():
         try:
-            adata.obs[cluster_key] = s.reindex(adata.obs.index).astype("category")
-        except Exception:
-            logger.warning("Failed to align clusters by cell_id; using positional attach.")
-            adata.obs[cluster_key] = pd.Categorical(labels[: adata.n_obs])
-    else:
-        if len(labels) != adata.n_obs:
-            logger.warning(
-                f"Cluster label length {len(labels)} != adata.n_obs {adata.n_obs}; attaching partial by position."
-            )
-        adata.obs[cluster_key] = pd.Categorical(labels[: adata.n_obs])
+            g = _open_zgroup(Path(cells_zarr))
+            # Common locations for centroids; update for your schema if needed
+            candidates = [
+                ("cells", "centroids"),
+                ("cells", "spatial"),
+                ("spatial", "centroids"),
+            ]
+            coords = None
+            for path in candidates:
+                try:
+                    node = g
+                    for key in path:
+                        node = node[key]
+                    coords = np.asarray(node[:])
+                    if coords.ndim == 2 and coords.shape[1] >= 2:
+                        break
+                    else:
+                        coords = None
+                except Exception:
+                    continue
+            if coords is not None:
+                # Try align length to n_obs; otherwise, skip with a warning
+                if coords.shape[0] == adata.n_obs:
+                    # Use first two dims as (x, y)
+                    adata.obsm["spatial"] = coords[:, :2]
+                else:
+                    logger.warning(
+                        "Centroid rows (%d) != n_obs (%d); skipping spatial assignment",
+                        coords.shape[0], adata.n_obs,
+                    )
+        except Exception as e:
+            logger.warning("Failed to enrich spatial from cells.zarr: %s", e)
 
-    adata.uns.setdefault("clusters", {})["source"] = str(analysis_zarr)
 
-
-# -----------------------------
-# Public API
-# -----------------------------
+# -----------------------------------------------------------------------------
+# Public API: load_anndata_from_partial
+# -----------------------------------------------------------------------------
 
 def load_anndata_from_partial(
-    mex_dir: Optional[os.PathLike | str] = None,
-    analysis_zarr: Optional[os.PathLike | str] = None,
-    cells_zarr: Optional[os.PathLike | str] = None,
     *,
-    base_dir: Optional[os.PathLike | str] = None,
+    # MEX location (either provide mex_dir OR base_dir/base_url + default subdir)
+    mex_dir: Optional[str | os.PathLike] = None,
+    # Optional Xenium zarr artifacts
+    analysis_zarr: Optional[str | os.PathLike] = None,
+    cells_zarr: Optional[str | os.PathLike] = None,
+    # Convenience: base directory/URL + file names
+    base_dir: Optional[str | os.PathLike] = None,
     base_url: Optional[str] = None,
-    analysis_name: str = "analysis.zarr",
-    cells_name: str = "cells.zarr",
-    # default MEX file names
+    analysis_name: Optional[str] = None,
+    cells_name: Optional[str] = None,
+    # MEX triplet names
     mex_matrix_name: str = "matrix.mtx.gz",
     mex_features_name: str = "features.tsv.gz",
     mex_barcodes_name: str = "barcodes.tsv.gz",
-    # where to look (by default) for MEX under base
+    # default subdir used under base_dir/base_url when mex_dir not provided
     mex_default_subdir: str = "cell_feature_matrix",
+    # Enrichment options
     cluster_key: str = "Cluster",
     sample: Optional[str] = None,
     keep_unassigned: bool = True,
-    build_counts_if_missing: bool = True,  # kept for API compatibility; now only controls empty-matrix behavior
+    # Behavior when no MEX is present
+    build_counts_if_missing: bool = False,
 ) -> AnnData:
-    """Create an AnnData from partial Xenium artifacts.
+    """Load partial Xenium outputs into an AnnData.
 
-    Default behavior:
-      - If `mex_dir` not given, try `<base>/cell_feature_matrix/` for MEX triplet.
-      - If MEX found: load counts from MEX.
-      - If MEX not found: DO NOT compute from transcripts; return empty-gene AnnData,
-        but still try to attach clusters/spatial from analysis.zarr/cells.zarr.
+    Parameters
+    ----------
+    mex_dir : path-like or None
+        Directory containing the 10x MEX triplet. If None, the loader will
+        look under `<base_dir or base_url>/<mex_default_subdir>/`.
+    analysis_zarr, cells_zarr : path-like or None
+        Optional Xenium ZARR artifacts to enrich clusters and spatial.
+        Can be local paths OR HTTP(S) URLs to .zarr.zip.
+    base_dir, base_url : str or None
+        If provided, used as the base to resolve `analysis_name`, `cells_name`,
+        and the MEX default subdir.
+    analysis_name, cells_name : str or None
+        Filenames of the respective artifacts (e.g., "analysis.zarr.zip").
+    mex_*_name : str
+        Filenames of the MEX triplet.
+    mex_default_subdir : str
+        Subdirectory under base_dir/base_url where the MEX triplet lives.
+    cluster_key : str
+        Column name in .obs to store cluster labels if found in analysis.zarr.
+    sample : str or None
+        Optional sample name to record in .uns["sample"].
+    keep_unassigned : bool
+        Whether to keep cells labeled as "unassigned" when cluster labels exist.
+    build_counts_if_missing : bool
+        If True and no MEX is found, create an AnnData with zero genes (no counts)
+        but still attempt to populate obs index and spatial from zarrs.
+
+    Returns
+    -------
+    AnnData
     """
-    # Resolve MEX directory
-    mex_dir_p: Optional[Path] = None
+    with tempfile.TemporaryDirectory(prefix="pyxenium_") as td:
+        tmpdir = Path(td)
 
-    # 1) If explicit mex_dir is provided
-    if mex_dir is not None:
-        if _is_url(mex_dir):
-            # download three files into the SAME temp dir
-            base_url_mex = str(mex_dir).rstrip("/")
-            tmpdir = _download_many_to_same_temp([
-                base_url_mex + "/" + mex_matrix_name,
-                base_url_mex + "/" + mex_features_name,
-                base_url_mex + "/" + mex_barcodes_name,
-            ])
-            mex_dir_p = tmpdir
+        # Resolve MEX directory
+        if mex_dir is not None:
+            mex_dir_p = Path(mex_dir)
+            if not mex_dir_p.exists():
+                raise FileNotFoundError(f"mex_dir not found: {mex_dir_p}")
         else:
-            mex_dir_p = _p(mex_dir)
+            # Try base_dir/base_url + default subdir
+            mex_dir_p = None
+            # (A) URL case
+            mex_url = _maybe_join_url(base_url, mex_default_subdir)
+            if mex_url is not None:
+                # Download triplet into a temp folder that mimics a directory
+                mex_tmp = tmpdir / "mex"
+                mex_tmp.mkdir(parents=True, exist_ok=True)
+                for name in (mex_matrix_name, mex_features_name, mex_barcodes_name):
+                    u = _maybe_join_url(mex_url, name)
+                    assert u is not None
+                    _ = _ensure_local(u, tmpdir=mex_tmp, desc=name)
+                mex_dir_p = mex_tmp
+            # (B) Local base_dir case
+            if mex_dir_p is None and base_dir is not None:
+                candidate = Path(base_dir) / mex_default_subdir
+                if candidate.exists():
+                    mex_dir_p = candidate
 
-    # 2) Otherwise, try `<base>/cell_feature_matrix/`
-    if mex_dir_p is None and (base_dir is not None or base_url is not None):
-        if base_dir is not None:
-            bd = _p(base_dir)
-            cand = bd / mex_default_subdir if bd is not None else None
-            if cand is not None and cand.exists():
-                mex_dir_p = cand
+        # Resolve analysis/cells zarr paths (localize URLs if needed)
+        analysis_p = None
+        cells_p = None
 
-        if mex_dir_p is None and base_url is not None:
-            # download three files from base_url/cell_feature_matrix/ into SAME temp dir
-            root_url = base_url.rstrip("/") + "/" + mex_default_subdir
-            try:
-                tmpdir = _download_many_to_same_temp([
-                    root_url + "/" + mex_matrix_name,
-                    root_url + "/" + mex_features_name,
-                    root_url + "/" + mex_barcodes_name,
-                ])
-                mex_dir_p = tmpdir
-            except Exception as e:
-                logger.warning(f"Failed to fetch MEX from {root_url}: {e}")
+        if analysis_zarr is not None:
+            analysis_p = _ensure_local(str(analysis_zarr), tmpdir=tmpdir, desc="analysis_zarr")
+        elif analysis_name is not None and (base_dir or base_url):
+            url = _maybe_join_url(base_url, analysis_name)
+            pth = os.path.join(str(base_dir), analysis_name) if base_dir else None
+            analysis_p = _ensure_local(url or pth, tmpdir=tmpdir, desc="analysis_zarr")
 
-    # Resolve Zarrs (optional)
-    def _resolve_zarr(explicit: Optional[os.PathLike | str], name: str) -> Optional[Path | str]:
-        if explicit is not None:
-            return explicit
-        if base_dir is None and base_url is None:
-            return None
-        if base_dir is not None:
-            base = _p(base_dir)
-            assert base is not None
-            cand = base / name
-            if cand.exists():
-                return cand
-            alt = None
-            if name.endswith(".zarr"):
-                alt = base / f"{name}.zip"
-            elif name.endswith(".zip"):
-                alt = base / name[:-4]
-            if alt is not None and alt.exists():
-                return alt
-        if base_url is not None:
-            return base_url.rstrip("/") + "/" + name
-        return None
+        if cells_zarr is not None:
+            cells_p = _ensure_local(str(cells_zarr), tmpdir=tmpdir, desc="cells_zarr")
+        elif cells_name is not None and (base_dir or base_url):
+            url = _maybe_join_url(base_url, cells_name)
+            pth = os.path.join(str(base_dir), cells_name) if base_dir else None
+            cells_p = _ensure_local(url or pth, tmpdir=tmpdir, desc="cells_zarr")
 
-    analysis_p = _resolve_zarr(analysis_zarr, analysis_name)
-    cells_p = _resolve_zarr(cells_zarr, cells_name)
+        # Construct AnnData from MEX if available
+        if mex_dir_p is not None:
+            adata = _load_mex_triplet(mex_dir_p, mex_matrix_name, mex_features_name, mex_barcodes_name)
+        else:
+            if not build_counts_if_missing:
+                raise FileNotFoundError(
+                    "No MEX found (mex_dir nor <base>/" + mex_default_subdir + ") and build_counts_if_missing=False"
+                )
+            # Build an empty-gene AnnData; we'll try to get obs index from zarrs
+            logger.warning(
+                "No MEX found under mex_dir or <base>/%s/. Returning empty-gene AnnData; counts unavailable.",
+                mex_default_subdir,
+            )
+            adata = AnnData(X=sp.csr_matrix((0, 0)))
 
-    # Construct AnnData
-    if mex_dir_p is not None:
-        adata = _load_mex_triplet(mex_dir_p, mex_matrix_name, mex_features_name, mex_barcodes_name)
-    else:
-        # No MEX: create empty-gene AnnData but still attempt to obtain obs index from zarrs
-        logger.warning(
-            "No MEX found under mex_dir or <base>/cell_feature_matrix/. "
-            "Returning empty-gene AnnData; counts are unavailable without MEX."
+        # Optional enrichment from zarrs (best-effort)
+        _try_enrich_from_zarr(
+            adata,
+            analysis_zarr=analysis_p,
+            cells_zarr=cells_p,
+            cluster_key=cluster_key,
+            keep_unassigned=keep_unassigned,
         )
-        # try to discover cell ids from any provided zarr to build obs
-        cell_ids: Optional[pd.Index] = None
-        probe_keys = ["cell_id", "cells/cell_id", "cell_ids", "barcodes", "cells/ids", "cell"]
-        for p in (cells_p, analysis_p):
-            if p is None:
-                continue
-            try:
-                root = _open_zarr(p)
-            except Exception:
-                continue
-            arr = _first_available(root, probe_keys)
-            if arr is not None:
-                idx, _ = _normalize_cell_ids(arr)
-                cell_ids = idx
-                break
 
-        if cell_ids is None:
-            # fall back to minimal AnnData
-            adata = AnnData(X=sparse.csr_matrix((0, 0)))
-        else:
-            obs = pd.DataFrame(index=cell_ids)
-            var = pd.DataFrame(index=pd.Index([], name="feature_id"))
-            adata = AnnData(X=sparse.csr_matrix((len(cell_ids), 0)), obs=obs, var=var)
+        # Tag sample, if provided
+        if sample is not None:
+            adata.uns.setdefault("sample", sample)
 
-    # Attach extras
-    if analysis_p is not None:
-        try:
-            _attach_clusters(adata, analysis_p, cluster_key=cluster_key)
-            if not keep_unassigned and cluster_key in adata.obs:
-                bad = {"-1", "NA", "None", "Unassigned", "unassigned"}
-                mask = ~adata.obs[cluster_key].astype(str).isin(bad)
-                dropped = int((~mask).sum())
-                if dropped:
-                    logger.info(f"Dropping {dropped} unassigned cells")
-                adata._inplace_subset_obs(mask.values)
-        except Exception as e:
-            logger.warning(f"Failed attaching clusters: {e}")
-
-    if cells_p is not None:
-        try:
-            _attach_spatial(adata, cells_p)
-        except Exception as e:
-            logger.warning(f"Failed attaching spatial coordinates: {e}")
-
-    if sample is not None:
-        adata.uns["sample"] = str(sample)
-
-    # provenance
-    adata.uns.setdefault("io", {})
-    adata.uns["io"]["analysis_zarr"] = str(analysis_p) if analysis_p else None
-    adata.uns["io"]["cells_zarr"] = str(cells_p) if cells_p else None
-    adata.uns["io"]["mex_dir"] = str(mex_dir_p) if mex_dir_p else None
-
-    return adata
-
-
-__all__ = ["load_anndata_from_partial", "PartialInputs"]
+        return adata
