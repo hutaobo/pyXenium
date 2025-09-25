@@ -183,6 +183,19 @@ def _load_mex_triplet(mex_dir: Path, matrix_name: str, features_name: str, barco
             f"MEX shapes mismatch: matrix {X.shape}, features {feat_df.shape[0]}, barcodes {obs.shape[0]}"
         )
 
+    # After reading X, var, obs
+    n_feat, n_bc = var.shape[0], obs.shape[0]
+    r, c = X.shape
+
+    if (r, c) == (n_feat, n_bc):
+        X = X.T.tocsr()
+    elif (r, c) == (n_bc, n_feat):
+        pass
+    else:
+        raise ValueError(
+            f"MEX shapes mismatch: matrix {X.shape}, features {n_feat}, barcodes {n_bc}"
+        )
+
     adata = AnnData(X=X, obs=obs, var=var)
     adata.layers["counts"] = adata.X.copy()
     adata.uns.setdefault("io", {})["mex_dir"] = str(mex_dir)
