@@ -254,16 +254,40 @@ def _parse_analysis_group(grp) -> Dict[str, Any]:
 def _parse_cells_group(grp) -> Dict[str, Any]:
     """Best-effort parser for cells.zarr.zip
     Returns a dict to stash under adata.uns["cells"] if available.
+    Tolerates both Groups and Arrays (some keys like "cell_summary" may be arrays).
     """
     out: Dict[str, Any] = {}
+
+    def _summarize(node):
+        try:
+            # Array-like: has shape/dtype
+            if hasattr(node, "shape") and hasattr(node, "dtype") and not hasattr(node, "keys"):
+                return {"type": "array", "shape": tuple(node.shape), "dtype": str(node.dtype)}
+            # Group-like
+            keys = []
+            if hasattr(node, "array_keys"):
+                keys = sorted(list(node.array_keys()))
+            elif hasattr(node, "keys"):
+                keys = sorted(list(node.keys()))
+            return {"type": "group", "keys": keys}
+        except Exception as e:
+            return {"type": "unknown", "error": str(e)}
+
     try:
-        # Common subgroups observed in Xenium bundles
+        # Common subgroups/arrays observed in Xenium bundles
         for k in ("cell_summary", "masks", "polygon_sets", "polygons", "cells"):
             if k in grp:
-                gk = grp[k]
-                # Just expose available array keys to help debugging downstream
-                keys = sorted(list(gk.array_keys()) if hasattr(gk, "array_keys") else list(gk.keys()))
-                out[k] = {"keys": keys}
+                out[k] = _summarize(grp[k])
+        # Also provide a shallow directory of top-level entries for debugging
+        try:
+            top_keys = []
+            if hasattr(grp, "array_keys"):
+                top_keys = sorted(list(grp.array_keys()))
+            elif hasattr(grp, "keys"):
+                top_keys = sorted(list(grp.keys()))
+            out["__top_level__"] = top_keys
+        except Exception:
+            pass
     except Exception as e:
         _warn(f"Failed to parse cells.zarr.zip: {e}")
     return out
