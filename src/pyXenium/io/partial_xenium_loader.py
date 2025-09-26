@@ -41,6 +41,7 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 from scipy.io import mmread
+from scipy.sparse import csr_matrix
 
 try:
     import anndata as ad
@@ -229,6 +230,124 @@ def _read_mex_triplet(matrix_path: str, features_path: str, barcodes_path: str) 
         X = X.T.tocsr()
 
     return X, features, barcodes
+
+
+# ------------------------------
+# Other helper
+# ------------------------------
+
+def _cell_id_ints_to_strings(cell_id_u32: np.ndarray) -> np.ndarray:
+    """
+    Convert Xenium integer cell_id (uint32 [N,2] -> [prefix, dataset_suffix])
+    to string barcodes like 'ffkpbaba-1', per 10x mapping:
+      1) prefix -> 8-digit hex
+      2) hex digits 0..9,a..f shift to a..p
+      3) append '-' + dataset_suffix (decimal)
+    """
+    if cell_id_u32.ndim != 2 or cell_id_u32.shape[1] != 2:
+        raise ValueError(f"cell_id array must be shape (N,2), got {cell_id_u32.shape}")
+    trans = str.maketrans("0123456789abcdef", "abcdefghijklmnop")
+    out = []
+    for p, s in cell_id_u32:
+        h = f"{int(p):08x}"
+        out.append(h.translate(trans) + "-" + str(int(s)))
+    return np.asarray(out, dtype=object)
+
+
+def _extract_cells_xy_and_ids(cells_zip_path: str) -> Tuple[pd.DataFrame, np.ndarray, Dict[str, Any]]:
+    """
+    Return (df_xy, cell_ids_str, meta) from cells.zarr.zip.
+    df_xy: index=cell_id_str, columns ['x','y']  (microns)
+    meta:  optional extra info (e.g., original column names)
+    """
+    grp = _open_zarr_zip(cells_zip_path)
+    if "cell_id" not in grp or "cell_summary" not in grp:
+        raise KeyError("cells.zarr.zip missing required arrays 'cell_id' and/or 'cell_summary'.")
+
+    # map integer cell_id -> string barcodes
+    cid = grp["cell_id"][:]
+    cell_ids_str = _cell_id_ints_to_strings(np.asarray(cid))
+
+    # read cell_summary table
+    arr = np.asarray(grp["cell_summary"][:])   # shape (N, 8) typically
+    attrs = {}
+    try:
+        attrs = dict(grp["cell_summary"].attrs.items())
+    except Exception:
+        pass
+
+    # column names (fallback to spec order)
+    cols = (attrs.get("columns") or attrs.get("col_names")
+            or ["cell_centroid_x","cell_centroid_y","cell_area",
+                "nucleus_centroid_x","nucleus_centroid_y","nucleus_area",
+                "z_level","nucleus_count"][:arr.shape[1]])
+    # build and rename to x,y
+    df = pd.DataFrame(arr, columns=cols)
+    colmap = {}
+    if "cell_centroid_x" in df.columns: colmap["cell_centroid_x"] = "x"
+    if "cell_centroid_y" in df.columns: colmap["cell_centroid_y"] = "y"
+    if colmap:
+        df = df.rename(columns=colmap)
+    keep = [c for c in ["x","y"] if c in df.columns]
+    df_xy = pd.DataFrame(index=cell_ids_str, data=df[keep].to_numpy(), columns=keep)
+
+    meta = {"cell_summary_cols": cols, "spatial_units": "micron"}
+    return df_xy, cell_ids_str, meta
+
+
+def _labels_from_analysis_cell_groups(analysis_zip_path: str, n_cells: int,
+                                      prefer_group: str = "0") -> Tuple[pd.Series, Dict[str, Any]]:
+    """
+    Build per-cell labels from analysis.zarr.zip/cell_groups/[prefer_group].
+    Returns (labels_series indexed by 0..n_cells-1, meta)
+    """
+    grp = _open_zarr_zip(analysis_zip_path)
+    if "cell_groups" not in grp:
+        raise KeyError("analysis.zarr.zip missing 'cell_groups'.")
+
+    cg = grp["cell_groups"]
+    # find group key: prefer '0' (graph-based), otherwise first available
+    keys = []
+    if hasattr(cg, "group_keys"):
+        keys = list(cg.group_keys())
+    else:
+        keys = list(cg.keys())
+    keys = sorted(keys, key=lambda s: int(s) if str(s).isdigit() else 1e9)
+    gkey = prefer_group if prefer_group in keys else keys[0]
+
+    idx = np.asarray(cg[gkey]["indices"][:], dtype=np.int64)
+    indptr = np.asarray(cg[gkey]["indptr"][:], dtype=np.int64)
+    n_rows = len(indptr) - 1
+    n_cols = int(n_cells)
+
+    data = np.ones_like(idx, dtype=np.uint8)
+    M = csr_matrix((data, idx, indptr), shape=(n_rows, n_cols))  # rows=clusters, cols=cells
+
+    nz_per_cell = np.asarray(M.sum(axis=0)).ravel()
+    labels_idx = np.array(M.argmax(axis=0)).ravel()
+    labels_idx[nz_per_cell == 0] = -1  # unassigned
+
+    # optional pretty names from attributes
+    gnames = []
+    try:
+        group_names_all = grp["cell_groups"].attrs.get("group_names", None)
+        if isinstance(group_names_all, (list, tuple)) and len(group_names_all) > int(gkey):
+            gnames = list(group_names_all[int(gkey)])
+    except Exception:
+        pass
+
+    def name_of(i):
+        if i < 0:
+            return "Unassigned"
+        if 0 <= i < len(gnames):
+            return gnames[i]
+        return f"Cluster {i+1}"
+
+    labels_str = np.array([name_of(i) for i in labels_idx], dtype=object)
+    ser = pd.Series(labels_str, index=np.arange(n_cols), name="cluster")
+
+    meta = {"group_key": str(gkey), "n_clusters": n_rows, "grouping_names": grp["cell_groups"].attrs.get("grouping_names", None)}
+    return ser, meta
 
 
 # ------------------------------
@@ -437,5 +556,52 @@ def load_anndata_from_partial(
     }
     uns["io"].update(io_meta)
     adata.uns.update(uns)
+
+    # ---------------- Enrich with spatial coords & cluster labels ----------------
+    # Try extract XY + cell_id strings from cells.zarr.zip (if provided)
+    cell_ids_str = None
+    df_xy = None
+    if local_paths.get("cells"):
+        try:
+            df_xy, cell_ids_str, cells_meta = _extract_cells_xy_and_ids(local_paths["cells"])
+            # write obs['x','y'] aligned to adata.obs_names (barcodes)
+            xy_aligned = df_xy.reindex(adata.obs_names)
+            if "x" in xy_aligned and "y" in xy_aligned:
+                adata.obs["x"] = xy_aligned["x"].to_numpy()
+                adata.obs["y"] = xy_aligned["y"].to_numpy()
+                # standard slot for 2D spatial coordinates (microns)
+                adata.obsm["spatial"] = np.c_[adata.obs["x"].to_numpy(), adata.obs["y"].to_numpy()]
+                adata.uns.setdefault("spatial", {})["units"] = cells_meta.get("spatial_units", "micron")
+            uns.setdefault("cells_meta", {})["cell_summary_cols"] = cells_meta.get("cell_summary_cols")
+        except Exception as e:
+            _warn(f"Could not extract XY from cells.zarr.zip: {e}")
+
+    # Try compute cluster labels from analysis.zarr.zip (if provided)
+    if local_paths.get("analysis"):
+        try:
+            # Prefer n_cells from df_xy; otherwise fall back to number of obs
+            n_cells_for_groups = (len(cell_ids_str) if cell_ids_str is not None else adata.n_obs)
+            labels_by_index, groups_meta = _labels_from_analysis_cell_groups(
+                local_paths["analysis"], n_cells=n_cells_for_groups, prefer_group="0"
+            )
+            # Map labels (index=0..N-1) -> barcode strings (via cells.zarr mapping)
+            if cell_ids_str is not None:
+                label_series = pd.Series(labels_by_index.values, index=pd.Index(cell_ids_str, name=None))
+            else:
+                # Without cells.zarr we can't robustly map index->barcode;
+                # assume adata.obs_names already match 0..N-1 order (best-effort)
+                label_series = pd.Series(labels_by_index.values, index=adata.obs_names)
+
+            lab_aligned = label_series.reindex(adata.obs_names).fillna("Unassigned")
+            adata.obs["cluster"] = pd.Categorical(lab_aligned.values)
+
+            # keep a light meta trace under uns['analysis']
+            adata.uns.setdefault("analysis", {}).update({
+                "group_key_used": groups_meta.get("group_key", "0"),
+                "grouping_names": groups_meta.get("grouping_names"),
+                "n_clusters": groups_meta.get("n_clusters"),
+            })
+        except Exception as e:
+            _warn(f"Could not compute cluster labels from analysis.zarr.zip: {e}")
 
     return adata
