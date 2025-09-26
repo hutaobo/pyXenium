@@ -1,4 +1,5 @@
-sphinx>=7.2,<8
-myst-parser[linkify]>=2,<3
-furo>=2024.8.6
-docutils<0.21
+mkdocs>=1.6
+mkdocs-material>=9.5
+mkdocstrings>=0.25
+mkdocstrings-python>=1.10
+pymdown-extensions>=10.7

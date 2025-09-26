@@ -5,6 +5,7 @@ from .analysis import protein_gene_correlation
 
 # src/pyXenium/__init__.py
 __all__ = [
+    *globals().get("__all__", []),
     "__version__",
     "load_xenium_gene_protein",
     "load_anndata_from_partial",
