@@ -744,4 +744,7 @@ def protein_gene_correlation(
     with fs_out.open(f"{out_dir_path}/protein_gene_correlation_summary.csv", 'w') as f:
         summary_df.to_csv(f, index=False)
 
+    print("[DEBUG] ny, nx =", ny, nx)
+    print("[DEBUG] y_bin_size, x_bin_size =", y_bin_size, x_bin_size)
+
     return summary_df
