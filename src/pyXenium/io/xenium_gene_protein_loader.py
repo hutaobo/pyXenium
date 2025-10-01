@@ -163,23 +163,106 @@ def _read_cell_feature_matrix_zarr(zarr_root: str) -> Tuple[sparse.csr_matrix, p
     return X, feat, barcodes
 
 
-def _read_cell_feature_matrix_h5(h5_path: str) -> Tuple[sparse.csr_matrix, pd.DataFrame, pd.Index]:
-    """读取 10x HDF5 版 cell_feature_matrix（若提供）"""
-    if h5py is None:
-        raise ImportError("需要 h5py 才能读取 HDF5 格式的 cell_feature_matrix")
+from typing import Tuple
+import pandas as pd
+from scipy import sparse
+import h5py, fsspec
 
-    with fsspec.open(h5_path).open() as fb:
-        with h5py.File(fb, "r") as f:
-            grp = f["X"]
-            X = sparse.csr_matrix((grp["data"][:], grp["indices"][:], grp["indptr"][:]),
-                                  shape=tuple(grp["shape"][:]))
-            feat = pd.DataFrame({
-                "id": f["features"]["id"][:].astype(str),
-                "name": f["features"]["name"][:].astype(str),
-                "feature_type": f["features"]["feature_type"][:].astype(str),
-            })
-            barcodes = pd.Index(f["barcodes"][:].astype(str), name="barcode")
-    return X, feat, barcodes
+def _read_cell_feature_matrix_h5(h5_path: str) -> Tuple[sparse.csr_matrix, pd.DataFrame, pd.Index]:
+    """Read 10x HDF5 cell_feature_matrix (RNA/Protein). Robust to group names, CSR/CSC, and naming diffs."""
+    # 兼容本地/远程
+    try:
+        fb = fsspec.open(h5_path).open()
+        fileobj = h5py.File(fb, "r")
+        managed = True
+    except Exception:
+        fileobj = h5py.File(h5_path, "r")
+        managed = False
+
+    def _as_str(arr):
+        arr = arr[()]
+        # h5py 字节串 -> str
+        if getattr(arr, "dtype", None) is not None and arr.dtype.kind in ("S", "O"):
+            return arr.astype(str)
+        return arr
+
+    try:
+        f = fileobj
+
+        # 1) 找到矩阵分组
+        grp = f.get("X") or f.get("matrix") or f.get("cell_feature_matrix")
+        if grp is None:
+            raise KeyError("Neither 'X' nor 'matrix' nor 'cell_feature_matrix' exists in HDF5.")
+
+        data = grp["data"][()]
+        indices = grp["indices"][()]
+        indptr = grp["indptr"][()]
+        shape = tuple(grp["shape"][()])  # (n_features, n_barcodes) in 10x HDF5
+
+        # 2) 识别是 CSR 还是 CSC
+        #    CSR: len(indptr) == n_rows + 1 == shape[0] + 1
+        #    CSC: len(indptr) == n_cols + 1 == shape[1] + 1  ← 10x HDF5 常见
+        if len(indptr) == shape[0] + 1:
+            # 已经是 CSR（行压缩），行=features
+            mat = sparse.csr_matrix((data, indices, indptr), shape=shape)
+            # 通常我们希望得到 cells x features，因此需要转置
+            X = mat.T.tocsr()  # (n_barcodes, n_features)
+        elif len(indptr) == shape[1] + 1:
+            # 是 CSC（列压缩），列=barcodes
+            mat = sparse.csc_matrix((data, indices, indptr), shape=shape)
+            # 转成 cells x features 的 CSR
+            X = mat.T.tocsr()  # (n_barcodes, n_features)
+        else:
+            raise ValueError(
+                f"Cannot infer matrix format: len(indptr)={len(indptr)}, "
+                f"shape={shape} (expect {shape[0]+1} for CSR rows or {shape[1]+1} for CSC cols)."
+            )
+
+        # 3) 找 features / barcodes（有的在 grp 下，有的在根）
+        def _find(node, name):
+            if name in node:
+                return node[name]
+            # 常见 10x HDF5: features/barcodes 挂在同一层（如 grp 或根）
+            if hasattr(node, "parent") and node.parent is not None and name in node.parent:
+                return node.parent[name]
+            if name in f:
+                return f[name]
+            return None
+
+        feat_grp = _find(grp, "features")
+        if feat_grp is None:
+            raise KeyError("Cannot find 'features' group.")
+
+        name_ds = feat_grp.get("name") or feat_grp.get("gene_names")
+        if name_ds is None:
+            raise KeyError("Cannot find 'features/name' (or 'gene_names').")
+
+        feat = pd.DataFrame({
+            "id": _as_str(feat_grp["id"]),
+            "name": _as_str(name_ds),
+            "feature_type": _as_str(feat_grp["feature_type"]),
+        })
+
+        bc_ds = _find(grp, "barcodes")
+        if bc_ds is None:
+            raise KeyError("Cannot find 'barcodes'.")
+        barcodes = pd.Index(_as_str(bc_ds), name="barcode")
+
+        # 4) 一致性检查（可帮助早发现问题）
+        n_cells, n_features = X.shape
+        if len(barcodes) != n_cells:
+            raise ValueError(f"Barcodes length {len(barcodes)} != X.shape[0] (cells) {n_cells}.")
+        if len(feat) != n_features:
+            raise ValueError(f"Features length {len(feat)} != X.shape[1] (features) {n_features}.")
+
+        return X, feat, barcodes
+    finally:
+        if managed:
+            try: fileobj.close()
+            except Exception: pass
+        else:
+            try: fileobj.close()
+            except Exception: pass
 
 
 # ---------------------------
