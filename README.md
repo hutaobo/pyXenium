@@ -89,17 +89,22 @@ Notes:
 Compute correlations between gene and protein across cells.
 
 ```python
-from pyXenium.analysis.protein_gene_correlation import compute
+BASE = "/mnt/taobo.hu/long/10X_datasets/Xenium/Xenium_Kidney/Xenium_V1_Human_Kidney_FFPE_Protein"
+pairs = [("CD3E", "CD3E"), ("E-Cadherin", "CDH1")]   # (protein, gene)
 
-# Pearson by default; method="spearman" is also supported
-corr_df = compute(gene_expr, protein_expr, method="pearson")
-# corr_df: DataFrame with index=genes, columns=proteins
+from pyXenium.analysis.protein_gene_correlation import protein_gene_correlation
+summary = protein_gene_correlation(
+    adata=adata,
+    transcripts_zarr_path=BASE + "/transcripts.zarr.zip",
+    pairs=pairs,
+    output_dir="./protein_gene_corr",
+    grid_size=(50, 50),     # 可自定义网格
+    pixel_size_um=0.2125,   # Xenium 常见像素尺寸
+    qv_threshold=20,
+    overwrite=False
+)
+print(summary)
 ```
-
-Tips:
-- Filter features with zero variance across cells to avoid undefined (`NaN`) correlations.
-- For large matrices, consider subsetting to marker genes/proteins before computing all pairwise
-  correlations.
 
 ## Data format expectations
 
