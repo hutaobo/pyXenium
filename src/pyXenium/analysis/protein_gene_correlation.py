@@ -537,7 +537,7 @@ def protein_gene_correlation(
     summary_path = f"{output_dir}/protein_gene_correlation_summary.csv"
     if not overwrite:
         try:
-            with fs_out.open(f"{out_dir_path}protein_gene_correlation_summary.csv", 'r') as f:
+            with fs_out.open(f"{out_dir_path}/protein_gene_correlation_summary.csv", 'r') as f:
                 old_summary_df = pd.read_csv(f)
         except FileNotFoundError:
             old_summary_df = None
@@ -555,20 +555,20 @@ def protein_gene_correlation(
         # Check if outputs exist and skip if not overwrite
         if not overwrite:
             try:
-                file_exists_csv = fs_out.exists(f"{out_dir_path}{pair_csv_name}")
+                file_exists_csv = fs_out.exists(f"{out_dir_path}/{pair_csv_name}")
             except Exception:
                 # If fs doesn't support exists, attempt open
                 try:
-                    ftest = fs_out.open(f"{out_dir_path}{pair_csv_name}", 'rb')
+                    ftest = fs_out.open(f"{out_dir_path}/{pair_csv_name}", 'rb')
                     ftest.close()
                     file_exists_csv = True
                 except Exception:
                     file_exists_csv = False
             try:
-                file_exists_png = fs_out.exists(f"{out_dir_path}{pair_png_name}")
+                file_exists_png = fs_out.exists(f"{out_dir_path}/{pair_png_name}")
             except Exception:
                 try:
-                    ftest = fs_out.open(f"{out_dir_path}{pair_png_name}", 'rb')
+                    ftest = fs_out.open(f"{out_dir_path}/{pair_png_name}", 'rb')
                     ftest.close()
                     file_exists_png = True
                 except Exception:
@@ -652,7 +652,7 @@ def protein_gene_correlation(
             ax.grid(True, linestyle='--', alpha=0.5)
             fig.tight_layout()
             # Write image to file (using fsspec)
-            with fs_out.open(f"{out_dir_path}{pair_png_name}", 'wb') as f:
+            with fs_out.open(f"{out_dir_path}/{pair_png_name}", 'wb') as f:
                 fig.savefig(f, format='png', dpi=300)
         finally:
             plt.close(fig)
@@ -672,7 +672,7 @@ def protein_gene_correlation(
             })
         pair_df = pd.DataFrame(records, columns=["bin_y", "bin_x", "n_cells", "transcript_count", "transcript_density", "protein_avg_intensity"])
         # Save to CSV
-        with fs_out.open(f"{out_dir_path}{pair_csv_name}", 'w') as f:
+        with fs_out.open(f"{out_dir_path}/{pair_csv_name}", 'w') as f:
             pair_df.to_csv(f, index=False)
 
     # If any pairs were skipped and not added to summary_records (due to missing old summary data), handle them:
@@ -685,7 +685,7 @@ def protein_gene_correlation(
                 safe_gene = gene_name.replace(os.sep, "_").replace(" ", "_")
                 pair_csv_name = f"{safe_prot}_{safe_gene}_correlation.csv"
                 try:
-                    with fs_out.open(f"{out_dir_path}{pair_csv_name}", 'r') as f:
+                    with fs_out.open(f"{out_dir_path}/{pair_csv_name}", 'r') as f:
                         df = pd.read_csv(f)
                         # We assume the CSV was produced by this function in a previous run and contains needed columns
                         if "transcript_density" in df.columns and "protein_avg_intensity" in df.columns and "n_cells" in df.columns:
@@ -718,7 +718,7 @@ def protein_gene_correlation(
         summary_df = pd.concat([summary_df, pd.DataFrame([rec])], ignore_index=True)
 
     # Save summary CSV
-    with fs_out.open(f"{out_dir_path}protein_gene_correlation_summary.csv", 'w') as f:
+    with fs_out.open(f"{out_dir_path}/protein_gene_correlation_summary.csv", 'w') as f:
         summary_df.to_csv(f, index=False)
 
     return summary_df
