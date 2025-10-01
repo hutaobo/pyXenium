@@ -153,27 +153,7 @@ def protein_gene_correlation(
 
     # Prepare mapping for protein names to data index/column
     protein_data = adata.obsm['protein']
-    protein_names = None
-    if hasattr(protein_data, "columns"):
-        # If .obsm['protein'] is a DataFrame, get its column names
-        protein_names = list(protein_data.columns)
-    else:
-        # Try to retrieve protein names from adata.uns or adata.var (if integrated)
-        if isinstance(adata.uns, dict):
-            if 'protein_names' in adata.uns:
-                protein_names = list(adata.uns['protein_names'])
-            elif 'protein_markers' in adata.uns:
-                protein_names = list(adata.uns['protein_markers'])
-            elif 'protein_channels' in adata.uns:
-                protein_names = list(adata.uns['protein_channels'])
-        if protein_names is None and 'feature_types' in adata.var:
-            # If gene and protein features are combined in var with a feature_types column (e.g., Seurat conversions)
-            prot_mask = (adata.var['feature_types'] == 'Protein') if 'Protein' in adata.var['feature_types'].values else (adata.var['feature_types'] == 'Antibody')
-            if prot_mask.any():
-                protein_names = list(adata.var_names[prot_mask])
-        if protein_names is None:
-            # If still not found, try to infer from obsm shape (not ideal because we need names)
-            protein_names = None  # leave as None, we'll handle missing name in lookup function
+    protein_names = list(protein_data.columns)
 
     def get_protein_vector(name):
         """Retrieve the per-cell intensity vector for the given protein name."""
@@ -743,8 +723,5 @@ def protein_gene_correlation(
     # Save summary CSV
     with fs_out.open(f"{out_dir_path}/protein_gene_correlation_summary.csv", 'w') as f:
         summary_df.to_csv(f, index=False)
-
-    print("[DEBUG] ny, nx =", ny, nx)
-    print("[DEBUG] y_bin_size, x_bin_size =", y_bin_size, x_bin_size)
 
     return summary_df
