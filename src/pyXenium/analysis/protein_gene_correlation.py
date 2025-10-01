@@ -45,6 +45,7 @@ def protein_gene_correlation(
     pairs,
     output_dir,
     grid_size=(50, 50),
+    grid_counts=(50, 50),
     pixel_size_um=0.2125,
     qv_threshold=20,
     overwrite=False
@@ -76,7 +77,10 @@ def protein_gene_correlation(
         Directory path (local or remote) where output files will be saved.
         Each pair will produce a scatter plot PNG and a CSV of binned data, and a summary CSV of all correlations will be saved in this directory.
     - `grid_size` : tuple(int, int), default=(50, 50)
-        Number of grid divisions in the y (rows) and x (columns) dimensions. The tissue region is divided into `grid_size[0]` by `grid_size[1]` spatial bins.
+        **每个格子的物理大小（单位：μm），格式为 (y_size_um, x_size_um)**。
+        当 `grid_counts` 为 None 时生效：程序会按此大小对区域进行等大小分箱，数量为 `ceil(范围/大小)`。
+    - `grid_counts` : tuple(int, int) or None, default=(50, 50)
+        **格子数量**（y 方向、x 方向）。若提供（非 None），**优先于** `grid_size`，表示将 y、x 轴分别均分为指定数量的格子。
     - `pixel_size_um` : float, default=0.2125
         Microns per pixel for the spatial coordinates. Xenium images typically have a resolution of 0.2125 µm/pixel.
         If the coordinates in `adata.obsm['spatial']` are in pixel units, they will be multiplied by this factor to convert to microns (physical space).
@@ -308,15 +312,34 @@ def protein_gene_correlation(
         region_min_y = min(region_min_y, float(cell_xy[:, 1].min()))
         region_max_y = max(region_max_y, float(cell_xy[:, 1].max()))
 
-    # Define grid edges and bin sizes
-    ny, nx = grid_size
-    # If region extent is zero (e.g., only one cell?), avoid zero division
+    # ---------------------- Grid definition (grid_counts vs grid_size) ----------------------
+    # 如果范围无效，提前报错
     if region_max_x <= region_min_x or region_max_y <= region_min_y:
         raise ValueError("Invalid region bounds for spatial data. Please check the coordinates in adata and transcripts.zarr.")
     region_width = region_max_x - region_min_x
     region_height = region_max_y - region_min_y
-    x_bin_size = region_width / nx
-    y_bin_size = region_height / ny
+
+    # 优先使用 grid_counts（数量）。若为 None，则用 grid_size（大小）推导数量。
+    if grid_counts is not None:
+        ny, nx = int(grid_counts[0]), int(grid_counts[1])
+        if ny <= 0 or nx <= 0:
+            raise ValueError("`grid_counts` must be positive integers, e.g., (50, 50).")
+        x_bin_size = region_width / nx
+        y_bin_size = region_height / ny
+    else:
+        if grid_size is None:
+            raise ValueError("Both `grid_counts` and `grid_size` are None. Provide at least one.")
+        # grid_size: (y_size_um, x_size_um)
+        gy_um, gx_um = float(grid_size[0]), float(grid_size[1])
+        if gy_um <= 0 or gx_um <= 0:
+            raise ValueError("`grid_size` must be positive (μm), e.g., (50, 50).")
+        ny = int(np.ceil(region_height / gy_um))
+        nx = int(np.ceil(region_width / gx_um))
+        ny = max(ny, 1)
+        nx = max(nx, 1)
+        x_bin_size = region_width / nx
+        y_bin_size = region_height / ny
+    # ---------------------------------------------------------------------------------------
 
     # Prepare arrays for transcript counts per bin for each gene
     transcripts_count = {gene: np.zeros((ny, nx), dtype=float) for gene in unique_genes}
