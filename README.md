@@ -71,14 +71,11 @@ Use the dedicated loader in `pyXenium.io.xenium_gene_protein_loader` to read a X
 that includes protein measurements. It separates features by type and aligns cells across modalities.
 
 ```python
-from pyXenium.io.xenium_gene_protein_loader import load_gene_protein
+from pyXenium.io.xenium_gene_protein_loader import load_xenium_gene_protein
 
-gene_expr, protein_expr = load_gene_protein(
-    base_dir="/path/to/xenium_export",   # expects cell_feature_matrix/ MEX triplet
+adata = load_xenium_gene_protein(
+    base_path="/mnt/taobo.hu/long/10X_datasets/Xenium/Xenium_Kidney/Xenium_V1_Human_Kidney_FFPE_Protein"
 )
-
-# gene_expr:    DataFrame (cells × genes)
-# protein_expr: DataFrame (cells × proteins)
 ```
 
 Notes:

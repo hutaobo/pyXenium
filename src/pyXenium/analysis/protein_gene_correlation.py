@@ -218,7 +218,7 @@ def protein_gene_correlation(
 
     # Open transcripts Zarr (allow both .zarr directory or .zarr.zip)
     if str(transcripts_zarr_path).endswith((".zarr.zip", ".zip")):
-        store = zarr.ZipStore(transcripts_zarr_path, mode='r')
+        store = zarr.storage.ZipStore(transcripts_zarr_path, mode='r')
     else:
         store = fsspec.get_mapper(transcripts_zarr_path)
     root = zarr.open(store, mode='r')
