@@ -662,7 +662,9 @@ def protein_gene_correlation(
 
         # Save pair CSV with binned data
         # Prepare DataFrame of binned values (only include bins with at least one cell to avoid overwhelming zeros outside tissue)
-        y_idx, x_idx = np.nonzero(cell_count)  # indices of bins that contain cells
+        y_idx, x_idx = np.indices((ny, nx))
+        y_idx = y_idx.ravel()
+        x_idx = x_idx.ravel()
         records = []
         for yi, xi in zip(y_idx, x_idx):
             records.append({
