@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import fsspec
@@ -117,24 +118,7 @@ def protein_gene_correlation(
     - The returned DataFrame `summary_df` can be used directly for further analysis. It is also written to the summary CSV file for convenience.
 
     **Usage Example:**
-
-    ```python
-    # Suppose adata is an AnnData object with Xenium multi-modal data already loaded.
-    pairs_to_analyze = [("CD3E", "CD3E"), ("PD-L1", "CD274")]  # (Protein, Gene) pairs
-    result_df = protein_gene_correlation(
-        adata,
-        "path/to/transcripts.zarr.zip",
-        pairs=pairs_to_analyze,
-        output_dir="results/correlation_analysis",
-        grid_size=(50, 50),
-        pixel_size_um=0.2125,
-        qv_threshold=20,
-        overwrite=False
-    )
-    print(result_df)
-    # This will print a DataFrame with Pearson correlation and p-values for the specified pairs.
-    # Output files (CSV and PNG for each pair, and a summary CSV) will be saved in the specified output directory.
-    ```
+    ...
     """
     # Ensure output directory path ends with a separator for consistent path joining
     output_dir = output_dir.rstrip('/')
@@ -307,11 +291,11 @@ def protein_gene_correlation(
         loc = level0[ck]['location']
         if loc.shape[0] == 0:
             continue  # no transcripts in this chunk
-        coords_chunk = loc[...]
-        if coords_chunk.size == 0:
+        coords = loc[...]
+        if coords.size == 0:
             continue
-        x_vals = coords_chunk[:, 0]
-        y_vals = coords_chunk[:, 1]
+        x_vals = coords[:, 0]
+        y_vals = coords[:, 1]
         # Update min/max from this chunk
         region_min_x = min(region_min_x, float(x_vals.min()))
         region_max_x = max(region_max_x, float(x_vals.max()))
@@ -337,6 +321,28 @@ def protein_gene_correlation(
     # Prepare arrays for transcript counts per bin for each gene
     transcripts_count = {gene: np.zeros((ny, nx), dtype=float) for gene in unique_genes}
 
+    # -------------------- BEGIN PATCH: robust qv/valid handling per chunk --------------------
+    def _ensure_1d(name, arr, target_len):
+        """
+        保证数组是一维且长度与 target_len 一致；若为 2D（常见误读 NxN），警告并压平。
+        返回：1D ndarray 或 None。
+        """
+        if arr is None:
+            return None
+        arr = np.asarray(arr)
+        if arr.ndim > 1:
+            if arr.ndim == 2 and arr.shape[0] == arr.shape[-1]:
+                print(f"[WARN] `{name}` appears to be {arr.shape}, flattening to 1D. "
+                      f"Check transcripts Zarr key selection.")
+            arr = arr.reshape(-1)
+        if arr.shape[0] != target_len:
+            raise ValueError(
+                f"`{name}` length ({arr.shape[0]}) does not match number of transcripts ({target_len}). "
+                f"Please verify transcripts Zarr schema/keys."
+            )
+        return arr
+    # --------------------- END PATCH: helper -------------------------------------------------
+
     # Process transcripts in chunks to fill transcript counts
     for ck in chunk_keys:
         group = level0[ck]
@@ -347,22 +353,41 @@ def protein_gene_correlation(
         gene_ids = group['gene_identity'][...]
         # Flatten gene_ids if it's two-dimensional (it should be 1D per transcript)
         gene_ids = gene_ids.flatten()
-        # Quality and valid filters
+
+        # -------------------- BEGIN PATCH: replace old mask_all construction -----------------
+        # Quality and valid filters (robust to wrong dimensionality)
         qv_arr = _safe_get_array(group, 'quality_score')
         qvs = _safe_read_all(qv_arr, 'quality_score')
         valid_arr = _safe_get_array(group, 'valid')
         valid_flags = _safe_read_all(valid_arr, 'valid')
-        mask_all = np.ones(coords.shape[0], dtype=bool)
-        if qvs is not None:
+
+        N = coords.shape[0]
+        # 强制为 1D 并校验长度；若为二维会 reshape(-1) 并警告
+        try:
+            qvs = _ensure_1d("quality_score", qvs, N) if qvs is not None else None
+        except ValueError as e:
+            # 在严格模式下抛错；如果希望更宽容，可改为 warnings.warn 并置 None
+            raise
+        try:
+            valid_flags = _ensure_1d("valid", valid_flags, N) if valid_flags is not None else None
+        except ValueError as e:
+            raise
+
+        # 允许 qv_threshold=None 跳过 QV 过滤
+        mask_all = np.ones(N, dtype=bool)
+        if (qvs is not None) and (qv_threshold is not None):
             mask_all &= (qvs >= qv_threshold)
         if valid_flags is not None:
             # According to Xenium documentation, final output transcripts have valid==1
             mask_all &= (valid_flags == 1)
+
         # 如果两个都拿不到，就降级为不应用 QV/valid 过滤
         if qvs is None and valid_flags is None:
             if qv_threshold is not None:
                 warnings.warn("[protein_gene_correlation] qv/valid unavailable; proceed without quality filtering.")
-            qv_threshold = None
+            # 不修改用户传入的 qv_threshold，只是不应用过滤
+        # --------------------- END PATCH: replace old mask_all construction ------------------
+
         # If a protein QC mask is provided, filter transcripts to those inside the mask region
         if mask is not None:
             # Convert transcript coordinates (micron) to mask pixel indices
@@ -391,6 +416,7 @@ def protein_gene_correlation(
             continue
         coords_filt = coords[mask_all]
         gene_ids_filt = gene_ids[mask_all]
+
         # For each gene of interest in this chunk, accumulate counts
         for gene, gene_idx in gene_index_map.items():
             # Select transcripts of this gene
@@ -595,6 +621,8 @@ def protein_gene_correlation(
             # If no bin has cells, skip correlation
             pearson_r = np.nan
             p_val = np.nan
+            gene_vals = np.array([])
+            prot_vals = np.array([])
         else:
             gene_vals = transcripts_density[valid_bins]
             prot_vals = protein_avg_mat[valid_bins]
