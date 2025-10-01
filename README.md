@@ -1,99 +1,127 @@
 # pyXenium
 
-Utilities for loading and analyzing 10x Genomics Xenium exports in Python.
+**pyXenium** is a Python library for loading and analyzing 10x Genomics Xenium *in situ* exports.
+It supports robust partial loading of incomplete exports and provides utilities for multi‑modal
+Xenium runs that include both RNA and protein measurements.
 
-## Quickstart
+> If you are already familiar with Xenium outputs, jump to:
+> - [Partial loading (incomplete exports)](#partial-loading-incomplete-exports)
+> - [RNA + Protein loader](#rna--protein-loader)
+> - [Gene–protein correlation](#gene–protein-correlation)
 
-Install:
+## Features
+
+- **Partial loading of incomplete exports** — Load what is available even when the
+  `cell_feature_matrix` MEX is missing/partial; optional attachment of clusters and spatial centroids.
+- **RNA + Protein support** — Read combined cell-feature matrices, split features by type
+  (Gene Expression vs Protein Expression), and return matched cell × gene/protein matrices.
+- **Protein–gene correlation** — Compute Pearson/Spearman correlations between gene expression
+  and protein intensities across cells.
+
+## Installation
 
 ```bash
-# 稳定用法（本地开发/CI）
-pip install -U "git+https://github.com/hutaobo/pyXenium@main"
-# 或
+# From PyPI (if available)
 pip install pyXenium
+
+# Or install the latest from GitHub
+pip install git+https://github.com/hutaobo/pyXenium.git
 ```
 
-Load a dataset hosted online (e.g. Hugging Face). **By default, `load_anndata_from_partial` looks for the 10x MEX triplet under `<base>/cell_feature_matrix/`**:
+Python ≥3.9 is recommended.
+
+## Quick start
+
+### Partial loading (incomplete exports)
+
+`pyXenium.io.partial_xenium_loader.load_anndata_from_partial` tries to assemble an `AnnData`
+object from a Xenium export directory or HTTP(S) base. It attaches optional results when present
+(e.g. `analysis.zarr[.zip]` and `cells.zarr[.zip]`).
 
 ```python
 from pyXenium.io.partial_xenium_loader import load_anndata_from_partial
 
-BASE = "https://huggingface.co/datasets/hutaobo/pyxenium-gsm9116572/resolve/main"
-
-adata = load_anndata_from_partial(
-    base_url=BASE,
-    analysis_name="analysis.zarr.zip",     # optional, attaches clusters if present
-    cells_name="cells.zarr.zip",           # optional, attaches spatial centroids if present
-    # By default it will read MEX from: BASE + "/cell_feature_matrix/"
-)
-print(adata)
-```
-
-**What gets loaded:**
-- **Counts**: from MEX (`cell_feature_matrix/{matrix.mtx.gz, features.tsv.gz, barcodes.tsv.gz}`).
-- **Clusters** (optional): from `analysis.zarr[.zip]` if provided.
-- **Spatial centroids** (optional): from `cells.zarr[.zip]` if provided.
-
-If MEX is missing:
-- The function returns an **empty-gene AnnData** (rows=cells if we can infer cell IDs; otherwise empty).
-- Clusters/spatial are still attached when possible.
-- To get real counts, upload MEX to `<base>/cell_feature_matrix/` or pass `mex_dir=...` explicitly.
-
-### Override the MEX location (optional)
-```python
-adata = load_anndata_from_partial(
-    base_url=BASE,
-    mex_dir=BASE + "/cell_feature_matrix",   # explicit
-    analysis_name="analysis.zarr.zip",
-    cells_name="cells.zarr.zip",
-)
-```
-
-### Local folder example
-```python
+# Local export directory
 adata = load_anndata_from_partial(
     base_dir="/path/to/xenium_export",
-    analysis_name="analysis.zarr",
-    cells_name="cells.zarr",
-    # will look for /path/to/xenium_export/cell_feature_matrix/
+    analysis_name="analysis.zarr",   # optional
+    cells_name="cells.zarr",         # optional
 )
+
+# Or remote base (files hosted under <BASE>/)
+# adata = load_anndata_from_partial(
+#     base_url="https://example.org/xenium_run",
+#     analysis_name="analysis.zarr.zip",
+#     cells_name="cells.zarr.zip",
+# )
+print(adata)  # cells × genes AnnData
 ```
 
-### Protein + RNA correlation (Xenium)
+**What gets loaded** (when available):
+- Counts from `cell_feature_matrix/{matrix.mtx.gz, features.tsv.gz, barcodes.tsv.gz}`
+- Clusters from `analysis.zarr[.zip]`
+- Spatial centroids from `cells.zarr[.zip]`
 
-Compute spatial correlation between **mean protein intensity** and **gene transcript density** on a user-defined grid.
+If the MEX triplet is missing, the function still returns a valid `AnnData` (empty genes)
+and attaches clusters/spatial if found — useful for inspecting partial/early exports.
+
+### RNA + Protein loader
+
+Use the dedicated loader in `pyXenium.io.xenium_gene_protein_loader` to read a Xenium export
+that includes protein measurements. It separates features by type and aligns cells across modalities.
 
 ```python
-from pyXenium.io.partial_xenium_loader import load_anndata_from_partial
-from pyXenium.analysis import protein_gene_correlation
+from pyXenium.io.xenium_gene_protein_loader import load_gene_protein
 
-# 1) Load data (RNA counts + optional cells/analysis attachments)
-BASE = "https://huggingface.co/datasets/<your-dataset>/resolve/main"
-adata = load_anndata_from_partial(
-    base_url=BASE,
-    # or base_dir="/path/to/Xenium_Export"
-    # If you also have analysis/cells zarr, pass them here to attach clusters & spatial centroids
+gene_expr, protein_expr = load_gene_protein(
+    base_dir="/path/to/xenium_export",   # expects cell_feature_matrix/ MEX triplet
 )
 
-# 2) Run protein–gene correlation
-#    transcripts_zarr_path 可为 .zarr 或 .zarr.zip（本地或远程，fsspec 透明读）
-pairs = [("CD3E", "CD3E"), ("E-Cadherin", "CDH1")]   # (protein, gene)
-summary = protein_gene_correlation(
-    adata=adata,
-    transcripts_zarr_path=BASE + "/transcripts.zarr.zip",
-    pairs=pairs,
-    output_dir="./protein_gene_corr",
-    grid_size=(50, 50),     # 可自定义网格
-    pixel_size_um=0.2125,   # Xenium 常见像素尺寸
-    qv_threshold=20,
-    overwrite=False
-)
-print(summary)
+# gene_expr:    DataFrame (cells × genes)
+# protein_expr: DataFrame (cells × proteins)
 ```
 
-### Troubleshooting
-- **FileNotFoundError: MEX missing files** → Ensure the three files exist in `cell_feature_matrix/`:
-  `matrix.mtx.gz`, `features.tsv.gz`, `barcodes.tsv.gz`.
-- **Different obs names** → We honor 10x barcodes (from MEX). If your Zarr stores numeric
-  cell IDs, we normalize them to strings internally but prefer the barcodes from MEX.
-- **Large downloads** → Remote MEX is downloaded once into a temp dir per session run.
+Notes:
+- The loader expects a combined MEX under `cell_feature_matrix/` where the 3rd column in
+  `features.tsv.gz` indicates the feature type (e.g., `"Gene Expression"`, `"Protein Expression"`).
+- Invalid/control entries (e.g., blank/unassigned codewords) are filtered by default.
+- Both matrices share **identical cell order**, enabling 1:1 comparisons across modalities.
+
+### Gene–protein correlation
+
+Compute correlations between every gene and protein across cells.
+
+```python
+from pyXenium.analysis.protein_gene_correlation import compute
+
+# Pearson by default; method="spearman" is also supported
+corr_df = compute(gene_expr, protein_expr, method="pearson")
+# corr_df: DataFrame with index=genes, columns=proteins
+```
+
+Tips:
+- Filter features with zero variance across cells to avoid undefined (`NaN`) correlations.
+- For large matrices, consider subsetting to marker genes/proteins before computing all pairwise
+  correlations.
+
+## Data format expectations
+
+- **Cell-feature matrix (MEX)** under `cell_feature_matrix/`:
+  - `matrix.mtx.gz`: sparse counts/intensities
+  - `features.tsv.gz`: 3 columns: `id`, `name`, `feature_type`
+  - `barcodes.tsv.gz`: cell barcodes (one per row)
+- **Optional**: `analysis.zarr[.zip]` (clusters), `cells.zarr[.zip]` (spatial centroids)
+
+## API reference (summary)
+
+- `pyXenium.io.partial_xenium_loader.load_anndata_from_partial(base_dir=None, base_url=None, mex_dir=None, analysis_name=None, cells_name=None)`
+- `pyXenium.io.xenium_gene_protein_loader.load_gene_protein(base_dir, mex_dir=None, drop_controls=True)`
+- `pyXenium.analysis.protein_gene_correlation.compute(gene_expr, protein_expr, method='pearson')`
+
+## Contributing
+
+Issues and pull requests are welcome. Please include minimal examples and tests where possible.
+
+## License
+
+MIT. See `LICENSE`.
