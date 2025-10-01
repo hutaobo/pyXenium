@@ -6,6 +6,38 @@ import warnings
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 
+
+def _safe_get_array(group, key):
+    """
+    容错地从 zarr group 取数组：
+      - 如果 key 不存在或 dtype 元数据非法，返回 None；
+      - 避免使用 `'key' in group` 触发严格解析。
+    """
+    try:
+        arr = group[key]  # 直接尝试取
+        return arr
+    except Exception as e:
+        # zarr 3 在遇到非法 dtype（如 'u1'）时会报 ValueError: No Zarr data type found...
+        if "No Zarr data type found" in str(e):
+            warnings.warn(f"[protein_gene_correlation] Skip '{key}' due to non-canonical dtype in Zarr metadata.")
+            return None
+        # key 不存在或其它读取错误
+        return None
+
+
+def _safe_read_all(arr, key_name=""):
+    """
+    容错地把 zarr array 读成 numpy 数组。
+    """
+    if arr is None:
+        return None
+    try:
+        return arr[...]
+    except Exception as e:
+        warnings.warn(f"[protein_gene_correlation] Failed to read '{key_name}': {e}. It will be ignored.")
+        return None
+
+
 def protein_gene_correlation(
     adata,
     transcripts_zarr_path,
@@ -316,20 +348,21 @@ def protein_gene_correlation(
         # Flatten gene_ids if it's two-dimensional (it should be 1D per transcript)
         gene_ids = gene_ids.flatten()
         # Quality and valid filters
-        if 'quality_score' in group:
-            qvs = group['quality_score'][...]
-        else:
-            qvs = None
-        if 'valid' in group:
-            valid_flags = group['valid'][...]
-        else:
-            valid_flags = None
+        qv_arr = _safe_get_array(group, 'quality_score')
+        qvs = _safe_read_all(qv_arr, 'quality_score')
+        valid_arr = _safe_get_array(group, 'valid')
+        valid_flags = _safe_read_all(valid_arr, 'valid')
         mask_all = np.ones(coords.shape[0], dtype=bool)
         if qvs is not None:
             mask_all &= (qvs >= qv_threshold)
         if valid_flags is not None:
             # According to Xenium documentation, final output transcripts have valid==1
             mask_all &= (valid_flags == 1)
+        # 如果两个都拿不到，就降级为不应用 QV/valid 过滤
+        if qvs is None and valid_flags is None:
+            if qv_threshold is not None:
+                warnings.warn("[protein_gene_correlation] qv/valid unavailable; proceed without quality filtering.")
+            qv_threshold = None
         # If a protein QC mask is provided, filter transcripts to those inside the mask region
         if mask is not None:
             # Convert transcript coordinates (micron) to mask pixel indices

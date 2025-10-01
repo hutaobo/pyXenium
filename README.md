@@ -86,7 +86,7 @@ Notes:
 
 ### Gene–protein correlation
 
-Compute correlations between every gene and protein across cells.
+Compute correlations between gene and protein across cells.
 
 ```python
 from pyXenium.analysis.protein_gene_correlation import compute
