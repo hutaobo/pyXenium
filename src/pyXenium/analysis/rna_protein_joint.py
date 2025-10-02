@@ -47,16 +47,8 @@ class ProteinModelResult:
 def _get_rna_matrix(adata: AnnData):
     """Return the raw RNA matrix from ``adata`` as CSR sparse matrix."""
 
-    if "rna" in adata.layers:
-        X = adata.layers["rna"]
-    else:
-        X = adata.X
-
-    if sparse.issparse(X):
-        return X.tocsr()
-
-    # Dense array – convert to CSR to keep operations memory friendly.
-    return sparse.csr_matrix(np.asarray(X))
+    X = adata.layers["rna"] if "rna" in adata.layers else adata.X
+    return X.tocsr() if sparse.issparse(X) else sparse.csr_matrix(np.asarray(X))
 
 
 def _normalize_log1p(matrix: sparse.csr_matrix, target_sum: float = 1e4) -> sparse.csr_matrix:
