@@ -48,7 +48,8 @@ def protein_gene_correlation(
     grid_counts=(50, 50),
     pixel_size_um=0.2125,
     qv_threshold=20,
-    overwrite=False
+    overwrite=False,
+    auto_detect_cell_units=True,   # <--- 新增：自动识别 cell 坐标单位（像素/微米）
 ):
     """
     Compute spatial correlation between protein average intensity and gene transcript density for Xenium multi-modal data.
@@ -64,38 +65,86 @@ def protein_gene_correlation(
     **Parameters:**
     - `adata` : AnnData
         AnnData object from Xenium output. It must contain protein expression data in `adata.obsm['protein']`
-        (with shape [cells, n_proteins]) and per-cell spatial coordinates (either in `adata.obsm['spatial']` or in `adata.obs` as `cell_centroid_x`/`y`).
-        Optionally, `adata.uns['protein_qc_mask']` can be provided (as a 2D array or image path) to mask out regions with low protein data quality).
+        and per-cell spatial coordinates (either in `adata.obsm['spatial']` or `adata.obs['cell_centroid_x'/'y']`).
     - `transcripts_zarr_path` : str
-        Path (local or remote) to the Xenium `transcripts.zarr` (or `transcripts.zarr.zip`) file containing transcript locations.
-        This path is opened with fsspec, so it can be a local file system path or a remote URL (e.g., S3 URI).
-    - `pairs` : list of tuple(str, str)
-        List of (protein_name, gene_name) pairs to analyze.
+        Path to `transcripts.zarr` (or `.zarr.zip`) opened via fsspec.
+    - `pairs` : list[tuple(str, str)]
+        (protein_name, gene_name).
     - `output_dir` : str
-        Directory path (local or remote) where output files will be saved.
+        Directory for outputs.
     - `grid_size` : tuple(int, int), default=(50, 50)
-        **每个格子的物理大小（单位：μm），格式为 (y_size_um, x_size_um)**。
-        当 `grid_counts` 为 None 时生效：程序会按此大小对区域进行等大小分箱，数量为 `ceil(范围/大小)`。
+        **每格的物理大小（μm）**，格式 (y_size_um, x_size_um)。仅在 `grid_counts=None` 时使用。
     - `grid_counts` : tuple(int, int) or None, default=(50, 50)
-        **格子数量**（y 方向、x 方向）。若提供（非 None），**优先于** `grid_size`，表示将 y、x 轴分别均分为指定数量的格子。
+        **网格数量**（y 方向、x 方向）。若提供（非 None），**优先于** `grid_size`。
     - `pixel_size_um` : float, default=0.2125
-        Microns per pixel for the spatial coordinates. If spatial coordinates in `adata` are pixel-based, they will be multiplied by this factor.
+        掩膜/形态学图像的像素大小（μm/px）。映射坐标到掩膜像素索引时会用到。
     - `qv_threshold` : int, default=20
-        Transcript quality score cutoff (Q-score)。仅保留 `>= qv_threshold` 的转录本（若该列存在）。
+        转录本质量阈值（Q-score）。
     - `overwrite` : bool, default=False
         是否覆盖已有输出。
+    - `auto_detect_cell_units` : bool, default=True
+        是否**自动判断** `adata` 中细胞坐标（obsm['spatial'] 或 obs 中）是否已经是**微米**。
+        若判断为微米，则**不做**像素→微米缩放；若判断为像素，则按 `pixel_size_um` 缩放。
+        若不确定，将默认不缩放并给出 warning。你也可以设置为 False 回到旧逻辑：
+        只要 `pixel_size_um not in (None, 1, 1.0)` 就进行缩放。
 
     **Returns:**
-    - `summary_df` : pandas.DataFrame
-        Columns: `Protein`, `Gene`, `Pearson_r`, `p_value`.
+    - `summary_df` : pandas.DataFrame with columns: `Protein`, `Gene`, `Pearson_r`, `p_value`.
 
     **Outputs:**
     - For each (protein, gene) pair:
-        - `"<Protein>_<Gene>_correlation.csv"`：**包含全部 `ny×nx` 个网格**的记录（不再仅限于有细胞的 bin）。
-          列：`bin_y`, `bin_x`, `n_cells`, `transcript_count`, `transcript_density`, `protein_avg_intensity`。
-        - `"<Protein>_<Gene>_scatter.png"`：散点图（仅以 `n_cells>0` 的 bin 参与相关性与绘图）。
+        - `"<Protein>_<Gene>_correlation.csv"`：**包含全部 `ny×nx`** 个网格记录（含无细胞 bin）。
+        - `"<Protein>_<Gene>_scatter.png"`：散点图（仅 `n_cells>0` 的 bin 参与相关性与绘图）。
     - `"protein_gene_correlation_summary.csv"`：汇总表。
+
+    **Notes:**
+    - 10x 文档说明：`cells.csv.gz` 与 `transcripts.csv.gz` 的坐标是**微米**；像素到微米约为 **0.2125 µm/px**（全分辨率层）。
+      若提供 `protein_qc_mask`，请确保 `pixel_size_um` 与该掩膜图层的像素大小一致。
     """
+    # ------------------ helpers ------------------
+    def _maybe_convert_cell_coords_auto(cell_xy_in_um_or_px, pixel_size, tx_width, tx_height):
+        """
+        基于与转录本范围（必为微米）对比的启发式，判断 cell_xy 是否已是微米。
+        返回：scaled_cell_xy, note(str)
+        """
+        if cell_xy_in_um_or_px.size == 0:
+            return cell_xy_in_um_or_px, "empty"
+
+        if not auto_detect_cell_units:
+            # 旧逻辑：只要 pixel_size 不为 1，就乘
+            if pixel_size not in (None, 1, 1.0):
+                return cell_xy_in_um_or_px * float(pixel_size), "manual_scaled_by_pixel_size"
+            else:
+                return cell_xy_in_um_or_px, "manual_no_scale"
+
+        # auto 模式：对比跨度
+        cx = cell_xy_in_um_or_px[:, 0]
+        cy = cell_xy_in_um_or_px[:, 1]
+        cw = float(np.max(cx) - np.min(cx)) if cx.size else 0.0
+        ch = float(np.max(cy) - np.min(cy)) if cy.size else 0.0
+        rw = float(tx_width)
+        rh = float(tx_height)
+
+        # 若任何跨度为 0，无法判断，按“不过缩放”处理（更安全）
+        if cw <= 0 or ch <= 0 or rw <= 0 or rh <= 0:
+            return cell_xy_in_um_or_px, "auto_fallback_no_scale"
+
+        ratio_w = cw / rw
+        ratio_h = ch / rh
+        # “已是微米”的目标带宽：~1x（允许一定浮动）
+        if 0.6 <= ratio_w <= 1.4 and 0.6 <= ratio_h <= 1.4:
+            return cell_xy_in_um_or_px, "auto_detect_microns_no_scale"
+
+        # “像素”的目标带宽：~ 1 / pixel_size
+        if pixel_size not in (None, 0, 1, 1.0):
+            target = 1.0 / float(pixel_size)
+            if 0.6 * target <= ratio_w <= 1.4 * target and 0.6 * target <= ratio_h <= 1.4 * target:
+                return cell_xy_in_um_or_px * float(pixel_size), "auto_detect_pixels_scale"
+
+        warnings.warn("[protein_gene_correlation] Unable to confidently infer cell coordinate units; "
+                      "assume microns (no scaling). Set auto_detect_cell_units=False to force scaling by pixel_size_um.")
+        return cell_xy_in_um_or_px, "auto_uncertain_assume_microns"
+
     # Ensure output directory path ends with a separator for consistent path joining
     output_dir = output_dir.rstrip('/')
 
@@ -106,17 +155,13 @@ def protein_gene_correlation(
     except Exception:
         pass
 
-    # Extract cell spatial coordinates from AnnData
+    # ------------------ load cell coords (raw, 不先缩放) ------------------
     if 'spatial' in adata.obsm:
         cell_xy = np.array(adata.obsm['spatial'])
     elif ('cell_centroid_x' in adata.obs) and ('cell_centroid_y' in adata.obs):
         cell_xy = np.vstack([adata.obs['cell_centroid_x'].values, adata.obs['cell_centroid_y'].values]).T
     else:
         raise ValueError("Spatial coordinates not found in adata. Please provide adata.obsm['spatial'] or .obs['cell_centroid_x' and 'cell_centroid_y'].")
-
-    # Convert coordinates from pixels to microns if needed
-    if pixel_size_um not in (None, 1, 1.0):
-        cell_xy = cell_xy * float(pixel_size_um)
 
     # Determine unique proteins and genes from the pairs list
     unique_proteins = [p for p, _ in set(pairs)]
@@ -137,7 +182,6 @@ def protein_gene_correlation(
                         return protein_data[col].values
             raise KeyError(f"Protein '{name}' not found in adata.obsm['protein'] columns.")
         else:
-            # 备用分支：若不是 DataFrame，可在此根据 protein_names 定位
             idx = protein_names.index(name)
             return np.asarray(protein_data)[:, idx]
 
@@ -169,14 +213,14 @@ def protein_gene_correlation(
             except Exception:
                 pass
 
-    # Open transcripts Zarr (allow both .zarr directory or .zarr.zip)
+    # ------------------ open transcripts zarr & get bounds (transcripts在微米空间) ------------------
     if str(transcripts_zarr_path).endswith((".zarr.zip", ".zip")):
         store = zarr.storage.ZipStore(transcripts_zarr_path, mode='r')
     else:
         store = fsspec.get_mapper(transcripts_zarr_path)
     root = zarr.open(store, mode='r')
 
-    # Determine gene index mapping for transcripts
+    # gene index map
     gene_index_map = {}
     gene_names_list = None
     if 'gene_names' in root.attrs:
@@ -191,7 +235,7 @@ def protein_gene_correlation(
             raise KeyError(f"Gene '{gene}' not found in transcripts data.")
         gene_index_map[gene] = gene_names_list.index(gene)
 
-    # Determine spatial bounds of the region (min and max coordinates)
+    # bounds from transcripts (microns)
     region_min_x = float('inf')
     region_min_y = float('inf')
     region_max_x = float('-inf')
@@ -201,6 +245,7 @@ def protein_gene_correlation(
         if isinstance(orig_attr, dict):
             region_min_x = float(orig_attr.get('x', region_min_x))
             region_min_y = float(orig_attr.get('y', region_min_y))
+    # if mask given, roughly include mask area extent
     if mask is not None:
         ox, oy = mask_origin
         region_min_x = min(region_min_x, ox)
@@ -212,7 +257,6 @@ def protein_gene_correlation(
         except Exception:
             pass
 
-    # Traverse transcript chunks to update bounds (and later count transcripts)
     level0 = root['grids']['0'] if 'grids' in root and '0' in root['grids'] else root
     chunk_keys = list(level0.keys())
     chunk_keys = [k for k in chunk_keys if ',' in k]
@@ -229,14 +273,35 @@ def protein_gene_correlation(
         region_max_x = max(region_max_x, float(x_vals.max()))
         region_min_y = min(region_min_y, float(y_vals.min()))
         region_max_y = max(region_max_y, float(y_vals.max()))
-    if cell_xy.size > 0:
-        region_min_x = min(region_min_x, float(cell_xy[:, 0].min()))
-        region_max_x = max(region_max_x, float(cell_xy[:, 0].max()))
-        region_min_y = min(region_min_y, float(cell_xy[:, 1].min()))
-        region_max_y = max(region_max_y, float(cell_xy[:, 1].max()))
+
+    # transcripts-only width/height (microns)，用于单位判定
+    tx_region_width = region_max_x - region_min_x if (region_max_x > region_min_x) else 0.0
+    tx_region_height = region_max_y - region_min_y if (region_max_y > region_min_y) else 0.0
+
+    # 关闭 zarr store 的 close 放在后面（读 counts 时还会用到）
+
+    # ------------------ auto detect & scale cell coords to microns (if needed) ------------------
+    # 注意：此处只用于单位判定，不先把 cell 参与到边界中，避免“像素坐标”把范围拉过大
+    cell_xy_scaled, scale_note = _maybe_convert_cell_coords_auto(
+        cell_xy_in_um_or_px=cell_xy,
+        pixel_size=pixel_size_um,
+        tx_width=tx_region_width,
+        tx_height=tx_region_height
+    )
+    # 现在可以把“已在微米空间”的 cell 坐标加入到最终边界中
+    if cell_xy_scaled.size > 0:
+        region_min_x = min(region_min_x, float(cell_xy_scaled[:, 0].min()))
+        region_max_x = max(region_max_x, float(cell_xy_scaled[:, 0].max()))
+        region_min_y = min(region_min_y, float(cell_xy_scaled[:, 1].min()))
+        region_max_y = max(region_max_y, float(cell_xy_scaled[:, 1].max()))
 
     # ---------------------- Grid definition (grid_counts vs grid_size) ----------------------
     if region_max_x <= region_min_x or region_max_y <= region_min_y:
+        # close store before raising
+        try:
+            store.close()
+        except Exception:
+            pass
         raise ValueError("Invalid region bounds for spatial data. Please check the coordinates in adata and transcripts.zarr.")
     region_width = region_max_x - region_min_x
     region_height = region_max_y - region_min_y
@@ -244,14 +309,26 @@ def protein_gene_correlation(
     if grid_counts is not None:
         ny, nx = int(grid_counts[0]), int(grid_counts[1])
         if ny <= 0 or nx <= 0:
+            try:
+                store.close()
+            except Exception:
+                pass
             raise ValueError("`grid_counts` must be positive integers, e.g., (50, 50).")
         x_bin_size = region_width / nx
         y_bin_size = region_height / ny
     else:
         if grid_size is None:
+            try:
+                store.close()
+            except Exception:
+                pass
             raise ValueError("Both `grid_counts` and `grid_size` are None. Provide at least one.")
         gy_um, gx_um = float(grid_size[0]), float(grid_size[1])
         if gy_um <= 0 or gx_um <= 0:
+            try:
+                store.close()
+            except Exception:
+                pass
             raise ValueError("`grid_size` must be positive (μm), e.g., (50, 50).")
         ny = int(np.ceil(region_height / gy_um))
         nx = int(np.ceil(region_width / gx_um))
@@ -264,7 +341,7 @@ def protein_gene_correlation(
     # Prepare arrays for transcript counts per bin for each gene
     transcripts_count = {gene: np.zeros((ny, nx), dtype=float) for gene in unique_genes}
 
-    # -------------------- BEGIN PATCH: robust qv/valid handling per chunk --------------------
+    # -------------------- BEGIN: robust qv/valid handling per chunk --------------------
     def _ensure_1d(name, arr, target_len):
         """
         保证数组是一维且长度与 target_len 一致；若为 2D（常见误读 NxN），警告并压平。
@@ -284,9 +361,9 @@ def protein_gene_correlation(
                 f"Please verify transcripts Zarr schema/keys."
             )
         return arr
-    # --------------------- END PATCH: helper -------------------------------------------------
+    # --------------------- END helper -------------------------------------------------
 
-    # Process transcripts in chunks to fill transcript counts
+    # -------------------- fill transcript counts --------------------
     for ck in chunk_keys:
         group = level0[ck]
         coords = group['location'][...]
@@ -295,7 +372,7 @@ def protein_gene_correlation(
         gene_ids = group['gene_identity'][...]
         gene_ids = gene_ids.flatten()
 
-        # Quality and valid filters
+        # quality & valid
         qv_arr = _safe_get_array(group, 'quality_score')
         qvs = _safe_read_all(qv_arr, 'quality_score')
         valid_arr = _safe_get_array(group, 'valid')
@@ -359,9 +436,10 @@ def protein_gene_correlation(
         pass
 
     # -------------------- Cells -> grid indices (single source of truth) --------------------
-    if cell_xy.shape[0] > 0:
-        cell_x = cell_xy[:, 0]
-        cell_y = cell_xy[:, 1]
+    # 注意：此时 cell_xy_scaled 已在微米空间（根据 auto 判定）
+    if cell_xy_scaled.shape[0] > 0:
+        cell_x = cell_xy_scaled[:, 0]
+        cell_y = cell_xy_scaled[:, 1]
         cell_x_idx = np.floor((cell_x - region_min_x) / x_bin_size).astype(int)
         cell_y_idx = np.floor((cell_y - region_min_y) / y_bin_size).astype(int)
         cell_x_idx[cell_x_idx < 0] = 0
@@ -372,13 +450,13 @@ def protein_gene_correlation(
         cell_x_idx = np.array([], dtype=int)
         cell_y_idx = np.array([], dtype=int)
 
-    # ---- NEW: 构造“全局有效细胞掩膜”，并与索引绑定（避免蛋白循环里二次掩膜） ----
-    n_cells_total = cell_xy.shape[0]
+    # ---- 全局有效细胞掩膜（统一用于索引与蛋白强度） ----
+    n_cells_total = cell_xy_scaled.shape[0]
     if n_cells_total > 0:
         valid_cell_mask = np.ones(n_cells_total, dtype=bool)
         if mask is not None:
-            rel_cx = cell_xy[:, 0] - mask_origin[0]
-            rel_cy = cell_xy[:, 1] - mask_origin[1]
+            rel_cx = cell_xy_scaled[:, 0] - mask_origin[0]
+            rel_cy = cell_xy_scaled[:, 1] - mask_origin[1]
             c_col = np.floor(rel_cx / float(pixel_size_um)).astype(int)
             c_row = np.floor(rel_cy / float(pixel_size_um)).astype(int)
             inside_mask_cells = (c_row >= 0) & (c_row < mask.shape[0]) & (c_col >= 0) & (c_col < mask.shape[1])
@@ -392,7 +470,7 @@ def protein_gene_correlation(
                     mask_vals[valid_cells_idx] = mask_vals_seg
                 inside_mask_cells &= mask_vals
             valid_cell_mask &= inside_mask_cells
-        # 用同一掩膜过滤网格索引（之后蛋白也用同一掩膜来过滤强度向量）
+
         if not valid_cell_mask.all():
             kept = np.where(valid_cell_mask)[0]
             if kept.size == 0:
@@ -403,26 +481,20 @@ def protein_gene_correlation(
                 cell_y_idx = cell_y_idx[valid_cell_mask]
     else:
         valid_cell_mask = np.array([], dtype=bool)
-    # ---------------------------------------------------------------------------------------
 
-    # Prepare arrays for protein intensity sums and cell counts per bin
+    # -------------------- accumulate proteins & cells --------------------
     protein_sums = {prot: np.zeros((ny, nx), dtype=float) for prot in unique_proteins}
     cell_count = np.zeros((ny, nx), dtype=float)
 
-    # Accumulate cell counts
     if cell_x_idx.size > 0:
         np.add.at(cell_count, (cell_y_idx, cell_x_idx), 1)
-        # Accumulate protein intensity sums for each protein
         for prot in unique_proteins:
             intensities_all = get_protein_vector(prot)
-            # 用同一掩膜过滤，使其与 cell_x_idx/cell_y_idx 一一对应
             if intensities_all.size == n_cells_total and n_cells_total > 0:
                 intensities = intensities_all[valid_cell_mask]
             else:
-                # 极端情况下长度不匹配，回退到与索引同长度的零向量
                 intensities = np.zeros(cell_x_idx.shape[0], dtype=float)
             if intensities.size != cell_x_idx.size:
-                # 再保险：若仍不一致，截断到相同最小长度
                 m = min(intensities.size, cell_x_idx.size)
                 intensities = intensities[:m]
                 cx = cell_x_idx[:m]
@@ -432,16 +504,16 @@ def protein_gene_correlation(
                 cy = cell_y_idx
             np.add.at(protein_sums[prot], (cy, cx), intensities.astype(float))
 
-    # Compute average protein intensity per bin for each protein
+    # mean protein per bin
     protein_avg = {}
+    nonzero = cell_count > 0
     for prot in unique_proteins:
         avg = np.zeros((ny, nx), dtype=float)
-        nonzero = cell_count > 0
         if np.any(nonzero):
             avg[nonzero] = protein_sums[prot][nonzero] / cell_count[nonzero]
         protein_avg[prot] = avg
 
-    # Prepare to generate outputs
+    # -------------------- prepare outputs --------------------
     summary_records = []
     skip_pairs = []
     old_summary_df = None
@@ -453,21 +525,19 @@ def protein_gene_correlation(
         except FileNotFoundError:
             old_summary_df = None
 
-    # Iterate over each requested pair in the original order
+    # iterate pairs
     for protein_name, gene_name in pairs:
         safe_prot = protein_name.replace(os.sep, "_").replace(" ", "_")
         safe_gene = gene_name.replace(os.sep, "_").replace(" ", "_")
         pair_csv_name = f"{safe_prot}_{safe_gene}_correlation.csv"
         pair_png_name = f"{safe_prot}_{safe_gene}_scatter.png"
 
-        # Check if outputs exist and skip if not overwrite
         if not overwrite:
             try:
                 file_exists_csv = fs_out.exists(f"{out_dir_path}/{pair_csv_name}")
             except Exception:
                 try:
-                    ftest = fs_out.open(f"{out_dir_path}/{pair_csv_name}", 'rb')
-                    ftest.close()
+                    ftest = fs_out.open(f"{out_dir_path}/{pair_csv_name}", 'rb'); ftest.close()
                     file_exists_csv = True
                 except Exception:
                     file_exists_csv = False
@@ -475,8 +545,7 @@ def protein_gene_correlation(
                 file_exists_png = fs_out.exists(f"{out_dir_path}/{pair_png_name}")
             except Exception:
                 try:
-                    ftest = fs_out.open(f"{out_dir_path}/{pair_png_name}", 'rb')
-                    ftest.close()
+                    ftest = fs_out.open(f"{out_dir_path}/{pair_png_name}", 'rb'); ftest.close()
                     file_exists_png = True
                 except Exception:
                     file_exists_png = False
@@ -490,27 +559,15 @@ def protein_gene_correlation(
                         summary_records.append({"Protein": protein_name, "Gene": gene_name, "Pearson_r": prev_r, "p_value": prev_p})
                 continue
 
-        # Compute correlation for this pair using the binned data
+        # compute correlation for this pair
         if gene_name not in transcripts_count:
             raise KeyError(f"Gene '{gene_name}' not processed in transcripts (not in unique_genes set).")
         gene_counts_mat = transcripts_count[gene_name]
         bin_area = x_bin_size * y_bin_size
         transcripts_density = gene_counts_mat.copy() if bin_area <= 0 else (gene_counts_mat / bin_area)
 
-        # Get protein average intensity matrix for this protein
-        if protein_name not in protein_avg:
-            intensities = get_protein_vector(protein_name)
-            protein_sums_temp = np.zeros((ny, nx), dtype=float)
-            if cell_x_idx.size > 0 and intensities.size == cell_x_idx.size:
-                np.add.at(protein_sums_temp, (cell_y_idx, cell_x_idx), intensities.astype(float))
-            protein_avg_mat = np.zeros((ny, nx), dtype=float)
-            nonzero_mask = cell_count > 0
-            if np.any(nonzero_mask):
-                protein_avg_mat[nonzero_mask] = protein_sums_temp[nonzero_mask] / cell_count[nonzero_mask]
-        else:
-            protein_avg_mat = protein_avg[protein_name]
+        protein_avg_mat = protein_avg[protein_name] if protein_name in protein_avg else np.zeros((ny, nx), dtype=float)
 
-        # Only bins with at least one cell are valid for protein avg intensity correlation
         valid_bins = cell_count > 0
         if not np.any(valid_bins):
             pearson_r = np.nan
@@ -527,9 +584,10 @@ def protein_gene_correlation(
                 with warnings.catch_warnings():
                     warnings.filterwarnings("ignore", category=RuntimeWarning)
                     pearson_r, p_val = pearsonr(gene_vals, prot_vals)
+
         summary_records.append({"Protein": protein_name, "Gene": gene_name, "Pearson_r": pearson_r, "p_value": p_val})
 
-        # Save scatter plot
+        # plot
         try:
             fig, ax = plt.subplots(figsize=(6, 5))
             ax.scatter(gene_vals, prot_vals, s=30, alpha=0.7, edgecolors='none')
@@ -546,7 +604,7 @@ def protein_gene_correlation(
         finally:
             plt.close(fig)
 
-        # Save pair CSV with binned data —— 输出全部 ny×nx 个 bin（含无细胞 bin）
+        # CSV —— 输出全部 ny×nx 个 bin（含无细胞 bin）
         y_idx, x_idx = np.indices((ny, nx))
         y_idx = y_idx.ravel()
         x_idx = x_idx.ravel()
@@ -564,7 +622,7 @@ def protein_gene_correlation(
         with fs_out.open(f"{out_dir_path}/{pair_csv_name}", 'w') as f:
             pair_df.to_csv(f, index=False)
 
-    # If any pairs were skipped and not added to summary_records (due to missing old summary data), handle them:
+    # if skipped pairs without old summary, backfill from CSV
     if skip_pairs:
         if old_summary_df is None:
             for protein_name, gene_name in skip_pairs:
@@ -593,7 +651,7 @@ def protein_gene_correlation(
                 except FileNotFoundError:
                     summary_records.append({"Protein": protein_name, "Gene": gene_name, "Pearson_r": np.nan, "p_value": np.nan})
 
-    # Create summary DataFrame in the original input order
+    # summary df (keep input order)
     summary_df = pd.DataFrame(columns=["Protein", "Gene", "Pearson_r", "p_value"])
     for protein_name, gene_name in pairs:
         rec = next((rec for rec in summary_records if rec["Protein"] == protein_name and rec["Gene"] == gene_name), None)
@@ -601,7 +659,6 @@ def protein_gene_correlation(
             rec = {"Protein": protein_name, "Gene": gene_name, "Pearson_r": np.nan, "p_value": np.nan}
         summary_df = pd.concat([summary_df, pd.DataFrame([rec])], ignore_index=True)
 
-    # Save summary CSV
     with fs_out.open(f"{out_dir_path}/protein_gene_correlation_summary.csv", 'w') as f:
         summary_df.to_csv(f, index=False)
 
