@@ -8,6 +8,7 @@ Xenium runs that include both RNA and protein measurements.
 > - [Partial loading (incomplete exports)](#partial-loading-incomplete-exports)
 > - [RNA + Protein loader](#rna--protein-loader)
 > - [Gene–protein correlation](#gene–protein-correlation)
+> - [RNA/protein joint analysis](#rnaprotein-joint-analysis)
 
 ## Features
 
@@ -104,6 +105,31 @@ summary = protein_gene_correlation(
     overwrite=False
 )
 print(summary)
+```
+
+### RNA/protein joint analysis
+
+Cluster cells using RNA expression, then explain within-cluster protein
+heterogeneity by training neural network classifiers on the RNA latent space.
+
+```python
+from pyXenium.analysis import rna_protein_cluster_analysis
+
+summary, models = rna_protein_cluster_analysis(
+    adata,
+    n_clusters=12,
+    n_pcs=30,
+    min_cells_per_cluster=100,
+    min_cells_per_group=30,
+    hidden_layer_sizes=(128, 64),
+)
+
+# Inspect metrics for the first few cluster × protein combinations
+print(summary.head())
+
+# Retrieve the fitted model for a specific cluster and protein
+podocin_model = models["cluster_3"]["Podocin"]
+print(podocin_model.test_accuracy)
 ```
 
 ## Data format expectations
