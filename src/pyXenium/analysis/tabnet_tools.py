@@ -45,7 +45,7 @@ from anndata import AnnData
 from scipy import sparse
 
 # sklearn
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.decomposition import TruncatedSVD
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, roc_auc_score
@@ -256,10 +256,14 @@ def tabnet_cluster_classifier(
 
     y = y_labels[idx]
 
+    # Encode labels to a single numeric dtype to avoid mixed str/numpy.str_ issues
+    le = LabelEncoder()
+    y_enc = le.fit_transform(y)
+
     # Train/val split
-    strat = y if stratify else None
+    strat = y_enc if stratify else None
     X_tr, X_val, y_tr, y_val = train_test_split(
-        X_full, y, test_size=val_size, random_state=random_state, stratify=strat
+        X_full, y_enc, test_size=val_size, random_state=random_state, stratify=strat
     )
 
     # Standardize (mean centering is safe because X_tr is dense here)
@@ -295,7 +299,7 @@ def tabnet_cluster_classifier(
         X_all_s = scaler.transform(X_full)
         proba = clf.predict_proba(X_all_s)
         # Map classes
-        classes_ = [str(c) for c in clf.classes_]
+        classes_ = [str(c) for c in le.classes_]
         # Write per-class probability columns
         proba_keys = []
         for i, cls in enumerate(classes_):
