@@ -8,18 +8,20 @@ Features
 --------
 - Within a chosen RNA cluster, split cells into protein-high vs protein-low by automatic thresholding (GMM / quantile).
 - Build a spatial graph *within the cluster* for Moran's I (spatial autocorrelation of protein).
-- Build a *global* KDTree (no full NxN adjacency) and compute neighborhood composition of the chosen cluster cells
+- Build a *global* KDTree and compute neighborhood composition of the chosen cluster cells
   against a grouping key (e.g., obs['cluster'] or obs['cell_type']) to quantify *microenvironment*.
 - Permutation-based neighbor enrichment test: compare neighborhood fractions of protein-high vs protein-low cells.
 - Differential expression (RNA) between protein-high vs protein-low *within the cluster* (with built-in normalize+log1p).
 - Predictability of protein-high from neighborhood composition (logistic regression, AUC + feature coefficients).
 - Robust spatial plotting for both numeric vectors and categorical labels (including NaN handling).
+- **Alias resolver integration**: user tokens like "MKI67", "Ki-67", "PDCD1", "PD-1", "CD274", "PD-L1", "MS4A1", "CD20"
+  are resolved to actual protein columns in your panel; status-column names like "MKI67__status_in_cluster_3"
+  are auto-corrected to the real existing column (e.g., "Ki-67__status_in_cluster_3") when possible.
 
 Large-scale notes
 -----------------
-- Global microenvironment is computed with KDTree radius queries (no full CSR NxN matrix), which scales well for
+- Global microenvironment is computed with KDTree radius queries (no full NxN adjacency), which scales well for
   hundreds of thousands of cells. The intra-cluster adjacency (CSR) is only used for Moran's I on a subset.
-- The heuristic radius estimator samples when n_cells is very large to avoid memory spikes.
 
 Author: (c) 2025
 License: MIT
@@ -46,6 +48,13 @@ import scanpy as sc
 import anndata as ad
 import matplotlib.pyplot as plt
 
+# ---- Alias resolver (project-level memory via YAML config) ----
+# See: pyXenium/utils/name_resolver.py and pyXenium/config/protein_aliases.yaml
+from pyXenium.utils.name_resolver import (
+    resolve_protein_column,
+    resolve_status_col_name,
+)
+
 
 # ---------------------------------------------------------------------
 # Utilities
@@ -62,7 +71,7 @@ def _get_coords(adata: ad.AnnData,
         return arr[:, :2]
     xk, yk = obs_xy
     if xk in adata.obs.columns and yk in adata.obs.columns:
-        return adata.obs[[xk, yk]].to_numpy(dtype=float)
+        return adata.obs.loc[:, [xk, yk]].to_numpy(dtype=float)
     raise KeyError(f"Cannot find spatial coords in obsm['{prefer_obsm}'] nor obs[{xk},{yk}].")
 
 
@@ -83,13 +92,16 @@ def _auto_radius(coords: np.ndarray, k: int = 8, factor: float = 1.5, max_n: int
     If very large, sample up to max_n cells for robustness and speed.
     """
     n = coords.shape[0]
+    if n <= 2:
+        return 1.0
     if n > max_n:
         rng = np.random.default_rng(0)
         sel = rng.choice(n, size=max_n, replace=False)
         X = coords[sel]
     else:
         X = coords
-    nn = NearestNeighbors(n_neighbors=min(k + 1, X.shape[0]-1), algorithm="kd_tree").fit(X)
+    k_eff = max(1, min(k + 1, X.shape[0] - 1))
+    nn = NearestNeighbors(n_neighbors=k_eff, algorithm="kd_tree").fit(X)
     d, _ = nn.kneighbors(X)
     kth = d[:, min(k, d.shape[1] - 1)]
     return float(np.median(kth) * factor)
@@ -105,6 +117,8 @@ def _build_radius_graph(coords: np.ndarray, radius: float) -> sp.csr_matrix:
             if i != j:
                 rows.append(i)
                 cols.append(j)
+    if not rows:
+        return sp.csr_matrix((coords.shape[0], coords.shape[0]), dtype=np.float32)
     data = np.ones(len(rows), dtype=np.float32)
     A = sp.csr_matrix((data, (rows, cols)), shape=(coords.shape[0], coords.shape[0]))
     A = ((A + A.T) > 0).astype(np.float32)
@@ -210,17 +224,21 @@ class ProteinMicroEnv:
         """
         if self.cluster_key not in self.adata.obs.columns:
             raise KeyError(f"'{self.cluster_key}' not in adata.obs.")
+
         # choose normalized if present
         key = self.protein_norm_obsm if self.protein_norm_obsm in self.adata.obsm_keys() else self.protein_obsm
         if key not in self.adata.obsm_keys():
             raise KeyError(f"Protein matrix not found in obsm['{key}'].")
+
+        # ---- resolve alias to the actual column in panel ----
+        prot_col = resolve_protein_column(self.adata, protein, self.protein_norm_obsm, self.protein_obsm)
         dfp = self.adata.obsm[key]
-        if protein not in dfp.columns:
-            raise KeyError(f"Protein '{protein}' not found in obsm['{key}'].")
+        if isinstance(dfp, pd.DataFrame) and prot_col not in dfp.columns:
+            raise KeyError(f"Protein column '{prot_col}' not found in obsm['{key}'].")
 
         mask = self.adata.obs[self.cluster_key].astype(str) == str(cluster_id)
         idx = self.adata.obs_names[mask]
-        vals = dfp.loc[idx, protein].to_numpy()
+        vals = dfp.loc[idx, prot_col].to_numpy()
 
         if method == "gmm":
             thr = _gmm_threshold(vals, random_state=self.random_state)
@@ -230,7 +248,7 @@ class ProteinMicroEnv:
             raise ValueError("method must be 'gmm' or 'quantile'.")
 
         status = np.where(vals >= thr, "protein_high", "protein_low")
-        col = f"{protein}__status_in_cluster_{cluster_id}"
+        col = f"{prot_col}__status_in_cluster_{cluster_id}"
         self.adata.obs.loc[idx, col] = status
         out = pd.DataFrame({"protein_value": vals, "protein_status": status}, index=idx)
         return out, col, thr
@@ -293,7 +311,10 @@ class ProteinMicroEnv:
             nbrs = tree.query_ball_point(coords_all[r], r=radius)
             # remove self if present
             if r in nbrs:
-                nbrs.remove(r)
+                try:
+                    nbrs.remove(r)
+                except ValueError:
+                    pass
             if len(nbrs) == 0:
                 continue
             lab = labels_all[nbrs]
@@ -319,6 +340,9 @@ class ProteinMicroEnv:
                                       random_state: int = 0) -> pd.DataFrame:
         """Permutation test on neighborhood fractions between protein-high vs protein-low (within focus_index)."""
         frac_cols = [c for c in comp.columns if c.startswith("nbr_frac:")]
+        if len(frac_cols) == 0:
+            return pd.DataFrame(columns=["neighbor_type", "delta_frac_high_minus_low", "z_score", "p_value", "q_value"])
+
         y = self.adata.obs.loc[focus_index, protein_status_col].astype(str)
         mask = y.isin(["protein_high", "protein_low"])
         y = y[mask].to_numpy()
@@ -359,6 +383,9 @@ class ProteinMicroEnv:
                                    max_iter: int = 1000) -> Dict[str, Union[float, pd.DataFrame]]:
         """Predict protein-high from neighborhood fractions; report AUC and feature coefficients."""
         frac_cols = [c for c in comp.columns if c.startswith("nbr_frac:")]
+        if len(frac_cols) == 0:
+            return {"auc": np.nan, "coef": pd.DataFrame({"feature": [], "coef": []})}
+
         y = self.adata.obs.loc[focus_index, protein_status_col].astype(str)
         mask = y.isin(["protein_high", "protein_low"])
         y = (y[mask].to_numpy() == "protein_high").astype(int)
@@ -386,9 +413,11 @@ class ProteinMicroEnv:
         """Moran's I of protein expression within the cluster."""
         key = self.protein_norm_obsm if (use_norm and self.protein_norm_obsm in self.adata.obsm_keys()) else self.protein_obsm
         dfp = self.adata.obsm[key]
-        if protein not in dfp.columns:
-            raise KeyError(f"Protein '{protein}' not found in obsm['{key}'].")
-        vals = dfp.loc[names_sub, protein].to_numpy()
+        # resolve alias for protein column
+        prot_col = resolve_protein_column(self.adata, protein, self.protein_norm_obsm, self.protein_obsm)
+        if isinstance(dfp, pd.DataFrame) and prot_col not in dfp.columns:
+            raise KeyError(f"Protein '{prot_col}' not found in obsm['{key}'].")
+        vals = dfp.loc[names_sub, prot_col].to_numpy()
         return _morans_I(vals, A_sub, permutations=permutations, random_state=self.random_state)
 
     # ---------------- Differential expression (within cluster) ----------------
@@ -439,7 +468,7 @@ class ProteinMicroEnv:
                      s: float = 2.0,
                      alpha: float = 0.9,
                      cmap: str = "viridis") -> None:
-        """Robust spatial scatter for numeric or categorical obs/obsm fields."""
+        """Robust spatial scatter for numeric or categorical obs/obsm fields (with alias/status auto-fix)."""
         coords = _get_coords(self.adata, self.spatial_obsm, self.obs_xy)
 
         def _scatter_num(cnum, cm):
@@ -450,18 +479,19 @@ class ProteinMicroEnv:
             plt.title(title); plt.xlabel("x"); plt.ylabel("y")
             plt.tight_layout(); plt.show()
 
+        # --- string: obs col / status col / protein name(alias) ---
         if isinstance(color, str):
-            # obs column?
+            # 0) try exact obs column
             if color in self.adata.obs.columns:
                 ser = self.adata.obs[color]
                 if ser.dtype.kind in "biufc":  # numeric
                     _scatter_num(ser.to_numpy(), cmap)
                     return
-                # categorical / string
+                # categorical / string with NaN -> grey
                 cat = ser.astype("category")
                 codes = cat.cat.codes.to_numpy()  # NaN -> -1
                 mask = codes != -1
-                base = plt.get_cmap("tab20", len(cat.cat.categories) if len(cat.cat.categories) > 0 else 1)
+                base = plt.get_cmap("tab20", max(len(cat.cat.categories), 1))
                 plt.figure(figsize=(6, 6))
                 if mask.any():
                     sca = plt.scatter(coords[mask, 0], coords[mask, 1], c=codes[mask],
@@ -476,14 +506,49 @@ class ProteinMicroEnv:
                 plt.tight_layout(); plt.show()
                 return
 
-            # protein columns?
-            for key in (self.protein_norm_obsm, self.protein_obsm):
-                if key in self.adata.obsm_keys():
-                    df = self.adata.obsm[key]
-                    if isinstance(df, pd.DataFrame) and color in df.columns:
-                        _scatter_num(df[color].to_numpy(), cmap)
-                        return
-            raise KeyError(f"color '{color}' not found in obs nor obsm protein columns.")
+            # 1) auto-correct status column like "MKI67__status_in_cluster_3"
+            fixed = resolve_status_col_name(
+                self.adata, color,
+                protein_norm_obsm=self.protein_norm_obsm,
+                protein_raw_obsm=self.protein_obsm
+            )
+            if fixed and fixed in self.adata.obs.columns:
+                ser = self.adata.obs[fixed].astype("category")
+                codes = ser.cat.codes.to_numpy()
+                maskv = codes != -1
+                base = plt.get_cmap("tab20", max(len(ser.cat.categories), 1))
+                plt.figure(figsize=(6, 6))
+                if maskv.any():
+                    sca = plt.scatter(coords[maskv, 0], coords[maskv, 1], c=codes[maskv],
+                                      s=s, alpha=alpha, cmap=base)
+                    cb = plt.colorbar(sca, shrink=0.8)
+                    cb.set_ticks(np.arange(len(ser.cat.categories)))
+                    cb.set_ticklabels(list(ser.cat.categories))
+                if (~maskv).any():
+                    plt.scatter(coords[~maskv, 0], coords[~maskv, 1], c="lightgrey", s=s, alpha=alpha)
+                plt.gca().set_aspect("equal", adjustable="box")
+                plt.title(title); plt.xlabel("x"); plt.ylabel("y")
+                plt.tight_layout(); plt.show()
+                return
+
+            # 2) resolve protein alias to numeric column and plot
+            try:
+                prot_col = resolve_protein_column(
+                    self.adata, color,
+                    self.protein_norm_obsm, self.protein_obsm
+                )
+                for key2 in (self.protein_norm_obsm, self.protein_obsm):
+                    if key2 in self.adata.obsm_keys():
+                        df2 = self.adata.obsm[key2]
+                        if isinstance(df2, pd.DataFrame) and prot_col in df2.columns:
+                            _scatter_num(df2[prot_col].to_numpy(), cmap)
+                            return
+            except Exception:
+                pass
+
+            raise KeyError(f"color '{color}' not found in obs nor obsm protein columns (after alias resolution).")
+
+        # --- numeric array directly ---
         else:
             arr = np.asarray(color)
             _scatter_num(arr, cmap)
@@ -540,7 +605,7 @@ class ProteinMicroEnv:
         pred = self.microenv_predict_from_comp(names_sub, comp, status_col)
 
         root = self.adata.uns.setdefault("protein_microenv", {})
-        key = f"cluster_{cluster_id}__protein_{protein}"
+        key = f"cluster_{cluster_id}__protein_{resolve_protein_column(self.adata, protein, self.protein_norm_obsm, self.protein_obsm)}"
         root[key] = {
             "status_col": status_col,
             "threshold": float(thr),
@@ -571,7 +636,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Protein microenvironment analysis within an RNA cluster.")
     parser.add_argument("--h5ad", required=True, help="AnnData file with RNA + obs/obsm prepared.")
     parser.add_argument("--cluster", required=True, help="Target RNA cluster id to analyze.")
-    parser.add_argument("--protein", required=True, help="Target protein column in obsm[protein/protein_norm].")
+    parser.add_argument("--protein", required=True, help="Target protein token (alias allowed, e.g., 'MKI67', 'PD-1').")
     parser.add_argument("--group-key", default="cluster", help="Grouping key for neighborhood composition (e.g., 'cluster' or 'cell_type').")
     parser.add_argument("--radius", type=float, default=None, help="Neighbor radius (μm). Auto if None.")
     parser.add_argument("--permutations", type=int, default=999)
