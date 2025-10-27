@@ -1,245 +1,394 @@
 # pyXenium/analysis/microenv_analysis.py
-
 from __future__ import annotations
+from typing import Sequence, Optional, Dict, Any
 import os
-import warnings
+import inspect
 import numpy as np
 import pandas as pd
-from scipy.spatial import cKDTree
-from sklearn.mixture import GaussianMixture
 from anndata import AnnData
-from pyXenium.io.xenium_gene_protein_loader import load_xenium_gene_protein
-from pyXenium.analysis import ProteinMicroEnv  # 确保依赖 ProteinMicroEnv 类
-from pyXenium.utils.name_resolver import resolve_protein_column
+
+# 依赖内部 ProteinMicroEnv
+try:
+    from pyXenium.analysis.protein_microenvironment import ProteinMicroEnv
+except Exception as e:
+    raise ImportError(
+        "未能导入 pyXenium.analysis.protein_microenvironment.ProteinMicroEnv，"
+        "请确认该类已包含在包内并可被导入。"
+    ) from e
+
+
+# ---------------------------
+# 工具：方法自适应与存储
+# ---------------------------
+
+def _subset_kwargs_by_signature(func, **kwargs):
+    sig = inspect.signature(func)
+    return {k: v for k, v in kwargs.items() if k in sig.parameters}
+
+def _call_first_available(obj, names: Sequence[str], **kwargs):
+    last = None
+    for nm in names:
+        if hasattr(obj, nm):
+            fn = getattr(obj, nm)
+            try:
+                return fn(**_subset_kwargs_by_signature(fn, **kwargs))
+            except Exception as e:
+                last = e
+    raise RuntimeError(f"尝试的方法均不可用：{names}\n最后错误：{last!r}")
+
+def _protein_df(adata: AnnData) -> pd.DataFrame:
+    prot = adata.obsm.get("protein", None)
+    if prot is None:
+        raise ValueError("当前 AnnData 不包含 obsm['protein']。")
+    if isinstance(prot, pd.DataFrame):
+        return prot
+    # 若不是 DataFrame，则构造列名兜底
+    cols = getattr(prot, "columns", None)
+    if cols is None:
+        cols = [f"p{i}" for i in range(prot.shape[1])]
+    return pd.DataFrame(prot, index=adata.obs_names, columns=cols)
+
+def _normalize_name(s: str) -> str:
+    return s.lower().replace("-", "").replace("_", "").replace(" ", "")
+
+def _resolve_protein_column(adata: AnnData, preferred: Sequence[str]) -> Optional[str]:
+    """
+    在 obsm['protein'].columns 中按同义名/大小写不敏感方式查找最佳列。
+    """
+    prot = _protein_df(adata)
+    norm_cols = {_normalize_name(c): c for c in prot.columns}
+    # 一些常用同义词
+    synonyms = {
+        "cd8": ["cd8", "cd8a"],
+        "cd45": ["cd45", "ptprc", "cd45ra", "cd45rb", "cd45ro"],
+        "cd3": ["cd3", "cd3e", "cd3d"],
+        "panck": ["panck", "pancytokeratin", "pan-cytokeratin", "pan-ck"],
+        "ecadherin": ["ecadherin", "e-cadherin", "ecad"],
+        "epcam": ["epcam"],
+        "alphasma": ["alphasma", "αsma", "alpha-sma", "acta2"],
+        "cd31": ["cd31", "pecam1"],
+    }
+    # 把 preferred 展开成同义词列表
+    cand_norms: list[str] = []
+    for p in preferred:
+        key = _normalize_name(p)
+        # 同义词集合
+        cand_norms.extend(synonyms.get(key, [key]))
+    # 逐个匹配
+    for c in cand_norms:
+        if c in norm_cols:
+            return norm_cols[c]
+    return None
+
+def _guess_transcripts_path(base_path: str) -> str:
+    cands = [
+        os.path.join(base_path, "transcripts.zarr.zip"),
+        os.path.join(base_path, "transcripts.zarr"),
+        os.path.join(base_path, "analysis", "transcripts.zarr.zip"),
+        os.path.join(base_path, "analysis", "transcripts.zarr"),
+    ]
+    for p in cands:
+        if os.path.exists(p):
+            return p
+    # 没找到就返回首选，交由 PM 本身报错
+    return cands[0]
+
+def _pm_init(
+    adata: AnnData,
+    transcripts_path: Optional[str],
+    pixel_size_um: float,
+    qv_threshold: int,
+    verbose: bool = True,
+) -> ProteinMicroEnv:
+    ctor = ProteinMicroEnv
+    kw = dict(
+        adata=adata,
+        transcripts_zarr_path=transcripts_path,
+        pixel_size_um=pixel_size_um,
+        qv_threshold=qv_threshold,
+        auto_detect_cell_units=True,
+        verbose=verbose,
+    )
+    kw = _subset_kwargs_by_signature(ctor, **kw)
+    return ctor(**kw)
+
+def _set_anchors(env: ProteinMicroEnv, anchor_indices: np.ndarray):
+    return _call_first_available(
+        env,
+        ["set_anchor_cells", "set_anchors_from_cells", "set_anchor_indices", "set_anchors"],
+        anchor_indices=np.asarray(anchor_indices, dtype=int),
+        indices=np.asarray(anchor_indices, dtype=int),
+    )
+
+def _set_rings(env: ProteinMicroEnv, ring_edges_um: Sequence[float]):
+    return _call_first_available(
+        env,
+        ["set_neighborhood", "set_rings", "set_neighborhood_rings"],
+        mode="rings",
+        ring_edges_um=list(ring_edges_um),
+        ring_edges=list(ring_edges_um),
+    )
+
+def _compute_gene_stats(
+    env: ProteinMicroEnv,
+    genes: Sequence[str],
+    background: str = "global",
+    area_norm: bool = True,
+    return_long: bool = False,
+):
+    """
+    返回通常是：index=锚点（或条形码），columns=每个 (gene@ring) 的宽表。
+    """
+    candidates = [
+        ("compute_transcript_stats", dict(genes=genes,
+                                          normalize_by_area=area_norm,
+                                          background=background,
+                                          return_long=return_long)),
+        ("compute_gene_density", dict(genes=genes,
+                                      background=background,
+                                      area_normalized=area_norm)),
+        ("compute_transcript_density", dict(genes=genes,
+                                            background=background,
+                                            area_normalized=area_norm)),
+    ]
+    last = None
+    for name, kw in candidates:
+        if hasattr(env, name):
+            try:
+                fn = getattr(env, name)
+                return fn(**_subset_kwargs_by_signature(fn, **kw))
+            except Exception as e:
+                last = e
+    raise RuntimeError(f"ProteinMicroEnv 无可用基因统计接口；最后错误：{last!r}")
+
+def _compute_neighbor_cells(env: ProteinMicroEnv, cell_types: pd.Series, how: str = "fraction"):
+    return _call_first_available(env, ["compute_neighbor_cells", "neighbor_cell_stats"],
+                                 cell_types=cell_types, how=how)
+
+def _store_anchor_df(
+    adata: AnnData,
+    df: pd.DataFrame,
+    anchor_indices: np.ndarray,
+    obsm_key: str,
+    uns_key: str,
+):
+    """
+    存储策略：
+      1) 完整 DataFrame 放到 uns[uns_key]（保留行索引信息）；
+      2) 同步一份到 obsm[obsm_key]：构造 (n_obs × df.shape[1]) 的矩阵，
+         非锚点行填 NaN；行匹配优先按名字对齐，否则按传入的 anchor_indices 顺序放置。
+    """
+    if not isinstance(df, pd.DataFrame):
+        # 尝试包装
+        df = pd.DataFrame(df)
+
+    # 1) 放 uns
+    adata.uns[uns_key] = df.copy()
+
+    # 2) 铺到 obsm（与 obs 对齐）
+    mat = np.full((adata.n_obs, df.shape[1]), np.nan, dtype=float)
+
+    if np.all(np.isin(df.index, adata.obs_names)):
+        row_idx = adata.obs_names.get_indexer(df.index)
+    else:
+        # 行数不一定等于锚点数，这里取两者的 min 并按次序放置
+        n = min(len(anchor_indices), len(df))
+        row_idx = np.asarray(anchor_indices[:n], dtype=int)
+        mat[row_idx, :] = df.iloc[:n, :].to_numpy()
+        adata.obsm[obsm_key] = mat
+        adata.uns[obsm_key + "_cols"] = list(df.columns)
+        return
+
+    mat[row_idx, :] = df.to_numpy()
+    adata.obsm[obsm_key] = mat
+    adata.uns[obsm_key + "_cols"] = list(df.columns)
+
+
+# ---------------------------
+# 免疫微环境
+# ---------------------------
+
+def run_immune_microenvironment(
+    adata: AnnData,
+    base_path: Optional[str] = None,
+    transcripts_path: Optional[str] = None,
+    ring_edges_um: Sequence[float] = (0, 10, 20, 40),
+    pixel_size_um: float = 1.0,
+    qv_threshold: int = 20,
+    genes: Sequence[str] = ("PDCD1", "CTLA4", "CCL5", "CXCL9", "CXCL10"),
+    out_prefix: str = "immune",
+) -> Dict[str, Any]:
+    prot = _protein_df(adata)
+
+    # 锚点：CD8 & CD45（若有 CD3 也可；不存在的自动忽略）
+    col_cd8  = _resolve_protein_column(adata, ["CD8", "CD8A"])
+    col_cd45 = _resolve_protein_column(adata, ["CD45", "PTPRC"])
+    col_cd3  = _resolve_protein_column(adata, ["CD3", "CD3E", "CD3D"])
+
+    markers = [c for c in [col_cd8, col_cd45, col_cd3] if c is not None]
+    if not markers:
+        raise ValueError("找不到用于免疫锚点的蛋白列（CD8/CD45[可选CD3]）。")
+
+    mask = np.ones(adata.n_obs, dtype=bool)
+    for m in markers:
+        mask &= (prot[m].to_numpy(dtype=float) > 0.0)
+    anchor_idx = np.where(mask)[0]
+    adata.obs[f"{out_prefix}_is_anchor"] = False
+    if anchor_idx.size:
+        adata.obs.iloc[anchor_idx, adata.obs.columns.get_loc(f"{out_prefix}_is_anchor")] = True
+
+    # 初始化 ProteinMicroEnv
+    if transcripts_path is None and base_path is not None:
+        transcripts_path = _guess_transcripts_path(base_path)
+    env = _pm_init(adata, transcripts_path, pixel_size_um=pixel_size_um, qv_threshold=qv_threshold)
+
+    # 设置锚点与邻域
+    _set_anchors(env, anchor_idx)
+    _set_rings(env, ring_edges_um)
+
+    # 基因邻域统计（宽表）
+    gene_df = _compute_gene_stats(env, list(genes), background="global", area_norm=True, return_long=False)
+    if isinstance(gene_df, pd.DataFrame):
+        _store_anchor_df(adata, gene_df, anchor_idx,
+                         obsm_key=f"{out_prefix}_gene_stats",
+                         uns_key=f"{out_prefix}_gene_stats")
+
+    # 邻居细胞组成（alphaSMA=CAF；CD31=Endothelial）
+    col_asma = _resolve_protein_column(adata, ["alphaSMA", "ACTA2"])
+    col_cd31 = _resolve_protein_column(adata, ["CD31", "PECAM1"])
+    cell_type = pd.Series("Other", index=adata.obs_names, dtype=object)
+    if col_asma is not None:
+        cell_type.loc[prot[col_asma].to_numpy(dtype=float) > 0.0] = "CAF"
+    if col_cd31 is not None:
+        cell_type.loc[prot[col_cd31].to_numpy(dtype=float) > 0.0] = "Endothelial"
+
+    # how='fraction'：返回各环占比；如果你的 PM 实现支持 how='count'，也可以改成 'count'
+    comp_df = _compute_neighbor_cells(env, cell_type, how="fraction")
+    if isinstance(comp_df, pd.DataFrame):
+        _store_anchor_df(adata, comp_df, anchor_idx,
+                         obsm_key=f"{out_prefix}_neighbor_composition",
+                         uns_key=f"{out_prefix}_neighbor_composition")
+
+    return {"env": env, "anchors": anchor_idx}
+
+
+# ---------------------------
+# 肿瘤-间质边界
+# ---------------------------
+
+def run_tumor_stroma_border(
+    adata: AnnData,
+    base_path: Optional[str] = None,
+    transcripts_path: Optional[str] = None,
+    ring_edges_um: Sequence[float] = (0, 10, 20, 40),
+    pixel_size_um: float = 1.0,
+    qv_threshold: int = 20,
+    ecm_genes: Sequence[str] = ("COL1A1", "COL3A1", "FN1"),
+    out_prefix: str = "tumor_border",
+) -> Dict[str, Any]:
+    prot = _protein_df(adata)
+
+    # 锚点：上皮蛋白（优先 PanCK，其次 E-Cadherin/EPCAM）
+    col_panck = _resolve_protein_column(adata, ["PanCK"])
+    col_ecad  = _resolve_protein_column(adata, ["E-Cadherin", "ECADHERIN", "ECAD"])
+    col_epcam = _resolve_protein_column(adata, ["EPCAM"])
+    anchor_col = next((c for c in [col_panck, col_ecad, col_epcam] if c is not None), None)
+    if anchor_col is None:
+        raise ValueError("找不到用于肿瘤锚点的蛋白列（PanCK/E-Cadherin/EPCAM）。")
+
+    mask = prot[anchor_col].to_numpy(dtype=float) > 0.0
+    anchor_idx = np.where(mask)[0]
+    adata.obs[f"{out_prefix}_is_anchor"] = False
+    if anchor_idx.size:
+        adata.obs.iloc[anchor_idx, adata.obs.columns.get_loc(f"{out_prefix}_is_anchor")] = True
+
+    if transcripts_path is None and base_path is not None:
+        transcripts_path = _guess_transcripts_path(base_path)
+    env = _pm_init(adata, transcripts_path, pixel_size_um=pixel_size_um, qv_threshold=qv_threshold)
+
+    _set_anchors(env, anchor_idx)
+    _set_rings(env, ring_edges_um)
+
+    # 邻居细胞组成：CAF / Endothelial
+    col_asma = _resolve_protein_column(adata, ["alphaSMA", "ACTA2"])
+    col_cd31 = _resolve_protein_column(adata, ["CD31", "PECAM1"])
+    cell_type = pd.Series("Other", index=adata.obs_names, dtype=object)
+    if col_asma is not None:
+        cell_type.loc[prot[col_asma].to_numpy(dtype=float) > 0.0] = "CAF"
+    if col_cd31 is not None:
+        cell_type.loc[prot[col_cd31].to_numpy(dtype=float) > 0.0] = "Endothelial"
+
+    comp_df = _compute_neighbor_cells(env, cell_type, how="fraction")
+    if isinstance(comp_df, pd.DataFrame):
+        _store_anchor_df(adata, comp_df, anchor_idx,
+                         obsm_key=f"{out_prefix}_neighbor_composition",
+                         uns_key=f"{out_prefix}_neighbor_composition")
+
+    # ECM 基因邻域统计
+    ecm_df = _compute_gene_stats(env, list(ecm_genes), background="global", area_norm=True, return_long=False)
+    if isinstance(ecm_df, pd.DataFrame):
+        _store_anchor_df(adata, ecm_df, anchor_idx,
+                         obsm_key=f"{out_prefix}_ecm_gene_stats",
+                         uns_key=f"{out_prefix}_ecm_gene_stats")
+
+    return {"env": env, "anchors": anchor_idx}
+
+
+# ---------------------------
+# 统一入口（Notebook 友好）
+# ---------------------------
 
 def analyze_microenvironment(
     mode: str,
-    adata: AnnData | None = None,
-    base_path: str | None = None,
-    output_dir: str | None = None
+    adata: AnnData,
+    base_path: Optional[str] = None,
+    transcripts_path: Optional[str] = None,
+    ring_edges_um: Sequence[float] = (0, 10, 20, 40),
+    pixel_size_um: float = 1.0,
+    qv_threshold: int = 20,
+    output_dir: Optional[str] = None,
 ) -> AnnData:
     """
-    执行免疫微环境 ('immune') 或肿瘤-间质边界 ('tumor_border') 分析的统一入口函数。
-
-    参数：
-    - mode: 分析模式，'immune' 表示免疫微环境分析，'tumor_border' 表示肿瘤与间质边界分析。
-    - adata: AnnData 对象，包含 Xenium 空间转录组+蛋白数据。如果未提供，则需要提供 base_path 以加载数据。
-    - base_path: Xenium 输出数据的根目录路径。当 adata 未提供时，将从该路径下加载数据。
-    - output_dir: 可选。若提供路径，则将在分析完成后把结果表格导出为 CSV 文件保存到此目录。
-
-    功能：
-    根据指定模式自动筛选“锚点”细胞，并进行空间邻域分析，包括：
-    1. **锚点筛选**：
-       - 模式 'immune': 自动选择免疫细胞作为锚点（优先使用 CD8 标记，如无则使用 CD45）。
-       - 模式 'tumor_border': 自动选择肿瘤细胞作为锚点（优先使用 PanCK 标记，如无则使用 E-Cadherin）。
-       使用 Gaussian 混合模型 (GMM) 对锚点标记的蛋白表达进行双峰拟合，计算阈值，将高于阈值的细胞判定为锚点。
-       对于肿瘤边界模式，会进一步筛选出靠近非肿瘤细胞的肿瘤锚点（即真正位于肿瘤-基质交界处的细胞）。
-    2. **邻域设置**：默认采用同心圆邻域半径 [0, 10, 20, 40] 微米。其中 40μm 视为微环境影响范围。
-       分析时将锚点周围 40μm 半径内的细胞定义为“邻居”群体，并可根据 0–10, 10–20, 20–40μm 不同距离分层计算。
-    3. **基因邻域密度与 Fold-change 分析**：比较“邻居”群体与远端细胞群体的基因表达差异。
-       计算每个基因在邻居细胞中的平均表达密度和在远端细胞中的平均表达密度，并计算二者之比（Fold-change）。
-    4. **邻居细胞类型统计**：统计每个锚点细胞邻域内特定类型细胞的数量，例如标记 alphaSMA⁺（成纤维细胞）和 CD31⁺（内皮细胞）的邻居数量。
-
-    输出：
-    函数直接修改并返回输入的 AnnData：
-    - 对于免疫微环境分析：
-      - 在 `adata.obs` 新增布尔列 `immune_is_anchor`，标记每个细胞是否被选为免疫锚点。
-      - 在 `adata.obsm` 新增 DataFrame `immune_gene_stats`，存储基因在邻居与远端的平均表达及fold-change（行索引为基因）。
-    - 对于肿瘤边界分析：
-      - 在 `adata.obs` 新增布尔列 `tumor_border_is_anchor`，标记每个细胞是否被选为肿瘤边界锚点。
-      - 在 `adata.obsm` 新增 DataFrame `tumor_border_gene_stats`，存储基因在邻居与远端的平均表达及fold-change。
-    - 无论哪种模式，`adata.obs` 将新增列 `neighbors_alphaSMA_count` 与 `neighbors_CD31_count`，
-      其中锚点细胞的该列值为其 40μm 邻域内 alphaSMA⁺ 邻居细胞数和 CD31⁺ 邻居细胞数（非锚点细胞该列为空值）。
-
-    此外，如果提供了 output_dir 参数，将把主要结果导出为 CSV 文件：
-    - `immune_gene_stats.csv` 或 `tumor_border_gene_stats.csv`：基因邻域分析结果表（含基因名称、邻居平均表达、远端平均表达和fold-change）。
-    - `neighbors_counts.csv`：各锚点细胞的 alphaSMA⁺ 和 CD31⁺ 邻居数量统计表。
-
-    注意：
-    - 函数对默认参数友好，旨在 Notebook 中快速调用。大部分参数内部自动处理，如坐标获取、阈值选择等无需用户干预。
-    - 实现上兼容不同版本的 ProteinMicroEnv 工具类（方法名和构造参数自动适配），并利用其中的别名解析等功能。
+    统一入口：执行 'immune' 或 'tumor_border' 分析。
+    - 结果表（按锚点×特征）存到 adata.uns[...]，并铺平到 adata.obsm[...]（非锚点=NaN）。
+    - 锚点布尔标记写入 adata.obs['<prefix>_is_anchor']。
+    - 若 output_dir 指定，会把主要结果另存 CSV。
     """
-    # 参数校验
     mode = mode.lower()
-    if mode not in ("immune", "tumor_border"):
-        raise ValueError("mode 必须为 'immune' 或 'tumor_border'")
-
-    # 若未提供 adata，则尝试根据 base_path 加载 Xenium 数据
-    if adata is None:
-        if base_path is None:
-            raise ValueError("adata 未提供时必须指定 base_path")
-        try:
-            adata = load_xenium_gene_protein(base_path)
-        except Exception as e:
-            raise RuntimeError(f"数据加载失败: {e}")
-
-    # 从 AnnData 获取空间坐标
-    if "spatial" in adata.obsm_keys():
-        coords = np.asarray(adata.obsm["spatial"], dtype=float)
-        if coords.ndim != 2 or coords.shape[1] < 2:
-            raise ValueError("adata.obsm['spatial'] 应为 shape (n_cells, >=2) 的坐标矩阵")
-        coords_xy = coords[:, :2]
-    elif {"x_centroid", "y_centroid"}.issubset(adata.obs.columns):
-        coords_xy = adata.obs.loc[:, ["x_centroid", "y_centroid"]].to_numpy(dtype=float)
-    else:
-        raise KeyError("AnnData 中未找到空间坐标信息（既不存在 obsm['spatial']，也没有 obs['x_centroid','y_centroid'] 列）")
-
-    # 初始化 KDTree 用于邻居查询
-    tree = cKDTree(coords_xy)
-
-    # 标记锚点的布尔掩码数组
-    anchor_mask = np.zeros(adata.n_obs, dtype=bool)
-    # 根据模式确定锚点筛选的蛋白标记候选
     if mode == "immune":
-        anchor_markers = ["CD8", "CD45"]  # 优先 CD8，如缺失则用 CD45
-        anchor_flag_col = "immune_is_anchor"
-    else:  # tumor_border
-        anchor_markers = ["PanCK", "E-Cadherin"]  # 优先 PanCK，如缺失则用 E-Cadherin
-        anchor_flag_col = "tumor_border_is_anchor"
+        res = run_immune_microenvironment(
+            adata=adata, base_path=base_path, transcripts_path=transcripts_path,
+            ring_edges_um=ring_edges_um, pixel_size_um=pixel_size_um, qv_threshold=qv_threshold,
+        )
+        prefix = "immune"
+        keys_to_dump = [
+            f"{prefix}_gene_stats",
+            f"{prefix}_neighbor_composition",
+        ]
+    elif mode == "tumor_border":
+        res = run_tumor_stroma_border(
+            adata=adata, base_path=base_path, transcripts_path=transcripts_path,
+            ring_edges_um=ring_edges_um, pixel_size_um=pixel_size_um, qv_threshold=qv_threshold,
+        )
+        prefix = "tumor_border"
+        keys_to_dump = [
+            f"{prefix}_ecm_gene_stats",
+            f"{prefix}_neighbor_composition",
+        ]
+    else:
+        raise ValueError("mode 必须是 'immune' 或 'tumor_border'。")
 
-    # 尝试对每个候选标记进行锚点筛选
-    for marker in anchor_markers:
-        try:
-            prot_col = resolve_protein_column(adata, marker)
-        except KeyError:
-            continue  # 该标记不在数据中，尝试下一个
-        # 提取该标记的蛋白表达值数组
-        values = adata.obsm["protein"][prot_col].to_numpy(dtype=float)
-        finite_vals = values[np.isfinite(values)]
-        if finite_vals.size == 0:
-            continue
-        # 使用双峰高斯混合模型估计阈值；若失败则退而求其次用中位数
-        try:
-            gmm = GaussianMixture(n_components=2, random_state=0)
-            gmm.fit(finite_vals.reshape(-1, 1))
-            mean1, mean2 = np.sort(gmm.means_.ravel())
-            threshold = float((mean1 + mean2) / 2.0)
-        except Exception:
-            threshold = float(np.nanquantile(finite_vals, 0.5))
-        # 更新锚点掩码：值大于等于阈值的细胞记为 True
-        anchor_mask |= (adata.obsm["protein"][prot_col].to_numpy(dtype=float) >= threshold)
-
-    # 如果模式为肿瘤边界，需要进一步筛选出真正位于边界的锚点
-    if mode == "tumor_border":
-        if anchor_mask.any():
-            border_mask = np.zeros_like(anchor_mask)
-            anchor_indices = np.where(anchor_mask)[0]
-            for idx in anchor_indices:
-                # 查找该锚点在半径40μm内的邻居
-                neighbor_idxs = tree.query_ball_point(coords_xy[idx], r=40.0)
-                if idx in neighbor_idxs:
-                    neighbor_idxs.remove(idx)
-                # 如存在至少一个非锚点邻居，则该锚点位于边界
-                if any(not anchor_mask[j] for j in neighbor_idxs):
-                    border_mask[idx] = True
-            anchor_mask = border_mask  # 仅保留边界锚点
-        else:
-            warnings.warn("未找到任何候选肿瘤锚点细胞，无法进行边界分析。")
-
-    # 将锚点标记写入 AnnData.obs
-    adata.obs[anchor_flag_col] = pd.Series(anchor_mask, index=adata.obs_names, dtype=bool)
-
-    # 确定邻居细胞和远端细胞集合
-    anchor_indices = np.where(anchor_mask)[0]
-    neighbor_set = set()
-    for idx in anchor_indices:
-        # 获取锚点 idx 在 40μm 半径内的所有邻居索引
-        neighbor_idxs = tree.query_ball_point(coords_xy[idx], r=40.0)
-        if idx in neighbor_idxs:
-            neighbor_idxs.remove(idx)
-        for j in neighbor_idxs:
-            # 仅记录非锚点的邻居细胞
-            if j not in anchor_indices:
-                neighbor_set.add(j)
-    neighbor_indices = np.array(sorted(neighbor_set))
-    far_set = set(range(adata.n_obs)) - neighbor_set - set(anchor_indices)
-    far_indices = np.array(sorted(far_set))
-
-    # 若RNA表达矩阵存在，则进行基因邻域差异分析
-    gene_stats_df = None
-    if adata.n_vars > 0:
-        # 提取基因表达矩阵（使用原始counts层）
-        X = adata.layers["rna"] if "rna" in adata.layers else adata.X
-        # 计算邻居组和远端组各基因平均表达
-        if neighbor_indices.size > 0:
-            neighbor_mean = np.asarray(X[neighbor_indices].mean(axis=0)).ravel()
-        else:
-            neighbor_mean = np.zeros(adata.n_vars, dtype=float)
-        if far_indices.size > 0:
-            far_mean = np.asarray(X[far_indices].mean(axis=0)).ravel()
-        else:
-            far_mean = np.zeros(adata.n_vars, dtype=float)
-        # 计算fold-change比值（邻居平均 / 远端平均）
-        with np.errstate(divide='ignore', invalid='ignore'):
-            fold_change = neighbor_mean / far_mean
-        # 将无法计算的情况（如远端均值和邻域均值皆为0）置为 NaN
-        fold_change = np.where(np.isfinite(fold_change), fold_change, np.nan)
-        # 准备结果 DataFrame：基因名称，邻居均值，远端均值，Fold-change
-        gene_names = adata.var.get("name") if "name" in adata.var.columns else adata.var_names
-        gene_stats_df = pd.DataFrame({
-            "neighbor_mean": neighbor_mean,
-            "far_mean": far_mean,
-            "fold_change": fold_change
-        }, index=pd.Index(gene_names, name="gene"))
-        # 根据 fold-change 大小降序排序（忽略 NaN）
-        gene_stats_df.sort_values(by="fold_change", ascending=False, inplace=True, na_position='last')
-        # 将结果存入 AnnData.obsm
-        result_key = "immune_gene_stats" if mode == "immune" else "tumor_border_gene_stats"
-        adata.obsm[result_key] = gene_stats_df
-
-    # 统计每个锚点邻域内 alphaSMA+ 和 CD31+ 邻居数量，结果存入 AnnData.obs
-    # 初始化计数列为 NaN，以便非锚点保持 NaN
-    adata.obs["neighbors_alphaSMA_count"] = np.nan
-    adata.obs["neighbors_CD31_count"] = np.nan
-    for idx in anchor_indices:
-        neighbor_idxs = tree.query_ball_point(coords_xy[idx], r=40.0)
-        if idx in neighbor_idxs:
-            neighbor_idxs.remove(idx)
-        # 统计 alphaSMA 邻居
-        alpha_count = 0
-        try:
-            col_alpha = resolve_protein_column(adata, "alphaSMA")
-        except KeyError:
-            col_alpha = None
-        if col_alpha:
-            for j in neighbor_idxs:
-                # 排除锚点细胞本身，统计邻居中 alphaSMA 蛋白值 >0 的细胞数
-                if not anchor_mask[j]:
-                    val = float(adata.obsm["protein"].iloc[j][col_alpha])
-                    if np.isfinite(val) and val > 0:
-                        alpha_count += 1
-        # 统计 CD31 邻居
-        cd31_count = 0
-        try:
-            col_cd31 = resolve_protein_column(adata, "CD31")
-        except KeyError:
-            col_cd31 = None
-        if col_cd31:
-            for j in neighbor_idxs:
-                if not anchor_mask[j]:
-                    val = float(adata.obsm["protein"].iloc[j][col_cd31])
-                    if np.isfinite(val) and val > 0:
-                        cd31_count += 1
-        # 写入该锚点的统计结果
-        cell_name = adata.obs_names[idx]
-        adata.obs.at[cell_name, "neighbors_alphaSMA_count"] = alpha_count
-        adata.obs.at[cell_name, "neighbors_CD31_count"] = cd31_count
-
-    # 如指定了输出目录，则将结果数据表保存为 CSV 文件
-    if output_dir is not None:
+    # 可选把 uns 表格另存 CSV
+    if output_dir:
         os.makedirs(output_dir, exist_ok=True)
-        # 基因差异分析结果
-        if gene_stats_df is not None:
-            out_path = os.path.join(
-                output_dir,
-                "immune_gene_stats.csv" if mode == "immune" else "tumor_border_gene_stats.csv"
-            )
-            gene_stats_df.to_csv(out_path)
-        # 邻居细胞类型计数结果
-        # 导出所有锚点的 alphaSMA/CD31 邻居计数（只导出锚点行，以免输出大量 NaN）
-        anchor_obs = adata.obs.loc[adata.obs[anchor_flag_col] == True,
-                                   ["neighbors_alphaSMA_count", "neighbors_CD31_count"]]
-        if not anchor_obs.empty:
-            anchor_obs.to_csv(os.path.join(output_dir, "neighbors_counts.csv"))
+        for k in keys_to_dump:
+            df = adata.uns.get(k, None)
+            if isinstance(df, pd.DataFrame):
+                df.to_csv(os.path.join(output_dir, f"{k}.csv"))
+        # 同时保存锚点名单
+        anchors = res.get("anchors", np.array([], dtype=int))
+        pd.Series(adata.obs_names[anchors]).to_csv(
+            os.path.join(output_dir, f"{prefix}_anchors.csv"), index=False, header=False
+        )
 
     return adata
