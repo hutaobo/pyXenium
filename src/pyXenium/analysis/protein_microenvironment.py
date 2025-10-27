@@ -343,6 +343,7 @@ class ProteinMicroEnv:
         if len(frac_cols) == 0:
             return pd.DataFrame(columns=["neighbor_type", "delta_frac_high_minus_low", "z_score", "p_value", "q_value"])
 
+        # 提取标签和特征矩阵
         y = self.adata.obs.loc[focus_index, protein_status_col].astype(str)
         mask = y.isin(["protein_high", "protein_low"])
         y = y[mask].to_numpy()
@@ -353,26 +354,39 @@ class ProteinMicroEnv:
             warnings.warn("One of the groups (high/low) is empty after filtering; skipping enrichment.")
             return pd.DataFrame(columns=["neighbor_type", "delta_frac_high_minus_low", "z_score", "p_value", "q_value"])
 
+        # 观测到的邻居比例差异
         diff_obs = X.loc[is_high, :].mean(axis=0) - X.loc[~is_high, :].mean(axis=0)
 
+        # 置换检验
         rng = np.random.default_rng(random_state)
         perm = np.zeros((permutations, X.shape[1]), dtype=float)
         for b in range(permutations):
             yp = rng.permutation(is_high)
             perm[b, :] = X.loc[yp, :].mean(axis=0).to_numpy() - X.loc[~yp, :].mean(axis=0).to_numpy()
 
-        mu = perm.mean(axis=0); sd = perm.std(axis=0, ddof=1) + 1e-9
+        # 计算Z分数和双侧p值
+        mu = perm.mean(axis=0)
+        sd = perm.std(axis=0, ddof=1) + 1e-9
         z = (diff_obs.to_numpy() - mu) / sd
         p = np.mean(np.abs(perm - mu) >= np.abs(diff_obs.to_numpy() - mu), axis=0)
         _, q, _, _ = multipletests(p, method="fdr_bh")
 
+        # 计算95%置信区间（CI）
+        ci_lower = np.percentile(perm, 2.5, axis=0)
+        ci_upper = np.percentile(perm, 97.5, axis=0)
+
+        # 汇总结果
         out = pd.DataFrame({
             "neighbor_type": [c.replace("nbr_frac:", "") for c in X.columns],
             "delta_frac_high_minus_low": diff_obs.values,
             "z_score": z,
             "p_value": p,
-            "q_value": q
-        }).sort_values("q_value")
+            "q_value": q,
+            "ci_lower": ci_lower,
+            "ci_upper": ci_upper
+        })
+        # 按显著性排序
+        out = out.sort_values("q_value").reset_index(drop=True)
         return out
 
     def microenv_predict_from_comp(self,
