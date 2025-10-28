@@ -24,7 +24,7 @@ Large-scale notes
   hundreds of thousands of cells. The intra-cluster adjacency (CSR) is only used for Moran's I on a subset.
 
 Author: (c) 2025
-License: MIT
+License: All rights reserved.
 """
 
 from __future__ import annotations
@@ -55,7 +55,6 @@ from pyXenium.utils.name_resolver import (
     resolve_status_col_name,
 )
 
-
 # ---------------------------------------------------------------------
 # Utilities
 # ---------------------------------------------------------------------
@@ -74,17 +73,14 @@ def _get_coords(adata: ad.AnnData,
         return adata.obs.loc[:, [xk, yk]].to_numpy(dtype=float)
     raise KeyError(f"Cannot find spatial coords in obsm['{prefer_obsm}'] nor obs[{xk},{yk}].")
 
-
 def _clr(mat: np.ndarray, eps: float = 1e-6) -> np.ndarray:
     """Centered log-ratio per row."""
     mat = np.asarray(mat, dtype=float) + eps
     logm = np.log(mat)
     return logm - logm.mean(axis=1, keepdims=True)
 
-
 def _arcsinh(mat: np.ndarray, cofactor: float = 5.0) -> np.ndarray:
     return np.arcsinh(np.asarray(mat, dtype=float) / cofactor)
-
 
 def _auto_radius(coords: np.ndarray, k: int = 8, factor: float = 1.5, max_n: int = 200_000) -> float:
     """
@@ -106,7 +102,6 @@ def _auto_radius(coords: np.ndarray, k: int = 8, factor: float = 1.5, max_n: int
     kth = d[:, min(k, d.shape[1] - 1)]
     return float(np.median(kth) * factor)
 
-
 def _build_radius_graph(coords: np.ndarray, radius: float) -> sp.csr_matrix:
     """Symmetric binary adjacency within radius on a *given subset* (for Moran's I)."""
     tree = cKDTree(coords)
@@ -123,7 +118,6 @@ def _build_radius_graph(coords: np.ndarray, radius: float) -> sp.csr_matrix:
     A = sp.csr_matrix((data, (rows, cols)), shape=(coords.shape[0], coords.shape[0]))
     A = ((A + A.T) > 0).astype(np.float32)
     return A
-
 
 def _morans_I(values: np.ndarray, W: sp.csr_matrix, permutations: int = 999, random_state: int = 0) -> Dict[str, float]:
     """
@@ -151,7 +145,6 @@ def _morans_I(values: np.ndarray, W: sp.csr_matrix, permutations: int = 999, ran
     p = (np.sum(np.abs(perm) >= np.abs(I)) + 1) / (permutations + 1)
     return {"I": float(I), "p_value": float(p)}
 
-
 def _gmm_threshold(x: np.ndarray, random_state: int = 0) -> float:
     """Two-component GMM threshold = mean(midpoint) of two component means."""
     x = np.asarray(x, dtype=float)
@@ -163,7 +156,6 @@ def _gmm_threshold(x: np.ndarray, random_state: int = 0) -> float:
     m1, m2 = np.sort(gmm.means_.ravel())
     return float((m1 + m2) / 2.0)
 
-
 def _labels_and_categories(adata: ad.AnnData, group_key: str) -> Tuple[np.ndarray, List[str]]:
     """Return integer labels and category list for obs[group_key]."""
     ser = adata.obs[group_key].astype(str)
@@ -171,7 +163,6 @@ def _labels_and_categories(adata: ad.AnnData, group_key: str) -> Tuple[np.ndarra
     mp = {c: i for i, c in enumerate(cats)}
     lab = ser.map(mp).to_numpy()
     return lab, cats
-
 
 # ---------------------------------------------------------------------
 # Core class
@@ -343,7 +334,7 @@ class ProteinMicroEnv:
         if len(frac_cols) == 0:
             return pd.DataFrame(columns=["neighbor_type", "delta_frac_high_minus_low", "z_score", "p_value", "q_value"])
 
-        # 提取标签和特征矩阵
+        # Extract labels and feature matrix
         y = self.adata.obs.loc[focus_index, protein_status_col].astype(str)
         mask = y.isin(["protein_high", "protein_low"])
         y = y[mask].to_numpy()
@@ -354,28 +345,28 @@ class ProteinMicroEnv:
             warnings.warn("One of the groups (high/low) is empty after filtering; skipping enrichment.")
             return pd.DataFrame(columns=["neighbor_type", "delta_frac_high_minus_low", "z_score", "p_value", "q_value"])
 
-        # 观测到的邻居比例差异
+        # Observed difference in neighbor proportions
         diff_obs = X.loc[is_high, :].mean(axis=0) - X.loc[~is_high, :].mean(axis=0)
 
-        # 置换检验
+        # Permutation test
         rng = np.random.default_rng(random_state)
         perm = np.zeros((permutations, X.shape[1]), dtype=float)
         for b in range(permutations):
             yp = rng.permutation(is_high)
             perm[b, :] = X.loc[yp, :].mean(axis=0).to_numpy() - X.loc[~yp, :].mean(axis=0).to_numpy()
 
-        # 计算Z分数和双侧p值
+        # Calculate Z-scores and two-sided p-values
         mu = perm.mean(axis=0)
         sd = perm.std(axis=0, ddof=1) + 1e-9
         z = (diff_obs.to_numpy() - mu) / sd
         p = np.mean(np.abs(perm - mu) >= np.abs(diff_obs.to_numpy() - mu), axis=0)
         _, q, _, _ = multipletests(p, method="fdr_bh")
 
-        # 计算95%置信区间（CI）
+        # Calculate 95% confidence interval (CI)
         ci_lower = np.percentile(perm, 2.5, axis=0)
         ci_upper = np.percentile(perm, 97.5, axis=0)
 
-        # 汇总结果
+        # Summarize results
         out = pd.DataFrame({
             "neighbor_type": [c.replace("nbr_frac:", "") for c in X.columns],
             "delta_frac_high_minus_low": diff_obs.values,
@@ -385,7 +376,7 @@ class ProteinMicroEnv:
             "ci_lower": ci_lower,
             "ci_upper": ci_upper
         })
-        # 按显著性排序
+        # Sort by significance
         out = out.sort_values("q_value").reset_index(drop=True)
         return out
 
@@ -640,7 +631,6 @@ class ProteinMicroEnv:
             pred["coef"].to_csv(os.path.join(save_dir, f"microenv_predict_coef_cluster{cluster_id}_{protein}.csv"), index=False)
 
         return root[key]
-
 
 # ---------------------------------------------------------------------
 # (Optional) CLI for quick batch usage
