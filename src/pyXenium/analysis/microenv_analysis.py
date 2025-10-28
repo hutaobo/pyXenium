@@ -71,7 +71,7 @@ def _resolve_protein_column(adata: AnnData, preferred: Sequence[str]) -> Optiona
     cand_norms: list[str] = []
     for p in preferred:
         key = _normalize_name(p)
-        # Synonym
+        # Synonym set
         cand_norms.extend(synonyms.get(key, [key]))
     # Match one by one
     for c in cand_norms:
