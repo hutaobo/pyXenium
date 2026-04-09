@@ -51,6 +51,14 @@ Validation summary from a local download of the public bundle:
 - In the downloaded bundle used for validation, `metrics_summary.csv` reports `num_cells_detected=465545`,
   and pyXenium reproduced that value from both supported matrix backends.
 
+An executable smoke-test example is included in
+`examples/smoke_test_10x_renal_ffpe_protein.py`.
+
+```bash
+python examples/smoke_test_10x_renal_ffpe_protein.py \
+  "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein"
+```
+
 Quick Start
 -----------
 
