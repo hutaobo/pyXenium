@@ -59,6 +59,22 @@ python examples/smoke_test_10x_renal_ffpe_protein.py \
   "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein"
 ```
 
+To also write a compact Markdown/JSON/CSV report bundle:
+
+```bash
+python examples/smoke_test_10x_renal_ffpe_protein.py \
+  "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein" \
+  --output-dir ./smoke_test_outputs
+```
+
+To export the loaded object for downstream analysis:
+
+```bash
+python examples/smoke_test_10x_renal_ffpe_protein.py \
+  "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein" \
+  --write-h5ad ./renal_ffpe_protein.h5ad
+```
+
 Quick Start
 -----------
 
