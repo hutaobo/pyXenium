@@ -4,8 +4,6 @@ pyXenium
 pyXenium is a Python library for loading and analyzing **10x Genomics Xenium** in‑situ outputs.
 It supports **robust partial loading** of incomplete exports and provides utilities for **multi‑modal (RNA + Protein)** runs.
 
-Version: 0.1.1
-
 ---
 
 Features
@@ -20,15 +18,38 @@ Features
 
 Installation
 ------------
-The package is organized as a standard `src/` layout. Until a PyPI release is available, install from source or Git:
+Install from PyPI or directly from GitHub:
 
 ```bash
+# From PyPI
+pip install pyXenium
+
 # From GitHub (source)
 pip install "git+https://github.com/hutaobo/pyXenium.git"
 ```
 
 Requirements (typical): Python 3.9+; `anndata`, `numpy`, `pandas`, `scipy`, `zarr`, `fsspec`, `matplotlib`, `scikit-learn`, `click`.
 (Exact dependencies follow the project configuration and imports.)
+
+Validated Public Dataset
+------------------------
+pyXenium has been smoke-tested against the official 10x Genomics dataset
+`Xenium In Situ Gene and Protein Expression data for FFPE Human Renal Cell Carcinoma`:
+
+- Source page: https://www.10xgenomics.com/datasets/xenium-protein-ffpe-human-renal-carcinoma
+- Provider: 10x Genomics
+- Modality: Xenium RNA + Protein
+- Software: Xenium Onboard Analysis 4.0.0
+- Upstream data license: CC BY 4.0
+
+Validation summary from a local download of the public bundle:
+
+- `load_xenium_gene_protein(..., prefer="auto")` loaded the Zarr-backed dataset successfully.
+- `load_xenium_gene_protein(..., prefer="h5")` loaded the HDF5-backed dataset successfully.
+- The validated bundle produced an `AnnData` with `465545` cells, `405` RNA features,
+  `27` protein markers, spatial centroids in `adata.obsm["spatial"]`, and merged cluster labels in `adata.obs["cluster"]`.
+- In the downloaded bundle used for validation, `metrics_summary.csv` reports `num_cells_detected=465545`,
+  and pyXenium reproduced that value from both supported matrix backends.
 
 Quick Start
 -----------
@@ -202,7 +223,7 @@ rna_protein_cluster_analysis(
 Command‑line
 ------------
 
-A small CLI is provided via `python -m pyXenium` (requires `click`).
+A small CLI is provided via `python -m pyXenium` or the installed `pyxenium` command.
 
 ```bash
 # Print a quick sanity check on the toy dataset
@@ -210,6 +231,9 @@ python -m pyXenium demo
 
 # Fetch a toy dataset to a cache directory
 python -m pyXenium datasets --name toy_slide --dest ~/.cache/pyXenium
+
+# Equivalent console script
+pyxenium demo
 ```
 
 Data layout expectations
@@ -244,4 +268,9 @@ If this toolkit helps your work, please cite the project and the 10x Genomics Xe
 
 License
 -------
-All rights reserved by the author.
+Copyright (c) 2025 Taobo Hu. All rights reserved.
+
+This project is source-available, not open source. You may use, modify, and
+redistribute it only for non-commercial purposes under the terms of the
+[LICENSE](LICENSE) file. Commercial use requires prior written permission from
+the copyright holder.

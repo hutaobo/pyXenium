@@ -1,3 +1,43 @@
-All rights reserved by the authors.
+pyXenium Non-Commercial License
 
-Copyright (c) 2025
+Copyright (c) 2025 Taobo Hu. All rights reserved.
+
+This software and associated documentation files (the "Software") are
+proprietary and are licensed, not sold.
+
+Permission is granted to use, reproduce, modify, and redistribute the Software
+solely for non-commercial purposes, subject to the following conditions:
+
+1. You must retain this license text, copyright notice, and all existing
+   attribution notices in any copy of the Software or substantial portion of
+   the Software.
+2. Any modified version that you share must be clearly marked as modified.
+3. You may not use the Software, or any derivative work of the Software, for
+   any commercial purpose without prior written permission from Taobo Hu.
+4. You may not sublicense or impose terms that expand the permissions granted
+   by this license.
+5. No trademark, patent, or other intellectual property rights are granted
+   except for the limited copyright license expressly stated here.
+
+For purposes of this license, "commercial purpose" includes any use that is
+primarily intended for or directed toward commercial advantage or monetary
+compensation. Commercial purpose includes, without limitation:
+
+- selling, licensing, sublicensing, or distributing the Software for a fee;
+- providing the Software, or a service substantially based on the Software, to
+  third parties for a fee or other commercial benefit;
+- using the Software to operate, support, or develop a product or service that
+  is sold, licensed, hosted, or otherwise commercialized;
+- internal use by or for a for-profit entity in connection with revenue-
+  generating activity, client work, consulting, or managed services.
+
+If you need commercial rights, you must obtain prior written permission from
+the copyright holder.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. IN NO EVENT
+SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES,
+OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE,
+ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.

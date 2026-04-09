@@ -8,7 +8,8 @@ version = "0.1.0"
 description = "A toy Python package for analyzing 10x Xenium data."
 readme = "README.md"
 requires-python = ">=3.8"
-license = { text = "MIT" }
+license = "LicenseRef-Proprietary-NonCommercial"
+license-files = ["LICENSE"]
 authors = [{ name = "Taobo Hu" }]
 
 # 运行时依赖（按你项目真实需要填写；示例）
@@ -22,7 +23,11 @@ dependencies = [
   "fsspec>=2024.6.0",
   "requests>=2.31",
   "aiohttp",
+  "click>=8.1",
 ]
+
+[project.scripts]
+pyxenium = "pyXenium.__main__:main"
 
 [project.optional-dependencies]
 # ★ 新增：CI 里用到的 .[dev]（pytest、构建/发布、文档等常见开发依赖）
@@ -38,6 +43,13 @@ dev = [
 [tool.setuptools]
 # ★ 明确 src 布局
 package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.package-data]
+pyXenium = [
+  "config/*.yaml",
+  "datasets/toy_slide/*.zip",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
