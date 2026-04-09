@@ -54,6 +54,13 @@ Validation summary from a local download of the public bundle:
 An executable smoke-test example is included in
 `examples/smoke_test_10x_renal_ffpe_protein.py`.
 
+After installing the package, the same workflow is also available as a CLI command:
+
+```bash
+pyxenium validate-renal-ffpe-protein \
+  "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein"
+```
+
 ```bash
 python examples/smoke_test_10x_renal_ffpe_protein.py \
   "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein"
@@ -62,7 +69,7 @@ python examples/smoke_test_10x_renal_ffpe_protein.py \
 To also write a compact Markdown/JSON/CSV report bundle:
 
 ```bash
-python examples/smoke_test_10x_renal_ffpe_protein.py \
+pyxenium validate-renal-ffpe-protein \
   "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein" \
   --output-dir ./smoke_test_outputs
 ```
@@ -70,7 +77,7 @@ python examples/smoke_test_10x_renal_ffpe_protein.py \
 To export the loaded object for downstream analysis:
 
 ```bash
-python examples/smoke_test_10x_renal_ffpe_protein.py \
+pyxenium validate-renal-ffpe-protein \
   "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein" \
   --write-h5ad ./renal_ffpe_protein.h5ad
 ```
