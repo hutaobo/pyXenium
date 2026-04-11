@@ -82,6 +82,54 @@ pyxenium validate-renal-ffpe-protein \
   --write-h5ad ./renal_ffpe_protein.h5ad
 ```
 
+Spatial Immune-Resistance Pilot
+-------------------------------
+
+pyXenium also includes a pilot workflow for discovery-stage spatial
+RNA + protein immune-resistance analysis on Xenium datasets. The workflow:
+
+- annotates hierarchical joint RNA/protein classes and cell states
+- computes marker-, state-, and pathway-level RNA/protein discordance
+- builds local spatial niches from neighbourhood composition
+- scores decoupled RNA-only, protein-only, joint, and leave-one-axis-out immune-resistance programs
+- extracts ROI patches, top hypotheses, and figure-ready artifact bundles
+
+Run the public renal FFPE example with:
+
+```bash
+pyxenium renal-immune-resistance-pilot \
+  "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein" \
+  --output-dir ./renal_immune_resistance_outputs
+```
+
+To write a fixed naming manuscript bundle:
+
+```bash
+pyxenium renal-immune-resistance-pilot \
+  "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein" \
+  --manuscript-mode
+```
+
+The repository also ships a matching example script:
+
+```bash
+python examples/renal_immune_resistance_pilot.py \
+  "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein" \
+  --output-dir ./renal_immune_resistance_outputs
+```
+
+Typical outputs include `summary.json`, `report.md`, `joint_cell_states.csv`,
+`joint_cell_classes.csv`, `marker_discordance.csv`, `pathway_discordance.csv`,
+`spatial_niches.csv`, `branch_summary.csv`, `ablation_summary.csv`,
+`marker_neighborhood_enrichment.csv`, `roi_scores.csv`, `roi_resistant_patches.csv`,
+`roi_control_patches.csv`, `top_hypotheses.csv`, `cohort_metadata_spec.csv`,
+`panel_gap_recommendations.csv`, and a `figures/` directory with:
+
+- `state_map.png`
+- `niche_map.png`
+- `top_marker_discordance_map.png`
+- `roi_panel_summary.png`
+
 Quick Start
 -----------
 
