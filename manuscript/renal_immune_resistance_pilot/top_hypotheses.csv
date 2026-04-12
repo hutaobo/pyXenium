@@ -1,0 +1,3 @@
+branch,hypothesis,best_model,benchmark_score,held_out_auc,spatial_coherence,roi_reproducibility,key_marker,key_gene,marker_target_correlation,suggested_validation
+epithelial_emt_front,Checkpoint-active myeloid enrichment at EMT transition fronts,emt_only,0.6643161154443801,0.6842331159954811,0.5665561435496891,0.5495985667838896,PanCK,EPCAM,0.18366988783638155,"mIF/RNAscope for PanCK, Vimentin, alphaSMA, and checkpoint-active myeloid markers at EMT transition fronts."
+myeloid_vascular,Perivascular immune-resistance belt,vascular_only,0.6524378118488082,0.5438159779873261,0.5986651282797075,0.6519618239660657,CD163,CD163,0.11769469459447142,"mIF/IHC for CD68 or CD163 with CD31 and alphaSMA, plus VISTA or HLA-DR at perivascular belts."

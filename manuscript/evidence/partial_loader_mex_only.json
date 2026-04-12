@@ -1,0 +1,29 @@
+{
+  "shape": [
+    465545,
+    543
+  ],
+  "layers": [
+    "counts"
+  ],
+  "has_spatial": false,
+  "has_cluster": false,
+  "uns_keys": [
+    "io"
+  ],
+  "var_columns": [
+    "feature_id",
+    "feature_name",
+    "feature_type",
+    "feature_types",
+    "total_counts"
+  ],
+  "feature_type_counts": {
+    "Gene Expression": 405,
+    "Negative Control Codeword": 41,
+    "Unassigned Codeword": 35,
+    "Protein Expression": 27,
+    "Negative Control Probe": 20,
+    "Genomic Control": 15
+  }
+}

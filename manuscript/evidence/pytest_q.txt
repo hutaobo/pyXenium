@@ -1,0 +1,8 @@
+......                                                                   [100%]
+============================== warnings summary ===============================
+C:\Users\taobo.hu\AppData\Local\miniconda3\Lib\site-packages\anndata\_settings.py:16
+  C:\Users\taobo.hu\AppData\Local\miniconda3\Lib\site-packages\anndata\_settings.py:16: DeprecationWarning: anndata will no longer support zarr v2 in the near future. Please prepare to upgrade to zarr>=3.
+    from .compat import is_zarr_v2, old_positionals
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 passed, 1 warning in 5.77s

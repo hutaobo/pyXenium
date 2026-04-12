@@ -1,0 +1,57 @@
+{
+  "shape": [
+    465545,
+    405
+  ],
+  "layers": [
+    "rna"
+  ],
+  "obsm_keys": [
+    "protein",
+    "spatial"
+  ],
+  "uns_keys_subset": [
+    "cell_boundaries",
+    "modality",
+    "nucleus_boundaries"
+  ],
+  "obs_columns_sample": [
+    "x_centroid",
+    "y_centroid",
+    "transcript_counts",
+    "control_probe_counts",
+    "genomic_control_counts",
+    "control_codeword_counts",
+    "unassigned_codeword_counts",
+    "deprecated_codeword_counts",
+    "total_counts",
+    "cell_area",
+    "nucleus_area",
+    "nucleus_count"
+  ],
+  "has_cluster": true,
+  "cluster_dtype": "category",
+  "protein_columns_sample": [
+    "PD-1",
+    "VISTA",
+    "PD-L1",
+    "LAG-3",
+    "CD16",
+    "GranzymeB",
+    "CD163",
+    "CD4"
+  ],
+  "spatial_shape": [
+    465545,
+    2
+  ],
+  "modality_uns": {
+    "rna": {
+      "feature_type": "Gene Expression"
+    },
+    "protein": {
+      "feature_type": "Protein Expression",
+      "value": "scaled_mean_intensity"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+field,type,description
+sample_id,string,Stable sample identifier across assays.
+tumor_subtype,string,Histologic or molecular renal cancer subtype.
+anatomic_site,string,"Primary site, metastasis, or thrombus origin."
+grade_stage,string,Grade/stage or other malignancy severity descriptor.
+therapy_exposure,string,"Pretreatment, on-treatment, post-treatment, or therapy-naive."
+ici_response,string,Response category for immunotherapy when available.
+pfs_os,string,Progression-free or overall survival linkage field.
+block_roi_id,string,FFPE block identifier and ROI identity.

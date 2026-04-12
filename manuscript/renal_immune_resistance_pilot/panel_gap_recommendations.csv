@@ -1,0 +1,12 @@
+marker_or_axis,domain,rationale
+SPP1,myeloid,TAM polarization and SPP1-CD44 resistance axis.
+CD44,tumor_stromal,Ligand partner for SPP1-linked resistance states.
+TREM2,myeloid,Suppressive macrophage state refinement.
+CXCL13,lymphoid,TLS-like and B-cell attracting programs.
+FAP,stromal,Activated fibroblast and invasive front context.
+FOXP3,immune,Regulatory T-cell context.
+TIGIT,immune,Checkpoint exhaustion refinement.
+TIM3,immune,Checkpoint exhaustion refinement.
+B2M/HLA-I,tumor_immune,Antigen-presentation loss.
+VEGFA/KDR/FLT1,vascular,Angiogenic signaling specificity.
+COL4A1/COL4A2,matrix,Perivascular collagen belt context.

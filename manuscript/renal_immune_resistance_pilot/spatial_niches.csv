@@ -1,0 +1,5 @@
+niche,n_cells,mean_score,mean_margin
+immune_rich,153448,0.5045023,0.14628121
+epithelial_emt_front,63215,0.35117194,0.21876666
+myeloid_vascular,77636,0.30194953,0.16871624
+mixed_low_signal,171246,0.19149958,0.08766308

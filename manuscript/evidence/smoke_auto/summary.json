@@ -1,0 +1,101 @@
+{
+  "summary": {
+    "dataset_title": "Xenium In Situ Gene and Protein Expression data for FFPE Human Renal Cell Carcinoma",
+    "dataset_url": "https://www.10xgenomics.com/datasets/xenium-protein-ffpe-human-renal-carcinoma",
+    "base_path": "Y:/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein",
+    "prefer": "auto",
+    "n_cells": 465545,
+    "n_rna_features": 405,
+    "n_protein_markers": 27,
+    "x_nnz": 16454170,
+    "has_spatial": true,
+    "has_cluster": true,
+    "obsm_keys": [
+      "protein",
+      "spatial"
+    ],
+    "metrics_summary_num_cells_detected": 465545,
+    "top_rna_features_by_total_counts": [
+      {
+        "feature": "VIM",
+        "detected_cells": 438708,
+        "total_counts": 9627261.0
+      },
+      {
+        "feature": "HLA-DRA",
+        "detected_cells": 382120,
+        "total_counts": 3621954.0
+      },
+      {
+        "feature": "HLA-DRB1",
+        "detected_cells": 278995,
+        "total_counts": 980650.0
+      },
+      {
+        "feature": "CXCL6",
+        "detected_cells": 128336,
+        "total_counts": 963037.0
+      },
+      {
+        "feature": "FCGR3A",
+        "detected_cells": 213534,
+        "total_counts": 943799.0
+      }
+    ],
+    "top_protein_markers_by_mean_signal": [
+      {
+        "marker": "Vimentin",
+        "mean_signal": 234.76998901367188,
+        "positive_cells": 455851
+      },
+      {
+        "marker": "CD45",
+        "mean_signal": 206.9364776611328,
+        "positive_cells": 446921
+      },
+      {
+        "marker": "PTEN",
+        "mean_signal": 149.33535766601562,
+        "positive_cells": 464946
+      },
+      {
+        "marker": "CD3E",
+        "mean_signal": 142.478271484375,
+        "positive_cells": 285619
+      },
+      {
+        "marker": "CD68",
+        "mean_signal": 120.7366714477539,
+        "positive_cells": 244801
+      }
+    ],
+    "largest_clusters": [
+      {
+        "cluster": "1",
+        "n_cells": 87757
+      },
+      {
+        "cluster": "2",
+        "n_cells": 67261
+      },
+      {
+        "cluster": "3",
+        "n_cells": 59896
+      },
+      {
+        "cluster": "4",
+        "n_cells": 53975
+      },
+      {
+        "cluster": "5",
+        "n_cells": 35331
+      }
+    ]
+  },
+  "validated_reference": {
+    "expected_cells": 465545,
+    "expected_rna_features": 405,
+    "expected_protein_markers": 27
+  },
+  "issues": []
+}

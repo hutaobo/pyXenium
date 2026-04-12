@@ -1,0 +1,228 @@
+{
+  "sample_id": "renal_ffpe_public_10x",
+  "dataset_title": "Xenium In Situ Gene and Protein Expression data for FFPE Human Renal Cell Carcinoma",
+  "dataset_url": "https://www.10xgenomics.com/datasets/xenium-protein-ffpe-human-renal-carcinoma",
+  "base_path": "Y:\\long\\10X_datasets\\Xenium\\Xenium_Renal\\Xenium_V1_Human_Kidney_FFPE_Protein",
+  "prefer": "auto",
+  "n_cells": 465545,
+  "n_rna_features": 405,
+  "n_protein_markers": 27,
+  "resistant_niches": [
+    "myeloid_vascular",
+    "epithelial_emt_front"
+  ],
+  "sample_summary": {
+    "n_cells": 465545,
+    "fraction_resistant_niche_cells": 0.3025507738242275,
+    "mean_rna_only": -0.10213911533355713,
+    "mean_protein_only": 0.06795245409011841,
+    "mean_joint_activity": -0.01709333248436451,
+    "mean_discordance_burden": 0.7012186050415039,
+    "top_niche_by_joint_score": "epithelial_emt_front",
+    "best_model__myeloid_vascular": "vascular_only",
+    "benchmark_score__myeloid_vascular": 0.6524378118488082,
+    "best_model__epithelial_emt_front": "emt_only",
+    "benchmark_score__epithelial_emt_front": 0.6643161154443801
+  },
+  "joint_cell_classes": [
+    {
+      "class": "stromal",
+      "n_cells": 182783
+    },
+    {
+      "class": "immune",
+      "n_cells": 128563
+    },
+    {
+      "class": "tumor",
+      "n_cells": 97202
+    },
+    {
+      "class": "unassigned",
+      "n_cells": 56997
+    }
+  ],
+  "joint_cell_states": [
+    {
+      "state": "endothelial_perivascular",
+      "n_cells": 182783
+    },
+    {
+      "state": "unassigned",
+      "n_cells": 64919
+    },
+    {
+      "state": "tumor_epithelial",
+      "n_cells": 47704
+    },
+    {
+      "state": "emt_like_tumor",
+      "n_cells": 45017
+    },
+    {
+      "state": "t_cell_exhausted_cytotoxic",
+      "n_cells": 41864
+    },
+    {
+      "state": "macrophage_like",
+      "n_cells": 41765
+    }
+  ],
+  "top_marker_discordance": [
+    {
+      "label": "alpha_sma",
+      "protein": "alphaSMA",
+      "gene": "ACTA2",
+      "mean_signed_discordance": 0.8514541983604431,
+      "mean_abs_discordance": 1.4604041576385498,
+      "protein_rna_correlation": 0.24057118032217234
+    },
+    {
+      "label": "vimentin",
+      "protein": "Vimentin",
+      "gene": "VIM",
+      "mean_signed_discordance": 0.2943122982978821,
+      "mean_abs_discordance": 1.3483577966690063,
+      "protein_rna_correlation": 0.23423659787404805
+    },
+    {
+      "label": "e_cadherin",
+      "protein": "E-Cadherin",
+      "gene": "CDH1",
+      "mean_signed_discordance": -0.3815441429615021,
+      "mean_abs_discordance": 1.1603587865829468,
+      "protein_rna_correlation": 0.012076920663170017
+    },
+    {
+      "label": "hla_dr",
+      "protein": "HLA-DR",
+      "gene": "HLA-DRA",
+      "mean_signed_discordance": 0.4475353956222534,
+      "mean_abs_discordance": 1.1139249801635742,
+      "protein_rna_correlation": 0.5431098714122176
+    },
+    {
+      "label": "vista",
+      "protein": "VISTA",
+      "gene": "VSIR",
+      "mean_signed_discordance": 0.14021478593349457,
+      "mean_abs_discordance": 0.9327681064605713,
+      "protein_rna_correlation": 0.13089704463793642
+    },
+    {
+      "label": "cd68",
+      "protein": "CD68",
+      "gene": "CD68",
+      "mean_signed_discordance": 0.29845306277275085,
+      "mean_abs_discordance": 0.7725370526313782,
+      "protein_rna_correlation": 0.4633027466193608
+    }
+  ],
+  "top_pathway_discordance": [
+    {
+      "pathway": "vascular_stromal",
+      "n_markers": 2,
+      "mean_signed_discordance": 0.42572709918022156,
+      "mean_abs_discordance": 0.8879015445709229
+    },
+    {
+      "pathway": "epithelial_emt",
+      "n_markers": 3,
+      "mean_signed_discordance": -0.029077285900712013,
+      "mean_abs_discordance": 0.7672330141067505
+    },
+    {
+      "pathway": "myeloid_activation",
+      "n_markers": 3,
+      "mean_signed_discordance": 0.2486627846956253,
+      "mean_abs_discordance": 0.6487901210784912
+    },
+    {
+      "pathway": "checkpoint",
+      "n_markers": 4,
+      "mean_signed_discordance": 0.03505369648337364,
+      "mean_abs_discordance": 0.5009496212005615
+    },
+    {
+      "pathway": "lymphoid_effector",
+      "n_markers": 3,
+      "mean_signed_discordance": 4.195351621660848e-09,
+      "mean_abs_discordance": 0.32258301973342896
+    }
+  ],
+  "top_spatial_niches": [
+    {
+      "niche": "immune_rich",
+      "n_cells": 153448,
+      "mean_score": 0.5045022964477539,
+      "mean_margin": 0.14628121256828308
+    },
+    {
+      "niche": "epithelial_emt_front",
+      "n_cells": 63215,
+      "mean_score": 0.35117194056510925,
+      "mean_margin": 0.21876665949821472
+    },
+    {
+      "niche": "myeloid_vascular",
+      "n_cells": 77636,
+      "mean_score": 0.30194953083992004,
+      "mean_margin": 0.16871623694896698
+    },
+    {
+      "niche": "mixed_low_signal",
+      "n_cells": 171246,
+      "mean_score": 0.19149957597255707,
+      "mean_margin": 0.08766307681798935
+    }
+  ],
+  "branch_summary": [
+    {
+      "branch": "epithelial_emt_front",
+      "best_model": "emt_only",
+      "benchmark_score": 0.6643161154443801,
+      "held_out_auc": 0.6842331159954811,
+      "branch_target_correlation": 0.28030941444660973,
+      "spatial_coherence": 0.5665561435496891,
+      "roi_reproducibility": 0.5495985667838896
+    },
+    {
+      "branch": "myeloid_vascular",
+      "best_model": "vascular_only",
+      "benchmark_score": 0.6524378118488082,
+      "held_out_auc": 0.5438159779873261,
+      "branch_target_correlation": 0.22928176260397495,
+      "spatial_coherence": 0.5986651282797075,
+      "roi_reproducibility": 0.6519618239660657
+    }
+  ],
+  "top_hypotheses": [
+    {
+      "branch": "epithelial_emt_front",
+      "hypothesis": "Checkpoint-active myeloid enrichment at EMT transition fronts",
+      "best_model": "emt_only",
+      "benchmark_score": 0.6643161154443801,
+      "held_out_auc": 0.6842331159954811,
+      "spatial_coherence": 0.5665561435496891,
+      "roi_reproducibility": 0.5495985667838896,
+      "key_marker": "PanCK",
+      "key_gene": "EPCAM",
+      "marker_target_correlation": 0.18366988783638155,
+      "suggested_validation": "mIF/RNAscope for PanCK, Vimentin, alphaSMA, and checkpoint-active myeloid markers at EMT transition fronts."
+    },
+    {
+      "branch": "myeloid_vascular",
+      "hypothesis": "Perivascular immune-resistance belt",
+      "best_model": "vascular_only",
+      "benchmark_score": 0.6524378118488082,
+      "held_out_auc": 0.5438159779873261,
+      "spatial_coherence": 0.5986651282797075,
+      "roi_reproducibility": 0.6519618239660657,
+      "key_marker": "CD163",
+      "key_gene": "CD163",
+      "marker_target_correlation": 0.11769469459447142,
+      "suggested_validation": "mIF/IHC for CD68 or CD163 with CD31 and alphaSMA, plus VISTA or HLA-DR at perivascular belts."
+    }
+  ],
+  "claim_positioning": "Branch-specific axis models localize the pilot signal more clearly than pooled summaries; the current claim should emphasize localization rather than universal superiority."
+}
