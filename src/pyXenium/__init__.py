@@ -8,15 +8,25 @@ from .analysis import (
     score_immune_resistance_program,
 )
 from .datasets import PUBLIC_DATASET_SOURCES, get_public_dataset_sources
-from .io.partial_xenium_loader import load_anndata_from_partial
-from .io.xenium_gene_protein_loader import load_xenium_gene_protein
+from .io import (
+    XeniumSData,
+    load_anndata_from_partial,
+    load_xenium_gene_protein,
+    read_sdata,
+    read_xenium,
+    write_xenium,
+)
 
 __all__ = [
     "__version__",
     "PUBLIC_DATASET_SOURCES",
+    "XeniumSData",
     "get_public_dataset_sources",
     "load_xenium_gene_protein",
     "load_anndata_from_partial",
+    "read_xenium",
+    "read_sdata",
+    "write_xenium",
     "protein_gene_correlation",
     "annotate_joint_cell_states",
     "compute_rna_protein_discordance",

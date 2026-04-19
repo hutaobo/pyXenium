@@ -27,6 +27,48 @@ def test_datasets_command_copies_bundled_files(tmp_path):
     assert (target / "transcripts.zarr.zip").exists()
 
 
+def test_export_spatialdata_command(monkeypatch, tmp_path):
+    captured = {}
+
+    def fake_export_xenium_to_spatialdata_zarr(**kwargs):
+        captured.update(kwargs)
+        return {
+            "base_path": kwargs["base_path"],
+            "output_path": str(tmp_path / "spatialdata.zarr"),
+            "images": [],
+            "labels": [],
+            "points": ["transcripts"],
+            "shapes": ["cell_boundaries"],
+            "tables": ["cells"],
+            "format": "pyxenium.sdata",
+            "version": 1,
+        }
+
+    monkeypatch.setattr(
+        "pyXenium.__main__.export_xenium_to_spatialdata_zarr",
+        fake_export_xenium_to_spatialdata_zarr,
+    )
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "export-spatialdata",
+            str(tmp_path / "dataset"),
+            "--output-path",
+            str(tmp_path / "out.zarr"),
+            "--no-morphology-focus",
+            "--no-aligned-images",
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.output)
+    assert payload["format"] == "pyxenium.sdata"
+    assert captured["output_path"] == str(tmp_path / "out.zarr")
+    assert captured["morphology_focus"] is False
+    assert captured["aligned_images"] is False
+
+
 def test_validate_renal_ffpe_protein_command(monkeypatch, tmp_path):
     captured = {}
 

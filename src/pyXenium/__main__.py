@@ -4,6 +4,7 @@ from pathlib import Path
 import click
 
 from .io.io import copy_bundled_dataset, load_toy
+from .io.spatialdata_export import DEFAULT_SPATIALDATA_STORE_NAME, export_xenium_to_spatialdata_zarr
 from .validation import (
     DEFAULT_DATASET_PATH,
     run_renal_immune_resistance_pilot,
@@ -42,6 +43,34 @@ def datasets(name, url, dest):
         except FileNotFoundError as exc:
             raise click.ClickException(str(exc)) from exc
         click.echo(f"Copied bundled toy dataset to {target}")
+
+
+@app.command("export-spatialdata")
+@click.argument("base_path", required=False, default=DEFAULT_DATASET_PATH)
+@click.option(
+    "--output-path",
+    default=None,
+    help=f"Optional output Zarr path. Defaults to <base_path>/{DEFAULT_SPATIALDATA_STORE_NAME}.",
+)
+@click.option("--overwrite", is_flag=True, default=False, help="Overwrite an existing output store.")
+@click.option("--n-jobs", type=int, default=1, show_default=True, help="Compatibility option retained for legacy scripts.")
+@click.option("--no-transcripts", is_flag=True, default=False, help="Skip transcript points to reduce output size.")
+@click.option("--no-morphology-focus", is_flag=True, default=False, help="Skip morphology_focus image.")
+@click.option("--no-morphology-mip", is_flag=True, default=False, help="Skip morphology_mip image.")
+@click.option("--no-aligned-images", is_flag=True, default=False, help="Skip aligned auxiliary images.")
+def export_spatialdata(base_path, output_path, overwrite, n_jobs, no_transcripts, no_morphology_focus, no_morphology_mip, no_aligned_images):
+    """Convert a Xenium export into pyXenium's SData store at the legacy path name."""
+    payload = export_xenium_to_spatialdata_zarr(
+        base_path=base_path,
+        output_path=output_path,
+        overwrite=overwrite,
+        n_jobs=n_jobs,
+        transcripts=not no_transcripts,
+        morphology_focus=not no_morphology_focus,
+        morphology_mip=not no_morphology_mip,
+        aligned_images=not no_aligned_images,
+    )
+    click.echo(json.dumps(payload, indent=2))
 
 
 @app.command("validate-renal-ffpe-protein")
