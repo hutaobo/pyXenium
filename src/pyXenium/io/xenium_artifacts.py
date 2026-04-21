@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 import gzip
 import io
 import json
@@ -18,6 +19,8 @@ import pandas as pd
 import requests
 from scipy import sparse
 
+from .sdata_model import XeniumImage
+
 try:
     import h5py
 except Exception:  # pragma: no cover
@@ -28,8 +31,14 @@ try:
 except Exception:  # pragma: no cover
     zarr = None
 
+try:
+    import tifffile
+except Exception:  # pragma: no cover
+    tifffile = None
+
 
 REMOTE_PREFIXES = ("http://", "https://", "s3://", "gs://")
+DEFAULT_IMAGE_PYRAMID_MIN_SIZE = 256
 BOUNDARY_COLUMN_CANDIDATES = {
     "cell_id": ("cell_id", "cell", "barcode", "CellID"),
     "vertex_id": ("vertex_id", "vertex", "point_id"),
@@ -43,6 +52,47 @@ SPATIAL_COLUMN_CANDIDATES = (
     ("centroid_x", "centroid_y"),
     ("x", "y"),
 )
+IMAGE_AXIS_ALIASES = {
+    "x": "x",
+    "y": "y",
+    "c": "c",
+    "s": "c",
+}
+
+
+@dataclass
+class TiffImageLevel:
+    source_path: str
+    series_index: int
+    level_index: int
+    shape: tuple[int, ...]
+    dtype: str
+    axes: str
+    chunks: tuple[int, ...] | None = None
+
+    def asarray(self) -> np.ndarray:
+        if tifffile is None:
+            raise ImportError("tifffile is required to materialize H&E image levels.")
+        return tifffile.imread(
+            self.source_path,
+            series=self.series_index,
+            level=self.level_index,
+            maxworkers=1,
+        )
+
+    def open_zarr_source(self):
+        if tifffile is None or zarr is None:
+            raise ImportError(
+                "tifffile and zarr are required to stream OME-TIFF pyramid levels into SData."
+            )
+        store = tifffile.imread(
+            self.source_path,
+            aszarr=True,
+            series=self.series_index,
+            level=self.level_index,
+        )
+        source = zarr.open(store, mode="r")
+        return store, _resolve_zarr_array(source)
 
 
 def is_remote_path(path_or_url: str) -> bool:
@@ -164,6 +214,100 @@ def open_zarr_group(path_or_url: str):
                 return zarr.open_group(store, mode="r")[root]
         return zarr.open_group(store=store, mode="r")
     return zarr.open_group(fsspec.get_mapper(resolved), mode="r")
+
+
+def _resolve_zarr_array(node: Any):
+    if hasattr(node, "shape") and hasattr(node, "dtype"):
+        return node
+    if hasattr(node, "keys"):
+        keys = sorted(str(key) for key in node.keys())
+        if "0" in keys:
+            return _resolve_zarr_array(node["0"])
+        if len(keys) == 1:
+            return _resolve_zarr_array(node[keys[0]])
+    raise TypeError(f"Unable to resolve an array-like object from {type(node)!r}.")
+
+
+def _normalize_image_axes(axes: str) -> str:
+    mapped = []
+    for axis in str(axes or ""):
+        key = axis.lower()
+        if key not in IMAGE_AXIS_ALIASES:
+            raise ValueError(f"Unsupported OME-TIFF axis {axis!r} in axes={axes!r}.")
+        mapped.append(IMAGE_AXIS_ALIASES[key])
+    normalized = "".join(mapped)
+    if "x" not in normalized or "y" not in normalized:
+        raise ValueError(f"Image axes must include X and Y, got {axes!r}.")
+    return normalized
+
+
+def _xy_axis_indices(axes: str) -> tuple[int, int]:
+    normalized = _normalize_image_axes(axes)
+    return normalized.index("y"), normalized.index("x")
+
+
+def _infer_tiff_chunks(level: Any, axes: str) -> tuple[int, ...] | None:
+    shape = tuple(int(value) for value in getattr(level, "shape", ()))
+    if not shape or not getattr(level, "pages", None):
+        return None
+    page = level.pages[0]
+    chunks = list(shape)
+    if getattr(page, "is_tiled", False):
+        y_index, x_index = _xy_axis_indices(axes)
+        tile_y = int(getattr(page, "tilelength", 0) or shape[y_index])
+        tile_x = int(getattr(page, "tilewidth", 0) or shape[x_index])
+        chunks[y_index] = min(tile_y, shape[y_index])
+        chunks[x_index] = min(tile_x, shape[x_index])
+        return tuple(int(value) for value in chunks)
+
+    rows_per_strip = int(getattr(page, "rowsperstrip", 0) or 0)
+    if rows_per_strip:
+        y_index, _ = _xy_axis_indices(axes)
+        chunks[y_index] = min(rows_per_strip, shape[y_index])
+        return tuple(int(value) for value in chunks)
+    return None
+
+
+def _downsample_image_level(level: np.ndarray, axes: str) -> np.ndarray:
+    normalized = _normalize_image_axes(axes)
+    slices = [slice(None)] * level.ndim
+    slices[normalized.index("y")] = slice(None, None, 2)
+    slices[normalized.index("x")] = slice(None, None, 2)
+    return np.asarray(level[tuple(slices)])
+
+
+def _build_image_pyramid(
+    base_level: np.ndarray,
+    axes: str,
+    *,
+    min_size: int = DEFAULT_IMAGE_PYRAMID_MIN_SIZE,
+) -> list[np.ndarray]:
+    normalized = _normalize_image_axes(axes)
+    y_index, x_index = normalized.index("y"), normalized.index("x")
+    levels = [np.asarray(base_level)]
+    while min(levels[-1].shape[y_index], levels[-1].shape[x_index]) > min_size:
+        next_level = _downsample_image_level(levels[-1], normalized)
+        if next_level.shape == levels[-1].shape:
+            break
+        levels.append(next_level)
+    return levels
+
+
+def _find_local_matches(base_path: str, patterns: Iterable[str]) -> list[str]:
+    if is_remote_path(base_path):
+        return []
+    root = Path(base_path).expanduser()
+    if not root.exists() or not root.is_dir():
+        return []
+    matches: list[str] = []
+    for pattern in patterns:
+        matches.extend(str(path) for path in sorted(root.glob(pattern)))
+    return matches
+
+
+def _first_local_match(base_path: str, patterns: Iterable[str]) -> str | None:
+    matches = _find_local_matches(base_path, patterns)
+    return matches[0] if matches else None
 
 
 def _coerce_feature_frame(features: pd.DataFrame) -> pd.DataFrame:
@@ -824,8 +968,175 @@ def resolve_transcripts_path(base_path: str) -> str | None:
     return None
 
 
+def read_experiment_metadata(base_path: str) -> dict[str, Any]:
+    experiment_path = join_path(base_path, "experiment.xenium")
+    if not exists(experiment_path):
+        return {}
+    with open_text(experiment_path) as stream:
+        payload = json.load(stream)
+    if isinstance(payload, dict):
+        return payload
+    return {}
+
+
+def read_alignment_affine(path_or_url: str) -> np.ndarray:
+    with open_text(path_or_url) as stream:
+        frame = pd.read_csv(stream, header=None)
+    matrix = frame.to_numpy(dtype=float)
+    if matrix.shape != (3, 3):
+        raise ValueError(f"H&E alignment CSV must contain a 3x3 matrix, got {matrix.shape}.")
+    return matrix
+
+
+def read_keypoints_validation(
+    path_or_url: str,
+    *,
+    affine: np.ndarray,
+) -> dict[str, Any]:
+    with open_text(path_or_url) as stream:
+        frame = pd.read_csv(stream)
+    lower_map = {column.lower(): column for column in frame.columns}
+    required = {
+        "fixedx": "fixedX",
+        "fixedy": "fixedY",
+        "alignmentx": "alignmentX",
+        "alignmenty": "alignmentY",
+    }
+    missing = [display for key, display in required.items() if key not in lower_map]
+    if missing:
+        raise ValueError(
+            f"H&E keypoints CSV is missing required columns: {sorted(missing)}"
+        )
+
+    fixed = frame[[lower_map["fixedx"], lower_map["fixedy"]]].to_numpy(dtype=float)
+    moving = frame[[lower_map["alignmentx"], lower_map["alignmenty"]]].to_numpy(dtype=float)
+    transformed = np.c_[moving, np.ones(len(moving), dtype=float)] @ affine.T
+    residuals = np.sqrt(np.square(transformed[:, :2] - fixed).sum(axis=1))
+    return {
+        "n_keypoints": int(len(frame)),
+        "mean_residual": float(residuals.mean()) if len(residuals) else 0.0,
+        "median_residual": float(np.median(residuals)) if len(residuals) else 0.0,
+        "max_residual": float(residuals.max()) if len(residuals) else 0.0,
+    }
+
+
+def discover_he_artifacts(base_path: str) -> dict[str, Any] | None:
+    image_path = _first_local_match(
+        base_path,
+        ("*_he_image.ome.tif", "*_he_image.ome.tiff"),
+    )
+    if image_path is None:
+        return None
+
+    alignment_path = _first_local_match(base_path, ("*_he_alignment.csv",))
+    keypoints_path = _first_local_match(base_path, ("*_keypoints.csv",))
+    experiment = {}
+    pixel_size_um = None
+    try:
+        experiment = read_experiment_metadata(base_path)
+        if "pixel_size" in experiment:
+            pixel_size_um = float(experiment["pixel_size"])
+    except Exception as exc:
+        warnings.warn(f"Failed to read experiment.xenium metadata: {exc}", stacklevel=2)
+
+    affine = None
+    if alignment_path is not None:
+        affine = read_alignment_affine(alignment_path)
+
+    keypoints_validation = None
+    if keypoints_path is not None and affine is not None:
+        keypoints_validation = read_keypoints_validation(keypoints_path, affine=affine)
+
+    return {
+        "name": "he",
+        "path": image_path,
+        "source_path": image_path,
+        "alignment_csv_path": alignment_path,
+        "keypoints_csv_path": keypoints_path,
+        "transform_kind": "affine",
+        "transform_direction": "image_pixel_xy_to_xenium_pixel_xy",
+        "transform_input_space": "image_pixel_xy",
+        "transform_output_space": "xenium_pixel_xy",
+        "transform_output_unit": "pixel",
+        "xenium_physical_unit": "micron",
+        "image_to_xenium_affine": affine.tolist() if affine is not None else None,
+        "pixel_size_um": pixel_size_um,
+        "keypoints_validation": keypoints_validation,
+        "experiment": experiment,
+    }
+
+
+def read_he_image(base_path: str) -> XeniumImage | None:
+    artifact = discover_he_artifacts(base_path)
+    if artifact is None:
+        return None
+    if tifffile is None:
+        raise ImportError("tifffile is required to read Xenium H&E OME-TIFF images.")
+
+    image_path = artifact["source_path"]
+    with tifffile.TiffFile(image_path) as tif:
+        series = tif.series[0]
+        axes = _normalize_image_axes(series.axes)
+        dtype = np.dtype(series.dtype).name
+        if len(series.levels) > 1:
+            levels: list[Any] = []
+            for level_index, level in enumerate(series.levels):
+                levels.append(
+                    TiffImageLevel(
+                        source_path=image_path,
+                        series_index=0,
+                        level_index=level_index,
+                        shape=tuple(int(value) for value in level.shape),
+                        dtype=np.dtype(level.dtype).name,
+                        axes=axes,
+                        chunks=_infer_tiff_chunks(level, series.axes),
+                    )
+                )
+        else:
+            base_level = series.asarray(maxworkers=1)
+            levels = _build_image_pyramid(base_level, axes)
+
+    metadata = {
+        "transform_direction": artifact["transform_direction"],
+        "transform_input_space": artifact["transform_input_space"],
+        "transform_output_space": artifact["transform_output_space"],
+        "transform_output_unit": artifact["transform_output_unit"],
+        "xenium_physical_unit": artifact["xenium_physical_unit"],
+    }
+    if artifact["keypoints_csv_path"] is not None:
+        metadata["keypoints_csv_path"] = artifact["keypoints_csv_path"]
+
+    return XeniumImage(
+        levels=levels,
+        axes=axes,
+        dtype=dtype,
+        source_path=image_path,
+        transform_kind=artifact["transform_kind"],
+        image_to_xenium_affine=artifact["image_to_xenium_affine"],
+        alignment_csv_path=artifact["alignment_csv_path"],
+        pixel_size_um=artifact["pixel_size_um"],
+        keypoints_validation=artifact["keypoints_validation"],
+        metadata=metadata,
+    )
+
+
 def discover_image_artifacts(base_path: str) -> dict[str, dict[str, Any]]:
     images: dict[str, dict[str, Any]] = {}
+    he_artifact = discover_he_artifacts(base_path)
+    if he_artifact is not None:
+        images["he"] = {
+            "path": he_artifact["path"],
+            "alignment_csv_path": he_artifact["alignment_csv_path"],
+            "transform_direction": he_artifact["transform_direction"],
+            "transform_input_space": he_artifact["transform_input_space"],
+            "transform_output_space": he_artifact["transform_output_space"],
+            "transform_output_unit": he_artifact["transform_output_unit"],
+            "xenium_physical_unit": he_artifact["xenium_physical_unit"],
+            "image_to_xenium_affine": he_artifact["image_to_xenium_affine"],
+            "pixel_size_um": he_artifact["pixel_size_um"],
+            "keypoints_validation": he_artifact["keypoints_validation"],
+        }
+
     candidates = {
         "morphology_focus": (
             "morphology_focus.ome.tif",

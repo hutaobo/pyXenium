@@ -19,6 +19,7 @@ from .xenium_artifacts import (
     read_cells_table,
     read_cells_zarr_spatial,
     read_clusters_series,
+    read_he_image,
     read_transcripts_table,
     resolve_transcripts_path,
     split_rna_and_protein,
@@ -34,7 +35,7 @@ def _metadata_for_source(
     backend: str,
     features: pd.DataFrame,
     cluster_key: str,
-    images: dict[str, Any] | None = None,
+    image_artifacts: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "source_path": str(base_path),
@@ -42,7 +43,7 @@ def _metadata_for_source(
         "units": "micron",
         "cluster_key": cluster_key,
         "feature_summary": build_feature_summary(features),
-        "images": images or {},
+        "image_artifacts": image_artifacts or {},
         "labels": {},
         "store_version": 1,
     }
@@ -150,8 +151,8 @@ def _assemble_anndata(
     for key, frame in boundaries.items():
         adata.uns[key] = frame.copy()
 
-    images = discover_image_artifacts(base_path) if include_images else {}
-    for key, payload in images.items():
+    image_artifacts = discover_image_artifacts(base_path) if include_images else {}
+    for key, payload in image_artifacts.items():
         adata.uns[key] = dict(payload)
 
     metadata = _metadata_for_source(
@@ -159,7 +160,7 @@ def _assemble_anndata(
         backend=backend,
         features=features,
         cluster_key=cluster_column_name,
-        images=images,
+        image_artifacts=image_artifacts,
     )
     return adata, boundaries, metadata
 
@@ -207,10 +208,17 @@ def read_xenium(
         if transcripts_path is not None:
             points["transcripts"] = read_transcripts_table(transcripts_path)
 
+    images = {}
+    if include_images:
+        he_image = read_he_image(base_path)
+        if he_image is not None:
+            images["he"] = he_image
+
     return XeniumSData(
         table=adata,
         points=points,
         shapes=boundaries,
+        images=images,
         metadata=metadata,
     )
 
@@ -240,7 +248,7 @@ def write_xenium(
             "tables": ["cells"],
             "points": sorted(obj.points.keys()) if isinstance(obj, XeniumSData) else [],
             "shapes": sorted(obj.shapes.keys()) if isinstance(obj, XeniumSData) else [],
-            "images": [],
+            "images": sorted(obj.images.keys()) if isinstance(obj, XeniumSData) else [],
             "labels": [],
         }
 
@@ -258,7 +266,7 @@ def read_sdata(path: str | Path) -> XeniumSData:
 def warn_unsupported_image_export_flags(*, morphology_focus: bool, morphology_mip: bool, aligned_images: bool) -> None:
     if morphology_focus or morphology_mip or aligned_images:
         warnings.warn(
-            "pyXenium SData v1 records image source metadata only; morphology/aligned images "
-            "are not materialized into the store yet.",
+            "pyXenium SData currently exports H&E images only. Legacy morphology/aligned "
+            "image flags are retained for compatibility and do not materialize those image groups.",
             stacklevel=2,
         )

@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .api import read_sdata, read_xenium, warn_unsupported_image_export_flags, write_xenium
+from .api import read_xenium, warn_unsupported_image_export_flags, write_xenium
 
 DEFAULT_SPATIALDATA_STORE_NAME = "spatialdata.zarr"
 
@@ -79,16 +79,14 @@ def export_xenium_to_spatialdata_zarr(
         )
 
     payload = write_xenium(sdata, output_path, format="sdata", overwrite=overwrite)
-    reloaded = read_sdata(output_path)
-    summary = reloaded.component_summary()
     return {
         "base_path": str(base_path),
         "output_path": str(output_path),
-        "images": summary["images"],
-        "labels": summary["labels"],
-        "points": summary["points"],
-        "shapes": summary["shapes"],
-        "tables": summary["tables"],
+        "images": payload["images"],
+        "labels": payload["labels"],
+        "points": payload["points"],
+        "shapes": payload["shapes"],
+        "tables": payload["tables"],
         "format": payload["format"],
         "version": payload["version"],
     }
