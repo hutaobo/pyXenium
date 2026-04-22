@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable, Iterator
 
 import anndata as ad
 import numpy as np
@@ -22,6 +22,19 @@ def _normalize_image_map(mapping: dict[str, "XeniumImage"] | None) -> dict[str, 
     for key, value in (mapping or {}).items():
         if not isinstance(value, XeniumImage):
             raise TypeError(f"{key!r} must be a XeniumImage, got {type(value)!r}.")
+        normalized[str(key)] = value
+    return normalized
+
+
+def _normalize_chunk_source_map(
+    mapping: dict[str, "XeniumFrameChunkSource"] | None,
+) -> dict[str, "XeniumFrameChunkSource"]:
+    normalized: dict[str, XeniumFrameChunkSource] = {}
+    for key, value in (mapping or {}).items():
+        if not isinstance(value, XeniumFrameChunkSource):
+            raise TypeError(
+                f"{key!r} must be a XeniumFrameChunkSource, got {type(value)!r}."
+            )
         normalized[str(key)] = value
     return normalized
 
@@ -52,6 +65,65 @@ def _coerce_xy_array(values: Any) -> np.ndarray:
     if array.ndim != 2 or array.shape[1] != 2:
         raise ValueError(f"Expected an array with shape (N, 2), got {array.shape}.")
     return array
+
+
+@dataclass(frozen=True)
+class XeniumFrameChunkSource:
+    columns: tuple[str, ...]
+    column_types: dict[str, str]
+    chunk_iter_factory: Callable[[], Iterator[pd.DataFrame]]
+    attrs: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        columns = tuple(str(column) for column in self.columns)
+        if not columns:
+            raise ValueError("XeniumFrameChunkSource.columns must be non-empty.")
+        column_types = {str(key): str(value) for key, value in dict(self.column_types).items()}
+        missing = set(columns).difference(column_types)
+        if missing:
+            raise ValueError(
+                "XeniumFrameChunkSource.column_types is missing definitions for columns: "
+                f"{sorted(missing)}"
+            )
+        unsupported = {
+            column: dtype_name
+            for column, dtype_name in column_types.items()
+            if dtype_name not in {"bool", "int64", "float64", "string"}
+        }
+        if unsupported:
+            raise ValueError(
+                "Unsupported chunk source column types: "
+                + ", ".join(f"{column}={dtype_name!r}" for column, dtype_name in sorted(unsupported.items()))
+            )
+        object.__setattr__(self, "columns", columns)
+        object.__setattr__(self, "column_types", column_types)
+        object.__setattr__(self, "attrs", dict(self.attrs or {}))
+
+    def iter_chunks(self) -> Iterator[pd.DataFrame]:
+        iterator = self.chunk_iter_factory()
+        if iterator is None:
+            raise TypeError("chunk_iter_factory() must return an iterator, got None.")
+        expected = list(self.columns)
+        missing_columns = set(expected)
+        for frame in iterator:
+            if not isinstance(frame, pd.DataFrame):
+                raise TypeError(
+                    "XeniumFrameChunkSource must yield pandas.DataFrame chunks, got "
+                    f"{type(frame)!r}."
+                )
+            missing = missing_columns.difference(frame.columns)
+            if missing:
+                raise ValueError(
+                    "Chunk source yielded a frame missing required columns: "
+                    f"{sorted(missing)}"
+                )
+            yield frame.loc[:, expected].copy()
+
+    def materialize(self) -> pd.DataFrame:
+        chunks = list(self.iter_chunks())
+        if not chunks:
+            return pd.DataFrame(columns=list(self.columns))
+        return pd.concat(chunks, ignore_index=True)
 
 
 @dataclass
@@ -175,6 +247,7 @@ class XeniumSData:
     shapes: dict[str, pd.DataFrame] = field(default_factory=dict)
     images: dict[str, XeniumImage] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
+    point_sources: dict[str, XeniumFrameChunkSource] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not isinstance(self.table, ad.AnnData):
@@ -183,15 +256,30 @@ class XeniumSData:
         self.shapes = _normalize_frame_map(self.shapes)
         self.images = _normalize_image_map(self.images)
         self.metadata = dict(self.metadata or {})
+        self.point_sources = _normalize_chunk_source_map(self.point_sources)
         self._validate()
 
     def _validate(self) -> None:
+        overlap = set(self.points).intersection(self.point_sources)
+        if overlap:
+            raise ValueError(
+                "XeniumSData.points and XeniumSData.point_sources cannot share keys: "
+                f"{sorted(overlap)}"
+            )
         if "transcripts" in self.points:
             required = {"x", "y", "gene_identity", "gene_name"}
             missing = required.difference(self.points["transcripts"].columns)
             if missing:
                 raise ValueError(
                     "XeniumSData.points['transcripts'] is missing required columns: "
+                    f"{sorted(missing)}"
+                )
+        if "transcripts" in self.point_sources:
+            required = {"x", "y", "gene_identity", "gene_name"}
+            missing = required.difference(self.point_sources["transcripts"].columns)
+            if missing:
+                raise ValueError(
+                    "XeniumSData.point_sources['transcripts'] is missing required columns: "
                     f"{sorted(missing)}"
                 )
 
@@ -218,8 +306,11 @@ class XeniumSData:
             ) from exc
 
         kwargs: dict[str, Any] = {}
-        if self.points:
-            kwargs["points"] = self.points
+        if self.points or self.point_sources:
+            points = dict(self.points)
+            for key, source in self.point_sources.items():
+                points[key] = source.materialize()
+            kwargs["points"] = points
         if self.shapes:
             kwargs["shapes"] = self.shapes
         kwargs["tables"] = {"cells": self.table}
@@ -239,7 +330,7 @@ class XeniumSData:
     def component_summary(self) -> dict[str, list[str]]:
         return {
             "tables": ["cells"],
-            "points": sorted(self.points.keys()),
+            "points": sorted(set(self.points).union(self.point_sources)),
             "shapes": sorted(self.shapes.keys()),
             "images": sorted(self.images.keys()),
             "labels": sorted(self.metadata.get("labels", {}).keys()),

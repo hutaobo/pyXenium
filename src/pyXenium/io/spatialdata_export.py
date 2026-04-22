@@ -58,6 +58,7 @@ def export_xenium_to_spatialdata_zarr(
         str(base_path),
         as_="sdata",
         include_transcripts=transcripts,
+        stream_transcripts=transcripts,
         include_boundaries=(cells_boundaries or nucleus_boundaries),
         include_images=(morphology_focus or morphology_mip or aligned_images),
     )

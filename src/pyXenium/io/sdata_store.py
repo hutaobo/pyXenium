@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import zarr
 
-from .sdata_model import XeniumImage, XeniumSData
+from .sdata_model import XeniumFrameChunkSource, XeniumImage, XeniumSData
 
 SDATA_FORMAT = "pyxenium.sdata"
 SDATA_VERSION = 1
@@ -44,6 +44,44 @@ def _column_payload(series: pd.Series) -> tuple[np.ndarray, str]:
     return series.astype(str).to_numpy(dtype=np.str_), "string"
 
 
+def _column_values_for_type(series: pd.Series, dtype_name: str) -> np.ndarray:
+    if dtype_name == "bool":
+        return series.fillna(False).to_numpy(dtype=bool)
+    if dtype_name == "int64":
+        filled = series.fillna(0) if hasattr(series, "fillna") else series
+        return np.asarray(filled.to_numpy(), dtype=np.int64)
+    if dtype_name == "float64":
+        return np.asarray(series.to_numpy(), dtype=np.float64)
+    if dtype_name == "string":
+        return series.astype(str).to_numpy(dtype=np.str_)
+    raise ValueError(f"Unsupported dtype_name={dtype_name!r}.")
+
+
+def _zarr_dtype_for_column(
+    dtype_name: str,
+    *,
+    string_length: int | None = None,
+) -> np.dtype:
+    if dtype_name == "bool":
+        return np.dtype(bool)
+    if dtype_name == "int64":
+        return np.dtype(np.int64)
+    if dtype_name == "float64":
+        return np.dtype(np.float64)
+    if dtype_name == "string":
+        return np.dtype(f"<U{max(int(string_length or 1), 1)}")
+    raise ValueError(f"Unsupported dtype_name={dtype_name!r}.")
+
+
+def _string_length(series: pd.Series) -> int:
+    if series.empty:
+        return 1
+    lengths = series.astype(str).str.len()
+    if lengths.empty:
+        return 1
+    return max(int(lengths.max()), 1)
+
+
 def _write_frame_group(parent: Any, key: str, frame: pd.DataFrame, *, attrs: dict[str, Any] | None = None) -> None:
     group = parent.require_group(key)
     group.attrs["columns"] = list(frame.columns)
@@ -59,6 +97,61 @@ def _write_frame_group(parent: Any, key: str, frame: pd.DataFrame, *, attrs: dic
         column_types = dict(group.attrs.get("column_types", {}))
         column_types[column] = dtype_name
         group.attrs["column_types"] = column_types
+
+
+def _write_chunked_frame_group(
+    parent: Any,
+    key: str,
+    source: XeniumFrameChunkSource,
+    *,
+    attrs: dict[str, Any] | None = None,
+) -> None:
+    group = parent.require_group(key)
+    columns = list(source.columns)
+    column_types = dict(source.column_types)
+    group.attrs["columns"] = columns
+    group.attrs["column_types"] = column_types
+    merged_attrs = dict(source.attrs)
+    if attrs:
+        merged_attrs.update(attrs)
+    for attr_key, attr_value in merged_attrs.items():
+        group.attrs[attr_key] = attr_value
+
+    # We scan once to size fixed-width unicode arrays, then stream chunks into place.
+    n_rows = 0
+    chunk_rows = 0
+    string_lengths = {
+        column: 1
+        for column, dtype_name in column_types.items()
+        if dtype_name == "string"
+    }
+    for frame in source.iter_chunks():
+        frame_rows = int(frame.shape[0])
+        n_rows += frame_rows
+        chunk_rows = max(chunk_rows, frame_rows)
+        for column in string_lengths:
+            string_lengths[column] = max(string_lengths[column], _string_length(frame[column]))
+
+    group.attrs["n_rows"] = n_rows
+    chunk_length = max(1, min(chunk_rows or 65536, n_rows or 1))
+    for column in columns:
+        group.create_array(
+            column,
+            shape=(n_rows,),
+            chunks=(chunk_length,),
+            dtype=_zarr_dtype_for_column(
+                column_types[column],
+                string_length=string_lengths.get(column),
+            ),
+            overwrite=True,
+        )
+
+    start = 0
+    for frame in source.iter_chunks():
+        stop = start + int(frame.shape[0])
+        for column in columns:
+            group[column][start:stop] = _column_values_for_type(frame[column], column_types[column])
+        start = stop
 
 
 def _read_frame_group(group: Any) -> pd.DataFrame:
@@ -280,10 +373,20 @@ def write_xenium_sdata(
     tables_root.attrs["primary_table"] = "cells"
 
     points_root = root.require_group("points")
-    point_attrs: dict[str, dict[str, Any]] = {}
     for key, frame in sdata.points.items():
-        point_attrs[key] = {"units": sdata.metadata.get("units", "micron")}
-        _write_frame_group(points_root, key, frame, attrs=point_attrs[key])
+        _write_frame_group(
+            points_root,
+            key,
+            frame,
+            attrs={"units": sdata.metadata.get("units", "micron")},
+        )
+    for key, source in sdata.point_sources.items():
+        _write_chunked_frame_group(
+            points_root,
+            key,
+            source,
+            attrs={"units": sdata.metadata.get("units", "micron")},
+        )
 
     shapes_root = root.require_group("shapes")
     for key, frame in sdata.shapes.items():

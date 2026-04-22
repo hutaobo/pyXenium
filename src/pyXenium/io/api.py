@@ -7,12 +7,13 @@ from typing import Any
 import anndata as ad
 import pandas as pd
 
-from .sdata_model import XeniumSData
+from .sdata_model import XeniumFrameChunkSource, XeniumSData
 from .sdata_store import read_xenium_sdata, write_xenium_sdata
 from .xenium_artifacts import (
     build_feature_summary,
     discover_image_artifacts,
     extract_spatial_from_obs,
+    iter_transcript_chunks,
     join_path,
     load_xenium_analysis,
     read_boundary_tables,
@@ -27,6 +28,24 @@ from .xenium_artifacts import (
 
 
 DEFAULT_CLUSTER_RELPATH = "analysis/clustering/gene_expression_graphclust/clusters.csv"
+TRANSCRIPT_POINT_COLUMNS = (
+    "x",
+    "y",
+    "gene_identity",
+    "gene_name",
+    "quality_score",
+    "valid",
+    "cell_id",
+)
+TRANSCRIPT_POINT_COLUMN_TYPES = {
+    "x": "float64",
+    "y": "float64",
+    "gene_identity": "int64",
+    "gene_name": "string",
+    "quality_score": "float64",
+    "valid": "bool",
+    "cell_id": "string",
+}
 
 
 def _metadata_for_source(
@@ -65,6 +84,15 @@ def _build_obs(
     metadata: dict[str, Any] = {}
     if obs is not None:
         return obs, metadata
+
+
+def _transcript_point_source(transcripts_path: str) -> XeniumFrameChunkSource:
+    return XeniumFrameChunkSource(
+        columns=TRANSCRIPT_POINT_COLUMNS,
+        column_types=TRANSCRIPT_POINT_COLUMN_TYPES,
+        chunk_iter_factory=lambda: iter_transcript_chunks(transcripts_path),
+        attrs={"source_path": transcripts_path},
+    )
 
     cells_path = join_path(base_path, "cells.zarr.zip")
     if Path(str(base_path)).suffix == ".zip":
@@ -176,6 +204,7 @@ def read_xenium(
     as_: str = "anndata",
     prefer: str = "auto",
     include_transcripts: bool = True,
+    stream_transcripts: bool = False,
     include_boundaries: bool = True,
     include_images: bool = False,
     clusters_relpath: str | None = DEFAULT_CLUSTER_RELPATH,
@@ -208,10 +237,14 @@ def read_xenium(
         return adata
 
     points: dict[str, pd.DataFrame] = {}
+    point_sources: dict[str, XeniumFrameChunkSource] = {}
     if include_transcripts:
         transcripts_path = resolve_transcripts_path(base_path)
         if transcripts_path is not None:
-            points["transcripts"] = read_transcripts_table(transcripts_path)
+            if stream_transcripts:
+                point_sources["transcripts"] = _transcript_point_source(transcripts_path)
+            else:
+                points["transcripts"] = read_transcripts_table(transcripts_path)
 
     images = {}
     if include_images:
@@ -225,6 +258,7 @@ def read_xenium(
         shapes=boundaries,
         images=images,
         metadata=metadata,
+        point_sources=point_sources,
     )
 
 

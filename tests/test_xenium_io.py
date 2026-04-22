@@ -13,6 +13,7 @@ import zarr
 from scipy import sparse
 from scipy.io import mmwrite
 
+import pyXenium.io.api as xenium_api_module
 from pyXenium.io import (
     XeniumSData,
     export_xenium_to_spatialdata_zarr,
@@ -488,6 +489,21 @@ def test_read_xenium_sdata_contains_expected_components(tmp_path):
     np.testing.assert_allclose(sdata.table.obsm["X_umap"], UMAP_VALUES)
 
 
+def test_read_xenium_sdata_can_stream_transcripts_for_export(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset")
+
+    sdata = read_xenium(str(dataset), as_="sdata", prefer="mex", stream_transcripts=True)
+
+    assert isinstance(sdata, XeniumSData)
+    assert "transcripts" not in sdata.points
+    assert "transcripts" in sdata.point_sources
+    assert sdata.component_summary()["points"] == ["transcripts"]
+
+    streamed = sdata.point_sources["transcripts"].materialize()
+    expected = read_xenium(str(dataset), as_="sdata", prefer="mex").points["transcripts"]
+    pd.testing.assert_frame_equal(streamed, expected)
+
+
 def test_read_xenium_sdata_loads_he_image_and_alignment_metadata(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
 
@@ -544,6 +560,19 @@ def test_sdata_roundtrip(tmp_path):
     assert reloaded.table.uns["xenium_analysis"]["projection_keys"]["umap"] == "X_umap"
 
 
+def test_sdata_roundtrip_preserves_streamed_transcripts(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset")
+    sdata = read_xenium(str(dataset), as_="sdata", prefer="zarr", stream_transcripts=True)
+
+    output = tmp_path / "pyxenium_sdata_streamed.zarr"
+    payload = write_xenium(sdata, output, format="sdata")
+    reloaded = read_sdata(output)
+    expected = read_xenium(str(dataset), as_="sdata", prefer="zarr").points["transcripts"]
+
+    assert payload["points"] == ["transcripts"]
+    pd.testing.assert_frame_equal(reloaded.points["transcripts"], expected)
+
+
 def test_sdata_roundtrip_preserves_he_images(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
     sdata = read_xenium(str(dataset), as_="sdata", prefer="zarr", include_images=True)
@@ -575,8 +604,13 @@ def test_load_xenium_gene_protein_wrapper_matches_new_api(tmp_path):
     np.testing.assert_allclose(legacy.obsm["spatial"], modern.obsm["spatial"])
 
 
-def test_export_xenium_to_spatialdata_zarr_writes_compat_store(tmp_path):
+def test_export_xenium_to_spatialdata_zarr_writes_compat_store(tmp_path, monkeypatch):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
+
+    def _unexpected_materialization(*args, **kwargs):
+        raise AssertionError("export_xenium_to_spatialdata_zarr should stream transcripts.")
+
+    monkeypatch.setattr(xenium_api_module, "read_transcripts_table", _unexpected_materialization)
 
     payload = export_xenium_to_spatialdata_zarr(str(dataset), overwrite=True)
     reloaded = read_sdata(payload["output_path"])
