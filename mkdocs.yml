@@ -30,6 +30,7 @@ nav:
   - Quickstart: quickstart.md
   - Guides:
       - Xenium data loading: guides/xenium-data-loading.md
+      - Contour-aware density profiling: guides/contour-density.md
       - Protein–Gene correlation: guides/protein-gene-correlation.md
   - API Reference:
       - analysis.protein_gene_correlation: api/analysis_protein_gene_correlation.md

@@ -3,12 +3,13 @@ pyXenium
 
 pyXenium is a Python toolkit for loading and analyzing **10x Genomics Xenium** data.
 
-The package now has four canonical public surfaces:
+The package now has five canonical public surfaces:
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
 - `pyXenium.multimodal`: joint RNA + Protein loading, analysis, immune-resistance scoring, and packaged workflows.
 - `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis.
 - `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
+- `pyXenium.contour`: contour import plus inward/outward density profiling around polygon annotations.
 
 Legacy compatibility entry points under `pyXenium.analysis`, `pyXenium.validation`, and
 `pyXenium.io.load_xenium_gene_protein(...)` are still available as compatibility aliases,
@@ -46,6 +47,10 @@ Core capabilities
   - `pyXenium.pathway.pathway_topology_analysis(...)`
   - `pyXenium.pathway.compute_pathway_activity_matrix(...)`
   - `pyXenium.validation.run_atera_wta_breast_topology(...)`
+- **Contour-aware profiling** via:
+  - `pyXenium.contour.add_contours_from_geojson(...)`
+  - `pyXenium.contour.ring_density(...)`
+  - `pyXenium.contour.smooth_density_by_distance(...)`
 
 Quick start
 -----------
@@ -98,6 +103,51 @@ summary = protein_gene_correlation(
     transcripts_zarr_path="/path/to/transcripts.zarr.zip",
     pairs=pairs,
     output_dir="./protein_gene_corr",
+)
+```
+
+### 5) Contour-aware density profiling
+
+```python
+from pyXenium.contour import (
+    add_contours_from_geojson,
+    ring_density,
+    smooth_density_by_distance,
+)
+from pyXenium.io import read_xenium
+
+sdata = read_xenium(
+    "/path/to/xenium_export",
+    as_="sdata",
+    include_images=True,
+)
+
+add_contours_from_geojson(
+    sdata,
+    "/path/to/polygon_units.geojson",
+    key="protein_cluster_contours",
+)
+
+ring_df = ring_density(
+    sdata,
+    contour_key="protein_cluster_contours",
+    target="transcripts",
+    contour_query='assigned_structure == "Structure 4"',
+    feature_values="VIM",
+    inward=100.0,
+    outward=100.0,
+    ring_width=50.0,
+)
+
+smooth_df = smooth_density_by_distance(
+    sdata,
+    contour_key="protein_cluster_contours",
+    target="transcripts",
+    contour_query='assigned_structure == "Structure 4"',
+    feature_values="VIM",
+    inward=100.0,
+    outward=100.0,
+    bandwidth=25.0,
 )
 ```
 
