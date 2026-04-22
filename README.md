@@ -42,7 +42,7 @@ canonical namespaces above.
 
 ## Release & Build
 
-- Current repository version: `0.2.2`
+- Current repository version: `0.2.3`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)

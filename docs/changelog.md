@@ -6,6 +6,11 @@ All notable changes to pyXenium are documented here.
 
 - No unreleased changes yet.
 
+## 0.2.3 - 2026-04-22
+
+- Add missing runtime dependencies required by the public import surface in clean environments, including `seaborn`, `statsmodels`, `scanpy`, and `PyYAML`.
+- Validate a clean-environment `import pyXenium` path after the rapid `0.2.2` hotfix.
+
 ## 0.2.2 - 2026-04-22
 
 - Fix a cross-platform `SyntaxError` in `pyXenium.io.xenium_artifacts.join_path(...)` caused by a backslash-containing f-string expression.
