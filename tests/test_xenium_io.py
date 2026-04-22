@@ -52,6 +52,20 @@ CELL_BY_FEATURE = sparse.csr_matrix(
         dtype=np.float32,
     )
 )
+GRAPHCLUST_LABELS = ["Tumor", "Immune", "Tumor"]
+KMEANS2_LABELS = ["0", "1", "1"]
+NESTED_GRAPHCLUST_LABELS = ["NestedA", "NestedB", "NestedA"]
+UMAP_VALUES = np.asarray([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]], dtype=float)
+NESTED_UMAP_VALUES = np.asarray([[101.0, 102.0], [103.0, 104.0], [105.0, 106.0]], dtype=float)
+PCA_VALUES = np.asarray(
+    [
+        [1.0, 2.0, 3.0],
+        [4.0, 5.0, 6.0],
+        [7.0, 8.0, 9.0],
+    ],
+    dtype=float,
+)
+TSNE_VALUES = np.asarray([[9.0, 1.0], [8.0, 2.0], [7.0, 3.0]], dtype=float)
 
 
 def _write_gzip_text(path: Path, text: str) -> None:
@@ -210,6 +224,63 @@ def _make_he_bundle(base_path: Path) -> np.ndarray:
     return affine
 
 
+def _write_cluster_csv(path: Path, labels, *, index_column: str, cluster_column: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame({index_column: BARCODES.to_list(), cluster_column: list(labels)}).to_csv(
+        path,
+        index=False,
+    )
+
+
+def _write_projection_csv(path: Path, columns: list[str], values: np.ndarray) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {"Barcode": BARCODES.to_list()}
+    for idx, column in enumerate(columns):
+        payload[column] = np.asarray(values)[:, idx]
+    pd.DataFrame(payload).to_csv(path, index=False)
+
+
+def _write_analysis_outputs(
+    base_path: Path,
+    *,
+    analysis_root: str,
+    graph_labels,
+    include_extra_clusterings: bool,
+    include_projections: bool,
+    umap_values: np.ndarray | None = None,
+) -> None:
+    root = base_path / Path(analysis_root)
+    _write_cluster_csv(
+        root / "clustering" / "gene_expression_graphclust" / "clusters.csv",
+        graph_labels,
+        index_column="Barcode",
+        cluster_column="Cluster",
+    )
+    if include_extra_clusterings:
+        _write_cluster_csv(
+            root / "clustering" / "gene_expression_kmeans_2_clusters" / "clusters.csv",
+            KMEANS2_LABELS,
+            index_column="cell_id",
+            cluster_column="cluster",
+        )
+    if include_projections:
+        _write_projection_csv(
+            root / "umap" / "gene_expression_2_components" / "projection.csv",
+            ["UMAP-1", "UMAP-2"],
+            UMAP_VALUES if umap_values is None else umap_values,
+        )
+        _write_projection_csv(
+            root / "pca" / "gene_expression_3_components" / "projection.csv",
+            ["PC-1", "PC-2", "PC-3"],
+            PCA_VALUES,
+        )
+        _write_projection_csv(
+            root / "tsne" / "gene_expression_2_components" / "projection.csv",
+            ["TSNE-1", "TSNE-2"],
+            TSNE_VALUES,
+        )
+
+
 def make_xenium_dataset(
     base_path: Path,
     *,
@@ -218,6 +289,11 @@ def make_xenium_dataset(
     include_transcripts: bool = True,
     include_zarr_sidecars: bool = False,
     include_he_image: bool = False,
+    include_analysis: bool = True,
+    include_extra_clusterings: bool = False,
+    include_projections: bool = False,
+    primary_analysis_root: str = "analysis",
+    include_nested_analysis_variant: bool = False,
 ) -> Path:
     base_path.mkdir(parents=True, exist_ok=True)
 
@@ -230,11 +306,23 @@ def make_xenium_dataset(
     )
     cells.to_csv(base_path / "cells.csv.gz", index=False, compression="gzip")
 
-    cluster_dir = base_path / "analysis" / "clustering" / "gene_expression_graphclust"
-    cluster_dir.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(
-        {"cell_id": BARCODES.to_list(), "cluster": ["Tumor", "Immune", "Tumor"]}
-    ).to_csv(cluster_dir / "clusters.csv", index=False)
+    if include_analysis:
+        _write_analysis_outputs(
+            base_path,
+            analysis_root=primary_analysis_root,
+            graph_labels=GRAPHCLUST_LABELS,
+            include_extra_clusterings=include_extra_clusterings,
+            include_projections=include_projections,
+        )
+        if include_nested_analysis_variant and primary_analysis_root != "analysis/analysis":
+            _write_analysis_outputs(
+                base_path,
+                analysis_root="analysis/analysis",
+                graph_labels=NESTED_GRAPHCLUST_LABELS,
+                include_extra_clusterings=False,
+                include_projections=include_projections,
+                umap_values=NESTED_UMAP_VALUES,
+            )
 
     if include_boundaries:
         cell_boundaries = pd.DataFrame(
@@ -314,8 +402,77 @@ def test_read_xenium_anndata_backends(tmp_path, prefer):
     assert adata.uns["xenium_io"]["backend"] == prefer
 
 
+def test_read_xenium_imports_all_clusterings_and_projections(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_extra_clusterings=True,
+        include_projections=True,
+    )
+
+    adata = read_xenium(str(dataset), as_="anndata", prefer="zarr")
+
+    assert list(adata.obs["cluster"].astype(str)) == GRAPHCLUST_LABELS
+    assert list(adata.obs["cluster__gene_expression_kmeans_2_clusters"].astype(str)) == KMEANS2_LABELS
+    np.testing.assert_allclose(adata.obsm["X_umap"], UMAP_VALUES)
+    np.testing.assert_allclose(adata.obsm["X_pca"], PCA_VALUES)
+    np.testing.assert_allclose(adata.obsm["X_tsne"], TSNE_VALUES)
+    assert adata.uns["xenium_analysis"]["default_cluster_key"] == "gene_expression_graphclust"
+    assert (
+        adata.uns["xenium_analysis"]["cluster_columns"]["gene_expression_kmeans_2_clusters"]
+        == "cluster__gene_expression_kmeans_2_clusters"
+    )
+    assert adata.uns["xenium_analysis"]["projection_keys"] == {
+        "pca": "X_pca",
+        "tsne": "X_tsne",
+        "umap": "X_umap",
+    }
+
+
+def test_read_xenium_prefers_single_layer_analysis_paths(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_projections=True,
+        include_nested_analysis_variant=True,
+    )
+
+    adata = read_xenium(str(dataset), as_="anndata", prefer="zarr")
+
+    assert list(adata.obs["cluster"].astype(str)) == GRAPHCLUST_LABELS
+    np.testing.assert_allclose(adata.obsm["X_umap"], UMAP_VALUES)
+    assert (
+        adata.uns["xenium_analysis"]["cluster_sources"]["gene_expression_graphclust"]["relpath"]
+        == "analysis/clustering/gene_expression_graphclust/clusters.csv"
+    )
+    assert (
+        adata.uns["xenium_analysis"]["projection_sources"]["umap"]["relpath"]
+        == "analysis/umap/gene_expression_2_components/projection.csv"
+    )
+
+
+def test_read_xenium_clusters_relpath_overrides_default_cluster_source(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_extra_clusterings=True,
+    )
+
+    adata = read_xenium(
+        str(dataset),
+        as_="anndata",
+        prefer="zarr",
+        clusters_relpath="analysis/clustering/gene_expression_kmeans_2_clusters/clusters.csv",
+    )
+
+    assert list(adata.obs["cluster"].astype(str)) == KMEANS2_LABELS
+    assert list(adata.obs["cluster__gene_expression_graphclust"].astype(str)) == GRAPHCLUST_LABELS
+    assert adata.uns["xenium_analysis"]["default_cluster_key"] == "gene_expression_kmeans_2_clusters"
+
+
 def test_read_xenium_sdata_contains_expected_components(tmp_path):
-    dataset = make_xenium_dataset(tmp_path / "dataset")
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_extra_clusterings=True,
+        include_projections=True,
+    )
 
     sdata = read_xenium(str(dataset), as_="sdata", prefer="mex")
 
@@ -326,6 +483,9 @@ def test_read_xenium_sdata_contains_expected_components(tmp_path):
     assert set(sdata.shapes) == {"cell_boundaries", "nucleus_boundaries"}
     assert sdata.metadata["units"] == "micron"
     assert sdata.metadata["feature_summary"]["n_features_total"] == 4
+    assert sdata.metadata["cluster_key"] == "gene_expression_graphclust"
+    assert "cluster__gene_expression_kmeans_2_clusters" in sdata.table.obs.columns
+    np.testing.assert_allclose(sdata.table.obsm["X_umap"], UMAP_VALUES)
 
 
 def test_read_xenium_sdata_loads_he_image_and_alignment_metadata(tmp_path):
@@ -362,7 +522,11 @@ def test_read_xenium_sdata_loads_he_image_and_alignment_metadata(tmp_path):
 
 
 def test_sdata_roundtrip(tmp_path):
-    dataset = make_xenium_dataset(tmp_path / "dataset")
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_extra_clusterings=True,
+        include_projections=True,
+    )
     sdata = read_xenium(str(dataset), as_="sdata", prefer="zarr")
 
     output = tmp_path / "pyxenium_sdata.zarr"
@@ -373,7 +537,11 @@ def test_sdata_roundtrip(tmp_path):
     assert reloaded.table.shape == sdata.table.shape
     assert reloaded.points["transcripts"].shape == sdata.points["transcripts"].shape
     assert reloaded.shapes["cell_boundaries"].shape == sdata.shapes["cell_boundaries"].shape
-    assert reloaded.metadata["cluster_key"] == "cluster"
+    assert reloaded.metadata["cluster_key"] == "gene_expression_graphclust"
+    assert list(reloaded.table.obs["cluster"].astype(str)) == GRAPHCLUST_LABELS
+    assert list(reloaded.table.obs["cluster__gene_expression_kmeans_2_clusters"].astype(str)) == KMEANS2_LABELS
+    np.testing.assert_allclose(reloaded.table.obsm["X_umap"], UMAP_VALUES)
+    assert reloaded.table.uns["xenium_analysis"]["projection_keys"]["umap"] == "X_umap"
 
 
 def test_sdata_roundtrip_preserves_he_images(tmp_path):
@@ -427,6 +595,7 @@ def test_read_xenium_sdata_gracefully_handles_missing_optional_artifacts(tmp_pat
         include_backends=("mex",),
         include_boundaries=False,
         include_transcripts=False,
+        include_analysis=False,
     )
 
     sdata = read_xenium(str(dataset), as_="sdata", prefer="mex")
@@ -434,6 +603,8 @@ def test_read_xenium_sdata_gracefully_handles_missing_optional_artifacts(tmp_pat
     assert sdata.table.n_obs == 3
     assert sdata.points == {}
     assert sdata.shapes == {}
+    assert "cluster" not in sdata.table.obs.columns
+    assert "X_umap" not in sdata.table.obsm
 
 
 def test_read_xenium_sdata_gracefully_handles_missing_he_image(tmp_path):
@@ -448,6 +619,23 @@ def test_read_xenium_sdata_gracefully_handles_missing_he_image(tmp_path):
     sdata = read_xenium(str(dataset), as_="sdata", prefer="mex", include_images=True)
 
     assert sdata.images == {}
+
+
+def test_read_xenium_supports_double_analysis_directory_variant(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_projections=True,
+        primary_analysis_root="analysis/analysis",
+    )
+
+    adata = read_xenium(str(dataset), as_="anndata", prefer="zarr")
+
+    assert list(adata.obs["cluster"].astype(str)) == GRAPHCLUST_LABELS
+    np.testing.assert_allclose(adata.obsm["X_umap"], UMAP_VALUES)
+    assert (
+        adata.uns["xenium_analysis"]["projection_sources"]["umap"]["relpath"]
+        == "analysis/analysis/umap/gene_expression_2_components/projection.csv"
+    )
 
 
 def test_load_anndata_from_partial_reuses_shared_artifact_readers(tmp_path):

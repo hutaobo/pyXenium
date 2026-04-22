@@ -14,11 +14,11 @@ from .xenium_artifacts import (
     discover_image_artifacts,
     extract_spatial_from_obs,
     join_path,
+    load_xenium_analysis,
     read_boundary_tables,
     read_cell_feature_matrix,
     read_cells_table,
     read_cells_zarr_spatial,
-    read_clusters_series,
     read_he_image,
     read_transcripts_table,
     resolve_transcripts_path,
@@ -34,7 +34,7 @@ def _metadata_for_source(
     base_path: str,
     backend: str,
     features: pd.DataFrame,
-    cluster_key: str,
+    cluster_key: str | None,
     image_artifacts: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
@@ -115,13 +115,15 @@ def _assemble_anndata(
         cells_parquet=cells_parquet,
     )
 
-    cluster_series = read_clusters_series(
+    analysis = load_xenium_analysis(
         base_path,
         clusters_relpath=clusters_relpath,
         barcodes=barcodes,
+        cluster_column_name=cluster_column_name,
     )
-    if cluster_series is not None:
-        obs[cluster_column_name] = pd.Categorical(cluster_series.astype("object"))
+    for key, series in analysis.cluster_series.items():
+        column_name = analysis.cluster_columns[key]
+        obs[column_name] = pd.Categorical(series.astype("object"))
 
     adata = ad.AnnData(X=modalities["rna_matrix"], obs=obs, var=modalities["rna_var"])
     adata.layers["rna"] = adata.X.copy()
@@ -129,6 +131,8 @@ def _assemble_anndata(
     spatial = extract_spatial_from_obs(adata.obs)
     if spatial is not None:
         adata.obsm["spatial"] = spatial
+    for method, frame in analysis.projection_frames.items():
+        adata.obsm[analysis.projection_keys[method]] = frame.to_numpy(dtype=float, copy=True)
 
     adata.uns.setdefault("modality", {})
     adata.uns["modality"]["rna"] = {"feature_type": "Gene Expression"}
@@ -142,6 +146,7 @@ def _assemble_anndata(
         "source_path": str(base_path),
         **obs_meta,
     }
+    adata.uns["xenium_analysis"] = analysis.summary()
 
     boundaries = (
         read_boundary_tables(base_path, include_cell=True, include_nucleus=True)
@@ -159,7 +164,7 @@ def _assemble_anndata(
         base_path=base_path,
         backend=backend,
         features=features,
-        cluster_key=cluster_column_name,
+        cluster_key=analysis.default_cluster_key,
         image_artifacts=image_artifacts,
     )
     return adata, boundaries, metadata

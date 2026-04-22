@@ -95,6 +95,46 @@ class TiffImageLevel:
         return store, _resolve_zarr_array(source)
 
 
+@dataclass(frozen=True)
+class XeniumClusteringArtifact:
+    key: str
+    path: str
+    relpath: str
+    analysis_depth: int
+
+
+@dataclass(frozen=True)
+class XeniumProjectionArtifact:
+    method: str
+    path: str
+    relpath: str
+    embedding_name: str
+    analysis_depth: int
+    n_components_hint: int | None
+
+
+@dataclass
+class XeniumAnalysisBundle:
+    default_cluster_key: str | None
+    default_cluster_column: str | None
+    cluster_series: dict[str, pd.Series]
+    cluster_columns: dict[str, str]
+    projection_frames: dict[str, pd.DataFrame]
+    projection_keys: dict[str, str]
+    cluster_sources: dict[str, dict[str, Any]]
+    projection_sources: dict[str, dict[str, Any]]
+
+    def summary(self) -> dict[str, Any]:
+        return {
+            "default_cluster_key": self.default_cluster_key,
+            "default_cluster_column": self.default_cluster_column,
+            "cluster_columns": dict(self.cluster_columns),
+            "cluster_sources": dict(self.cluster_sources),
+            "projection_keys": dict(self.projection_keys),
+            "projection_sources": dict(self.projection_sources),
+        }
+
+
 def is_remote_path(path_or_url: str) -> bool:
     return str(path_or_url).startswith(REMOTE_PREFIXES)
 
@@ -618,6 +658,306 @@ def extract_spatial_from_obs(obs: pd.DataFrame) -> np.ndarray | None:
     return None
 
 
+def _analysis_relative_path(base_path: str, candidate_path: Path) -> str:
+    root = Path(base_path).expanduser().resolve()
+    try:
+        return candidate_path.resolve().relative_to(root).as_posix()
+    except Exception:
+        return candidate_path.as_posix()
+
+
+def _component_count_from_name(name: str) -> int | None:
+    match = re.search(r"(\d+)_components?$", str(name))
+    if match is None:
+        return None
+    return int(match.group(1))
+
+
+def _iter_local_analysis_csvs(base_path: str, filename: str) -> Iterator[Path]:
+    if is_remote_path(base_path):
+        return iter(())
+
+    root = Path(base_path).expanduser()
+    if not root.exists() or not root.is_dir():
+        return iter(())
+    return root.rglob(filename)
+
+
+def discover_clustering_artifacts(base_path: str) -> dict[str, XeniumClusteringArtifact]:
+    selected: dict[str, XeniumClusteringArtifact] = {}
+    for path in _iter_local_analysis_csvs(base_path, "clusters.csv"):
+        relpath = _analysis_relative_path(base_path, path)
+        rel_parts = Path(relpath).parts
+        if "analysis" not in rel_parts or "clustering" not in rel_parts:
+            continue
+        artifact = XeniumClusteringArtifact(
+            key=str(path.parent.name),
+            path=str(path),
+            relpath=relpath,
+            analysis_depth=sum(1 for part in rel_parts if part == "analysis"),
+        )
+        current = selected.get(artifact.key)
+        if current is None or (artifact.analysis_depth, artifact.relpath) < (
+            current.analysis_depth,
+            current.relpath,
+        ):
+            selected[artifact.key] = artifact
+    return selected
+
+
+def discover_projection_artifacts(base_path: str) -> dict[str, XeniumProjectionArtifact]:
+    selected: dict[str, XeniumProjectionArtifact] = {}
+    for path in _iter_local_analysis_csvs(base_path, "projection.csv"):
+        relpath = _analysis_relative_path(base_path, path)
+        rel_parts = Path(relpath).parts
+        if "analysis" not in rel_parts:
+            continue
+
+        method = None
+        for candidate in ("umap", "pca", "tsne"):
+            if candidate in rel_parts:
+                method = candidate
+                break
+        if method is None:
+            continue
+
+        artifact = XeniumProjectionArtifact(
+            method=method,
+            path=str(path),
+            relpath=relpath,
+            embedding_name=str(path.parent.name),
+            analysis_depth=sum(1 for part in rel_parts if part == "analysis"),
+            n_components_hint=_component_count_from_name(path.parent.name),
+        )
+        current = selected.get(method)
+        artifact_score = (
+            artifact.analysis_depth,
+            -(artifact.n_components_hint or 0),
+            artifact.relpath,
+        )
+        if current is None:
+            selected[method] = artifact
+            continue
+        current_score = (
+            current.analysis_depth,
+            -(current.n_components_hint or 0),
+            current.relpath,
+        )
+        if artifact_score < current_score:
+            selected[method] = artifact
+    return selected
+
+
+def _infer_frame_index_column(frame: pd.DataFrame) -> str:
+    for candidate in ("Barcode", "barcode", "cell_id", "cell", "cellID", "CellID", "cells"):
+        if candidate in frame.columns:
+            return str(candidate)
+    return str(frame.columns[0])
+
+
+def _infer_cluster_column(frame: pd.DataFrame, *, index_col: str) -> str:
+    lower_map = {str(column).lower(): str(column) for column in frame.columns}
+    for key in ("cluster", "clusters", "graphclust", "label", "group"):
+        if key in lower_map:
+            return lower_map[key]
+    if frame.shape[1] == 2:
+        return next(str(column) for column in frame.columns if str(column) != index_col)
+    return str(frame.columns[-1])
+
+
+def _cluster_key_from_relpath(relpath: str) -> str:
+    path = Path(relpath)
+    if path.parent.name:
+        return str(path.parent.name)
+    return str(path.stem or "cluster")
+
+
+def read_cluster_series_from_path(
+    clusters_path: str,
+    *,
+    barcodes: pd.Index,
+) -> tuple[pd.Series, dict[str, Any]]:
+    with open_text(clusters_path) as stream:
+        frame = pd.read_csv(stream)
+    if frame.empty:
+        empty = pd.Series(index=barcodes, dtype="object")
+        empty.index.name = "barcode"
+        return empty, {
+            "index_column": None,
+            "cluster_column": None,
+            "n_rows": 0,
+            "n_obs_assigned": 0,
+        }
+
+    index_col = _infer_frame_index_column(frame)
+    cluster_col = _infer_cluster_column(frame, index_col=index_col)
+    series = (
+        frame[[index_col, cluster_col]]
+        .dropna(subset=[index_col])
+        .assign(**{index_col: lambda table: table[index_col].astype(str)})
+        .set_index(index_col)[cluster_col]
+        .astype(str)
+        .reindex(barcodes)
+    )
+    series.index.name = "barcode"
+    return series, {
+        "index_column": index_col,
+        "cluster_column": cluster_col,
+        "n_rows": int(frame.shape[0]),
+        "n_obs_assigned": int(series.notna().sum()),
+    }
+
+
+def _infer_projection_columns(frame: pd.DataFrame, *, index_col: str) -> list[str]:
+    component_columns: list[str] = []
+    for column in frame.columns:
+        if str(column) == index_col:
+            continue
+        numeric = pd.to_numeric(frame[column], errors="coerce")
+        if numeric.notna().any():
+            component_columns.append(str(column))
+    return component_columns
+
+
+def read_projection_frame_from_path(
+    projection_path: str,
+    *,
+    barcodes: pd.Index,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    with open_text(projection_path) as stream:
+        frame = pd.read_csv(stream)
+    if frame.empty:
+        empty = pd.DataFrame(index=barcodes)
+        empty.index.name = "barcode"
+        return empty, {
+            "index_column": None,
+            "component_columns": [],
+            "n_rows": 0,
+            "n_components": 0,
+            "n_obs_assigned": 0,
+        }
+
+    index_col = _infer_frame_index_column(frame)
+    component_columns = _infer_projection_columns(frame, index_col=index_col)
+    if not component_columns:
+        empty = pd.DataFrame(index=barcodes)
+        empty.index.name = "barcode"
+        return empty, {
+            "index_column": index_col,
+            "component_columns": [],
+            "n_rows": int(frame.shape[0]),
+            "n_components": 0,
+            "n_obs_assigned": 0,
+        }
+
+    projection = (
+        frame[[index_col, *component_columns]]
+        .dropna(subset=[index_col])
+        .assign(**{index_col: lambda table: table[index_col].astype(str)})
+        .set_index(index_col)
+    )
+    projection = projection.apply(pd.to_numeric, errors="coerce").reindex(barcodes)
+    projection.index.name = "barcode"
+    return projection, {
+        "index_column": index_col,
+        "component_columns": component_columns,
+        "n_rows": int(frame.shape[0]),
+        "n_components": int(len(component_columns)),
+        "n_obs_assigned": int(projection.notna().all(axis=1).sum()),
+    }
+
+
+def load_xenium_analysis(
+    base_path: str,
+    *,
+    barcodes: pd.Index,
+    clusters_relpath: str | None,
+    cluster_column_name: str = "cluster",
+) -> XeniumAnalysisBundle:
+    cluster_artifacts = discover_clustering_artifacts(base_path)
+    projection_artifacts = discover_projection_artifacts(base_path)
+
+    default_cluster_key: str | None = None
+    if clusters_relpath:
+        explicit_path = join_path(base_path, clusters_relpath)
+        if exists(explicit_path):
+            explicit_relpath = clusters_relpath.replace("\\", "/")
+            explicit_key = _cluster_key_from_relpath(explicit_relpath)
+            cluster_artifacts[explicit_key] = XeniumClusteringArtifact(
+                key=explicit_key,
+                path=explicit_path,
+                relpath=explicit_relpath,
+                analysis_depth=explicit_relpath.split("/").count("analysis"),
+            )
+            default_cluster_key = explicit_key
+
+    if default_cluster_key is None and "gene_expression_graphclust" in cluster_artifacts:
+        default_cluster_key = "gene_expression_graphclust"
+    if default_cluster_key is None and cluster_artifacts:
+        default_cluster_key = sorted(cluster_artifacts)[0]
+
+    cluster_series: dict[str, pd.Series] = {}
+    cluster_columns: dict[str, str] = {}
+    cluster_sources: dict[str, dict[str, Any]] = {}
+
+    for key in sorted(cluster_artifacts):
+        artifact = cluster_artifacts[key]
+        series, meta = read_cluster_series_from_path(artifact.path, barcodes=barcodes)
+        if series.empty and meta["n_rows"] == 0:
+            continue
+        cluster_series[key] = series
+        cluster_columns[key] = (
+            cluster_column_name if key == default_cluster_key else f"{cluster_column_name}__{key}"
+        )
+        cluster_sources[key] = {
+            "path": artifact.path,
+            "relpath": artifact.relpath,
+            "index_column": meta["index_column"],
+            "cluster_column": meta["cluster_column"],
+            "n_rows": meta["n_rows"],
+            "n_obs_assigned": meta["n_obs_assigned"],
+        }
+
+    projection_frames: dict[str, pd.DataFrame] = {}
+    projection_keys: dict[str, str] = {}
+    projection_sources: dict[str, dict[str, Any]] = {}
+
+    for method in sorted(projection_artifacts):
+        artifact = projection_artifacts[method]
+        frame, meta = read_projection_frame_from_path(artifact.path, barcodes=barcodes)
+        if frame.shape[1] == 0:
+            continue
+        projection_frames[method] = frame
+        projection_keys[method] = f"X_{method}"
+        projection_sources[method] = {
+            "path": artifact.path,
+            "relpath": artifact.relpath,
+            "embedding_name": artifact.embedding_name,
+            "index_column": meta["index_column"],
+            "component_columns": meta["component_columns"],
+            "n_rows": meta["n_rows"],
+            "n_components": meta["n_components"],
+            "n_obs_assigned": meta["n_obs_assigned"],
+        }
+
+    default_cluster_column = (
+        cluster_columns.get(default_cluster_key)
+        if default_cluster_key is not None
+        else None
+    )
+
+    return XeniumAnalysisBundle(
+        default_cluster_key=default_cluster_key,
+        default_cluster_column=default_cluster_column,
+        cluster_series=cluster_series,
+        cluster_columns=cluster_columns,
+        projection_frames=projection_frames,
+        projection_keys=projection_keys,
+        cluster_sources=cluster_sources,
+        projection_sources=projection_sources,
+    )
+
+
 def read_clusters_series(
     base_path: str,
     *,
@@ -631,40 +971,7 @@ def read_clusters_series(
     if not exists(clusters_path):
         return None
 
-    with open_text(clusters_path) as stream:
-        frame = pd.read_csv(stream)
-    if frame.empty:
-        return pd.Series(index=barcodes, dtype="object")
-
-    index_col = None
-    for candidate in ("cell_id", "barcode", "cell", "cellID", "CellID", "cells"):
-        if candidate in frame.columns:
-            index_col = candidate
-            break
-    if index_col is None:
-        index_col = frame.columns[0]
-
-    lower_map = {column.lower(): column for column in frame.columns}
-    cluster_col = None
-    for key in ("cluster", "clusters", "graphclust", "label", "group"):
-        if key in lower_map:
-            cluster_col = lower_map[key]
-            break
-    if cluster_col is None:
-        if frame.shape[1] == 2:
-            cluster_col = next(column for column in frame.columns if column != index_col)
-        else:
-            cluster_col = frame.columns[-1]
-
-    series = (
-        frame[[index_col, cluster_col]]
-        .dropna(subset=[index_col])
-        .assign(**{index_col: lambda table: table[index_col].astype(str)})
-        .set_index(index_col)[cluster_col]
-        .astype(str)
-        .reindex(barcodes)
-    )
-    series.index.name = "barcode"
+    series, _ = read_cluster_series_from_path(clusters_path, barcodes=barcodes)
     return series
 
 
