@@ -29,6 +29,8 @@ changelog
     <a href="https://pypi.org/project/pyXenium/">PyPI</a>
     <a href="https://github.com/hutaobo/pyXenium">GitHub</a>
     <a href="https://pyxenium.readthedocs.io/en/latest/">Read the Docs</a>
+    <a href="https://pyxenium.readthedocs.io/en/latest/changelog.html">Changelog</a>
+    <a href="https://github.com/hutaobo/pyXenium/releases">Releases</a>
   </div>
 </div>
 
@@ -36,6 +38,23 @@ changelog
 :alt: pyXenium scientific banner
 :class: pyxenium-banner
 ```
+
+## Version & Build
+
+<p>
+  <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/pypi/v/pyXenium.svg" alt="PyPI version"></a>
+  <a href="https://pyxenium.readthedocs.io/en/latest/"><img src="https://readthedocs.org/projects/pyxenium/badge/?version=latest" alt="Read the Docs"></a>
+  <a href="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml"><img src="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/pypi/pyversions/pyXenium.svg" alt="Python versions"></a>
+  <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-non--commercial-d97706.svg" alt="License"></a>
+</p>
+
+- Current repository version: `0.2.1`
+- Package index: [PyPI](https://pypi.org/project/pyXenium/)
+- Documentation site: [Read the Docs latest](https://pyxenium.readthedocs.io/en/latest/)
+- Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
+- Releases: [GitHub releases](https://github.com/hutaobo/pyXenium/releases)
+- Changelog: [RTD changelog](https://pyxenium.readthedocs.io/en/latest/changelog.html)
 
 ::::{grid} 1 2 3 3
 :gutter: 2

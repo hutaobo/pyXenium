@@ -4,15 +4,29 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyXenium"
-version = "0.2.0"
-description = "Xenium I/O and multimodal RNA+Protein analysis workflows for 10x Xenium data."
+dynamic = ["version"]
+description = "Xenium I/O, multimodal analysis, topology workflows, and contour-native spatial profiling."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "LicenseRef-Proprietary-NonCommercial"
 license-files = ["LICENSE"]
 authors = [{ name = "Taobo Hu" }]
+keywords = ["xenium", "spatial-omics", "spatial-transcriptomics", "multimodal", "anndata"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
 
-# 运行时依赖（按你项目真实需要填写；示例）
 dependencies = [
   "anndata>=0.10",
   "numpy>=1.23",
@@ -29,6 +43,13 @@ dependencies = [
   "aiohttp",
   "click>=8.1",
 ]
+
+[project.urls]
+Documentation = "https://pyxenium.readthedocs.io/en/latest/"
+Source = "https://github.com/hutaobo/pyXenium"
+Issues = "https://github.com/hutaobo/pyXenium/issues"
+Changelog = "https://pyxenium.readthedocs.io/en/latest/changelog.html"
+Releases = "https://github.com/hutaobo/pyXenium/releases"
 
 [project.scripts]
 pyxenium = "pyXenium.__main__:main"
@@ -50,9 +71,11 @@ dev = [
 ]
 
 [tool.setuptools]
-# ★ 明确 src 布局
 package-dir = {"" = "src"}
 include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {attr = "pyXenium._version.__version__"}
 
 [tool.setuptools.package-data]
 pyXenium = [
