@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pyXenium._compat import deprecated_callable, deprecated_symbol
+from pyXenium.ligand_receptor import ligand_receptor_topology_analysis as _ligand_receptor_topology_analysis
 from pyXenium.multimodal import (
     plot_auc_heatmap as _plot_auc_heatmap,
     plot_DE_volcano as _plot_DE_volcano,
@@ -10,10 +11,21 @@ from pyXenium.multimodal import (
     rna_protein_cluster_analysis as _rna_protein_cluster_analysis,
     write_model_scores as _write_model_scores,
 )
+from pyXenium.pathway import (
+    compute_pathway_activity_matrix as _compute_pathway_activity_matrix,
+    pathway_topology_analysis as _pathway_topology_analysis,
+)
 
-from . import differential, plotting, scoring
-from .ligand_receptor_topology import ligand_receptor_topology_analysis
-from .pathway_topology import compute_pathway_activity_matrix, pathway_topology_analysis
+from . import (
+    differential,
+    microenv_analysis,
+    plotting,
+    scoring,
+    tabnet_model,
+    tabnet_pipeline,
+    tabnet_reports,
+    tabnet_tools,
+)
 
 protein_gene_correlation = deprecated_callable(
     _protein_gene_correlation,
@@ -50,6 +62,21 @@ plot_topk_per_cluster = deprecated_callable(
     old_path="pyXenium.analysis.plot_topk_per_cluster",
     new_path="pyXenium.multimodal.plot_topk_per_cluster",
 )
+ligand_receptor_topology_analysis = deprecated_callable(
+    _ligand_receptor_topology_analysis,
+    old_path="pyXenium.analysis.ligand_receptor_topology_analysis",
+    new_path="pyXenium.ligand_receptor.ligand_receptor_topology_analysis",
+)
+pathway_topology_analysis = deprecated_callable(
+    _pathway_topology_analysis,
+    old_path="pyXenium.analysis.pathway_topology_analysis",
+    new_path="pyXenium.pathway.pathway_topology_analysis",
+)
+compute_pathway_activity_matrix = deprecated_callable(
+    _compute_pathway_activity_matrix,
+    old_path="pyXenium.analysis.compute_pathway_activity_matrix",
+    new_path="pyXenium.pathway.compute_pathway_activity_matrix",
+)
 
 _DEPRECATED_PUBLIC_NAMES = {
     "DEFAULT_BRANCH_MODELS",
@@ -83,6 +110,7 @@ __all__ = [
     "compute_pathway_activity_matrix",
     "differential",
     "ligand_receptor_topology_analysis",
+    "microenv_analysis",
     "pathway_topology_analysis",
     "plot_auc_heatmap",
     "plot_DE_volcano",
@@ -92,5 +120,9 @@ __all__ = [
     "protein_gene_correlation",
     "rna_protein_cluster_analysis",
     "scoring",
+    "tabnet_model",
+    "tabnet_pipeline",
+    "tabnet_reports",
+    "tabnet_tools",
     "write_model_scores",
 ]

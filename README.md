@@ -3,14 +3,16 @@ pyXenium
 
 pyXenium is a Python toolkit for loading and analyzing **10x Genomics Xenium** data.
 
-The package now has two canonical public surfaces:
+The package now has four canonical public surfaces:
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
 - `pyXenium.multimodal`: joint RNA + Protein loading, analysis, immune-resistance scoring, and packaged workflows.
+- `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis.
+- `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
 
-Legacy multimodal entry points under `pyXenium.analysis`, `pyXenium.validation`, and
+Legacy compatibility entry points under `pyXenium.analysis`, `pyXenium.validation`, and
 `pyXenium.io.load_xenium_gene_protein(...)` are still available as compatibility aliases,
-but they now emit `DeprecationWarning` and forward to `pyXenium.multimodal`.
+but they now emit `DeprecationWarning` and forward to the new parallel namespaces.
 
 Installation
 ------------
@@ -39,7 +41,11 @@ Core capabilities
 - **Packaged multimodal workflows** including:
   - `run_validated_renal_ffpe_smoke(...)`
   - `run_renal_immune_resistance_pilot(...)`
-- **Topology workflows** for ligand-receptor / pathway analyses, including the Atera WTA breast reproducibility bundle
+- **Topology workflows** via:
+  - `pyXenium.ligand_receptor.ligand_receptor_topology_analysis(...)`
+  - `pyXenium.pathway.pathway_topology_analysis(...)`
+  - `pyXenium.pathway.compute_pathway_activity_matrix(...)`
+  - `pyXenium.validation.run_atera_wta_breast_topology(...)`
 
 Quick start
 -----------
@@ -181,13 +187,14 @@ python examples/renal_immune_resistance_pilot.py \
 Atera breast topology workflow
 ------------------------------
 
-The Atera WTA FFPE breast reproducibility workflow remains part of the topology / validation line rather than the multimodal module.
+The Atera WTA FFPE breast reproducibility workflow now sits on top of the dedicated
+topology namespaces rather than `pyXenium.analysis`.
 
 It packages:
 
-- `ligand_receptor_topology_analysis(...)`
-- `pathway_topology_analysis(...)`
-- `compute_pathway_activity_matrix(...)`
+- `pyXenium.ligand_receptor.ligand_receptor_topology_analysis(...)`
+- `pyXenium.pathway.pathway_topology_analysis(...)`
+- `pyXenium.pathway.compute_pathway_activity_matrix(...)`
 - `run_atera_wta_breast_topology(...)`
 
 CLI:
@@ -216,6 +223,9 @@ Minimal API index
 - `pyXenium.multimodal.rna_protein_cluster_analysis(...)`
 - `pyXenium.multimodal.run_validated_renal_ffpe_smoke(...)`
 - `pyXenium.multimodal.run_renal_immune_resistance_pilot(...)`
+- `pyXenium.ligand_receptor.ligand_receptor_topology_analysis(...)`
+- `pyXenium.pathway.pathway_topology_analysis(...)`
+- `pyXenium.pathway.compute_pathway_activity_matrix(...)`
 
 License
 -------

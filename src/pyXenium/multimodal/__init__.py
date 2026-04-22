@@ -1,3 +1,4 @@
+from . import analysis, immune_resistance, loading, workflows
 from .analysis import (
     ProteinMicroEnv,
     ProteinModelResult,
@@ -58,6 +59,7 @@ __all__ = [
     "MarkerPair",
     "ProteinMicroEnv",
     "ProteinModelResult",
+    "analysis",
     "aggregate_multi_sample_study",
     "annotate_joint_cell_states",
     "build_cohort_handoff_spec",
@@ -68,6 +70,8 @@ __all__ = [
     "build_top_hypotheses_table",
     "compute_rna_protein_discordance",
     "extract_ranked_patches",
+    "immune_resistance",
+    "loading",
     "load_rna_protein_anndata",
     "plot_auc_heatmap",
     "plot_DE_volcano",
@@ -84,4 +88,5 @@ __all__ = [
     "write_model_scores",
     "write_output_artifacts",
     "write_renal_immune_resistance_artifacts",
+    "workflows",
 ]

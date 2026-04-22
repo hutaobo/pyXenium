@@ -1,11 +1,7 @@
 from __future__ import annotations
 
 from ._version import __version__
-from .analysis import (
-    compute_pathway_activity_matrix,
-    ligand_receptor_topology_analysis,
-    pathway_topology_analysis,
-)
+from . import io, ligand_receptor, multimodal, pathway, validation
 from .datasets import PUBLIC_DATASET_SOURCES, get_public_dataset_sources
 from .io import (
     XeniumSData,
@@ -15,6 +11,7 @@ from .io import (
     read_xenium,
     write_xenium,
 )
+from .ligand_receptor import ligand_receptor_topology_analysis
 from .multimodal import (
     ProteinMicroEnv,
     ProteinModelResult,
@@ -45,6 +42,7 @@ from .multimodal import (
     write_output_artifacts,
     write_renal_immune_resistance_artifacts,
 )
+from .pathway import compute_pathway_activity_matrix, pathway_topology_analysis
 
 __all__ = [
     "__version__",
@@ -64,11 +62,15 @@ __all__ = [
     "compute_rna_protein_discordance",
     "extract_ranked_patches",
     "get_public_dataset_sources",
+    "io",
     "ligand_receptor_topology_analysis",
+    "ligand_receptor",
     "load_anndata_from_partial",
     "load_rna_protein_anndata",
     "load_xenium_gene_protein",
+    "multimodal",
     "pathway_topology_analysis",
+    "pathway",
     "plot_auc_heatmap",
     "plot_DE_volcano",
     "plot_model_diagnostics",
@@ -83,6 +85,7 @@ __all__ = [
     "run_validated_renal_ffpe_smoke",
     "score_immune_resistance_program",
     "validate_summary",
+    "validation",
     "write_model_scores",
     "write_output_artifacts",
     "write_renal_immune_resistance_artifacts",

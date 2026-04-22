@@ -7,11 +7,9 @@ from typing import Any
 
 import pandas as pd
 
-from pyXenium.analysis import (
-    ligand_receptor_topology_analysis,
-    pathway_topology_analysis,
-)
 from pyXenium.io import read_xenium
+from pyXenium.ligand_receptor import ligand_receptor_topology_analysis
+from pyXenium.pathway import pathway_topology_analysis
 
 DEFAULT_ATERA_WTA_BREAST_DATASET_PATH = (
     r"Y:\long\10X_datasets\Xenium\Atera\WTA_Preview_FFPE_Breast_Cancer_outs"

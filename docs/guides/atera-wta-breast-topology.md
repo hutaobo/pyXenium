@@ -6,9 +6,9 @@ breast-validated ligand-receptor and pathway topology analyses.
 
 Core entrypoints:
 
-- `pyXenium.analysis.ligand_receptor_topology_analysis`
-- `pyXenium.analysis.pathway_topology_analysis`
-- `pyXenium.analysis.compute_pathway_activity_matrix`
+- `pyXenium.ligand_receptor.ligand_receptor_topology_analysis`
+- `pyXenium.pathway.pathway_topology_analysis`
+- `pyXenium.pathway.compute_pathway_activity_matrix`
 - `pyXenium.validation.run_atera_wta_breast_topology`
 
 CLI usage:

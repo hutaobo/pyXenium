@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 import pandas as pd
+import pytest
 
 from pyXenium import (
     compute_pathway_activity_matrix,
     ligand_receptor_topology_analysis,
     pathway_topology_analysis,
+)
+from pyXenium.ligand_receptor import ligand_receptor_topology_analysis as ligand_receptor_topology_analysis_direct
+from pyXenium.pathway import (
+    compute_pathway_activity_matrix as compute_pathway_activity_matrix_direct,
+    pathway_topology_analysis as pathway_topology_analysis_direct,
 )
 
 
@@ -58,6 +64,26 @@ def test_public_topology_exports_are_importable():
     assert callable(ligand_receptor_topology_analysis)
     assert callable(pathway_topology_analysis)
     assert callable(compute_pathway_activity_matrix)
+    assert callable(ligand_receptor_topology_analysis_direct)
+    assert callable(pathway_topology_analysis_direct)
+    assert callable(compute_pathway_activity_matrix_direct)
+
+
+def test_analysis_topology_compatibility_imports_warn_and_resolve():
+    with pytest.warns(DeprecationWarning):
+        from pyXenium.analysis.ligand_receptor_topology import (
+            ligand_receptor_topology_analysis as legacy_lr_topology_analysis,
+        )
+
+    with pytest.warns(DeprecationWarning):
+        from pyXenium.analysis.pathway_topology import (
+            compute_pathway_activity_matrix as legacy_compute_pathway_activity_matrix,
+            pathway_topology_analysis as legacy_pathway_topology_analysis,
+        )
+
+    assert legacy_lr_topology_analysis is ligand_receptor_topology_analysis_direct
+    assert legacy_pathway_topology_analysis is pathway_topology_analysis_direct
+    assert legacy_compute_pathway_activity_matrix is compute_pathway_activity_matrix_direct
 
 
 def test_ligand_receptor_precomputed_anchors_match_supplied_topology():
