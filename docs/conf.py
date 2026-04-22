@@ -18,7 +18,7 @@ release = __version__
 version = __version__
 
 extensions = [
-    "myst_parser",
+    "myst_nb",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
@@ -29,7 +29,8 @@ extensions = [
 
 source_suffix = {
     ".rst": "restructuredtext",
-    ".md": "myst",
+    ".md": "myst-nb",
+    ".ipynb": "myst-nb",
 }
 
 root_doc = "index"
@@ -55,6 +56,9 @@ myst_enable_extensions = [
     "deflist",
 ]
 myst_heading_anchors = 3
+nb_execution_mode = "off"
+nb_execution_raise_on_error = True
+nb_merge_streams = True
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),

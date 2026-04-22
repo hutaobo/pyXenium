@@ -5,6 +5,7 @@
 :maxdepth: 2
 
 quickstart
+tutorials/index
 user-guide/index
 workflows/index
 api/index
@@ -69,6 +70,12 @@ Install pyXenium, set up the docs environment, and run your first Xenium workflo
 :link: guides/xenium-data-loading
 :link-type: doc
 Load Xenium exports, recover partial bundles, round-trip `XeniumSData`, and export compat stores.
+:::
+
+:::{grid-item-card} Tutorials
+:link: tutorials/index
+:link-type: doc
+Follow notebook-style walkthroughs for `io`, `ligand_receptor`, `pathway`, `multimodal`, and the current contour guide.
 :::
 
 :::{grid-item-card} Multimodal Analysis

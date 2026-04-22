@@ -63,8 +63,12 @@ docs = [
   "sphinx>=8",
   "pydata-sphinx-theme>=0.16",
   "myst-parser>=4.0",
+  "myst-nb>=1.1",
   "sphinx-design>=0.6",
   "sphinx-copybutton>=0.5",
+  "ipykernel>=6.29",
+  "nbclient>=0.10",
+  "nbformat>=5.10",
 ]
 
 dev = [
