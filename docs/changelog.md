@@ -6,6 +6,11 @@ All notable changes to pyXenium are documented here.
 
 - No unreleased changes yet.
 
+## 0.2.2 - 2026-04-22
+
+- Fix a cross-platform `SyntaxError` in `pyXenium.io.xenium_artifacts.join_path(...)` caused by a backslash-containing f-string expression.
+- Restore Linux CI importability immediately after the `0.2.1` metadata/docs sync release.
+
 ## 0.2.1 - 2026-04-22
 
 - Add `pyXenium.contour.expand_contours(...)` with overlap-preserving and Voronoi-exclusive contour expansion modes.

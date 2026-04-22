@@ -152,7 +152,8 @@ def join_path(base: str, *names: str) -> str:
         if re.match(r"^[A-Za-z]:[\\/]", text) or text.startswith("/"):
             current = text
             continue
-        current = f"{current}/{text.lstrip('/\\')}"
+        relative_text = text.lstrip("/\\")
+        current = f"{current}/{relative_text}"
     return current
 
 
