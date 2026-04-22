@@ -6,13 +6,17 @@ from pathlib import Path
 import anndata as ad
 import numpy as np
 import pandas as pd
+import pytest
+from shapely import union_all
 
 import pyXenium.contour as contour
 from pyXenium.contour import (
     add_contours_from_geojson,
+    expand_contours,
     ring_density,
     smooth_density_by_distance,
 )
+from pyXenium.contour._geometry import contour_frame_to_geometry_table
 from pyXenium.io import XeniumFrameChunkSource, XeniumSData, read_sdata, read_xenium, write_xenium
 
 from test_xenium_io import make_xenium_dataset
@@ -162,12 +166,90 @@ def _make_contour_ready_sdata(*, streamed_transcripts: bool = False) -> XeniumSD
         table=adata,
         points={"transcripts": transcripts},
         shapes={"contours": contour_frame},
-        metadata={"units": "micron"},
+        metadata={
+            "units": "micron",
+            "contours": {"contours": {"units": "micron", "annotation_source": "synthetic"}},
+        },
     )
+
+
+def _make_nearby_contour_sdata() -> XeniumSData:
+    sdata = _make_contour_ready_sdata()
+    contour_frame = pd.DataFrame(
+        {
+            "contour_id": ["left"] * 4 + ["right"] * 4,
+            "part_id": [0] * 8,
+            "ring_id": [0] * 8,
+            "is_hole": [False] * 8,
+            "vertex_id": [0, 1, 2, 3] * 2,
+            "x": [0.0, 10.0, 10.0, 0.0, 14.0, 24.0, 24.0, 14.0],
+            "y": [0.0, 0.0, 10.0, 10.0, 0.0, 0.0, 10.0, 10.0],
+            "assigned_structure": ["Left"] * 4 + ["Right"] * 4,
+            "classification_name": ["Synthetic"] * 8,
+            "annotation_source": ["manual"] * 8,
+            "structure_id": ["L"] * 4 + ["R"] * 4,
+            "segmentation_source": ["unit-test"] * 8,
+            "score": [0.25] * 4 + [0.75] * 4,
+        }
+    )
+    sdata.shapes["neighbor_contours"] = contour_frame
+    sdata.metadata["contours"]["neighbor_contours"] = {
+        "units": "micron",
+        "annotation_source": "synthetic",
+    }
+    return sdata
+
+
+def _make_complex_contour_sdata() -> XeniumSData:
+    sdata = _make_contour_ready_sdata()
+    donut_frame = pd.DataFrame(
+        {
+            "contour_id": ["donut"] * 8,
+            "part_id": [0] * 8,
+            "ring_id": [0] * 4 + [1] * 4,
+            "is_hole": [False] * 4 + [True] * 4,
+            "vertex_id": [0, 1, 2, 3] * 2,
+            "x": [0.0, 20.0, 20.0, 0.0, 7.0, 13.0, 13.0, 7.0],
+            "y": [0.0, 0.0, 20.0, 20.0, 7.0, 7.0, 13.0, 13.0],
+            "assigned_structure": ["Donut"] * 8,
+            "classification_name": ["Hole rich"] * 8,
+            "annotation_source": ["manual"] * 8,
+            "structure_id": ["D"] * 8,
+        }
+    )
+    multi_frame = pd.DataFrame(
+        {
+            "contour_id": ["multi"] * 8,
+            "part_id": [0] * 4 + [1] * 4,
+            "ring_id": [0] * 8,
+            "is_hole": [False] * 8,
+            "vertex_id": [0, 1, 2, 3] * 2,
+            "x": [40.0, 50.0, 50.0, 40.0, 60.0, 70.0, 70.0, 60.0],
+            "y": [0.0, 0.0, 10.0, 10.0, 0.0, 0.0, 10.0, 10.0],
+            "assigned_structure": ["Multi"] * 8,
+            "classification_name": ["Two islands"] * 8,
+            "annotation_source": ["manual"] * 8,
+            "structure_id": ["M"] * 8,
+        }
+    )
+    sdata.shapes["complex_contours"] = pd.concat([donut_frame, multi_frame], ignore_index=True)
+    sdata.metadata["contours"]["complex_contours"] = {
+        "units": "micron",
+        "annotation_source": "synthetic",
+    }
+    return sdata
+
+
+def _geometry_table_for_key(sdata: XeniumSData, contour_key: str) -> pd.DataFrame:
+    return contour_frame_to_geometry_table(sdata.shapes[contour_key], contour_key=contour_key).sort_values(
+        "contour_id",
+        kind="stable",
+    ).reset_index(drop=True)
 
 
 def test_contour_public_imports_smoke():
     assert callable(contour.add_contours_from_geojson)
+    assert callable(contour.expand_contours)
     assert callable(contour.ring_density)
     assert callable(contour.smooth_density_by_distance)
 
@@ -359,3 +441,184 @@ def test_add_contours_from_real_geojson_smoke():
     assert frame["contour_id"].nunique() > 100
     assert "assigned_structure" in frame.columns
     assert frame["assigned_structure"].notna().any()
+
+
+def test_expand_contours_overlap_creates_new_layer_and_preserves_metadata():
+    sdata = _make_nearby_contour_sdata()
+
+    expand_contours(
+        sdata,
+        contour_key="neighbor_contours",
+        distance=3.0,
+        mode="overlap",
+    )
+
+    assert "neighbor_contours_expanded" in sdata.shapes
+    expanded_frame = sdata.shapes["neighbor_contours_expanded"]
+    assert expanded_frame["contour_id"].tolist().count("left") > 0
+    assert expanded_frame["segmentation_source"].eq("unit-test").all()
+    assert expanded_frame["score"].notna().all()
+
+    source_table = _geometry_table_for_key(sdata, "neighbor_contours")
+    expanded_table = _geometry_table_for_key(sdata, "neighbor_contours_expanded")
+    assert np.all(expanded_table["geometry"].map(lambda geom: geom.area).to_numpy() > source_table["geometry"].map(lambda geom: geom.area).to_numpy())
+
+    left_geometry = expanded_table.loc[expanded_table["contour_id"] == "left", "geometry"].item()
+    right_geometry = expanded_table.loc[expanded_table["contour_id"] == "right", "geometry"].item()
+    assert left_geometry.intersection(right_geometry).area > 0.0
+
+    metadata = sdata.metadata["contours"]["neighbor_contours_expanded"]
+    assert metadata["derived_from_key"] == "neighbor_contours"
+    assert metadata["generator"] == "expand_contours"
+    assert metadata["expansion_mode"] == "overlap"
+    assert metadata["expansion_distance"] == 3.0
+    assert metadata["expansion_distance_um"] == 3.0
+
+
+def test_expand_contours_voronoi_is_disjoint_and_matches_overlap_support():
+    base = _make_nearby_contour_sdata()
+    overlap = expand_contours(
+        base,
+        contour_key="neighbor_contours",
+        distance=3.0,
+        mode="overlap",
+        output_key="neighbor_overlap",
+        copy=True,
+    )
+    voronoi = expand_contours(
+        base,
+        contour_key="neighbor_contours",
+        distance=3.0,
+        mode="voronoi",
+        output_key="neighbor_voronoi",
+        copy=True,
+        voronoi_sample_step=1.0,
+    )
+
+    assert overlap is not None
+    assert voronoi is not None
+
+    overlap_table = _geometry_table_for_key(overlap, "neighbor_overlap")
+    voronoi_table = _geometry_table_for_key(voronoi, "neighbor_voronoi")
+    overlap_union = union_all(list(overlap_table["geometry"]))
+    voronoi_union = union_all(list(voronoi_table["geometry"]))
+
+    left_geometry = voronoi_table.loc[voronoi_table["contour_id"] == "left", "geometry"].item()
+    right_geometry = voronoi_table.loc[voronoi_table["contour_id"] == "right", "geometry"].item()
+    assert left_geometry.intersection(right_geometry).area < 1e-8
+    assert abs(float(overlap_union.area) - float(voronoi_union.area)) < 1e-6
+    assert left_geometry.within(
+        overlap_table.loc[overlap_table["contour_id"] == "left", "geometry"].item().buffer(1e-8)
+    )
+    assert right_geometry.within(
+        overlap_table.loc[overlap_table["contour_id"] == "right", "geometry"].item().buffer(1e-8)
+    )
+
+    metadata = voronoi.metadata["contours"]["neighbor_voronoi"]
+    assert metadata["expansion_mode"] == "voronoi"
+    assert metadata["voronoi_sample_step"] == 1.0
+    assert metadata["voronoi_sample_step_um"] == 1.0
+
+
+def test_expand_contours_copy_mode_and_roundtrip(tmp_path):
+    sdata = _make_nearby_contour_sdata()
+
+    copied = expand_contours(
+        sdata,
+        contour_key="neighbor_contours",
+        distance=2.0,
+        mode="voronoi",
+        copy=True,
+        output_key="neighbor_voronoi",
+        voronoi_sample_step=1.0,
+    )
+
+    assert copied is not None
+    assert "neighbor_voronoi" not in sdata.shapes
+    assert "neighbor_voronoi" in copied.shapes
+
+    output = write_xenium(copied, tmp_path / "contour_roundtrip.zarr", format="sdata")
+    reloaded = read_sdata(output["output_path"])
+    reloaded_table = _geometry_table_for_key(reloaded, "neighbor_voronoi")
+    copied_table = _geometry_table_for_key(copied, "neighbor_voronoi")
+    assert set(reloaded_table["contour_id"]) == set(copied_table["contour_id"])
+    assert reloaded.metadata["contours"]["neighbor_voronoi"]["derived_from_key"] == "neighbor_contours"
+
+
+def test_expand_contours_supports_holes_and_multipolygons():
+    sdata = _make_complex_contour_sdata()
+
+    expanded = expand_contours(
+        sdata,
+        contour_key="complex_contours",
+        distance=1.0,
+        mode="overlap",
+        output_key="complex_expanded",
+        copy=True,
+    )
+
+    assert expanded is not None
+    frame = expanded.shapes["complex_expanded"]
+    assert frame["contour_id"].nunique() == 2
+    assert frame["is_hole"].any()
+    multi_parts = frame.loc[frame["contour_id"] == "multi", "part_id"].nunique()
+    assert multi_parts == 2
+
+    source_table = _geometry_table_for_key(sdata, "complex_contours")
+    expanded_table = _geometry_table_for_key(expanded, "complex_expanded")
+    source_areas = source_table.set_index("contour_id")["geometry"].map(lambda geom: geom.area)
+    expanded_areas = expanded_table.set_index("contour_id")["geometry"].map(lambda geom: geom.area)
+    assert expanded_areas["donut"] > source_areas["donut"]
+    assert expanded_areas["multi"] > source_areas["multi"]
+
+
+def test_expand_contours_voronoi_single_contour_matches_overlap():
+    sdata = _make_contour_ready_sdata()
+
+    overlap = expand_contours(
+        sdata,
+        contour_key="contours",
+        distance=2.0,
+        mode="overlap",
+        output_key="contours_overlap",
+        copy=True,
+    )
+    voronoi = expand_contours(
+        sdata,
+        contour_key="contours",
+        distance=2.0,
+        mode="voronoi",
+        output_key="contours_voronoi",
+        copy=True,
+        voronoi_sample_step=1.0,
+    )
+
+    assert overlap is not None
+    assert voronoi is not None
+    overlap_geometry = _geometry_table_for_key(overlap, "contours_overlap").loc[0, "geometry"]
+    voronoi_geometry = _geometry_table_for_key(voronoi, "contours_voronoi").loc[0, "geometry"]
+    assert overlap_geometry.symmetric_difference(voronoi_geometry).area < 1e-8
+
+
+def test_expand_contours_validation():
+    sdata = _make_contour_ready_sdata()
+
+    with pytest.raises(ValueError, match="`distance` must be greater than 0"):
+        expand_contours(sdata, contour_key="contours", distance=0.0)
+    with pytest.raises(ValueError, match="`mode` must be one of"):
+        expand_contours(sdata, contour_key="contours", distance=1.0, mode="invalid")
+    with pytest.raises(KeyError, match="missing_contours"):
+        expand_contours(sdata, contour_key="missing_contours", distance=1.0)
+    with pytest.raises(ValueError, match="`voronoi_sample_step` must be greater than 0"):
+        expand_contours(
+            sdata,
+            contour_key="contours",
+            distance=1.0,
+            mode="voronoi",
+            output_key="contours_voronoi",
+            voronoi_sample_step=0.0,
+        )
+
+    expand_contours(sdata, contour_key="contours", distance=1.0)
+    with pytest.raises(KeyError, match="contours_expanded"):
+        expand_contours(sdata, contour_key="contours", distance=1.0)

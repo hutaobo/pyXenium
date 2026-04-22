@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ._version import __version__
 from . import contour, io, ligand_receptor, multimodal, pathway, validation
-from .contour import add_contours_from_geojson, ring_density, smooth_density_by_distance
+from .contour import add_contours_from_geojson, expand_contours, ring_density, smooth_density_by_distance
 from .datasets import PUBLIC_DATASET_SOURCES, get_public_dataset_sources
 from .io import (
     XeniumSData,
@@ -52,6 +52,7 @@ __all__ = [
     "ProteinModelResult",
     "XeniumSData",
     "add_contours_from_geojson",
+    "expand_contours",
     "aggregate_multi_sample_study",
     "annotate_joint_cell_states",
     "build_cohort_handoff_spec",

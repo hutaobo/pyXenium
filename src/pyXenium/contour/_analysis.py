@@ -6,8 +6,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 from shapely import STRtree, contains, distance, points
-from shapely.geometry import GeometryCollection, MultiPolygon, Polygon
 
+from ._geometry import contour_frame_to_geometry_table
 from pyXenium.io.sdata_model import XeniumSData
 
 __all__ = ["ring_density", "smooth_density_by_distance"]
@@ -209,90 +209,11 @@ def _prepare_contours(
         raise KeyError(f"Contour key `{contour_key}` not found in `sdata.shapes`.")
 
     frame = sdata.shapes[contour_key].copy()
-    required = {"contour_id", "vertex_id", "x", "y"}
-    missing = required.difference(frame.columns)
-    if missing:
-        raise ValueError(
-            f"`sdata.shapes[{contour_key!r}]` is missing required contour columns: {sorted(missing)}"
-        )
-
     if contour_query is not None:
         frame = frame.query(contour_query, engine="python")
     if frame.empty:
         raise ValueError("No contours remain after applying the requested filters.")
-
-    if "part_id" not in frame.columns:
-        frame["part_id"] = 0
-    if "ring_id" not in frame.columns:
-        frame["ring_id"] = 0
-    if "is_hole" not in frame.columns:
-        frame["is_hole"] = False
-
-    metadata_columns = [
-        column
-        for column in frame.columns
-        if column
-        not in {"contour_id", "part_id", "ring_id", "is_hole", "vertex_id", "x", "y"}
-    ]
-    records: list[dict[str, Any]] = []
-    for contour_id, contour_rows in frame.groupby("contour_id", sort=False, dropna=False):
-        geometry = _frame_to_geometry(contour_rows)
-        if geometry.is_empty:
-            continue
-        if not geometry.is_valid:
-            geometry = geometry.buffer(0)
-        if geometry.is_empty:
-            continue
-        record = {"contour_id": str(contour_id), "geometry": geometry}
-        first_row = contour_rows.iloc[0]
-        for column in metadata_columns:
-            record[column] = first_row[column]
-        records.append(record)
-
-    contour_table = pd.DataFrame.from_records(records)
-    if contour_table.empty:
-        raise ValueError("No valid contour geometries could be reconstructed from the contour table.")
-    return contour_table.reset_index(drop=True)
-
-
-def _frame_to_geometry(frame: pd.DataFrame) -> Polygon | MultiPolygon | GeometryCollection:
-    polygons: list[Polygon] = []
-    ordered = frame.sort_values(["part_id", "ring_id", "vertex_id"], kind="stable")
-    for _, part_rows in ordered.groupby("part_id", sort=False, dropna=False):
-        rings: dict[int, list[tuple[float, float]]] = {}
-        hole_flags: dict[int, bool] = {}
-        for ring_id, ring_rows in part_rows.groupby("ring_id", sort=False, dropna=False):
-            ring_coords = list(zip(ring_rows["x"].astype(float), ring_rows["y"].astype(float)))
-            if len(ring_coords) < 3:
-                continue
-            rings[int(ring_id)] = ring_coords
-            hole_flags[int(ring_id)] = bool(ring_rows["is_hole"].iloc[0])
-
-        exterior_ids = [ring_id for ring_id, is_hole in hole_flags.items() if not is_hole]
-        if not exterior_ids:
-            continue
-
-        ordered_exteriors = sorted(exterior_ids) if len(exterior_ids) > 1 else exterior_ids
-
-        for exterior_id in ordered_exteriors:
-            exterior = rings.get(exterior_id)
-            if not exterior or len(exterior) < 3:
-                continue
-            holes = [
-                rings[ring_id]
-                for ring_id, is_hole in hole_flags.items()
-                if is_hole and ring_id in rings and len(rings[ring_id]) >= 3
-            ]
-            polygon = Polygon(exterior, holes=holes)
-            if polygon.is_empty:
-                continue
-            polygons.append(polygon)
-
-    if not polygons:
-        return GeometryCollection()
-    if len(polygons) == 1:
-        return polygons[0]
-    return MultiPolygon(polygons)
+    return contour_frame_to_geometry_table(frame, contour_key=contour_key)
 
 
 def _feature_context(

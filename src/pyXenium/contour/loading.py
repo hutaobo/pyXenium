@@ -9,6 +9,7 @@ import pandas as pd
 from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon, shape
 
+from ._geometry import geometry_table_to_contour_frame
 from pyXenium.io.sdata_model import XeniumSData
 
 __all__ = ["add_contours_from_geojson"]
@@ -141,26 +142,18 @@ def _read_contour_geojson(
             raise ValueError(f"Duplicate contour id {contour_id!r} found in {path.name}.")
         seen_ids.add(contour_id)
         properties_by_id[contour_id] = raw_properties
-        records.extend(
-            _geometry_to_records(
-                geometry=geometry,
-                contour_id=contour_id,
-                metadata_values=metadata_values,
-                metadata_columns=metadata_columns,
-            )
-        )
+        record = {
+            "contour_id": contour_id,
+            "geometry": geometry,
+        }
+        for column in metadata_columns:
+            record[column] = metadata_values.get(column)
+        records.append(record)
 
-    frame = pd.DataFrame.from_records(records)
-    if frame.empty:
+    geometry_table = pd.DataFrame.from_records(records)
+    if geometry_table.empty:
         raise ValueError(f"No polygon vertices could be parsed from {path}.")
-
-    frame["contour_id"] = frame["contour_id"].astype(str)
-    frame["part_id"] = frame["part_id"].astype("int64")
-    frame["ring_id"] = frame["ring_id"].astype("int64")
-    frame["vertex_id"] = frame["vertex_id"].astype("int64")
-    frame["is_hole"] = frame["is_hole"].astype(bool)
-    frame["x"] = frame["x"].astype(float)
-    frame["y"] = frame["y"].astype(float)
+    frame = geometry_table_to_contour_frame(geometry_table)
 
     metadata = {
         "source_geojson_path": str(path),
@@ -223,60 +216,6 @@ def _normalize_feature(
         raw_properties = {"properties": raw_properties}
 
     return str(contour_id), geometry, metadata_values, raw_properties
-
-
-def _geometry_to_records(
-    *,
-    geometry: Polygon | MultiPolygon,
-    contour_id: str,
-    metadata_values: dict[str, Any],
-    metadata_columns: list[str],
-) -> list[dict[str, Any]]:
-    polygons = [geometry] if isinstance(geometry, Polygon) else list(geometry.geoms)
-    records: list[dict[str, Any]] = []
-
-    for part_id, polygon in enumerate(polygons):
-        if polygon.is_empty:
-            continue
-
-        exterior_coords = list(polygon.exterior.coords)
-        if exterior_coords and exterior_coords[0] == exterior_coords[-1]:
-            exterior_coords = exterior_coords[:-1]
-
-        for vertex_id, (x, y) in enumerate(exterior_coords):
-            record = {
-                "contour_id": contour_id,
-                "part_id": part_id,
-                "ring_id": 0,
-                "is_hole": False,
-                "vertex_id": vertex_id,
-                "x": float(x),
-                "y": float(y),
-            }
-            for column in metadata_columns:
-                record[column] = metadata_values.get(column)
-            records.append(record)
-
-        for hole_offset, interior in enumerate(polygon.interiors, start=1):
-            hole_coords = list(interior.coords)
-            if hole_coords and hole_coords[0] == hole_coords[-1]:
-                hole_coords = hole_coords[:-1]
-
-            for vertex_id, (x, y) in enumerate(hole_coords):
-                record = {
-                    "contour_id": contour_id,
-                    "part_id": part_id,
-                    "ring_id": hole_offset,
-                    "is_hole": True,
-                    "vertex_id": vertex_id,
-                    "x": float(x),
-                    "y": float(y),
-                }
-                for column in metadata_columns:
-                    record[column] = metadata_values.get(column)
-                records.append(record)
-
-    return records
 
 
 def _json_ready(value: Any) -> Any:
