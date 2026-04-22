@@ -1,6 +1,7 @@
-# Protein–Gene correlation
+# Protein-gene correlation
 
-Compute the Pearson correlation between **mean protein intensity** and **gene transcript density** on a user-defined grid.
+Use `pyXenium.multimodal.protein_gene_correlation(...)` to compare protein abundance against
+transcript density on a shared spatial grid.
 
 ```python
 from pyXenium.io.partial_xenium_loader import load_anndata_from_partial
@@ -18,7 +19,7 @@ summary = protein_gene_correlation(
     grid_size=(50, 50),
     pixel_size_um=0.2125,
     qv_threshold=20,
-    overwrite=False,
 )
-print(summary)
 ```
+
+The output directory contains per-pair figures and NumPy grids plus a summary table for downstream reporting.

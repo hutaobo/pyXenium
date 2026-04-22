@@ -34,14 +34,19 @@ dependencies = [
 pyxenium = "pyXenium.__main__:main"
 
 [project.optional-dependencies]
-# ★ 新增：CI 里用到的 .[dev]（pytest、构建/发布、文档等常见开发依赖）
+docs = [
+  "sphinx>=8",
+  "pydata-sphinx-theme>=0.16",
+  "myst-parser>=4.0",
+  "sphinx-design>=0.6",
+  "sphinx-copybutton>=0.5",
+]
+
 dev = [
   "pytest>=7",
   "pytest-cov",
   "build",
   "twine",
-  "mkdocs",
-  "mkdocs-material",
 ]
 
 [tool.setuptools]

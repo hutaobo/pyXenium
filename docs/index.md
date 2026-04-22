@@ -1,12 +1,91 @@
 # pyXenium
 
-pyXenium now has five canonical public surfaces:
+```{toctree}
+:hidden:
+:maxdepth: 2
+
+quickstart
+user-guide/index
+workflows/index
+api/index
+changelog
+```
+
+<div class="pyxenium-hero">
+  <div class="pyxenium-hero-logo">
+    <img src="_static/branding/pyxenium-horizontal-dark.svg" alt="pyXenium" class="only-light">
+    <img src="_static/branding/pyxenium-horizontal-light.svg" alt="pyXenium" class="only-dark">
+  </div>
+  <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, and contour-native spatial profiling.</p>
+  <p class="pyxenium-lead">
+    pyXenium is a Python toolkit for 10x Genomics Xenium with a layered public surface:
+    canonical Xenium I/O, multimodal RNA + protein analysis, topology-native ligand-receptor
+    and pathway methods, and contour-aware geometry workflows. This site is organized to mirror
+    the crisp, research-oriented experience of the SpatialData docs while staying specific to
+    pyXenium’s package architecture.
+  </p>
+  <div class="pyxenium-link-row">
+    <a href="quickstart.html">Get started</a>
+    <a href="https://pypi.org/project/pyXenium/">PyPI</a>
+    <a href="https://github.com/hutaobo/pyXenium">GitHub</a>
+    <a href="https://pyxenium.readthedocs.io/en/latest/">Read the Docs</a>
+  </div>
+</div>
+
+```{image} _static/branding/pyxenium-banner.png
+:alt: pyXenium scientific banner
+:class: pyxenium-banner
+```
+
+::::{grid} 1 2 3 3
+:gutter: 2
+
+:::{grid-item-card} Installation
+:link: quickstart
+:link-type: doc
+Install pyXenium, set up the docs environment, and run your first Xenium workflow.
+:::
+
+:::{grid-item-card} Xenium I/O
+:link: guides/xenium-data-loading
+:link-type: doc
+Load Xenium exports, recover partial bundles, round-trip `XeniumSData`, and export compat stores.
+:::
+
+:::{grid-item-card} Multimodal Analysis
+:link: user-guide/multimodal-overview
+:link-type: doc
+Work with the canonical `pyXenium.multimodal` surface for RNA + protein preparation and joint analysis.
+:::
+
+:::{grid-item-card} Workflows
+:link: workflows/index
+:link-type: doc
+Run packaged renal and Atera workflows with report-ready outputs and artifact bundles.
+:::
+
+:::{grid-item-card} API
+:link: api/index
+:link-type: doc
+Browse curated autosummary pages for `io`, `multimodal`, `ligand_receptor`, `pathway`, and `contour`.
+:::
+
+:::{grid-item-card} Changelog
+:link: changelog
+:link-type: doc
+Track documentation, branding, and package-level changes.
+:::
+::::
+
+## Canonical public surfaces
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
-- `pyXenium.multimodal`: joint RNA + Protein preparation, analysis, immune-resistance scoring, and packaged workflows.
-- `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis.
+- `pyXenium.multimodal`: canonical RNA + protein loading, immune-resistance scoring, joint analyses, and packaged multimodal workflows.
+- `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis primitives.
 - `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
-- `pyXenium.contour`: contour GeoJSON import and contour-aware density profiling for cells or transcripts.
+- `pyXenium.contour`: GeoJSON contour import and contour-aware density profiling around polygon annotations.
 
-`pyXenium.analysis` remains importable only as a compatibility facade and is no longer the
-primary implementation home for public APIs.
+:::{admonition} GitHub branding asset
+:class: pyxenium-brand-note
+Use `docs/_static/branding/pyxenium-social-preview.png` as the repository social preview image in GitHub repository settings. That upload is still a manual GitHub step even though the asset is versioned in the repo.
+:::

@@ -1,0 +1,14 @@
+# User guide
+
+```{toctree}
+:maxdepth: 1
+
+multimodal-overview
+../guides/xenium-data-loading
+../usage/load_partial
+../guides/protein-gene-correlation
+../guides/contour-density
+```
+
+The user guide is organized around the package’s canonical surfaces: low-level Xenium I/O,
+standardized multimodal preparation, and geometry-aware downstream analysis.

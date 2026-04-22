@@ -1,7 +1,9 @@
 # Changelog
 
-All notable changes to this project will be documented here.
+All notable changes to pyXenium are documented here.
 
 ## Unreleased
-- Add `protein_gene_correlation()` analysis function and documentation.
-- Add MkDocs configuration and docs skeleton.
+
+- Migrate the documentation site to `Sphinx + pydata-sphinx-theme`.
+- Rebuild the homepage and API landing pages around canonical public namespaces.
+- Add pyXenium branding assets for Read the Docs and GitHub surfaces.

@@ -1,14 +1,32 @@
 # Xenium data loading
 
-This guide focuses on the split between the two public entry points:
+Use `pyXenium.io` when you want low-level Xenium artifact access and `pyXenium.multimodal`
+when you want the canonical RNA + protein `AnnData` used by downstream joint analyses.
 
-- `pyXenium.io` for raw Xenium artifact access.
-- `pyXenium.multimodal` for standardized RNA + Protein AnnData preparation.
+## XeniumSData route
 
-## Partial / low-level loading
+```python
+from pyXenium.io import read_xenium
 
-Use `pyXenium.io.partial_xenium_loader.load_anndata_from_partial(...)` when you need to recover incomplete exports or attach only selected artifacts.
+sdata = read_xenium(
+    "/path/to/xenium_export",
+    as_="sdata",
+    prefer="zarr",
+)
+```
 
-## Canonical RNA + Protein loading
+This route is the right choice when you want images, shapes, points, and table-level metadata together.
 
-Use `pyXenium.multimodal.load_rna_protein_anndata(...)` when you want the standard joint RNA + Protein AnnData used by downstream multimodal analyses and workflows.
+## Canonical multimodal AnnData route
+
+```python
+from pyXenium.multimodal import load_rna_protein_anndata
+
+adata = load_rna_protein_anndata(
+    base_path="/path/to/xenium_export",
+    prefer="auto",
+)
+```
+
+This route is the right choice when you want the package-standard RNA + protein matrix for
+multimodal clustering, protein-gene correlation, or immune-resistance workflows.
