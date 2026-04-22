@@ -12,7 +12,7 @@
 
 **Summary:** 10x Genomics Xenium outputs combine sparse count matrices, cell tables, clustering results and optional boundary files, and practical analyses often begin with exports that are incomplete or stored in different matrix backends. pyXenium is a Python package for loading these outputs into `AnnData` while preserving modality separation and spatial annotations. In a validated smoke test on the public Xenium FFPE human renal cell carcinoma RNA+Protein dataset, pyXenium recovered 465,545 cells, 405 RNA features and 27 protein markers, reproduced the reported detected-cell count, and attached spatial coordinates and cluster labels under both automatic and explicit HDF5 loading. A separate partial loader supports counts-first recovery from incomplete exports and degrades to structured metadata rather than immediate failure when key artifacts are absent.
 
-**Availability and implementation:** Implemented in Python. Source code: `https://github.com/hutaobo/pyXenium`. Package index: [PyPI URL placeholder if published]. Documentation: [documentation URL placeholder]. Current repository version: `0.1.0`. License: `LicenseRef-Proprietary-NonCommercial`.
+**Availability and implementation:** Implemented in Python. Source code: `https://github.com/hutaobo/pyXenium`. Package index: [PyPI URL placeholder if published]. Documentation: [documentation URL placeholder]. Current repository version: `0.2.0`. License: `LicenseRef-Proprietary-NonCommercial`.
 
 **Contact:** [corresponding.author@institution.edu]
 
@@ -48,7 +48,7 @@ Repository-level checks support these data-level validations. In the current loc
 
 ## 4 Availability and implementation
 
-pyXenium is implemented in Python and uses `anndata`, `numpy`, `pandas`, `scipy`, `scikit-learn`, `zarr`, `fsspec`, `requests`, `aiohttp` and `click` according to `pyproject.toml`. The current repository version is `0.1.0`, and the declared Python requirement is `>=3.8`. Source code is available at `https://github.com/hutaobo/pyXenium` and may also be distributed through [PyPI URL placeholder]. Documentation source files are present under `docs/`; the deployed documentation URL should be inserted here as [documentation URL placeholder]. The current license is `LicenseRef-Proprietary-NonCommercial`, which permits non-commercial source use; if a different release license is chosen before submission, this sentence should be updated accordingly. Operating-system support should be stated explicitly at submission as [validated platform statement placeholder].
+pyXenium is implemented in Python and uses `anndata`, `numpy`, `pandas`, `scipy`, `scikit-learn`, `zarr`, `fsspec`, `requests`, `aiohttp` and `click` according to `pyproject.toml`. The current repository version is `0.2.0`, and the declared Python requirement is `>=3.8`. Source code is available at `https://github.com/hutaobo/pyXenium` and may also be distributed through [PyPI URL placeholder]. Documentation source files are present under `docs/`; the deployed documentation URL should be inserted here as [documentation URL placeholder]. The current license is `LicenseRef-Proprietary-NonCommercial`, which permits non-commercial source use; if a different release license is chosen before submission, this sentence should be updated accordingly. Operating-system support should be stated explicitly at submission as [validated platform statement placeholder].
 
 ## Figure Legends
 
