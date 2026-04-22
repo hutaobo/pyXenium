@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 try:
-    from pyXenium.validation import (
+    from pyXenium.multimodal import (
         DEFAULT_DATASET_PATH,
         run_renal_immune_resistance_pilot,
     )
@@ -15,7 +15,7 @@ except ModuleNotFoundError:
     repo_src = Path(__file__).resolve().parents[1] / "src"
     if str(repo_src) not in sys.path:
         sys.path.insert(0, str(repo_src))
-    from pyXenium.validation import (
+    from pyXenium.multimodal import (
         DEFAULT_DATASET_PATH,
         run_renal_immune_resistance_pilot,
     )

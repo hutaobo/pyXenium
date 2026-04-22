@@ -1,0 +1,41 @@
+from .renal_ffpe_protein import (
+    DEFAULT_DATASET_PATH,
+    EXPECTED_CELLS,
+    EXPECTED_PROTEIN_MARKERS,
+    EXPECTED_RNA_FEATURES,
+    build_summary,
+    render_markdown_report,
+    run_validated_renal_ffpe_smoke,
+    validate_summary,
+    write_output_artifacts,
+)
+from .renal_immune_resistance import (
+    build_cohort_handoff_spec,
+    build_panel_gap_table,
+    build_serializable_pilot_summary,
+    build_top_hypotheses_table,
+    extract_ranked_patches,
+    render_renal_immune_resistance_report,
+    run_renal_immune_resistance_pilot,
+    write_renal_immune_resistance_artifacts,
+)
+
+__all__ = [
+    "DEFAULT_DATASET_PATH",
+    "EXPECTED_CELLS",
+    "EXPECTED_PROTEIN_MARKERS",
+    "EXPECTED_RNA_FEATURES",
+    "build_cohort_handoff_spec",
+    "build_panel_gap_table",
+    "build_serializable_pilot_summary",
+    "build_summary",
+    "build_top_hypotheses_table",
+    "extract_ranked_patches",
+    "render_markdown_report",
+    "render_renal_immune_resistance_report",
+    "run_renal_immune_resistance_pilot",
+    "run_validated_renal_ffpe_smoke",
+    "validate_summary",
+    "write_output_artifacts",
+    "write_renal_immune_resistance_artifacts",
+]

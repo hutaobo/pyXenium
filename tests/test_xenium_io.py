@@ -23,6 +23,7 @@ from pyXenium.io import (
     read_xenium,
     write_xenium,
 )
+from pyXenium.multimodal import load_rna_protein_anndata
 
 try:
     import h5py
@@ -468,6 +469,44 @@ def test_read_xenium_clusters_relpath_overrides_default_cluster_source(tmp_path)
     assert adata.uns["xenium_analysis"]["default_cluster_key"] == "gene_expression_kmeans_2_clusters"
 
 
+def test_read_xenium_accepts_official_cell_groups_barcode_clusters_schema(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset")
+    _write_cluster_csv(
+        dataset / "WTA_Preview_FFPE_Breast_Cancer_cell_groups.csv",
+        GRAPHCLUST_LABELS,
+        index_column="Barcode",
+        cluster_column="Clusters",
+    )
+
+    adata = read_xenium(
+        str(dataset),
+        as_="anndata",
+        prefer="zarr",
+        clusters_relpath="WTA_Preview_FFPE_Breast_Cancer_cell_groups.csv",
+    )
+
+    assert list(adata.obs["cluster"].astype(str)) == GRAPHCLUST_LABELS
+
+
+def test_read_xenium_accepts_official_cell_groups_cellid_group_schema(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset")
+    _write_cluster_csv(
+        dataset / "sample_cell_groups.csv",
+        KMEANS2_LABELS,
+        index_column="cell_id",
+        cluster_column="group",
+    )
+
+    adata = read_xenium(
+        str(dataset),
+        as_="anndata",
+        prefer="zarr",
+        clusters_relpath="sample_cell_groups.csv",
+    )
+
+    assert list(adata.obs["cluster"].astype(str)) == KMEANS2_LABELS
+
+
 def test_read_xenium_sdata_contains_expected_components(tmp_path):
     dataset = make_xenium_dataset(
         tmp_path / "dataset",
@@ -596,8 +635,9 @@ def test_sdata_roundtrip_preserves_he_images(tmp_path):
 def test_load_xenium_gene_protein_wrapper_matches_new_api(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset")
 
-    legacy = load_xenium_gene_protein(str(dataset), prefer="zarr")
-    modern = read_xenium(str(dataset), as_="anndata", prefer="zarr", include_transcripts=False)
+    with pytest.warns(DeprecationWarning):
+        legacy = load_xenium_gene_protein(str(dataset), prefer="zarr")
+    modern = load_rna_protein_anndata(str(dataset), prefer="zarr")
 
     assert legacy.shape == modern.shape
     assert list(legacy.obsm["protein"].columns) == list(modern.obsm["protein"].columns)

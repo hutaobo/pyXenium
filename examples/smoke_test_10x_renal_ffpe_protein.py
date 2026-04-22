@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 try:
-    from pyXenium.validation.renal_ffpe_protein import (
+    from pyXenium.multimodal import (
         DEFAULT_DATASET_PATH,
         run_validated_renal_ffpe_smoke,
     )
@@ -15,7 +15,7 @@ except ModuleNotFoundError:
     repo_src = Path(__file__).resolve().parents[1] / "src"
     if str(repo_src) not in sys.path:
         sys.path.insert(0, str(repo_src))
-    from pyXenium.validation.renal_ffpe_protein import (
+    from pyXenium.multimodal import (
         DEFAULT_DATASET_PATH,
         run_validated_renal_ffpe_smoke,
     )
@@ -41,7 +41,7 @@ def parse_args() -> argparse.Namespace:
         "--prefer",
         choices=("auto", "zarr", "h5", "mex"),
         default="auto",
-        help="Preferred matrix backend passed to load_xenium_gene_protein().",
+        help="Preferred matrix backend passed to load_rna_protein_anndata().",
     )
     parser.add_argument(
         "--top-n",

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyXenium"
 version = "0.1.0"
-description = "A toy Python package for analyzing 10x Xenium data."
+description = "Xenium I/O and multimodal RNA+Protein analysis workflows for 10x Xenium data."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "LicenseRef-Proprietary-NonCommercial"

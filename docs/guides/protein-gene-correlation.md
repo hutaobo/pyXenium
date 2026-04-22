@@ -4,7 +4,7 @@ Compute the Pearson correlation between **mean protein intensity** and **gene tr
 
 ```python
 from pyXenium.io.partial_xenium_loader import load_anndata_from_partial
-from pyXenium.analysis import protein_gene_correlation
+from pyXenium.multimodal import protein_gene_correlation
 
 BASE = "https://huggingface.co/datasets/<your-dataset>/resolve/main"
 adata = load_anndata_from_partial(base_url=BASE)
