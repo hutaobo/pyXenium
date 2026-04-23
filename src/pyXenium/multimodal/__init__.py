@@ -1,4 +1,4 @@
-from . import analysis, immune_resistance, loading, workflows
+from . import analysis, contour_boundary_ecology, immune_resistance, loading, workflows
 from .analysis import (
     ProteinMicroEnv,
     ProteinModelResult,
@@ -9,6 +9,10 @@ from .analysis import (
     protein_gene_correlation,
     rna_protein_cluster_analysis,
     write_model_scores,
+)
+from .contour_boundary_ecology import (
+    DEFAULT_BOUNDARY_PROGRAM_LIBRARY,
+    score_contour_boundary_programs,
 )
 from .immune_resistance import (
     DEFAULT_BRANCH_MODELS,
@@ -36,16 +40,20 @@ from .workflows import (
     build_summary,
     build_top_hypotheses_table,
     extract_ranked_patches,
+    render_contour_boundary_ecology_report,
     render_markdown_report,
     render_renal_immune_resistance_report,
+    run_contour_boundary_ecology_pilot,
     run_renal_immune_resistance_pilot,
     run_validated_renal_ffpe_smoke,
     validate_summary,
+    write_contour_boundary_ecology_artifacts,
     write_output_artifacts,
     write_renal_immune_resistance_artifacts,
 )
 
 __all__ = [
+    "DEFAULT_BOUNDARY_PROGRAM_LIBRARY",
     "DEFAULT_BRANCH_MODELS",
     "DEFAULT_DATASET_PATH",
     "DEFAULT_MARKER_PAIRS",
@@ -60,6 +68,7 @@ __all__ = [
     "ProteinMicroEnv",
     "ProteinModelResult",
     "analysis",
+    "contour_boundary_ecology",
     "aggregate_multi_sample_study",
     "annotate_joint_cell_states",
     "build_cohort_handoff_spec",
@@ -78,14 +87,18 @@ __all__ = [
     "plot_model_diagnostics",
     "plot_topk_per_cluster",
     "protein_gene_correlation",
+    "render_contour_boundary_ecology_report",
     "render_markdown_report",
     "render_renal_immune_resistance_report",
     "rna_protein_cluster_analysis",
+    "run_contour_boundary_ecology_pilot",
     "run_renal_immune_resistance_pilot",
     "run_validated_renal_ffpe_smoke",
+    "score_contour_boundary_programs",
     "score_immune_resistance_program",
     "validate_summary",
     "write_model_scores",
+    "write_contour_boundary_ecology_artifacts",
     "write_output_artifacts",
     "write_renal_immune_resistance_artifacts",
     "workflows",

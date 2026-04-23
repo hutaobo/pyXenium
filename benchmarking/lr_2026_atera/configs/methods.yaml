@@ -1,0 +1,239 @@
+methods:
+  - slug: pyxenium
+    display_name: pyXenium topology LR
+    language: python
+    status: implemented
+    env_name: pyx-lr-pyxenium
+    env_file: envs/pyx-lr-pyxenium.yml
+    runner: runners/python/run_pyxenium.py
+    default_phase: smoke
+    resolution: celltype_pair
+    preferred_platform: local
+    a100_preferred: false
+    supports_native_db: false
+    supports_common_db: true
+    install:
+      pip_editable_repo: true
+
+  - slug: cellchat
+    display_name: CellChat v3 / Spatial CellChat
+    language: r
+    status: adapter-implemented
+    env_name: r-lr-cellchat
+    env_file: envs/r-lr-cellchat.yml
+    runner: runners/r/run_cellchat.R
+    default_phase: smoke
+    resolution: celltype_pair
+    preferred_platform: a100
+    a100_preferred: true
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      cran:
+        - renv
+        - remotes
+      github:
+        - jinworks/CellChat
+        - jinworks/SpatialCellChat
+
+  - slug: commot
+    display_name: COMMOT
+    language: python
+    status: adapter-implemented
+    env_name: pyx-lr-commot
+    env_file: envs/pyx-lr-commot.yml
+    runner: runners/python/run_commot.py
+    default_phase: smoke
+    resolution: cell_pair
+    preferred_platform: local
+    a100_preferred: false
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      pip_editable_repo: true
+      pip:
+        - commot
+
+  - slug: liana
+    display_name: LIANA+ bivariate
+    language: python
+    status: adapter-implemented
+    env_name: pyx-lr-liana
+    env_file: envs/pyx-lr-liana.yml
+    runner: runners/python/run_liana.py
+    default_phase: smoke
+    resolution: local_lr
+    preferred_platform: local
+    a100_preferred: false
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      pip_editable_repo: true
+      pip:
+        - liana
+        - omnipath
+        - mudata
+        - decoupler
+
+  - slug: spatialdm
+    display_name: SpatialDM
+    language: python
+    status: scaffolded
+    env_name: pyx-lr-spatialdm
+    env_file: envs/pyx-lr-spatialdm.yml
+    runner: runners/python/run_method_stub.py
+    default_phase: smoke
+    resolution: local_lr
+    preferred_platform: local
+    a100_preferred: false
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      pip:
+        - SpatialDM
+
+  - slug: stlearn
+    display_name: stLearn CCI
+    language: python
+    status: scaffolded
+    env_name: pyx-lr-stlearn
+    env_file: envs/pyx-lr-stlearn.yml
+    runner: runners/python/run_method_stub.py
+    default_phase: smoke
+    resolution: local_lr
+    preferred_platform: local
+    a100_preferred: false
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      pip:
+        - stlearn
+
+  - slug: squidpy
+    display_name: Squidpy ligrec
+    language: python
+    status: adapter-implemented
+    env_name: pyx-lr-squidpy
+    env_file: envs/pyx-lr-squidpy.yml
+    runner: runners/python/run_squidpy.py
+    default_phase: smoke
+    resolution: celltype_pair
+    preferred_platform: local
+    a100_preferred: false
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      pip_editable_repo: true
+      pip:
+        - squidpy
+        - omnipath
+
+  - slug: spatalk
+    display_name: SpaTalk
+    language: r
+    status: scaffolded
+    env_name: r-lr-spatalk
+    env_file: envs/r-lr-spatalk.yml
+    runner: runners/r/run_method_stub.R
+    default_phase: smoke
+    resolution: cell_pair
+    preferred_platform: a100
+    a100_preferred: true
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      cran:
+        - renv
+        - remotes
+      github:
+        - ZJUFanLab/SpaTalk
+
+  - slug: cellnest
+    display_name: CellNEST
+    language: python
+    status: scaffolded
+    env_name: pyx-lr-cellnest
+    env_file: envs/pyx-lr-cellnest.yml
+    runner: runners/python/run_method_stub.py
+    default_phase: smoke
+    resolution: cell_pair
+    preferred_platform: a100
+    a100_preferred: true
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      pip_git:
+        - git+https://github.com/schwartzlab-methods/CellNEST.git
+
+  - slug: cellagentchat
+    display_name: CellAgentChat
+    language: python
+    status: scaffolded
+    env_name: pyx-lr-cellagentchat
+    env_file: envs/pyx-lr-cellagentchat.yml
+    runner: runners/python/run_method_stub.py
+    default_phase: smoke
+    resolution: cell_pair
+    preferred_platform: a100
+    a100_preferred: true
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      pip_git:
+        - git+https://github.com/mcgilldinglab/CellAgentChat.git
+
+  - slug: scild
+    display_name: SCILD
+    language: python
+    status: scaffolded
+    env_name: pyx-lr-scild
+    env_file: envs/pyx-lr-scild.yml
+    runner: runners/python/run_method_stub.py
+    default_phase: appendix
+    resolution: cell_pair
+    preferred_platform: a100
+    a100_preferred: true
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      manual_setup_required: true
+      notes: Add the official SCILD implementation URL before bootstrap.
+
+  - slug: niches
+    display_name: NICHES
+    language: r
+    status: scaffolded
+    env_name: r-lr-niches
+    env_file: envs/r-lr-niches.yml
+    runner: runners/r/run_method_stub.R
+    default_phase: appendix
+    resolution: cell_pair
+    preferred_platform: a100
+    a100_preferred: true
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      cran:
+        - renv
+        - remotes
+      github:
+        - msraredon/NICHES
+
+  - slug: prep
+    display_name: Benchmark data prep
+    language: python
+    status: implemented
+    env_name: pyx-lr-prep
+    env_file: envs/pyx-lr-prep.yml
+    runner: scripts/prepare_data.py
+    default_phase: prep
+    resolution: none
+    preferred_platform: local
+    a100_preferred: false
+    supports_native_db: false
+    supports_common_db: true
+    install:
+      pip_editable_repo: true
+      pip:
+        - liana
+        - omnipath

@@ -1,0 +1,9 @@
+name: r-lr-spatalk
+channels:
+  - conda-forge
+dependencies:
+  - r-base=4.3
+  - r-renv
+  - r-remotes
+  - r-jsonlite
+  - git

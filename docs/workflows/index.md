@@ -6,6 +6,8 @@
 renal-multimodal
 atera-wta-breast-topology
 atera-breast-contour
+atera-contour-boundary-ecology
+atera-wta-breast-lr-benchmark
 ```
 
 Workflows package higher-level, reproducible analyses around the lower-level APIs. They are intended

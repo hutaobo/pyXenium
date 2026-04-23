@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/hutaobo/pyXenium/main/docs/_static/branding/pyxenium-banner.png" alt="pyXenium banner" width="100%">
+  <img src="https://raw.githubusercontent.com/hutaobo/pyXenium/main/docs/_static/branding/pyxenium-horizontal-dark.png" alt="pyXenium horizontal logo" width="960">
 </p>
 
 <h1 align="center">pyXenium</h1>
@@ -117,19 +117,19 @@ Start here: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/
 
 ## Branding assets
 
-The repository keeps its Read the Docs and GitHub branding assets under:
+The repository keeps its Read the Docs, GitHub, and PyPI branding assets under:
 
 ```text
 docs/_static/branding/
 ```
 
-To update the GitHub social preview manually, upload:
+Use the derived horizontal PNG for README, PyPI, and GitHub social preview surfaces:
 
 ```text
-docs/_static/branding/pyxenium-social-preview.png
+docs/_static/branding/pyxenium-horizontal-dark.png
 ```
 
-in the repository settings.
+The canonical source artwork remains `docs/_static/branding/pyxenium-horizontal-dark.svg`.
 
 ## License
 

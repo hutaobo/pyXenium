@@ -1,0 +1,36 @@
+canonical_axes:
+  - name: CXCL12_CXCR4_caf_to_tcell
+    ligand: CXCL12
+    receptor: CXCR4
+    sender: CAFs, DCIS Associated
+    receiver: T Lymphocytes
+    pathway: CXCL12/CXCR4
+    weight: 1.0
+  - name: CSF1_CSF1R_stroma_to_macrophage
+    ligand: CSF1
+    receptor: CSF1R
+    sender: CAFs, DCIS Associated
+    receiver: Macrophages
+    pathway: CSF1/CSF1R
+    weight: 1.0
+  - name: DLL4_NOTCH3_endo_to_pericyte
+    ligand: DLL4
+    receptor: NOTCH3
+    sender: Endothelial Cells
+    receiver: Pericytes
+    pathway: Notch
+    weight: 1.0
+  - name: JAG1_NOTCH1_tumor_axis
+    ligand: JAG1
+    receptor: NOTCH1
+    sender: 11q13 Invasive Tumor Cells
+    receiver: Basal-like Structured DCIS Cells
+    pathway: Notch
+    weight: 0.75
+  - name: TGFB1_TGFBR2_endothelial_axis
+    ligand: TGFB1
+    receptor: TGFBR2
+    sender: Endothelial Cells
+    receiver: Endothelial Cells
+    pathway: TGF-beta
+    weight: 0.75

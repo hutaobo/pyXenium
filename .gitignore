@@ -6,3 +6,13 @@ build/
 dist/
 docs/_build/
 docs/api/generated/
+benchmarking/lr_2026_atera/data/*
+!benchmarking/lr_2026_atera/data/.gitkeep
+benchmarking/lr_2026_atera/logs/*
+!benchmarking/lr_2026_atera/logs/.gitkeep
+benchmarking/lr_2026_atera/results/*
+!benchmarking/lr_2026_atera/results/.gitkeep
+benchmarking/lr_2026_atera/reports/*
+!benchmarking/lr_2026_atera/reports/.gitkeep
+benchmarking/lr_2026_atera/runs/*
+!benchmarking/lr_2026_atera/runs/.gitkeep

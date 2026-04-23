@@ -247,15 +247,25 @@ def _extract_contour_he_patches(
 ) -> dict[str, XeniumImage]:
     contour_table = contour_frame_to_geometry_table(contour_frame, contour_key=contour_key)
     contour_patches: dict[str, XeniumImage] = {}
-    for _, row in contour_table.iterrows():
-        contour_id = str(row["contour_id"])
-        contour_patches[contour_id] = _extract_single_contour_he_patch(
-            contour_geometry_um=row["geometry"],
-            contour_key=contour_key,
-            contour_id=contour_id,
-            he_image=he_image,
-            source_image_key=source_image_key,
-        )
+    level0 = he_image.levels[0]
+    reusable_store = None
+    reusable_level = None
+    if hasattr(level0, "open_zarr_source"):
+        reusable_store, reusable_level = level0.open_zarr_source()
+    try:
+        for _, row in contour_table.iterrows():
+            contour_id = str(row["contour_id"])
+            contour_patches[contour_id] = _extract_single_contour_he_patch(
+                contour_geometry_um=row["geometry"],
+                contour_key=contour_key,
+                contour_id=contour_id,
+                he_image=he_image,
+                source_image_key=source_image_key,
+                level0_crop_source=reusable_level,
+            )
+    finally:
+        if reusable_store is not None and hasattr(reusable_store, "close"):
+            reusable_store.close()
     return contour_patches
 
 
@@ -266,6 +276,7 @@ def _extract_single_contour_he_patch(
     contour_id: str,
     he_image: XeniumImage,
     source_image_key: str,
+    level0_crop_source: Any | None = None,
 ) -> XeniumImage:
     level0 = he_image.levels[0]
     image_geometry = _geometry_um_to_image_xy(contour_geometry_um, he_image=he_image)
@@ -276,7 +287,8 @@ def _extract_single_contour_he_patch(
         contour_key=contour_key,
         contour_id=contour_id,
     )
-    patch_array = _crop_image_level(level0, axes=he_image.axes, bbox=bbox)
+    crop_level = level0_crop_source if level0_crop_source is not None else level0
+    patch_array = _crop_image_level(crop_level, axes=he_image.axes, bbox=bbox)
     mask = _polygon_mask_for_bbox(image_geometry=image_geometry, bbox=bbox)
     masked_patch = _apply_polygon_mask(patch_array, mask=mask, axes=he_image.axes)
 
@@ -384,7 +396,19 @@ def _crop_image_level(
     slices = [slice(None)] * len(level.shape)
     slices[axes.index("x")] = slice(x0, x1)
     slices[axes.index("y")] = slice(y0, y1)
-    return np.asarray(level[tuple(slices)]).copy()
+    try:
+        return np.asarray(level[tuple(slices)]).copy()
+    except TypeError:
+        if hasattr(level, "open_zarr_source"):
+            store, source = level.open_zarr_source()
+            try:
+                return np.asarray(source[tuple(slices)]).copy()
+            finally:
+                if hasattr(store, "close"):
+                    store.close()
+        if hasattr(level, "asarray"):
+            return np.asarray(level.asarray()[tuple(slices)]).copy()
+        raise
 
 
 def _polygon_mask_for_bbox(

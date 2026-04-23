@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 from ._version import __version__
-from . import contour, io, ligand_receptor, multimodal, pathway, validation
-from .contour import add_contours_from_geojson, expand_contours, ring_density, smooth_density_by_distance
+from . import benchmarking, contour, io, ligand_receptor, multimodal, pathway, validation
+from .contour import (
+    add_contours_from_geojson,
+    build_contour_feature_table,
+    expand_contours,
+    ring_density,
+    smooth_density_by_distance,
+)
 from .datasets import PUBLIC_DATASET_SOURCES, get_public_dataset_sources
 from .io import (
     XeniumSData,
@@ -14,6 +20,7 @@ from .io import (
 )
 from .ligand_receptor import ligand_receptor_topology_analysis
 from .multimodal import (
+    DEFAULT_BOUNDARY_PROGRAM_LIBRARY,
     ProteinMicroEnv,
     ProteinModelResult,
     aggregate_multi_sample_study,
@@ -32,13 +39,17 @@ from .multimodal import (
     plot_model_diagnostics,
     plot_topk_per_cluster,
     protein_gene_correlation,
+    render_contour_boundary_ecology_report,
     render_markdown_report,
     render_renal_immune_resistance_report,
     rna_protein_cluster_analysis,
+    run_contour_boundary_ecology_pilot,
     run_renal_immune_resistance_pilot,
     run_validated_renal_ffpe_smoke,
+    score_contour_boundary_programs,
     score_immune_resistance_program,
     validate_summary,
+    write_contour_boundary_ecology_artifacts,
     write_model_scores,
     write_output_artifacts,
     write_renal_immune_resistance_artifacts,
@@ -51,7 +62,9 @@ __all__ = [
     "ProteinMicroEnv",
     "ProteinModelResult",
     "XeniumSData",
+    "DEFAULT_BOUNDARY_PROGRAM_LIBRARY",
     "add_contours_from_geojson",
+    "build_contour_feature_table",
     "expand_contours",
     "aggregate_multi_sample_study",
     "annotate_joint_cell_states",
@@ -61,6 +74,7 @@ __all__ = [
     "build_spatial_niches",
     "build_summary",
     "build_top_hypotheses_table",
+    "benchmarking",
     "compute_pathway_activity_matrix",
     "compute_rna_protein_discordance",
     "contour",
@@ -82,16 +96,20 @@ __all__ = [
     "protein_gene_correlation",
     "read_sdata",
     "read_xenium",
+    "render_contour_boundary_ecology_report",
     "ring_density",
     "render_markdown_report",
     "render_renal_immune_resistance_report",
     "rna_protein_cluster_analysis",
+    "run_contour_boundary_ecology_pilot",
     "run_renal_immune_resistance_pilot",
     "run_validated_renal_ffpe_smoke",
+    "score_contour_boundary_programs",
     "score_immune_resistance_program",
     "smooth_density_by_distance",
     "validate_summary",
     "validation",
+    "write_contour_boundary_ecology_artifacts",
     "write_model_scores",
     "write_output_artifacts",
     "write_renal_immune_resistance_artifacts",

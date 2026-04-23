@@ -1,0 +1,17 @@
+benchmark_name: atera_xenium_lr_2026
+dataset_root: Y:\long\10X_datasets\Xenium\Atera\WTA_Preview_FFPE_Breast_Cancer_outs
+tbc_results: Y:\long\10X_datasets\Xenium\Atera\WTA_Preview_FFPE_Breast_Cancer_outs\sfplot_tbc_formal_wta\results
+smoke_n_cells: 20000
+seed: 0
+local_env_root: D:\GitHub\pyXenium\.envs\lr_benchmark
+a100_remote_root: /data/taobo.hu/pyxenium_lr_benchmark_2026-04
+score_weights:
+  canonical_recovery: 0.30
+  spatial_coherence: 0.25
+  pathway_relevance: 0.20
+  robustness: 0.15
+  novelty_support: 0.10
+notes:
+  - Use one isolated environment per method.
+  - Prefer local smoke runs for prep, pyXenium, Squidpy, LIANA+, COMMOT, and SpatialDM.
+  - Prefer A100 for CellNEST, CellAgentChat, SpaTalk, SCILD, and heavy CellChat full runs.

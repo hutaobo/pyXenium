@@ -31,8 +31,8 @@ changelog
   </div>
 </div>
 
-```{image} _static/branding/pyxenium-banner.png
-:alt: pyXenium scientific banner
+```{image} _static/branding/pyxenium-horizontal-dark.png
+:alt: pyXenium horizontal logo
 :class: pyxenium-banner
 ```
 
@@ -109,5 +109,5 @@ Track documentation, branding, and package-level changes.
 
 :::{admonition} GitHub branding asset
 :class: pyxenium-brand-note
-Use `docs/_static/branding/pyxenium-social-preview.png` as the repository social preview image in GitHub repository settings. That upload is still a manual GitHub step even though the asset is versioned in the repo.
+Use `docs/_static/branding/pyxenium-horizontal-dark.png` as the repository social preview image in GitHub repository settings. That upload is still a manual GitHub step even though the asset is versioned in the repo.
 :::

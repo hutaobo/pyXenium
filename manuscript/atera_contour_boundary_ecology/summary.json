@@ -1,0 +1,32 @@
+{
+  "sample_summary": {
+    "sample_id": "WTA_Preview_FFPE_Breast_Cancer_outs",
+    "contour_key": "atera_boundary_ecology_contours",
+    "n_contours": 28,
+    "n_cells": 170057,
+    "n_ecotypes": 4,
+    "bootstrap_mean_ari": 0.6618598348800824,
+    "silhouette": 0.22801915086674865,
+    "feature_count": 416,
+    "embedding_backend": false,
+    "neighbor_k": 6,
+    "matched_exemplar_pairs": 18,
+    "top_program_counts": {
+      "immune_exclusion": 10,
+      "stromal_encapsulation": 6,
+      "emt_invasive_front": 3,
+      "tls_adjacent_activation": 3,
+      "necrotic_hypoxic_rim": 3,
+      "myeloid_vascular_belt": 3
+    }
+  },
+  "top_program_counts": {
+    "immune_exclusion": 10,
+    "stromal_encapsulation": 6,
+    "emt_invasive_front": 3,
+    "tls_adjacent_activation": 3,
+    "necrotic_hypoxic_rim": 3,
+    "myeloid_vascular_belt": 3
+  },
+  "exemplar_montage": "D:\\GitHub\\pyXenium\\manuscript\\atera_contour_boundary_ecology\\exemplar_montage.png"
+}

@@ -8,6 +8,7 @@
    :nosignatures:
 
    add_contours_from_geojson
+   build_contour_feature_table
    expand_contours
    generate_xenium_explorer_annotations
    ring_density

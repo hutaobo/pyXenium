@@ -1,0 +1,26 @@
+name: pyx-lr-prep
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - git
+  - numpy
+  - pandas
+  - scipy
+  - pyyaml
+  - anndata
+  - scanpy
+  - click
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - statsmodels
+  - pyarrow
+  - zarr
+  - fsspec
+  - requests
+  - aiohttp
+  - shapely
+  - tifffile
+  - imagecodecs

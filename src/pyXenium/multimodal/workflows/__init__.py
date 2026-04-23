@@ -1,3 +1,8 @@
+from .contour_boundary_ecology import (
+    render_contour_boundary_ecology_report,
+    run_contour_boundary_ecology_pilot,
+    write_contour_boundary_ecology_artifacts,
+)
 from .renal_ffpe_protein import (
     DEFAULT_DATASET_PATH,
     EXPECTED_CELLS,
@@ -31,11 +36,14 @@ __all__ = [
     "build_summary",
     "build_top_hypotheses_table",
     "extract_ranked_patches",
+    "render_contour_boundary_ecology_report",
     "render_markdown_report",
     "render_renal_immune_resistance_report",
+    "run_contour_boundary_ecology_pilot",
     "run_renal_immune_resistance_pilot",
     "run_validated_renal_ffpe_smoke",
     "validate_summary",
+    "write_contour_boundary_ecology_artifacts",
     "write_output_artifacts",
     "write_renal_immune_resistance_artifacts",
 ]

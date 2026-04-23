@@ -1,0 +1,64 @@
+pathways:
+  Notch:
+    genes:
+      - JAG1
+      - DLL4
+      - NOTCH1
+      - NOTCH3
+    pairs:
+      - JAG1^NOTCH1
+      - DLL4^NOTCH3
+  TGF-beta:
+    genes:
+      - TGFB1
+      - TGFBR2
+      - TGFB2
+      - TGFBR1
+    pairs:
+      - TGFB1^TGFBR2
+  CXCL12/CXCR4:
+    genes:
+      - CXCL12
+      - CXCR4
+    pairs:
+      - CXCL12^CXCR4
+  CSF1/CSF1R:
+    genes:
+      - CSF1
+      - CSF1R
+    pairs:
+      - CSF1^CSF1R
+  angiogenesis:
+    genes:
+      - DLL4
+      - NOTCH3
+      - VEGFA
+      - KDR
+      - FLT1
+      - ANGPT1
+      - TEK
+    pairs:
+      - DLL4^NOTCH3
+  ECM / CAF remodeling:
+    genes:
+      - CXCL12
+      - TGFB1
+      - COL1A1
+      - COL1A2
+      - FN1
+      - ITGB1
+      - ITGA5
+    pairs:
+      - CXCL12^CXCR4
+      - TGFB1^TGFBR2
+  immune recruitment / myeloid interaction:
+    genes:
+      - CSF1
+      - CSF1R
+      - CXCL12
+      - CXCR4
+      - CCL2
+      - CCR2
+    pairs:
+      - CSF1^CSF1R
+      - CXCL12^CXCR4
