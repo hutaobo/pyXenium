@@ -84,7 +84,6 @@ html_theme_options = {
     "logo": {
         "image_light": "_static/branding/pyxenium-horizontal-dark.svg",
         "image_dark": "_static/branding/pyxenium-horizontal-light.svg",
-        "text": "pyXenium",
     },
     "navbar_start": ["navbar-logo"],
     "navbar_center": ["navbar-nav"],

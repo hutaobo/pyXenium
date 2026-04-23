@@ -30,17 +30,28 @@ html[data-theme="dark"] {
   max-width: 980px;
 }
 
+.bd-navbar-elements {
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.15rem;
+}
+
+.bd-navbar-elements .nav-link {
+  padding-left: 0.55rem;
+  padding-right: 0.55rem;
+  white-space: nowrap;
+}
+
+.navbar-brand.logo .logo__image {
+  max-height: 2.5rem;
+}
+
+section#pyxenium > h1:first-child {
+  display: none;
+}
+
 .pyxenium-hero {
-  padding: 1rem 0 0.5rem;
-}
-
-.pyxenium-hero-logo {
-  margin-bottom: 1rem;
-}
-
-.pyxenium-hero-logo img {
-  max-width: 360px;
-  width: 100%;
+  padding: 0.25rem 0 0.5rem;
 }
 
 .pyxenium-tagline {

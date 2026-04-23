@@ -13,10 +13,6 @@ changelog
 ```
 
 <div class="pyxenium-hero">
-  <div class="pyxenium-hero-logo">
-    <img src="_static/branding/pyxenium-horizontal-dark.svg" alt="pyXenium" class="only-light">
-    <img src="_static/branding/pyxenium-horizontal-light.svg" alt="pyXenium" class="only-dark">
-  </div>
   <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, and contour-native spatial profiling.</p>
   <p class="pyxenium-lead">
     pyXenium is a Python toolkit for 10x Genomics Xenium with a layered public surface:
