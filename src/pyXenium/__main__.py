@@ -20,6 +20,7 @@ from .benchmarking import (
     compute_pathway_relevance,
     compute_spatial_coherence,
     compute_robustness,
+    execute_a100_stage_plan,
     prepare_a100_bundle,
     prepare_atera_lr_benchmark,
     render_atera_lr_benchmark_report,
@@ -555,29 +556,40 @@ def benchmark_atera_lr_report(benchmark_root, combined_results, canonical_config
 @click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
 @click.option("--remote-xenium-root", default=DEFAULT_A100_READONLY_XENIUM_ROOT, show_default=True, help="Read-only Xenium outs path on A100.")
 @click.option("--stage-data/--skip-data", default=None, help="Whether to copy local benchmark data. Defaults to skip when a remote Xenium root is provided.")
+@click.option("--transfer-mode", type=click.Choice(["auto", "rsync", "scp", "tar-scp"]), default="auto", show_default=True)
 @click.option("--include-path", "include_paths", multiple=True, help="Optional paths to stage. Defaults to configs/envs/scripts/runners/data.")
 @click.option("--output-json", default=None, help="Optional JSON path to persist the staging manifest.")
 @click.option("--plan-only", is_flag=True, default=False, help="Generate a host-agnostic A100 stage plan without requiring host/user.")
-def benchmark_atera_lr_stage_a100(benchmark_root, host, user, remote_root, remote_xenium_root, stage_data, include_paths, output_json, plan_only):
+@click.option("--dry-run/--execute", default=True, show_default=True, help="When executing, run mkdir + transfer commands immediately.")
+def benchmark_atera_lr_stage_a100(benchmark_root, host, user, remote_root, remote_xenium_root, stage_data, transfer_mode, include_paths, output_json, plan_only, dry_run):
     """Generate SSH/SCP commands for staging the benchmark to A100."""
     payload = build_a100_stage_plan(
         benchmark_root=benchmark_root,
         remote_root=remote_root,
         remote_xenium_root=remote_xenium_root,
         stage_data=stage_data,
+        transfer_mode=transfer_mode,
         host=host,
         user=user,
     )
+    effective_dry_run = bool(plan_only or dry_run)
+    response = payload
+    if not effective_dry_run:
+        response = {
+            "stage_plan": payload,
+            "stage_execution": execute_a100_stage_plan(stage_plan=payload, dry_run=False),
+        }
     if output_json:
         Path(output_json).parent.mkdir(parents=True, exist_ok=True)
-        Path(output_json).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    click.echo(json.dumps(payload, indent=2))
+        Path(output_json).write_text(json.dumps(response, indent=2) + "\n", encoding="utf-8")
+    click.echo(json.dumps(response, indent=2))
 
 
 @benchmark_atera_lr_group.command("prepare-a100-bundle")
 @click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
 @click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
 @click.option("--remote-xenium-root", default=DEFAULT_A100_READONLY_XENIUM_ROOT, show_default=True, help="Read-only Xenium outs path on A100.")
+@click.option("--transfer-mode", type=click.Choice(["auto", "rsync", "scp", "tar-scp"]), default="auto", show_default=True)
 @click.option("--methods", default="pyxenium,squidpy,liana,commot,cellchat", show_default=True)
 @click.option("--database-mode", default="common-db", show_default=True)
 @click.option("--phase", type=click.Choice(["smoke", "full"]), default="full", show_default=True)
@@ -596,6 +608,7 @@ def benchmark_atera_lr_prepare_a100_bundle(
     benchmark_root,
     remote_root,
     remote_xenium_root,
+    transfer_mode,
     methods,
     database_mode,
     phase,
@@ -616,6 +629,7 @@ def benchmark_atera_lr_prepare_a100_bundle(
         benchmark_root=benchmark_root,
         remote_root=remote_root,
         remote_xenium_root=remote_xenium_root,
+        transfer_mode=transfer_mode,
         methods=[item.strip() for item in methods.split(",") if item.strip()],
         database_mode=database_mode,
         phase=phase,
@@ -638,9 +652,19 @@ def benchmark_atera_lr_prepare_a100_bundle(
 @click.option("--plan-json", required=True, help="A100 job manifest or bundle plan JSON.")
 @click.option("--job-id", "job_ids", multiple=True, help="Optional job id filter.")
 @click.option("--dry-run/--execute", default=True, show_default=True)
-def benchmark_atera_lr_run_a100_plan(plan_json, job_ids, dry_run):
+@click.option("--remote/--local", default=False, show_default=True, help="Execute the plan over SSH instead of locally.")
+@click.option("--host", default=None, help="Remote SSH host or IP.")
+@click.option("--user", default=None, help="Remote SSH username.")
+def benchmark_atera_lr_run_a100_plan(plan_json, job_ids, dry_run, remote, host, user):
     """Dry-run or execute commands from an A100 job manifest."""
-    payload = run_a100_plan(plan_json=plan_json, dry_run=dry_run, job_ids=job_ids or None)
+    payload = run_a100_plan(
+        plan_json=plan_json,
+        dry_run=dry_run,
+        job_ids=job_ids or None,
+        remote=remote,
+        host=host,
+        user=user,
+    )
     click.echo(json.dumps(payload, indent=2))
 
 
@@ -649,15 +673,17 @@ def benchmark_atera_lr_run_a100_plan(plan_json, job_ids, dry_run):
 @click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
 @click.option("--host", default=None)
 @click.option("--user", default=None)
+@click.option("--transfer-mode", type=click.Choice(["auto", "rsync", "scp"]), default="auto", show_default=True)
 @click.option("--dry-run/--execute", default=True, show_default=True)
 @click.option("--output-json", default=None)
-def benchmark_atera_lr_collect_a100_results(benchmark_root, remote_root, host, user, dry_run, output_json):
+def benchmark_atera_lr_collect_a100_results(benchmark_root, remote_root, host, user, transfer_mode, dry_run, output_json):
     """Generate or execute result recovery commands from A100."""
     payload = collect_a100_results(
         benchmark_root=benchmark_root,
         remote_root=remote_root,
         host=host,
         user=user,
+        transfer_mode=transfer_mode,
         dry_run=dry_run,
     )
     if output_json:

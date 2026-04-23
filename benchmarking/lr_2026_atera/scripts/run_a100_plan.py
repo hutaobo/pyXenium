@@ -11,12 +11,18 @@ def main() -> None:
     parser.add_argument("--plan-json", required=True)
     parser.add_argument("--job-id", action="append", default=[])
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--remote", action="store_true")
+    parser.add_argument("--host", default=None)
+    parser.add_argument("--user", default=None)
     args = parser.parse_args()
 
     payload = run_a100_plan(
         plan_json=args.plan_json,
         dry_run=not args.execute,
         job_ids=args.job_id or None,
+        remote=args.remote,
+        host=args.host,
+        user=args.user,
     )
     print(json.dumps(payload, indent=2))
 
