@@ -119,7 +119,8 @@ def _expand_contour_geometry_table(
         column for column in contour_table.columns if column not in {"contour_id", "geometry"}
     ]
     for _, row in contour_table.iterrows():
-        expanded_geometry = _buffer_geometry(row["geometry"], distance)
+        source_geometry = _clean_geometry(row["geometry"])
+        expanded_geometry = _buffer_geometry(source_geometry, distance)
         if expanded_geometry.is_empty:
             continue
         record = {"contour_id": row["contour_id"], "geometry": expanded_geometry}
@@ -145,14 +146,10 @@ def _expand_contour_geometry_table(
 
 
 def _buffer_geometry(geometry: BaseGeometry, distance: float) -> BaseGeometry:
-    expanded = geometry.buffer(distance)
+    expanded = _clean_geometry(geometry).buffer(distance)
     if expanded.is_empty:
         return GeometryCollection()
-    if not expanded.is_valid:
-        expanded = expanded.buffer(0)
-    if expanded.is_empty:
-        return GeometryCollection()
-    return expanded
+    return _clean_geometry(expanded)
 
 
 def _apply_voronoi_partition(
@@ -161,8 +158,8 @@ def _apply_voronoi_partition(
     expanded_table: pd.DataFrame,
     sample_step: float | None,
 ) -> pd.DataFrame:
-    expanded_geometries = list(expanded_table["geometry"])
-    support_union = union_all(expanded_geometries)
+    expanded_geometries = [_clean_geometry(geometry) for geometry in expanded_table["geometry"]]
+    support_union = _clean_geometry(union_all(expanded_geometries))
     if support_union.is_empty:
         raise ValueError("Voronoi contour expansion requires a non-empty buffered support region.")
 
@@ -205,16 +202,20 @@ def _apply_voronoi_partition(
         column for column in expanded_table.columns if column not in {"contour_id", "geometry"}
     ]
     for contour_index, row in expanded_table.iterrows():
-        contour_cells = cells_by_contour.get(contour_index, [])
+        contour_cells = []
+        for cell in cells_by_contour.get(contour_index, []):
+            cleaned_cell = _clean_geometry(cell)
+            if not cleaned_cell.is_empty:
+                contour_cells.append(cleaned_cell)
         if not contour_cells:
             raise ValueError(
                 f"Voronoi contour expansion did not produce any cells for contour {row['contour_id']!r}."
             )
 
-        voronoi_region = union_all(contour_cells)
-        final_geometry = row["geometry"].intersection(voronoi_region).intersection(support_union)
-        if not final_geometry.is_valid:
-            final_geometry = final_geometry.buffer(0)
+        voronoi_region = _clean_geometry(union_all(contour_cells))
+        final_geometry = _clean_geometry(
+            _clean_geometry(row["geometry"]).intersection(voronoi_region).intersection(support_union)
+        )
         if final_geometry.is_empty:
             raise ValueError(
                 f"Voronoi contour expansion produced an empty geometry for contour {row['contour_id']!r}."
@@ -270,8 +271,13 @@ def _sample_boundary_points(
 
 
 def _boundary_coordinates(boundary: BaseGeometry) -> list[tuple[float, float]]:
-    if hasattr(boundary, "coords"):
-        coords = [(float(x), float(y)) for x, y in boundary.coords]
+    try:
+        coords_obj = boundary.coords
+    except (AttributeError, NotImplementedError):
+        coords_obj = None
+
+    if coords_obj is not None:
+        coords = [(float(x), float(y)) for x, y in coords_obj]
         if coords and coords[0] == coords[-1]:
             coords = coords[:-1]
         return coords
@@ -333,12 +339,26 @@ def _resolve_voronoi_sample_step(distance: float, voronoi_sample_step: float | N
     return resolved
 
 
+def _clean_geometry(geometry: BaseGeometry) -> BaseGeometry:
+    if geometry.is_empty:
+        return GeometryCollection()
+    if geometry.is_valid:
+        return geometry
+    cleaned = geometry.buffer(0)
+    if cleaned.is_empty:
+        return GeometryCollection()
+    return cleaned
+
+
 def _copy_sdata(sdata: XeniumSData) -> XeniumSData:
     return XeniumSData(
         table=sdata.table.copy(),
         points={name: frame.copy() for name, frame in sdata.points.items()},
         shapes={name: frame.copy() for name, frame in sdata.shapes.items()},
         images=dict(sdata.images),
+        contour_images={
+            contour_key: dict(images) for contour_key, images in sdata.contour_images.items()
+        },
         metadata=deepcopy(sdata.metadata),
         point_sources=dict(sdata.point_sources),
     )

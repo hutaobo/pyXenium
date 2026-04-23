@@ -5,7 +5,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from shapely import STRtree, contains, distance, points
+from shapely import STRtree, contains, distance, intersects, points
 
 from ._geometry import contour_frame_to_geometry_table
 from pyXenium.io.sdata_model import XeniumSData
@@ -20,6 +20,7 @@ _DEFAULT_CONTOUR_METADATA_COLUMNS = (
 )
 _GAUSSIAN_KERNEL = "gaussian"
 _KERNEL_TRUNCATION = 4.0
+_SMALL_CONTOUR_FASTPATH_THRESHOLD = 32
 
 
 def ring_density(
@@ -241,6 +242,20 @@ def _count_targets_by_interval(
     feature_key: str,
     feature_values: str | Sequence[str] | None,
 ) -> np.ndarray:
+    if len(contour_table) <= _SMALL_CONTOUR_FASTPATH_THRESHOLD:
+        return _count_targets_by_interval_small_n(
+            contour_table=contour_table,
+            support_geometries=support_geometries,
+            interval_edges=interval_edges,
+            target_frames=_iter_target_frames(
+                sdata=sdata,
+                target=target,
+                target_query=target_query,
+                feature_key=feature_key,
+                feature_values=feature_values,
+            ),
+        )
+
     contour_geometries = np.asarray(contour_table["geometry"], dtype=object)
     contour_boundaries = np.asarray([geometry.boundary for geometry in contour_geometries], dtype=object)
     tree = STRtree(support_geometries)
@@ -282,6 +297,51 @@ def _count_targets_by_interval(
     return counts
 
 
+def _count_targets_by_interval_small_n(
+    *,
+    contour_table: pd.DataFrame,
+    support_geometries: np.ndarray,
+    interval_edges: np.ndarray,
+    target_frames: Iterator[pd.DataFrame],
+) -> np.ndarray:
+    contour_geometries = np.asarray(contour_table["geometry"], dtype=object)
+    contour_boundaries = np.asarray([geometry.boundary for geometry in contour_geometries], dtype=object)
+    support_bounds = np.asarray([geometry.bounds for geometry in support_geometries], dtype=float)
+    counts = np.zeros((len(contour_table), len(interval_edges) - 1), dtype=np.int64)
+
+    for target_frame in target_frames:
+        if target_frame.empty:
+            continue
+
+        x_values = target_frame["x"].to_numpy(dtype=float)
+        y_values = target_frame["y"].to_numpy(dtype=float)
+        for contour_idx, (support_geometry, support_bbox) in enumerate(
+            zip(support_geometries, support_bounds, strict=True)
+        ):
+            bbox_mask = _points_within_bounds(x_values, y_values, support_bbox)
+            if not np.any(bbox_mask):
+                continue
+
+            candidate_idx = np.flatnonzero(bbox_mask)
+            candidate_points = points(x_values[candidate_idx], y_values[candidate_idx])
+            support_mask = np.asarray(intersects(support_geometry, candidate_points), dtype=bool)
+            if not np.any(support_mask):
+                continue
+
+            contour_points = candidate_points[support_mask]
+            signed = _signed_distance_scalar(
+                point_geometries=contour_points,
+                contour_geometry=contour_geometries[contour_idx],
+                contour_boundary=contour_boundaries[contour_idx],
+            )
+            ring_idx = _assign_intervals(signed_distances=signed, interval_edges=interval_edges)
+            valid = ring_idx >= 0
+            if np.any(valid):
+                np.add.at(counts[contour_idx], ring_idx[valid], 1)
+
+    return counts
+
+
 def _count_smoothed_targets(
     *,
     sdata: XeniumSData,
@@ -296,6 +356,23 @@ def _count_smoothed_targets(
     outward: float,
     bandwidth: float,
 ) -> np.ndarray:
+    if len(contour_table) <= _SMALL_CONTOUR_FASTPATH_THRESHOLD:
+        return _count_smoothed_targets_small_n(
+            contour_table=contour_table,
+            support_geometries=support_geometries,
+            signed_distance_grid=signed_distance_grid,
+            target_frames=_iter_target_frames(
+                sdata=sdata,
+                target=target,
+                target_query=target_query,
+                feature_key=feature_key,
+                feature_values=feature_values,
+            ),
+            inward=inward,
+            outward=outward,
+            bandwidth=bandwidth,
+        )
+
     contour_geometries = np.asarray(contour_table["geometry"], dtype=object)
     contour_boundaries = np.asarray([geometry.boundary for geometry in contour_geometries], dtype=object)
     tree = STRtree(support_geometries)
@@ -343,6 +420,63 @@ def _count_smoothed_targets(
                 counts[current_contour_idx],
                 signed_distance_grid=signed_distance_grid,
                 sample_locations=signed_for_contour,
+                bandwidth=bandwidth,
+                lower=lower,
+                upper=upper,
+            )
+
+    return counts
+
+
+def _count_smoothed_targets_small_n(
+    *,
+    contour_table: pd.DataFrame,
+    support_geometries: np.ndarray,
+    signed_distance_grid: np.ndarray,
+    target_frames: Iterator[pd.DataFrame],
+    inward: float,
+    outward: float,
+    bandwidth: float,
+) -> np.ndarray:
+    contour_geometries = np.asarray(contour_table["geometry"], dtype=object)
+    contour_boundaries = np.asarray([geometry.boundary for geometry in contour_geometries], dtype=object)
+    support_bounds = np.asarray([geometry.bounds for geometry in support_geometries], dtype=float)
+    counts = np.zeros((len(contour_table), len(signed_distance_grid)), dtype=float)
+    lower = -float(inward)
+    upper = float(outward)
+
+    for target_frame in target_frames:
+        if target_frame.empty:
+            continue
+
+        x_values = target_frame["x"].to_numpy(dtype=float)
+        y_values = target_frame["y"].to_numpy(dtype=float)
+        for contour_idx, (support_geometry, support_bbox) in enumerate(
+            zip(support_geometries, support_bounds, strict=True)
+        ):
+            bbox_mask = _points_within_bounds(x_values, y_values, support_bbox)
+            if not np.any(bbox_mask):
+                continue
+
+            candidate_idx = np.flatnonzero(bbox_mask)
+            candidate_points = points(x_values[candidate_idx], y_values[candidate_idx])
+            support_mask = np.asarray(intersects(support_geometry, candidate_points), dtype=bool)
+            if not np.any(support_mask):
+                continue
+
+            signed = _signed_distance_scalar(
+                point_geometries=candidate_points[support_mask],
+                contour_geometry=contour_geometries[contour_idx],
+                contour_boundary=contour_boundaries[contour_idx],
+            )
+            valid = (signed >= lower) & (signed <= upper)
+            if not np.any(valid):
+                continue
+
+            _accumulate_gaussian_with_reflection(
+                counts[contour_idx],
+                signed_distance_grid=signed_distance_grid,
+                sample_locations=signed[valid],
                 bandwidth=bandwidth,
                 lower=lower,
                 upper=upper,
@@ -563,6 +697,32 @@ def _signed_distance(
     inside = np.asarray(contains(contour_geometries, point_geometries), dtype=bool)
     signed = np.where(dist == 0, 0.0, np.where(inside, -dist, dist))
     return np.asarray(signed, dtype=float)
+
+
+def _signed_distance_scalar(
+    *,
+    point_geometries: np.ndarray,
+    contour_geometry: Any,
+    contour_boundary: Any,
+) -> np.ndarray:
+    dist = np.asarray(distance(point_geometries, contour_boundary), dtype=float)
+    inside = np.asarray(contains(contour_geometry, point_geometries), dtype=bool)
+    signed = np.where(dist == 0, 0.0, np.where(inside, -dist, dist))
+    return np.asarray(signed, dtype=float)
+
+
+def _points_within_bounds(
+    x_values: np.ndarray,
+    y_values: np.ndarray,
+    bounds: np.ndarray,
+) -> np.ndarray:
+    minx, miny, maxx, maxy = [float(value) for value in bounds]
+    return (
+        (x_values >= minx)
+        & (x_values <= maxx)
+        & (y_values >= miny)
+        & (y_values <= maxy)
+    )
 
 
 def _assign_intervals(*, signed_distances: np.ndarray, interval_edges: np.ndarray) -> np.ndarray:

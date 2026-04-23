@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import asyncio
 import gzip
 import io
 import json
@@ -8,6 +9,7 @@ import os
 import re
 import shutil
 import tempfile
+import threading
 import warnings
 import zipfile
 from pathlib import Path
@@ -213,6 +215,85 @@ def _safe_array(group: Any, key: str) -> np.ndarray | None:
         return np.asarray(group[key][...])
     except Exception:
         return None
+
+
+def _collect_async_values(async_iterable: Any) -> list[Any]:
+    async def _collect() -> list[Any]:
+        return [item async for item in async_iterable]
+
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return asyncio.run(_collect())
+
+    result: list[Any] = []
+    error: Exception | None = None
+
+    def _runner() -> None:
+        nonlocal result, error
+        try:
+            result = asyncio.run(_collect())
+        except Exception as exc:  # pragma: no cover
+            error = exc
+
+    thread = threading.Thread(target=_runner, daemon=True)
+    thread.start()
+    thread.join()
+    if error is not None:
+        raise error
+    return result
+
+
+def _list_group_members(group: Any) -> list[str]:
+    store = getattr(group, "store", None)
+    path = getattr(group, "path", None)
+    if store is None or path is None or not getattr(store, "supports_listing", False):
+        return []
+    if not hasattr(store, "list_dir"):
+        return []
+
+    try:
+        entries = _collect_async_values(store.list_dir(path))
+    except Exception:
+        return []
+
+    members: list[str] = []
+    for entry in entries:
+        name = str(entry).strip("/").split("/")[-1]
+        if name and not name.startswith("."):
+            members.append(name)
+    return list(dict.fromkeys(members))
+
+
+def _attach_extra_chunk_columns(
+    frame: pd.DataFrame,
+    *,
+    chunk: Any,
+    chunk_length: int,
+    mask: np.ndarray,
+    excluded: set[str],
+) -> None:
+    for key in _list_group_members(chunk):
+        if key in excluded:
+            continue
+        values = _safe_array(chunk, key)
+        if values is None:
+            continue
+
+        array = np.asarray(values)
+        if array.ndim == 0 or array.shape[0] != chunk_length:
+            continue
+
+        decoded = _decode_array(array)
+        if decoded.ndim == 1:
+            frame[key] = decoded[mask]
+            continue
+        if decoded.ndim == 2 and decoded.shape[1] == 1:
+            frame[key] = decoded.reshape(-1)[mask]
+            continue
+        if decoded.ndim == 2:
+            for idx in range(decoded.shape[1]):
+                frame[f"{key}_{idx}"] = decoded[:, idx][mask]
 
 
 def _find_zarr_root_in_zip(zip_path: str) -> str:
@@ -1229,6 +1310,8 @@ def iter_transcript_chunks(
                 "gene_name": gene_labels[mask].astype(str),
             }
         )
+        if coords.shape[1] > 2:
+            frame["z"] = coords[mask, 2].astype(float)
 
         if quality is not None:
             frame["quality_score"] = np.asarray(quality).reshape(-1)[mask]
@@ -1247,6 +1330,14 @@ def iter_transcript_chunks(
                 frame["cell_id"] = mapped[mask].astype(str)
             else:
                 frame["cell_id"] = _decode_array(cell_values).reshape(-1)[mask].astype(str)
+
+        _attach_extra_chunk_columns(
+            frame,
+            chunk=chunk,
+            chunk_length=coords.shape[0],
+            mask=mask,
+            excluded={"location", "gene_identity", "quality_score", "valid", "cell_id"},
+        )
         yield frame.reset_index(drop=True)
 
 

@@ -35,7 +35,6 @@ TRANSCRIPT_POINT_COLUMNS = (
     "gene_name",
     "quality_score",
     "valid",
-    "cell_id",
 )
 TRANSCRIPT_POINT_COLUMN_TYPES = {
     "x": "float64",
@@ -44,7 +43,6 @@ TRANSCRIPT_POINT_COLUMN_TYPES = {
     "gene_name": "string",
     "quality_score": "float64",
     "valid": "bool",
-    "cell_id": "string",
 }
 
 
@@ -85,15 +83,6 @@ def _build_obs(
     if obs is not None:
         return obs, metadata
 
-
-def _transcript_point_source(transcripts_path: str) -> XeniumFrameChunkSource:
-    return XeniumFrameChunkSource(
-        columns=TRANSCRIPT_POINT_COLUMNS,
-        column_types=TRANSCRIPT_POINT_COLUMN_TYPES,
-        chunk_iter_factory=lambda: iter_transcript_chunks(transcripts_path),
-        attrs={"source_path": transcripts_path},
-    )
-
     cells_path = join_path(base_path, "cells.zarr.zip")
     if Path(str(base_path)).suffix == ".zip":
         cells_path = str(base_path)
@@ -110,6 +99,16 @@ def _transcript_point_source(transcripts_path: str) -> XeniumFrameChunkSource:
         obs = pd.DataFrame(index=barcodes)
         obs.index.name = "barcode"
         return obs, metadata
+
+
+def _transcript_point_source(transcripts_path: str) -> XeniumFrameChunkSource:
+    return XeniumFrameChunkSource(
+        columns=TRANSCRIPT_POINT_COLUMNS,
+        column_types=TRANSCRIPT_POINT_COLUMN_TYPES,
+        chunk_iter_factory=lambda: iter_transcript_chunks(transcripts_path),
+        attrs={"source_path": transcripts_path},
+        preserve_extra_columns=True,
+    )
 
 
 def _assemble_anndata(
@@ -288,6 +287,9 @@ def write_xenium(
             "points": sorted(obj.points.keys()) if isinstance(obj, XeniumSData) else [],
             "shapes": sorted(obj.shapes.keys()) if isinstance(obj, XeniumSData) else [],
             "images": sorted(obj.images.keys()) if isinstance(obj, XeniumSData) else [],
+            "contour_images": (
+                sorted(obj.contour_images.keys()) if isinstance(obj, XeniumSData) else []
+            ),
             "labels": [],
         }
 

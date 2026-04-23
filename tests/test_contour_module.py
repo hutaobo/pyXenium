@@ -10,9 +10,11 @@ import pytest
 from shapely import union_all
 
 import pyXenium.contour as contour
+import pyXenium.contour.generation as contour_generation_module
 from pyXenium.contour import (
     add_contours_from_geojson,
     expand_contours,
+    generate_xenium_explorer_annotations,
     ring_density,
     smooth_density_by_distance,
 )
@@ -95,6 +97,48 @@ def _simple_contour_geojson() -> dict:
                     ],
                 },
             },
+        ],
+    }
+
+
+def _hole_contour_geojson() -> dict:
+    return {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "polygon_id": "donut",
+                    "segmentation_source": "protein_clusters",
+                    "metadata": {
+                        "assigned_structure": "Donut structure",
+                        "classification_name": "Hole rich",
+                        "annotation_source": "manual",
+                        "structure_id": "D",
+                        "name": "Donut structure",
+                        "object_type": "polygon_unit",
+                    },
+                },
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [40.0, 40.0],
+                            [120.0, 40.0],
+                            [120.0, 120.0],
+                            [40.0, 120.0],
+                            [40.0, 40.0],
+                        ],
+                        [
+                            [60.0, 60.0],
+                            [60.0, 100.0],
+                            [100.0, 100.0],
+                            [100.0, 60.0],
+                            [60.0, 60.0],
+                        ],
+                    ],
+                },
+            }
         ],
     }
 
@@ -200,6 +244,39 @@ def _make_nearby_contour_sdata() -> XeniumSData:
     return sdata
 
 
+def _xenium_explorer_geojson() -> dict:
+    return {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "name": "Macrophage Island",
+                    "objectType": "annotation",
+                    "assigned_structure": "Macrophages",
+                    "structure_id": "macrophage",
+                    "classification": {
+                        "name": "Macrophages",
+                        "color": [34, 139, 34],
+                    },
+                },
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [0.0, 0.0],
+                            [10.0, 0.0],
+                            [10.0, 10.0],
+                            [0.0, 10.0],
+                            [0.0, 0.0],
+                        ]
+                    ],
+                },
+            }
+        ],
+    }
+
+
 def _make_complex_contour_sdata() -> XeniumSData:
     sdata = _make_contour_ready_sdata()
     donut_frame = pd.DataFrame(
@@ -250,6 +327,7 @@ def _geometry_table_for_key(sdata: XeniumSData, contour_key: str) -> pd.DataFram
 def test_contour_public_imports_smoke():
     assert callable(contour.add_contours_from_geojson)
     assert callable(contour.expand_contours)
+    assert callable(contour.generate_xenium_explorer_annotations)
     assert callable(contour.ring_density)
     assert callable(contour.smooth_density_by_distance)
 
@@ -296,6 +374,191 @@ def test_add_contours_from_geojson_imports_scales_and_roundtrips(tmp_path):
     ).reset_index(drop=True)
     pd.testing.assert_frame_equal(frame, reloaded_frame)
     assert reloaded.metadata["contours"]["protein_cluster_contours"]["n_contours"] == 2
+
+
+def test_add_contours_from_geojson_extracts_he_patches_and_roundtrips(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
+    sdata = read_xenium(str(dataset), as_="sdata", include_images=True, prefer="zarr")
+    geojson_path = tmp_path / "contours.geojson"
+    _write_geojson(geojson_path, _simple_contour_geojson())
+
+    copied = add_contours_from_geojson(
+        sdata,
+        geojson_path,
+        key="protein_cluster_contours",
+        extract_he_patches=True,
+        copy=True,
+    )
+
+    assert copied is not None
+    assert "protein_cluster_contours" not in sdata.contour_images
+    assert "protein_cluster_contours" in copied.contour_images
+    assert copied.component_summary()["contour_images"] == ["protein_cluster_contours"]
+    assert copied.metadata["contours"]["protein_cluster_contours"]["he_patches_enabled"] is True
+    assert copied.metadata["contours"]["protein_cluster_contours"]["he_image_key"] == "he"
+    assert copied.metadata["contours"]["protein_cluster_contours"]["n_he_patches"] == 2
+    assert copied.metadata["contours"]["protein_cluster_contours"]["storage_group"] == (
+        "contour_images/protein_cluster_contours"
+    )
+
+    patches = copied.contour_images["protein_cluster_contours"]
+    assert set(patches) == {"structure4_a", "structure2_b"}
+
+    edge_patch = patches["structure4_a"]
+    assert tuple(int(value) for value in edge_patch.levels[0].shape) == (12, 15, 3)
+    assert edge_patch.metadata["bbox_image_xy"] == [0, 0, 15, 12]
+
+    multi_patch = patches["structure2_b"]
+    assert len(multi_patch.levels) == 1
+    assert tuple(int(value) for value in multi_patch.levels[0].shape) == (8, 25, 3)
+    assert multi_patch.metadata["source_image_key"] == "he"
+    assert multi_patch.metadata["contour_key"] == "protein_cluster_contours"
+    assert multi_patch.metadata["contour_id"] == "structure2_b"
+    assert multi_patch.metadata["mask_mode"] == "polygon"
+    assert multi_patch.metadata["padding_px"] == 0
+    assert multi_patch.metadata["bbox_image_xy"] == [45, 31, 70, 39]
+    assert multi_patch.metadata["bbox_xenium_um"] == [50.0, 50.0, 75.0, 60.0]
+    assert multi_patch.metadata["transform_input_space"] == "patch_local_image_pixel_xy"
+    np.testing.assert_allclose(
+        np.asarray(multi_patch.image_to_xenium_affine, dtype=float),
+        np.asarray([[2.0, 0.0, 100.0], [0.0, 3.0, 98.0], [0.0, 0.0, 1.0]], dtype=float),
+    )
+    assert not np.allclose(
+        np.asarray(multi_patch.image_to_xenium_affine, dtype=float),
+        np.asarray(copied.images["he"].image_to_xenium_affine, dtype=float),
+    )
+    assert np.count_nonzero(np.asarray(multi_patch.levels[0])[:, 10:15, :]) == 0
+
+    add_contours_from_geojson(
+        sdata,
+        geojson_path,
+        key="protein_cluster_contours",
+        extract_he_patches=True,
+        copy=False,
+    )
+    assert "protein_cluster_contours" in sdata.contour_images
+
+    expanded = expand_contours(
+        copied,
+        contour_key="protein_cluster_contours",
+        distance=2.0,
+        output_key="protein_cluster_contours_expanded",
+        copy=True,
+    )
+    assert expanded is not None
+    assert set(expanded.contour_images["protein_cluster_contours"]) == set(patches)
+
+    output = tmp_path / "contour_he_patches.zarr"
+    payload = write_xenium(copied, output, format="sdata")
+    reloaded = read_sdata(payload["output_path"])
+
+    assert payload["contour_images"] == ["protein_cluster_contours"]
+    assert "protein_cluster_contours" in reloaded.contour_images
+    reloaded_patch = reloaded.contour_images["protein_cluster_contours"]["structure2_b"]
+    assert tuple(int(value) for value in reloaded_patch.levels[0].shape) == (8, 25, 3)
+    assert reloaded_patch.metadata["bbox_image_xy"] == [45, 31, 70, 39]
+    np.testing.assert_allclose(
+        np.asarray(reloaded_patch.image_to_xenium_affine, dtype=float),
+        np.asarray(multi_patch.image_to_xenium_affine, dtype=float),
+    )
+
+
+def test_add_contours_from_geojson_extracts_he_patches_with_polygon_holes(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
+    sdata = read_xenium(str(dataset), as_="sdata", include_images=True, prefer="zarr")
+    geojson_path = tmp_path / "hole_contours.geojson"
+    _write_geojson(geojson_path, _hole_contour_geojson())
+
+    copied = add_contours_from_geojson(
+        sdata,
+        geojson_path,
+        key="hole_contours",
+        extract_he_patches=True,
+        copy=True,
+    )
+
+    donut_patch = np.asarray(copied.contour_images["hole_contours"]["donut"].levels[0])
+    assert tuple(int(value) for value in donut_patch.shape) == (28, 40, 3)
+    assert np.count_nonzero(donut_patch[10:20, 12:28, :]) == 0
+    assert np.count_nonzero(donut_patch[2:6, 2:6, :]) > 0
+
+
+def test_add_contours_from_geojson_patch_extraction_requires_loaded_he_image_and_alignment(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
+    geojson_path = tmp_path / "contours.geojson"
+    _write_geojson(geojson_path, _simple_contour_geojson())
+
+    sdata_without_images = read_xenium(str(dataset), as_="sdata", include_images=False, prefer="zarr")
+    add_contours_from_geojson(
+        sdata_without_images,
+        geojson_path,
+        key="protein_cluster_contours",
+        pixel_size_um=0.5,
+        extract_he_patches=False,
+        copy=False,
+    )
+    assert "protein_cluster_contours" in sdata_without_images.shapes
+    assert "protein_cluster_contours" not in sdata_without_images.contour_images
+
+    with pytest.raises(ValueError, match="include_images=True"):
+        add_contours_from_geojson(
+            read_xenium(str(dataset), as_="sdata", include_images=False, prefer="zarr"),
+            geojson_path,
+            key="protein_cluster_contours",
+            extract_he_patches=True,
+            copy=True,
+        )
+
+    sdata_missing_affine = read_xenium(str(dataset), as_="sdata", include_images=True, prefer="zarr")
+    sdata_missing_affine.images["he"].image_to_xenium_affine = None
+    with pytest.raises(ValueError, match="image_to_xenium_affine"):
+        add_contours_from_geojson(
+            sdata_missing_affine,
+            geojson_path,
+            key="protein_cluster_contours",
+            extract_he_patches=True,
+            copy=True,
+        )
+
+    sdata_missing_pixel_size = read_xenium(
+        str(dataset),
+        as_="sdata",
+        include_images=True,
+        prefer="zarr",
+    )
+    sdata_missing_pixel_size.images["he"].pixel_size_um = None
+    with pytest.raises(ValueError, match="pixel_size_um"):
+        add_contours_from_geojson(
+            sdata_missing_pixel_size,
+            geojson_path,
+            key="protein_cluster_contours",
+            extract_he_patches=True,
+            copy=True,
+        )
+
+
+def test_add_contours_from_xenium_explorer_geojson_maps_schema_fields(tmp_path):
+    sdata = XeniumSData(
+        table=ad.AnnData(X=np.zeros((0, 0), dtype=float)),
+        metadata={"image_artifacts": {"he": {"pixel_size_um": 1.0}}},
+    )
+    geojson_path = tmp_path / "xenium_explorer_annotations.generated.geojson"
+    _write_geojson(geojson_path, _xenium_explorer_geojson())
+
+    imported = add_contours_from_geojson(
+        sdata,
+        geojson_path,
+        key="atera_contours",
+        id_key="name",
+        copy=True,
+    )
+
+    frame = imported.shapes["atera_contours"]
+    assert frame["contour_id"].unique().tolist() == ["Macrophage Island"]
+    assert frame["classification_name"].unique().tolist() == ["Macrophages"]
+    assert frame["object_type"].unique().tolist() == ["annotation"]
+    assert frame["assigned_structure"].unique().tolist() == ["Macrophages"]
+    assert frame["structure_id"].unique().tolist() == ["macrophage"]
 
 
 def test_ring_density_supports_transcripts_and_cells():
@@ -572,6 +835,24 @@ def test_expand_contours_supports_holes_and_multipolygons():
     assert expanded_areas["multi"] > source_areas["multi"]
 
 
+def test_expand_contours_voronoi_supports_multipart_boundaries():
+    sdata = _make_complex_contour_sdata()
+
+    expanded = expand_contours(
+        sdata,
+        contour_key="complex_contours",
+        distance=1.0,
+        mode="voronoi",
+        output_key="complex_voronoi",
+        copy=True,
+        voronoi_sample_step=1.0,
+    )
+
+    assert expanded is not None
+    table = _geometry_table_for_key(expanded, "complex_voronoi")
+    assert set(table["contour_id"]) == {"donut", "multi"}
+
+
 def test_expand_contours_voronoi_single_contour_matches_overlap():
     sdata = _make_contour_ready_sdata()
 
@@ -622,3 +903,17 @@ def test_expand_contours_validation():
     expand_contours(sdata, contour_key="contours", distance=1.0)
     with pytest.raises(KeyError, match="contours_expanded"):
         expand_contours(sdata, contour_key="contours", distance=1.0)
+
+
+def test_generate_xenium_explorer_annotations_error_is_actionable(tmp_path, monkeypatch):
+    def _missing_histoseg(name):
+        raise ModuleNotFoundError(name)
+
+    monkeypatch.setattr(contour_generation_module.importlib, "import_module", _missing_histoseg)
+
+    with pytest.raises(ImportError, match="Install `histoseg` or pass `histoseg_root`"):
+        generate_xenium_explorer_annotations(
+            tmp_path,
+            structures=[{"structure_name": "Macrophages", "cluster_ids": [1]}],
+            output_relpath="contour_exports",
+        )

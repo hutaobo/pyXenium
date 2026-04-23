@@ -75,24 +75,36 @@ def _write_gzip_text(path: Path, text: str) -> None:
         stream.write(text)
 
 
-def _make_transcripts_zip(path: Path) -> None:
+def _make_transcripts_zip(
+    path: Path,
+    *,
+    include_cell_id: bool = True,
+    extra_columns: dict[str, np.ndarray] | None = None,
+    include_z_coordinate: bool = False,
+) -> None:
     store = zarr.storage.ZipStore(str(path), mode="w")
     root = zarr.open_group(store=store, mode="w")
     root.attrs["gene_names"] = ["Gene1", "Gene2"]
     grids = root.require_group("grids")
     level = grids.require_group("0")
     chunk = level.require_group("0,0")
+    locations = np.asarray([[10.0, 20.0], [15.0, 25.0], [30.0, 40.0], [35.0, 45.0]])
+    if include_z_coordinate:
+        locations = np.c_[locations, np.asarray([0.0, 1.0, 2.0, 3.0], dtype=float)]
     chunk.create_array(
         "location",
-        data=np.asarray([[10.0, 20.0], [15.0, 25.0], [30.0, 40.0], [35.0, 45.0]]),
+        data=locations,
     )
     chunk.create_array("gene_identity", data=np.asarray([0, 1, 0, 1], dtype=np.int64))
     chunk.create_array("quality_score", data=np.asarray([30.0, 25.0, 18.0, 35.0]))
     chunk.create_array("valid", data=np.asarray([1, 1, 1, 0], dtype=np.uint8))
-    chunk.create_array(
-        "cell_id",
-        data=np.asarray([BARCODES[0], BARCODES[1], BARCODES[2], BARCODES[0]], dtype=np.str_),
-    )
+    if include_cell_id:
+        chunk.create_array(
+            "cell_id",
+            data=np.asarray([BARCODES[0], BARCODES[1], BARCODES[2], BARCODES[0]], dtype=np.str_),
+        )
+    for key, values in (extra_columns or {}).items():
+        chunk.create_array(key, data=np.asarray(values))
     store.close()
 
 
@@ -296,6 +308,9 @@ def make_xenium_dataset(
     include_projections: bool = False,
     primary_analysis_root: str = "analysis",
     include_nested_analysis_variant: bool = False,
+    transcripts_include_cell_id: bool = True,
+    transcript_extra_columns: dict[str, np.ndarray] | None = None,
+    transcripts_include_z_coordinate: bool = False,
 ) -> Path:
     base_path.mkdir(parents=True, exist_ok=True)
 
@@ -349,7 +364,12 @@ def make_xenium_dataset(
         )
 
     if include_transcripts:
-        _make_transcripts_zip(base_path / "transcripts.zarr.zip")
+        _make_transcripts_zip(
+            base_path / "transcripts.zarr.zip",
+            include_cell_id=transcripts_include_cell_id,
+            extra_columns=transcript_extra_columns,
+            include_z_coordinate=transcripts_include_z_coordinate,
+        )
 
     if include_zarr_sidecars:
         _make_cells_zip(base_path / "cells.zarr.zip")
@@ -543,6 +563,41 @@ def test_read_xenium_sdata_can_stream_transcripts_for_export(tmp_path):
     pd.testing.assert_frame_equal(streamed, expected)
 
 
+def test_read_xenium_streamed_transcripts_allow_missing_cell_id(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset_missing_cell_id",
+        transcripts_include_cell_id=False,
+        transcripts_include_z_coordinate=True,
+    )
+
+    sdata = read_xenium(str(dataset), as_="sdata", prefer="mex", stream_transcripts=True)
+    streamed = sdata.point_sources["transcripts"].materialize()
+
+    assert "cell_id" not in streamed.columns
+    assert {"x", "y", "z", "gene_identity", "gene_name", "quality_score", "valid"} <= set(streamed.columns)
+    assert streamed["z"].tolist() == [0.0, 1.0, 2.0, 3.0]
+
+
+def test_read_xenium_streamed_transcripts_preserve_extra_columns(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset_extra_columns",
+        transcript_extra_columns={
+            "status": np.asarray([1, 0, 1, 1], dtype=np.uint8),
+            "fov_name": np.asarray(["fov_a", "fov_a", "fov_b", "fov_b"], dtype=np.str_),
+            "codeword_identity": np.asarray([[11, 101], [12, 102], [13, 103], [14, 104]], dtype=np.int64),
+        },
+    )
+
+    sdata = read_xenium(str(dataset), as_="sdata", prefer="mex", stream_transcripts=True)
+    streamed = sdata.point_sources["transcripts"].materialize()
+
+    assert {"status", "fov_name", "codeword_identity_0", "codeword_identity_1"} <= set(streamed.columns)
+    assert streamed["status"].tolist() == [1, 0, 1, 1]
+    assert streamed["fov_name"].tolist() == ["fov_a", "fov_a", "fov_b", "fov_b"]
+    assert streamed["codeword_identity_0"].tolist() == [11, 12, 13, 14]
+    assert streamed["codeword_identity_1"].tolist() == [101, 102, 103, 104]
+
+
 def test_read_xenium_sdata_loads_he_image_and_alignment_metadata(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
 
@@ -610,6 +665,27 @@ def test_sdata_roundtrip_preserves_streamed_transcripts(tmp_path):
 
     assert payload["points"] == ["transcripts"]
     pd.testing.assert_frame_equal(reloaded.points["transcripts"], expected)
+
+
+def test_sdata_roundtrip_preserves_streamed_transcript_extra_columns(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset_streamed_extra_roundtrip",
+        transcripts_include_cell_id=False,
+        transcript_extra_columns={
+            "status": np.asarray([1, 0, 1, 1], dtype=np.uint8),
+            "fov_name": np.asarray(["fov_a", "fov_a", "fov_b", "fov_b"], dtype=np.str_),
+        },
+        transcripts_include_z_coordinate=True,
+    )
+    sdata = read_xenium(str(dataset), as_="sdata", prefer="zarr", stream_transcripts=True)
+
+    output = tmp_path / "pyxenium_sdata_streamed_extra.zarr"
+    payload = write_xenium(sdata, output, format="sdata")
+    reloaded = read_sdata(output)
+
+    assert payload["points"] == ["transcripts"]
+    assert {"z", "status", "fov_name"} <= set(reloaded.points["transcripts"].columns)
+    assert "cell_id" not in reloaded.points["transcripts"].columns
 
 
 def test_sdata_roundtrip_preserves_he_images(tmp_path):

@@ -89,6 +89,7 @@ version = {attr = "pyXenium._version.__version__"}
 pyXenium = [
   "config/*.yaml",
   "datasets/toy_slide/*.zip",
+  "notebooks/*.ipynb",
 ]
 
 [tool.setuptools.packages.find]

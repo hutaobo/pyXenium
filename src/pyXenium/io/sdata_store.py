@@ -16,6 +16,24 @@ from .sdata_model import XeniumFrameChunkSource, XeniumImage, XeniumSData
 
 SDATA_FORMAT = "pyxenium.sdata"
 SDATA_VERSION = 1
+_IMAGE_CORE_ATTRS = {
+    "axes",
+    "dtype",
+    "multiscale_levels",
+    "level_shapes",
+    "source_path",
+    "transform_kind",
+    "transform_direction",
+    "transform_input_space",
+    "transform_output_space",
+    "transform_output_unit",
+    "xenium_physical_unit",
+    "image_to_xenium_affine",
+    "alignment_csv_path",
+    "pixel_size_um",
+    "xenium_pixel_size_um",
+    "keypoints_validation",
+}
 
 
 def _ensure_writable_path(path: str | Path, *, overwrite: bool) -> Path:
@@ -53,7 +71,7 @@ def _column_values_for_type(series: pd.Series, dtype_name: str) -> np.ndarray:
     if dtype_name == "float64":
         return np.asarray(series.to_numpy(), dtype=np.float64)
     if dtype_name == "string":
-        return series.astype(str).to_numpy(dtype=np.str_)
+        return series.fillna("").astype(str).to_numpy(dtype=np.str_)
     raise ValueError(f"Unsupported dtype_name={dtype_name!r}.")
 
 
@@ -76,10 +94,15 @@ def _zarr_dtype_for_column(
 def _string_length(series: pd.Series) -> int:
     if series.empty:
         return 1
-    lengths = series.astype(str).str.len()
+    lengths = series.fillna("").astype(str).str.len()
     if lengths.empty:
         return 1
     return max(int(lengths.max()), 1)
+
+
+def _dtype_name_for_series(series: pd.Series) -> str:
+    _, dtype_name = _column_payload(series)
+    return dtype_name
 
 
 def _write_frame_group(parent: Any, key: str, frame: pd.DataFrame, *, attrs: dict[str, Any] | None = None) -> None:
@@ -107,10 +130,6 @@ def _write_chunked_frame_group(
     attrs: dict[str, Any] | None = None,
 ) -> None:
     group = parent.require_group(key)
-    columns = list(source.columns)
-    column_types = dict(source.column_types)
-    group.attrs["columns"] = columns
-    group.attrs["column_types"] = column_types
     merged_attrs = dict(source.attrs)
     if attrs:
         merged_attrs.update(attrs)
@@ -118,6 +137,8 @@ def _write_chunked_frame_group(
         group.attrs[attr_key] = attr_value
 
     # We scan once to size fixed-width unicode arrays, then stream chunks into place.
+    columns = list(source.columns)
+    column_types = dict(source.column_types)
     n_rows = 0
     chunk_rows = 0
     string_lengths = {
@@ -129,9 +150,21 @@ def _write_chunked_frame_group(
         frame_rows = int(frame.shape[0])
         n_rows += frame_rows
         chunk_rows = max(chunk_rows, frame_rows)
-        for column in string_lengths:
-            string_lengths[column] = max(string_lengths[column], _string_length(frame[column]))
+        if source.preserve_extra_columns:
+            for column in frame.columns:
+                if column not in column_types:
+                    columns.append(column)
+                    column_types[column] = _dtype_name_for_series(frame[column])
+                    if column_types[column] == "string":
+                        string_lengths[column] = 1
+        for column in columns:
+            if column not in frame.columns:
+                continue
+            if column_types[column] == "string":
+                string_lengths[column] = max(string_lengths.get(column, 1), _string_length(frame[column]))
 
+    group.attrs["columns"] = columns
+    group.attrs["column_types"] = column_types
     group.attrs["n_rows"] = n_rows
     chunk_length = max(1, min(chunk_rows or 65536, n_rows or 1))
     for column in columns:
@@ -149,8 +182,22 @@ def _write_chunked_frame_group(
     start = 0
     for frame in source.iter_chunks():
         stop = start + int(frame.shape[0])
+        frame_columns = set(frame.columns)
         for column in columns:
-            group[column][start:stop] = _column_values_for_type(frame[column], column_types[column])
+            if column in frame_columns:
+                series = frame[column]
+            else:
+                dtype_name = column_types[column]
+                if dtype_name == "bool":
+                    fill_value = False
+                elif dtype_name == "int64":
+                    fill_value = 0
+                elif dtype_name == "float64":
+                    fill_value = np.nan
+                else:
+                    fill_value = ""
+                series = pd.Series([fill_value] * int(frame.shape[0]))
+            group[column][start:stop] = _column_values_for_type(series, column_types[column])
         start = stop
 
 
@@ -270,80 +317,100 @@ def _write_image_level(parent: Any, key: str, level: Any, *, axes: str) -> None:
     _write_array_like_dataset(parent, key, np.asarray(level), axes=axes)
 
 
+def _write_single_image_group(group: Any, image: XeniumImage) -> None:
+    for level_index, level in enumerate(image.levels):
+        _write_image_level(group, str(level_index), level, axes=image.axes)
+    transform_metadata = image.transform_metadata()
+    group.attrs["axes"] = image.axes
+    group.attrs["dtype"] = image.dtype
+    group.attrs["multiscale_levels"] = list(range(len(image.levels)))
+    group.attrs["level_shapes"] = [list(shape) for shape in image.multiscale_shapes()]
+    group.attrs["source_path"] = image.source_path
+    group.attrs["transform_kind"] = image.transform_kind
+    group.attrs["transform_direction"] = transform_metadata["transform_direction"]
+    group.attrs["transform_input_space"] = transform_metadata["transform_input_space"]
+    group.attrs["transform_output_space"] = transform_metadata["transform_output_space"]
+    group.attrs["transform_output_unit"] = transform_metadata["transform_output_unit"]
+    group.attrs["xenium_physical_unit"] = transform_metadata["xenium_physical_unit"]
+    group.attrs["image_to_xenium_affine"] = image.image_to_xenium_affine
+    group.attrs["alignment_csv_path"] = image.alignment_csv_path
+    group.attrs["pixel_size_um"] = image.pixel_size_um
+    if "xenium_pixel_size_um" in transform_metadata:
+        group.attrs["xenium_pixel_size_um"] = transform_metadata["xenium_pixel_size_um"]
+    if image.keypoints_validation is not None:
+        group.attrs["keypoints_validation"] = image.keypoints_validation
+        for summary_key, summary_value in image.keypoints_validation.items():
+            group.attrs[summary_key] = summary_value
+    for meta_key, meta_value in image.metadata.items():
+        if meta_key in {
+            "transform_direction",
+            "transform_input_space",
+            "transform_output_space",
+            "transform_output_unit",
+            "xenium_physical_unit",
+            "xenium_pixel_size_um",
+        }:
+            continue
+        group.attrs[meta_key] = meta_value
+
+
 def _write_images_group(parent: Any, images: dict[str, XeniumImage]) -> None:
     for key, image in images.items():
-        group = parent.require_group(key)
-        for level_index, level in enumerate(image.levels):
-            _write_image_level(group, str(level_index), level, axes=image.axes)
-        transform_metadata = image.transform_metadata()
-        group.attrs["axes"] = image.axes
-        group.attrs["dtype"] = image.dtype
-        group.attrs["multiscale_levels"] = list(range(len(image.levels)))
-        group.attrs["level_shapes"] = [list(shape) for shape in image.multiscale_shapes()]
-        group.attrs["source_path"] = image.source_path
-        group.attrs["transform_kind"] = image.transform_kind
-        group.attrs["transform_direction"] = transform_metadata["transform_direction"]
-        group.attrs["transform_input_space"] = transform_metadata["transform_input_space"]
-        group.attrs["transform_output_space"] = transform_metadata["transform_output_space"]
-        group.attrs["transform_output_unit"] = transform_metadata["transform_output_unit"]
-        group.attrs["xenium_physical_unit"] = transform_metadata["xenium_physical_unit"]
-        group.attrs["image_to_xenium_affine"] = image.image_to_xenium_affine
-        group.attrs["alignment_csv_path"] = image.alignment_csv_path
-        group.attrs["pixel_size_um"] = image.pixel_size_um
-        if "xenium_pixel_size_um" in transform_metadata:
-            group.attrs["xenium_pixel_size_um"] = transform_metadata["xenium_pixel_size_um"]
-        if image.keypoints_validation is not None:
-            group.attrs["keypoints_validation"] = image.keypoints_validation
-            for summary_key, summary_value in image.keypoints_validation.items():
-                group.attrs[summary_key] = summary_value
-        for meta_key, meta_value in image.metadata.items():
-            if meta_key in {
-                "transform_direction",
-                "transform_input_space",
-                "transform_output_space",
-                "transform_output_unit",
-                "xenium_physical_unit",
-            }:
-                continue
-            group.attrs[meta_key] = meta_value
+        _write_single_image_group(parent.require_group(key), image)
+
+
+def _read_single_image_group(group: Any) -> XeniumImage:
+    level_names = sorted(
+        (str(level_key) for level_key in group.keys()),
+        key=lambda value: int(value) if value.isdigit() else value,
+    )
+    levels = [group[level_name] for level_name in level_names]
+    keypoints_validation = group.attrs.get("keypoints_validation", None)
+    metadata = {
+        str(attr_key): group.attrs[attr_key]
+        for attr_key in group.attrs.keys()
+        if str(attr_key) not in _IMAGE_CORE_ATTRS
+    }
+    for attr_key in (
+        "transform_direction",
+        "transform_input_space",
+        "transform_output_space",
+        "transform_output_unit",
+        "xenium_physical_unit",
+    ):
+        if attr_key in group.attrs:
+            metadata[attr_key] = group.attrs[attr_key]
+    return XeniumImage(
+        levels=levels,
+        axes=str(group.attrs["axes"]),
+        dtype=str(group.attrs["dtype"]),
+        source_path=str(group.attrs.get("source_path", "")),
+        transform_kind=str(group.attrs.get("transform_kind", "affine")),
+        image_to_xenium_affine=group.attrs.get("image_to_xenium_affine", None),
+        alignment_csv_path=group.attrs.get("alignment_csv_path", None),
+        pixel_size_um=group.attrs.get("pixel_size_um", None),
+        keypoints_validation=keypoints_validation,
+        metadata=metadata,
+    )
 
 
 def _read_images_group(parent: Any) -> dict[str, XeniumImage]:
-    images: dict[str, XeniumImage] = {}
-    for key in parent.keys():
-        group = parent[key]
-        level_names = sorted(
-            (str(level_key) for level_key in group.keys()),
-            key=lambda value: int(value) if value.isdigit() else value,
-        )
-        levels = [group[level_name] for level_name in level_names]
-        keypoints_validation = group.attrs.get("keypoints_validation", None)
-        metadata: dict[str, Any] = {}
-        if "transform_direction" in group.attrs:
-            metadata["transform_direction"] = group.attrs["transform_direction"]
-        if "transform_input_space" in group.attrs:
-            metadata["transform_input_space"] = group.attrs["transform_input_space"]
-        if "transform_output_space" in group.attrs:
-            metadata["transform_output_space"] = group.attrs["transform_output_space"]
-        if "transform_output_unit" in group.attrs:
-            metadata["transform_output_unit"] = group.attrs["transform_output_unit"]
-        if "xenium_physical_unit" in group.attrs:
-            metadata["xenium_physical_unit"] = group.attrs["xenium_physical_unit"]
-        if "keypoints_csv_path" in group.attrs:
-            metadata["keypoints_csv_path"] = group.attrs["keypoints_csv_path"]
-        images[str(key)] = XeniumImage(
-            levels=levels,
-            axes=str(group.attrs["axes"]),
-            dtype=str(group.attrs["dtype"]),
-            source_path=str(group.attrs.get("source_path", "")),
-            transform_kind=str(group.attrs.get("transform_kind", "affine")),
-            image_to_xenium_affine=group.attrs.get("image_to_xenium_affine", None),
-            alignment_csv_path=group.attrs.get("alignment_csv_path", None),
-            pixel_size_um=group.attrs.get("pixel_size_um", None),
-            keypoints_validation=keypoints_validation,
-            metadata=metadata,
-        )
-    return images
+    return {str(key): _read_single_image_group(parent[key]) for key in parent.keys()}
+
+
+def _write_contour_images_group(
+    parent: Any,
+    contour_images: dict[str, dict[str, XeniumImage]],
+) -> None:
+    for contour_key, images in contour_images.items():
+        _write_images_group(parent.require_group(contour_key), images)
+
+
+def _read_contour_images_group(parent: Any) -> dict[str, dict[str, XeniumImage]]:
+    contour_images: dict[str, dict[str, XeniumImage]] = {}
+    for contour_key in parent.keys():
+        contour_images[str(contour_key)] = _read_images_group(parent[contour_key])
+    return contour_images
 
 
 def write_xenium_sdata(
@@ -394,6 +461,8 @@ def write_xenium_sdata(
 
     images_root = root.require_group("images")
     _write_images_group(images_root, sdata.images)
+    contour_images_root = root.require_group("contour_images")
+    _write_contour_images_group(contour_images_root, sdata.contour_images)
 
     metadata_root = root.require_group("metadata")
     payload = dict(sdata.metadata)
@@ -437,10 +506,21 @@ def read_xenium_sdata(path: str | Path) -> XeniumSData:
     if "images" in root:
         images = _read_images_group(root["images"])
 
+    contour_images: dict[str, dict[str, XeniumImage]] = {}
+    if "contour_images" in root:
+        contour_images = _read_contour_images_group(root["contour_images"])
+
     metadata: dict[str, Any] = {}
     if "metadata" in root and "json" in root["metadata"]:
         values = np.asarray(root["metadata"]["json"][...]).astype(str)
         if len(values):
             metadata = json.loads(values[0])
 
-    return XeniumSData(table=table, points=points, shapes=shapes, images=images, metadata=metadata)
+    return XeniumSData(
+        table=table,
+        points=points,
+        shapes=shapes,
+        images=images,
+        contour_images=contour_images,
+        metadata=metadata,
+    )

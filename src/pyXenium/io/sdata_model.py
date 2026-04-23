@@ -26,6 +26,19 @@ def _normalize_image_map(mapping: dict[str, "XeniumImage"] | None) -> dict[str, 
     return normalized
 
 
+def _normalize_nested_image_map(
+    mapping: dict[str, dict[str, "XeniumImage"]] | None,
+) -> dict[str, dict[str, "XeniumImage"]]:
+    normalized: dict[str, dict[str, XeniumImage]] = {}
+    for key, value in (mapping or {}).items():
+        if not isinstance(value, dict):
+            raise TypeError(
+                f"{key!r} must map to a dict[str, XeniumImage], got {type(value)!r}."
+            )
+        normalized[str(key)] = _normalize_image_map(value)
+    return normalized
+
+
 def _normalize_chunk_source_map(
     mapping: dict[str, "XeniumFrameChunkSource"] | None,
 ) -> dict[str, "XeniumFrameChunkSource"]:
@@ -73,6 +86,7 @@ class XeniumFrameChunkSource:
     column_types: dict[str, str]
     chunk_iter_factory: Callable[[], Iterator[pd.DataFrame]]
     attrs: dict[str, Any] = field(default_factory=dict)
+    preserve_extra_columns: bool = False
 
     def __post_init__(self) -> None:
         columns = tuple(str(column) for column in self.columns)
@@ -98,26 +112,30 @@ class XeniumFrameChunkSource:
         object.__setattr__(self, "columns", columns)
         object.__setattr__(self, "column_types", column_types)
         object.__setattr__(self, "attrs", dict(self.attrs or {}))
+        object.__setattr__(self, "preserve_extra_columns", bool(self.preserve_extra_columns))
 
     def iter_chunks(self) -> Iterator[pd.DataFrame]:
         iterator = self.chunk_iter_factory()
         if iterator is None:
             raise TypeError("chunk_iter_factory() must return an iterator, got None.")
         expected = list(self.columns)
-        missing_columns = set(expected)
         for frame in iterator:
             if not isinstance(frame, pd.DataFrame):
                 raise TypeError(
                     "XeniumFrameChunkSource must yield pandas.DataFrame chunks, got "
                     f"{type(frame)!r}."
                 )
-            missing = missing_columns.difference(frame.columns)
+            missing = set(expected).difference(frame.columns)
             if missing:
                 raise ValueError(
                     "Chunk source yielded a frame missing required columns: "
                     f"{sorted(missing)}"
                 )
-            yield frame.loc[:, expected].copy()
+            columns = list(expected)
+            if self.preserve_extra_columns:
+                extras = [column for column in frame.columns if column not in self.column_types]
+                columns.extend(extras)
+            yield frame.loc[:, columns].copy()
 
     def materialize(self) -> pd.DataFrame:
         chunks = list(self.iter_chunks())
@@ -246,6 +264,7 @@ class XeniumSData:
     points: dict[str, pd.DataFrame] = field(default_factory=dict)
     shapes: dict[str, pd.DataFrame] = field(default_factory=dict)
     images: dict[str, XeniumImage] = field(default_factory=dict)
+    contour_images: dict[str, dict[str, XeniumImage]] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
     point_sources: dict[str, XeniumFrameChunkSource] = field(default_factory=dict)
 
@@ -255,6 +274,7 @@ class XeniumSData:
         self.points = _normalize_frame_map(self.points)
         self.shapes = _normalize_frame_map(self.shapes)
         self.images = _normalize_image_map(self.images)
+        self.contour_images = _normalize_nested_image_map(self.contour_images)
         self.metadata = dict(self.metadata or {})
         self.point_sources = _normalize_chunk_source_map(self.point_sources)
         self._validate()
@@ -333,5 +353,6 @@ class XeniumSData:
             "points": sorted(set(self.points).union(self.point_sources)),
             "shapes": sorted(self.shapes.keys()),
             "images": sorted(self.images.keys()),
+            "contour_images": sorted(self.contour_images.keys()),
             "labels": sorted(self.metadata.get("labels", {}).keys()),
         }
