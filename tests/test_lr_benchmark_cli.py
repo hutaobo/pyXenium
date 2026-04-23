@@ -297,6 +297,8 @@ def test_benchmark_stage_a100_plan_only_command(tmp_path, monkeypatch):
             "--benchmark-root",
             str(benchmark),
             "--plan-only",
+            "--transfer-mode",
+            "tar-scp",
             "--remote-xenium-root",
             "/mnt/taobo.hu/long/10X_datasets/Xenium/Atera/WTA_Preview_FFPE_Breast_Cancer_outs",
         ],
@@ -307,6 +309,7 @@ def test_benchmark_stage_a100_plan_only_command(tmp_path, monkeypatch):
     assert payload["kind"] == "a100_stage_plan"
     assert payload["requires_host"] is True
     assert payload["stage_data"] is False
+    assert payload["transfer_mode"] == "tar-scp"
     assert payload["readonly_xenium_root"].startswith("/mnt/taobo.hu")
     assert payload["path_policy"]["valid"] is True
 
@@ -326,6 +329,8 @@ def test_benchmark_prepare_a100_bundle_command(tmp_path, monkeypatch):
             "--methods",
             "squidpy",
             "--allow-missing-full",
+            "--transfer-mode",
+            "tar-scp",
         ],
     )
 
@@ -336,6 +341,7 @@ def test_benchmark_prepare_a100_bundle_command(tmp_path, monkeypatch):
     assert payload["job_manifest"]["jobs"]
     assert payload["job_manifest"]["jobs"][0]["job_id"] == "prepare_full_bundle"
     assert payload["stage_plan"]["kind"] == "a100_stage_plan"
+    assert payload["stage_plan"]["transfer_mode"] == "tar-scp"
     assert payload["path_policy"]["valid"] is True
 
 
@@ -358,12 +364,28 @@ def test_benchmark_run_a100_plan_dry_run_command(tmp_path):
         encoding="utf-8",
     )
 
-    result = CliRunner().invoke(app, ["benchmark", "atera-lr", "run-a100-plan", "--plan-json", str(plan)])
+    result = CliRunner().invoke(
+        app,
+        [
+            "benchmark",
+            "atera-lr",
+            "run-a100-plan",
+            "--plan-json",
+            str(plan),
+            "--remote",
+            "--host",
+            "sscb-a100.scilifelab.se",
+            "--user",
+            "taobo.hu",
+        ],
+    )
 
     assert result.exit_code == 0
     payload = json.loads(result.output)
     assert payload["dry_run"] is True
+    assert payload["remote"] is True
     assert payload["jobs"][0]["status"] == "dry-run"
+    assert payload["jobs"][0]["wrapper_command"].startswith("ssh taobo.hu@sscb-a100.scilifelab.se ")
 
 
 def test_benchmark_collect_a100_results_dry_run_command(tmp_path, monkeypatch):
@@ -378,10 +400,13 @@ def test_benchmark_collect_a100_results_dry_run_command(tmp_path, monkeypatch):
             "collect-a100-results",
             "--benchmark-root",
             str(benchmark),
+            "--transfer-mode",
+            "scp",
         ],
     )
 
     assert result.exit_code == 0
     payload = json.loads(result.output)
     assert payload["dry_run"] is True
+    assert payload["transfer_mode"] == "scp"
     assert len(payload["commands"]) == 4

@@ -27,7 +27,10 @@ from pyXenium.benchmarking.lr_a100 import (
     build_a100_job_manifest,
     build_a100_stage_plan,
     build_engineering_summary,
+    collect_a100_results,
+    execute_a100_stage_plan,
     prepare_a100_bundle,
+    run_a100_plan,
     summarize_run_status,
     validate_a100_path_policy,
     write_failed_method_card,
@@ -422,16 +425,20 @@ def test_build_a100_stage_and_job_manifest(tmp_path, monkeypatch):
     monkeypatch.chdir(repo)
 
     remote_root = "/data/taobo.hu/test"
-    stage = build_a100_stage_plan(benchmark_root=benchmark, remote_root=remote_root)
+    stage = build_a100_stage_plan(benchmark_root=benchmark, remote_root=remote_root, transfer_mode="tar-scp")
     jobs = build_a100_job_manifest(benchmark_root=benchmark, remote_root=remote_root, methods=["pyxenium", "cellchat"])
 
     assert stage["requires_host"] is True
     assert stage["stage_data"] is False
+    assert stage["transfer_mode"] == "tar-scp"
     assert stage["path_policy"]["valid"] is True
     assert any(item["destination"].endswith("/repo/pyproject.toml") for item in stage["local_items"])
     assert not any(item["destination"].endswith("/data") for item in stage["local_items"])
     assert "/data/taobo.hu/test/tmp" in stage["mkdir_command"]
-    assert any("rsync" in command for command in stage["copy_commands"])
+    assert stage["local_archive"].endswith("a100_stage_payload.tar.gz")
+    assert stage["remote_archive"].endswith("/logs/a100_stage_payload.tar.gz")
+    assert len(stage["archive_entries"]) == len(stage["local_items"])
+    assert any(command.startswith("scp ") for command in stage["copy_commands"])
     assert len(jobs["jobs"]) == 5
     assert jobs["jobs"][0]["job_id"] == "prepare_full_bundle"
     assert jobs["jobs"][0]["input_root"] == DEFAULT_A100_READONLY_XENIUM_ROOT
@@ -543,6 +550,7 @@ def test_prepare_a100_bundle_can_plan_remote_prepare_when_full_bundle_is_missing
     payload = prepare_a100_bundle(
         benchmark_root=benchmark,
         remote_root="/data/taobo.hu/test",
+        transfer_mode="tar-scp",
         methods=["pyxenium"],
         output_json=benchmark / "logs" / "plan.json",
     )
@@ -550,7 +558,90 @@ def test_prepare_a100_bundle_can_plan_remote_prepare_when_full_bundle_is_missing
     assert payload["status"] == "ready_after_remote_prepare"
     assert payload["remote_prepare_required"] is True
     assert payload["path_policy"]["valid"] is True
+    assert payload["stage_plan"]["transfer_mode"] == "tar-scp"
     assert payload["job_manifest"]["jobs"][0]["job_id"] == "prepare_full_bundle"
+
+
+def test_execute_a100_stage_plan_tar_scp_dry_run(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    benchmark = repo / "benchmarking" / "lr_2026_atera"
+    (benchmark / "configs").mkdir(parents=True)
+    (benchmark / "envs").mkdir()
+    (benchmark / "scripts").mkdir()
+    (benchmark / "runners").mkdir()
+    (repo / "src").mkdir()
+    (repo / "pyproject.toml").write_text("[project]\nname='toy'\n", encoding="utf-8")
+    (repo / "README.md").write_text("toy\n", encoding="utf-8")
+    (repo / "LICENSE").write_text("toy\n", encoding="utf-8")
+    monkeypatch.chdir(repo)
+
+    stage = build_a100_stage_plan(
+        benchmark_root=benchmark,
+        remote_root="/data/taobo.hu/test",
+        host="sscb-a100.scilifelab.se",
+        user="taobo.hu",
+        transfer_mode="tar-scp",
+    )
+    payload = execute_a100_stage_plan(stage_plan=stage, dry_run=True)
+
+    assert payload["transfer_mode"] == "tar-scp"
+    assert [step["step"] for step in payload["steps"]] == ["mkdir", "pack", "upload", "extract"]
+
+
+def test_run_a100_plan_remote_dry_run_exposes_wrapper_command(tmp_path):
+    plan = tmp_path / "plan.json"
+    plan.write_text(
+        json.dumps(
+            {
+                "kind": "a100_job_manifest",
+                "jobs": [
+                    {
+                        "job_id": "full_common_db_pyxenium",
+                        "command": "echo hello",
+                        "stdout": "/data/taobo.hu/test/logs/stdout.log",
+                        "stderr": "/data/taobo.hu/test/logs/stderr.log",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    payload = run_a100_plan(
+        plan_json=plan,
+        dry_run=True,
+        remote=True,
+        host="sscb-a100.scilifelab.se",
+        user="taobo.hu",
+    )
+
+    assert payload["remote"] is True
+    assert payload["jobs"][0]["status"] == "dry-run"
+    assert payload["jobs"][0]["wrapper_command"].startswith("ssh taobo.hu@sscb-a100.scilifelab.se ")
+
+
+def test_collect_a100_results_scp_dry_run(tmp_path, monkeypatch):
+    benchmark = tmp_path / "benchmarking" / "lr_2026_atera"
+    (tmp_path / "pyproject.toml").write_text("[project]\nname='toy'\n", encoding="utf-8")
+    (benchmark / "configs").mkdir(parents=True)
+    (benchmark / "results").mkdir()
+    (benchmark / "logs").mkdir()
+    (benchmark / "runs").mkdir()
+    (benchmark / "reports").mkdir()
+    monkeypatch.chdir(tmp_path)
+
+    payload = collect_a100_results(
+        benchmark_root=benchmark,
+        remote_root="/data/taobo.hu/test",
+        host="sscb-a100.scilifelab.se",
+        user="taobo.hu",
+        transfer_mode="scp",
+        dry_run=True,
+    )
+
+    assert payload["transfer_mode"] == "scp"
+    assert len(payload["commands"]) == 4
+    assert all(command.startswith('scp -r taobo.hu@sscb-a100.scilifelab.se:"/data/taobo.hu/test/') for command in payload["commands"])
 
 
 def test_summarize_run_status_and_engineering_summary_and_method_card(tmp_path):
