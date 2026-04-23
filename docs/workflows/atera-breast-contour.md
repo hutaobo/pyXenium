@@ -7,8 +7,12 @@ density profiling.
 
 Notebook:
 
+- [RTD tutorial](../tutorials/contour)
 - [Source notebook](https://github.com/hutaobo/pyXenium/blob/main/src/pyXenium/notebooks/02_atera_breast_contour_workflow.ipynb)
 - [Download notebook](https://raw.githubusercontent.com/hutaobo/pyXenium/main/src/pyXenium/notebooks/02_atera_breast_contour_workflow.ipynb)
+
+This page is the workflow summary. The canonical, same-level
+`pyXenium.contour` tutorial is rendered from `docs/tutorials/contour.ipynb`.
 
 ## Dataset
 

@@ -8,13 +8,13 @@ io
 ligand_receptor
 pathway
 multimodal
+contour
 ```
 
 The tutorials hub brings the five canonical pyXenium themes into one place.
-The four notebooks below use real pyXenium study outputs to explain what each
+The five notebooks below use real pyXenium study outputs to explain what each
 module does, how to rerun it on local Xenium data, and why the result matters
-biologically. The contour tutorial remains the current guide page while that
-notebook is still being written.
+biologically.
 
 ::::{grid} 1 1 2 2
 :gutter: 2
@@ -49,10 +49,10 @@ discordance, niches, and branch-level hypotheses.
 :::
 
 :::{grid-item-card} `pyXenium.contour`
-:link: ../guides/contour-density
+:link: contour
 :link-type: doc
-Open the current contour density guide without changing its in-progress content.
-It stays here as the fifth tutorial theme until the dedicated notebook lands.
+Generate HistoSeg-backed Atera breast contours, import Xenium Explorer
+annotations, expand boundaries, and profile shell-based marker densities.
 :::
 ::::
 

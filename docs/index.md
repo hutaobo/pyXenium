@@ -75,7 +75,7 @@ Load Xenium exports, recover partial bundles, round-trip `XeniumSData`, and expo
 :::{grid-item-card} Tutorials
 :link: tutorials/index
 :link-type: doc
-Follow notebook-style walkthroughs for `io`, `ligand_receptor`, `pathway`, `multimodal`, and the current contour guide.
+Follow notebook-style walkthroughs for `io`, `ligand_receptor`, `pathway`, `multimodal`, and `contour`.
 :::
 
 :::{grid-item-card} Multimodal Analysis
