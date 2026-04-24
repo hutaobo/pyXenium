@@ -313,12 +313,12 @@ def _make_biology_sdata(*, streamed_transcripts: bool = False) -> XeniumSData:
 
     transcript_rows = []
     transcript_specs = {
-        "case_1": ((2.0, 2.0), ["GENE_A", "GENE_A", "GENE_A", "GENE_B"]),
-        "case_2": ((22.0, 2.0), ["GENE_A", "GENE_A", "GENE_A", "GENE_A", "GENE_B"]),
-        "ref_1": ((2.0, 22.0), ["GENE_A", "GENE_B", "GENE_B", "GENE_B"]),
-        "ref_2": ((22.0, 22.0), ["GENE_A", "GENE_B", "GENE_B", "GENE_B", "GENE_B"]),
+        "case_1": ((2.0, 2.0), "bio_cell_0", ["GENE_A", "GENE_A", "GENE_A", "GENE_B"]),
+        "case_2": ((22.0, 2.0), "bio_cell_3", ["GENE_A", "GENE_A", "GENE_A", "GENE_A", "GENE_B"]),
+        "ref_1": ((2.0, 22.0), "bio_cell_6", ["GENE_A", "GENE_B", "GENE_B", "GENE_B"]),
+        "ref_2": ((22.0, 22.0), "bio_cell_9", ["GENE_A", "GENE_B", "GENE_B", "GENE_B", "GENE_B"]),
     }
-    for contour_id, ((x0, y0), genes) in transcript_specs.items():
+    for contour_id, ((x0, y0), cell_id, genes) in transcript_specs.items():
         for offset, gene in enumerate(genes):
             transcript_rows.append(
                 {
@@ -327,6 +327,7 @@ def _make_biology_sdata(*, streamed_transcripts: bool = False) -> XeniumSData:
                     "gene_identity": 1 if gene == "GENE_A" else 2,
                     "gene_name": gene,
                     "quality_score": 40.0,
+                    "cell_id": cell_id,
                     "contour_hint": contour_id,
                 }
             )
@@ -344,6 +345,7 @@ def _make_biology_sdata(*, streamed_transcripts: bool = False) -> XeniumSData:
                 "gene_identity": "int64",
                 "gene_name": "string",
                 "quality_score": "float64",
+                "cell_id": "string",
                 "contour_hint": "string",
             },
             chunk_iter_factory=lambda: iter([chunk_1, chunk_2]),
@@ -1169,6 +1171,55 @@ def test_compare_contour_transcript_de_uses_direct_transcript_counts():
     assert pairwise.loc[("Stroma", "Tumor", "GENE_A"), "log2fc_cpm"] < 0
 
 
+def test_compare_contour_transcript_de_can_discover_all_transcript_genes_without_long_table():
+    sdata = _make_biology_sdata()
+
+    result = compare_contour_transcript_de(
+        sdata,
+        contour_key="biology_contours",
+        groupby="assigned_structure",
+        genes=None,
+        comparisons=("global", "one_vs_rest"),
+        return_contour_gene=False,
+    )
+
+    assert result["contour_gene"].empty
+    assert {"GENE_A", "GENE_B"} == set(result["global_de"]["gene"])
+    one_vs_rest = result["one_vs_rest_de"].set_index(["case", "gene"])
+    assert one_vs_rest.loc[("Tumor", "GENE_A"), "log2fc_cpm"] > 0
+    assert one_vs_rest.loc[("Tumor", "GENE_B"), "log2fc_cpm"] < 0
+
+
+def test_compare_contour_transcript_de_supports_cell_id_assignment():
+    sdata = _make_biology_sdata()
+
+    coordinate_result = compare_contour_transcript_de(
+        sdata,
+        contour_key="biology_contours",
+        groupby="assigned_structure",
+        genes=["GENE_A", "GENE_B"],
+        comparisons=("one_vs_rest",),
+        include_zero_counts=True,
+    )
+    cell_id_result = compare_contour_transcript_de(
+        sdata,
+        contour_key="biology_contours",
+        groupby="assigned_structure",
+        genes=["GENE_A", "GENE_B"],
+        assignment="cell_id",
+        comparisons=("one_vs_rest",),
+        include_zero_counts=True,
+    )
+
+    pd.testing.assert_frame_equal(
+        coordinate_result["contour_gene"].sort_values(["contour_id", "gene"]).reset_index(drop=True),
+        cell_id_result["contour_gene"].sort_values(["contour_id", "gene"]).reset_index(drop=True),
+    )
+    one_vs_rest = cell_id_result["one_vs_rest_de"].set_index(["case", "gene"])
+    assert one_vs_rest.loc[("Tumor", "GENE_A"), "log2fc_cpm"] > 0
+    assert one_vs_rest.loc[("Tumor", "GENE_B"), "log2fc_cpm"] < 0
+
+
 def test_compare_contour_transcript_de_matches_streamed_transcripts():
     materialized = compare_contour_transcript_de(
         _make_biology_sdata(streamed_transcripts=False),
@@ -1354,6 +1405,13 @@ def test_contour_biology_validation_paths():
             contour_key="biology_contours",
             groupby="assigned_structure",
             comparisons=("unsupported",),
+        )
+    with pytest.raises(ValueError, match="`assignment`"):
+        compare_contour_transcript_de(
+            sdata,
+            contour_key="biology_contours",
+            groupby="assigned_structure",
+            assignment="unsupported",
         )
     with pytest.raises(KeyError, match="missing_group"):
         compare_contour_cell_composition(

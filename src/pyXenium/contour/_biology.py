@@ -120,23 +120,30 @@ def compare_contour_transcript_de(
     contour_key: str,
     groupby: str,
     contour_query: str | None = None,
+    cell_query: str | None = None,
     transcript_query: str | None = None,
     feature_key: str = "gene_name",
     genes: str | Sequence[str] | None = None,
+    assignment: str = "coordinates",
     comparisons: str | Sequence[str] = ("global", "one_vs_rest"),
     case: str | Sequence[str] | None = None,
     reference: str | Sequence[str] | None = None,
     min_total_transcripts_per_contour: int = 1,
     min_contours_per_group: int = 2,
     include_zero_counts: bool = False,
+    return_contour_gene: bool = True,
 ) -> dict[str, pd.DataFrame]:
     """
     Compare contour groups with transcript-count pseudobulk normalization.
 
     Transcript coordinates are assigned directly to contour polygons, converted
     to contour x gene counts, normalized as CPM and log1p(CPM), and compared
-    across contour groups. The returned payload includes a contour-gene table
-    plus global, one-vs-rest, and/or pairwise differential summaries.
+    across contour groups. By default transcripts are assigned by their x/y
+    coordinates. Set ``assignment="cell_id"`` to aggregate cell-associated
+    transcripts through the contour membership of each cell centroid, which is
+    useful for whole-transcriptome screening. Set ``return_contour_gene=False``
+    for whole-transcriptome scans where the full contour-gene long table would
+    be unnecessarily large.
     """
 
     _validate_sdata(sdata)
@@ -153,17 +160,34 @@ def compare_contour_transcript_de(
     if groupby not in contour_table.columns:
         raise KeyError(f"`groupby` column {groupby!r} was not found in the contour table.")
 
+    assignment_mode = _normalize_transcript_assignment(assignment)
     comparison_set = _normalize_comparisons(comparisons)
     requested_genes = _normalize_optional_string_sequence(genes, name="genes")
-    profile = _build_contour_transcript_profile(
-        sdata=sdata,
-        contour_key=contour_key,
-        contour_table=contour_table,
-        groupby=groupby,
-        transcript_query=transcript_query,
-        feature_key=feature_key,
-        genes=requested_genes,
-        include_zero_counts=include_zero_counts,
+    profile = (
+        _build_contour_transcript_profile_by_cell_id(
+            sdata=sdata,
+            contour_key=contour_key,
+            contour_table=contour_table,
+            groupby=groupby,
+            cell_query=cell_query,
+            transcript_query=transcript_query,
+            feature_key=feature_key,
+            genes=requested_genes,
+            include_zero_counts=include_zero_counts,
+            return_contour_gene=bool(return_contour_gene),
+        )
+        if assignment_mode == "cell_id"
+        else _build_contour_transcript_profile(
+            sdata=sdata,
+            contour_key=contour_key,
+            contour_table=contour_table,
+            groupby=groupby,
+            transcript_query=transcript_query,
+            feature_key=feature_key,
+            genes=requested_genes,
+            include_zero_counts=include_zero_counts,
+            return_contour_gene=bool(return_contour_gene),
+        )
     )
     matrices = profile["matrices"]
     metadata = profile["contour_metadata"]
@@ -756,6 +780,33 @@ def _iter_transcript_frames(
             yield working.loc[:, ["x", "y", feature_key]].copy()
 
 
+def _iter_transcript_cell_frames(
+    *,
+    sdata: XeniumSData,
+    transcript_query: str | None,
+    feature_key: str,
+):
+    if "transcripts" in sdata.point_sources:
+        iterator = sdata.point_sources["transcripts"].iter_chunks()
+    elif "transcripts" in sdata.points:
+        iterator = iter([sdata.points["transcripts"]])
+    else:
+        raise KeyError("Transcript points are not available in `sdata.points` or `sdata.point_sources`.")
+
+    for frame in iterator:
+        working = frame.copy()
+        if transcript_query is not None:
+            working = working.query(transcript_query, engine="python")
+        missing = {"cell_id", feature_key}.difference(working.columns)
+        if missing:
+            raise ValueError(
+                "Cell-id transcript assignment requires transcript points with "
+                f"columns: {sorted(missing)}"
+            )
+        if not working.empty:
+            yield working.loc[:, ["cell_id", feature_key]].copy()
+
+
 def _assemble_gene_composition(
     *,
     contour_table: pd.DataFrame,
@@ -906,6 +957,14 @@ def _normalize_comparisons(comparisons: str | Sequence[str]) -> set[str]:
     return set(normalized)
 
 
+def _normalize_transcript_assignment(assignment: str) -> str:
+    mode = str(assignment).strip().lower()
+    valid = {"coordinates", "cell_id"}
+    if mode not in valid:
+        raise ValueError(f"`assignment` must be one of {sorted(valid)}; received {assignment!r}.")
+    return mode
+
+
 def _build_contour_transcript_profile(
     *,
     sdata: XeniumSData,
@@ -916,6 +975,7 @@ def _build_contour_transcript_profile(
     feature_key: str,
     genes: Sequence[str] | None,
     include_zero_counts: bool,
+    return_contour_gene: bool,
 ) -> dict[str, Any]:
     contour_ids = [str(value) for value in contour_table["contour_id"]]
     contour_index = {contour_id: idx for idx, contour_id in enumerate(contour_ids)}
@@ -1009,10 +1069,143 @@ def _build_contour_transcript_profile(
         "log1p_cpm": log1p_cpm,
         "density_per_um2": density,
     }
-    contour_gene = _assemble_contour_gene_profile_table(
-        metadata=metadata,
-        matrices=matrices,
-        include_zero_counts=include_zero_counts,
+    contour_gene = (
+        _assemble_contour_gene_profile_table(
+            metadata=metadata,
+            matrices=matrices,
+            include_zero_counts=include_zero_counts,
+        )
+        if return_contour_gene
+        else _empty_contour_gene_profile_table(metadata=metadata)
+    )
+    return {
+        "contour_metadata": metadata,
+        "matrices": matrices,
+        "contour_gene": contour_gene,
+    }
+
+
+def _build_contour_transcript_profile_by_cell_id(
+    *,
+    sdata: XeniumSData,
+    contour_key: str,
+    contour_table: pd.DataFrame,
+    groupby: str,
+    cell_query: str | None,
+    transcript_query: str | None,
+    feature_key: str,
+    genes: Sequence[str] | None,
+    include_zero_counts: bool,
+    return_contour_gene: bool,
+) -> dict[str, Any]:
+    contour_ids = [str(value) for value in contour_table["contour_id"]]
+    counters = [Counter() for _ in contour_ids]
+    totals = np.zeros(len(contour_ids), dtype=float)
+    gene_filter = set(str(gene) for gene in genes) if genes is not None else None
+    observed_genes: set[str] = set()
+
+    cell_frame = _prepare_cell_frame(sdata=sdata, cell_query=cell_query)
+    memberships = _membership_masks(contour_table=contour_table, point_frame=cell_frame)
+    cell_to_contours: dict[str, list[int]] = {}
+    for local_index, membership in enumerate(memberships):
+        if not membership.any():
+            continue
+        for cell_id in cell_frame.loc[membership, "_cell_id"].astype(str):
+            cell_to_contours.setdefault(str(cell_id), []).append(local_index)
+
+    candidate_cells = set(cell_to_contours)
+    for frame in _iter_transcript_cell_frames(
+        sdata=sdata,
+        transcript_query=transcript_query,
+        feature_key=feature_key,
+    ):
+        if frame.empty or not candidate_cells:
+            continue
+        working = frame.loc[frame["cell_id"].astype(str).isin(candidate_cells), ["cell_id", feature_key]].copy()
+        if working.empty:
+            continue
+        working["cell_id"] = working["cell_id"].astype(str)
+        working["contour_index"] = working["cell_id"].map(cell_to_contours)
+        working = working.explode("contour_index", ignore_index=True)
+        working = working.dropna(subset=["contour_index"])
+        if working.empty:
+            continue
+
+        contour_indices = working["contour_index"].astype(int).to_numpy()
+        totals += np.bincount(contour_indices, minlength=len(contour_ids)).astype(float)
+
+        gene_values = working[feature_key].astype(str).to_numpy()
+        if gene_filter is not None:
+            selected = np.isin(gene_values, list(gene_filter))
+            if not selected.any():
+                continue
+            gene_values = gene_values[selected]
+            contour_indices = contour_indices[selected]
+
+        observed_genes.update(str(value) for value in gene_values)
+        if gene_values.size == 0:
+            continue
+        pair_counts = pd.DataFrame(
+            {
+                "contour_index": contour_indices.astype(int),
+                "gene": gene_values.astype(str),
+            }
+        ).value_counts(["contour_index", "gene"])
+        for (local_contour_index, gene), count in pair_counts.items():
+            counters[int(local_contour_index)][str(gene)] += int(count)
+
+    gene_order = list(genes) if genes is not None else sorted(observed_genes)
+    if not gene_order:
+        raise ValueError(
+            "No cell-associated transcript genes were observed inside the selected contours. "
+            "Check `transcript_query`, `feature_key`, `cell_query`, or the contour geometry."
+        )
+
+    counts = np.zeros((len(contour_ids), len(gene_order)), dtype=float)
+    gene_index = {gene: idx for idx, gene in enumerate(gene_order)}
+    for local_index, counter in enumerate(counters):
+        for gene, count in counter.items():
+            gene_position = gene_index.get(str(gene))
+            if gene_position is not None:
+                counts[local_index, gene_position] = float(count)
+
+    areas = contour_table["geometry"].map(lambda geom: float(geom.area)).to_numpy(dtype=float)
+    cpm = np.divide(
+        counts,
+        totals[:, None],
+        out=np.zeros_like(counts, dtype=float),
+        where=totals[:, None] > 0,
+    ) * _CPM_SCALE
+    log1p_cpm = np.log1p(cpm)
+    density = np.divide(
+        counts,
+        areas[:, None],
+        out=np.full_like(counts, np.nan, dtype=float),
+        where=areas[:, None] > 0,
+    )
+
+    metadata = _build_contour_transcript_metadata(
+        contour_key=contour_key,
+        contour_table=contour_table,
+        groupby=groupby,
+        totals=totals,
+        areas=areas,
+    )
+    matrices = {
+        "genes": list(gene_order),
+        "counts": counts,
+        "cpm": cpm,
+        "log1p_cpm": log1p_cpm,
+        "density_per_um2": density,
+    }
+    contour_gene = (
+        _assemble_contour_gene_profile_table(
+            metadata=metadata,
+            matrices=matrices,
+            include_zero_counts=include_zero_counts,
+        )
+        if return_contour_gene
+        else _empty_contour_gene_profile_table(metadata=metadata)
     )
     return {
         "contour_metadata": metadata,
@@ -1082,6 +1275,11 @@ def _assemble_contour_gene_profile_table(
     return pd.DataFrame.from_records(rows, columns=columns)
 
 
+def _empty_contour_gene_profile_table(*, metadata: pd.DataFrame) -> pd.DataFrame:
+    columns = metadata.columns.tolist() + ["gene", "count", "cpm", "log1p_cpm", "density_per_um2"]
+    return pd.DataFrame(columns=columns)
+
+
 def _global_transcript_de(
     *,
     matrices: Mapping[str, Any],
@@ -1126,11 +1324,15 @@ def _global_transcript_de(
         bottom_group = None
         max_mean = np.nan
         min_mean = np.nan
+        top_group_mean_density = np.nan
+        bottom_group_mean_density = np.nan
         if group_means:
             top_group = max(group_means, key=group_means.get)
             bottom_group = min(group_means, key=group_means.get)
             max_mean = float(group_means[top_group])
             min_mean = float(group_means[bottom_group])
+            top_group_mean_density = float(group_mean_density.get(top_group, np.nan))
+            bottom_group_mean_density = float(group_mean_density.get(bottom_group, np.nan))
 
         rows.append(
             {
@@ -1145,9 +1347,11 @@ def _global_transcript_de(
                 "min_mean_log1p_cpm": min_mean,
                 "delta_log1p_cpm": np.nan if not np.isfinite(max_mean) or not np.isfinite(min_mean) else max_mean - min_mean,
                 "top_group_mean_cpm": np.nan if top_group is None else group_mean_cpm.get(top_group, np.nan),
-                "top_group_mean_density_per_um2": np.nan
-                if top_group is None
-                else group_mean_density.get(top_group, np.nan),
+                "top_group_mean_density_per_um2": top_group_mean_density,
+                "bottom_group_mean_density_per_um2": bottom_group_mean_density,
+                "delta_mean_density_per_um2": np.nan
+                if not np.isfinite(top_group_mean_density) or not np.isfinite(bottom_group_mean_density)
+                else top_group_mean_density - bottom_group_mean_density,
                 "statistic": statistic,
                 "p_value": p_value,
                 "fdr": np.nan,
