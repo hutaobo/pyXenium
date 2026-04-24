@@ -9,6 +9,7 @@ ligand_receptor
 pathway
 multimodal
 contour
+contour_s1_s5_breast
 contour_boundary_ecology
 ```
 
@@ -54,6 +55,14 @@ discordance, niches, and branch-level hypotheses.
 :link-type: doc
 Generate HistoSeg-backed Atera breast contours, import Xenium Explorer
 annotations, expand boundaries, and profile shell-based marker densities.
+:::
+
+:::{grid-item-card} S1-S5 Breast Contour Application
+:link: contour_s1_s5_breast
+:link-type: doc
+Aggregate Atera breast cancer cell groups into five contour classes, run
+transcript-level contour DEG, compare cell composition, and profile
+barrier-aware boundary density curves.
 :::
 
 :::{grid-item-card} pyXenium.contour Boundary Ecology Tutorial

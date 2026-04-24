@@ -1,0 +1,6 @@
+structure_id,structure_name,selected_cluster_ids,input_cell_count,assigned_cell_count,contour_count,description
+1,S1,"1, 2, 7, 8, 10, 14, 16, 21, 23",72873,71725,106,Invasive tumor + CAFs
+2,S2,"6, 11, 15, 20, 25, 32",23298,15935,358,Basal DCIS + lymphoid
+3,S3,"5, 13, 18, 19, 22, 24, 26, 31, 34",26690,37038,491,Myeloid-vascular-stromal
+4,S4,"3, 4, 17, 27, 28, 29, 30",33753,36486,313,Myoepithelial/DCIS CAF/plasma
+5,S5,"9, 12, 33",13431,8861,28,Apocrine/luminal DCIS

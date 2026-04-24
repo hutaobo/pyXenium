@@ -13,8 +13,11 @@ import pyXenium.contour as contour
 import pyXenium.contour.generation as contour_generation_module
 from pyXenium.contour import (
     add_contours_from_geojson,
+    compare_contour_cell_composition,
     compare_contour_de,
+    compare_contour_transcript_de,
     expand_contours,
+    generate_barrier_contour_shells,
     generate_contour_shells,
     generate_xenium_explorer_annotations,
     ring_density,
@@ -1131,6 +1134,101 @@ def test_compare_contour_de_uses_contour_pseudobulk_replicates():
     assert np.isnan(insufficient["p_value"].iloc[0])
 
 
+def test_compare_contour_transcript_de_uses_direct_transcript_counts():
+    sdata = _make_biology_sdata()
+
+    result = compare_contour_transcript_de(
+        sdata,
+        contour_key="biology_contours",
+        groupby="assigned_structure",
+        genes=["GENE_A", "GENE_B"],
+        comparisons=("global", "one_vs_rest", "pairwise"),
+        include_zero_counts=True,
+    )
+
+    contour_gene = result["contour_gene"].set_index(["contour_id", "gene"])
+    case_1_gene_a = contour_gene.loc[("case_1", "GENE_A")]
+    assert case_1_gene_a["count"] == 3
+    assert case_1_gene_a["total_transcripts"] == 4
+    assert case_1_gene_a["cpm"] == pytest.approx(750_000.0)
+    assert case_1_gene_a["density_per_um2"] == pytest.approx(3 / 100)
+
+    one_vs_rest = result["one_vs_rest_de"].set_index(["case", "gene"])
+    assert one_vs_rest.loc[("Tumor", "GENE_A"), "status"] == "ok"
+    assert one_vs_rest.loc[("Tumor", "GENE_A"), "log2fc_cpm"] > 0
+    assert np.isfinite(one_vs_rest.loc[("Tumor", "GENE_A"), "p_value"])
+    assert np.isfinite(one_vs_rest.loc[("Tumor", "GENE_A"), "fdr"])
+    assert one_vs_rest.loc[("Tumor", "GENE_B"), "log2fc_cpm"] < 0
+
+    global_de = result["global_de"].set_index("gene")
+    assert global_de.loc["GENE_A", "status"] == "ok"
+    assert global_de.loc["GENE_A", "top_group"] == "Tumor"
+    assert np.isfinite(global_de.loc["GENE_A", "p_value"])
+
+    pairwise = result["pairwise_de"].set_index(["case", "reference", "gene"])
+    assert pairwise.loc[("Stroma", "Tumor", "GENE_A"), "log2fc_cpm"] < 0
+
+
+def test_compare_contour_transcript_de_matches_streamed_transcripts():
+    materialized = compare_contour_transcript_de(
+        _make_biology_sdata(streamed_transcripts=False),
+        contour_key="biology_contours",
+        groupby="assigned_structure",
+        genes=["GENE_A", "GENE_B"],
+        comparisons=("one_vs_rest",),
+        include_zero_counts=True,
+    )
+    streamed = compare_contour_transcript_de(
+        _make_biology_sdata(streamed_transcripts=True),
+        contour_key="biology_contours",
+        groupby="assigned_structure",
+        genes=["GENE_A", "GENE_B"],
+        comparisons=("one_vs_rest",),
+        include_zero_counts=True,
+    )
+
+    pd.testing.assert_frame_equal(
+        materialized["contour_gene"].sort_values(["contour_id", "gene"]).reset_index(drop=True),
+        streamed["contour_gene"].sort_values(["contour_id", "gene"]).reset_index(drop=True),
+    )
+    pd.testing.assert_frame_equal(
+        materialized["one_vs_rest_de"].sort_values(["case", "gene"]).reset_index(drop=True),
+        streamed["one_vs_rest_de"].sort_values(["case", "gene"]).reset_index(drop=True),
+    )
+
+
+def test_compare_contour_cell_composition_reports_quantity_and_pvalues():
+    sdata = _make_biology_sdata()
+
+    result = compare_contour_cell_composition(
+        sdata,
+        contour_key="biology_contours",
+        groupby="assigned_structure",
+    )
+
+    composition = result["composition"]
+    case_1_tumor = composition.loc[
+        (composition["contour_id"] == "case_1") & (composition["cell_type"] == "Tumor")
+    ].iloc[0]
+    assert case_1_tumor["assigned_structure"] == "Tumor"
+    assert case_1_tumor["n_cells"] == 2
+    assert case_1_tumor["fraction"] == pytest.approx(2 / 3)
+
+    group_summary = result["group_summary"].set_index(["assigned_structure", "cell_type"])
+    assert group_summary.loc[("Tumor", "Tumor"), "total_count"] == 5
+    assert group_summary.loc[("Stroma", "Endothelial"), "mean_fraction"] == pytest.approx(0.5)
+
+    global_stats = result["global_stats"].set_index(["cell_type", "metric"])
+    assert global_stats.loc[("Tumor", "fraction"), "status"] == "ok"
+    assert np.isfinite(global_stats.loc[("Tumor", "fraction"), "p_value"])
+
+    pairwise_stats = result["pairwise_stats"].set_index(["cell_type", "metric", "case", "reference"])
+    assert pairwise_stats.loc[("Tumor", "fraction", "Stroma", "Tumor"), "mean_case"] < pairwise_stats.loc[
+        ("Tumor", "fraction", "Stroma", "Tumor"),
+        "mean_reference",
+    ]
+
+
 def test_generate_contour_shells_creates_independent_overlapping_shells():
     sdata = _make_nearby_contour_sdata()
 
@@ -1168,6 +1266,43 @@ def test_generate_contour_shells_creates_independent_overlapping_shells():
     assert metadata["generator"] == "generate_contour_shells"
     assert metadata["shell_mode"] == "per_contour"
     assert metadata["step_size_um"] == 1.0
+
+
+def test_generate_barrier_contour_shells_blocks_other_contour_interiors():
+    sdata = _make_nearby_contour_sdata()
+
+    copied = generate_barrier_contour_shells(
+        sdata,
+        contour_key="neighbor_contours",
+        inward=1.0,
+        outward=5.0,
+        step_size=1.0,
+        output_key="neighbor_barrier_shells",
+        copy=True,
+    )
+
+    assert copied is not None
+    assert "neighbor_barrier_shells" not in sdata.shapes
+    assert "neighbor_barrier_shells" in copied.shapes
+
+    source_table = _geometry_table_for_key(copied, "neighbor_contours").set_index("contour_id")
+    shell_table = _geometry_table_for_key(copied, "neighbor_barrier_shells")
+    left_outward = shell_table.loc[
+        (shell_table["source_contour_id"] == "left") & (shell_table["shell_direction"] == "outward"),
+        "geometry",
+    ]
+    right_geometry = source_table.loc["right", "geometry"]
+    assert left_outward.map(lambda geom: geom.intersection(right_geometry).area).max() < 1e-8
+
+    frame = copied.shapes["neighbor_barrier_shells"]
+    assert {"source_contour_id", "shell_start", "shell_end", "shell_mid", "shell_direction"} <= set(frame.columns)
+    assert set(frame["shell_direction"]) == {"inward", "outward"}
+    assert frame.loc[frame["source_contour_id"] == "left", "assigned_structure"].unique().tolist() == ["Left"]
+
+    metadata = copied.metadata["contours"]["neighbor_barrier_shells"]
+    assert metadata["generator"] == "generate_barrier_contour_shells"
+    assert metadata["shell_mode"] == "per_contour_barrier"
+    assert metadata["barrier_contour_key"] == "neighbor_contours"
 
 
 def test_contour_biology_validation_paths():
@@ -1212,6 +1347,28 @@ def test_contour_biology_validation_paths():
             inward=1.0,
             outward=1.0,
             step_size=0.0,
+        )
+    with pytest.raises(ValueError, match="`comparisons`"):
+        compare_contour_transcript_de(
+            sdata,
+            contour_key="biology_contours",
+            groupby="assigned_structure",
+            comparisons=("unsupported",),
+        )
+    with pytest.raises(KeyError, match="missing_group"):
+        compare_contour_cell_composition(
+            sdata,
+            contour_key="biology_contours",
+            groupby="missing_group",
+        )
+    with pytest.raises(KeyError, match="missing_barrier"):
+        generate_barrier_contour_shells(
+            sdata,
+            contour_key="biology_contours",
+            barrier_contour_key="missing_barrier",
+            inward=1.0,
+            outward=1.0,
+            step_size=1.0,
         )
 
 
