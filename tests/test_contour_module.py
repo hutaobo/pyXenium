@@ -13,10 +13,13 @@ import pyXenium.contour as contour
 import pyXenium.contour.generation as contour_generation_module
 from pyXenium.contour import (
     add_contours_from_geojson,
+    compare_contour_de,
     expand_contours,
+    generate_contour_shells,
     generate_xenium_explorer_annotations,
     ring_density,
     smooth_density_by_distance,
+    summarize_contour_composition,
 )
 from pyXenium.contour._geometry import contour_frame_to_geometry_table
 from pyXenium.io import XeniumFrameChunkSource, XeniumSData, read_sdata, read_xenium, write_xenium
@@ -242,6 +245,119 @@ def _make_nearby_contour_sdata() -> XeniumSData:
         "annotation_source": "synthetic",
     }
     return sdata
+
+
+def _make_biology_sdata(*, streamed_transcripts: bool = False) -> XeniumSData:
+    obs = pd.DataFrame(
+        {
+            "x_centroid": [2.0, 5.0, 8.0, 22.0, 25.0, 28.0, 2.0, 5.0, 8.0, 22.0, 25.0, 28.0],
+            "y_centroid": [2.0, 5.0, 8.0, 2.0, 5.0, 8.0, 22.0, 25.0, 28.0, 22.0, 25.0, 28.0],
+            "cell_type": [
+                "Tumor",
+                "Tumor",
+                "Myeloid",
+                "Tumor",
+                "Tumor",
+                "Tumor",
+                "Fibroblast",
+                "Fibroblast",
+                "Endothelial",
+                "Fibroblast",
+                "Endothelial",
+                "Endothelial",
+            ],
+        },
+        index=pd.Index([f"bio_cell_{idx}" for idx in range(12)], name="barcode"),
+    )
+    expression = np.asarray(
+        [
+            [10.0, 1.0, 5.0],
+            [10.0, 1.0, 5.0],
+            [11.0, 2.0, 5.0],
+            [12.0, 1.0, 5.0],
+            [12.0, 2.0, 5.0],
+            [13.0, 2.0, 5.0],
+            [1.0, 9.0, 5.0],
+            [1.0, 10.0, 5.0],
+            [2.0, 10.0, 5.0],
+            [2.0, 11.0, 5.0],
+            [2.0, 11.0, 5.0],
+            [3.0, 12.0, 5.0],
+        ],
+        dtype=float,
+    )
+    adata = ad.AnnData(
+        X=expression,
+        obs=obs,
+        var=pd.DataFrame(index=pd.Index(["GENE_A", "GENE_B", "HOUSE"], name="gene")),
+    )
+    adata.layers["scaled"] = expression * 2.0
+
+    contour_frame = pd.DataFrame(
+        {
+            "contour_id": ["case_1"] * 4 + ["case_2"] * 4 + ["ref_1"] * 4 + ["ref_2"] * 4,
+            "part_id": [0] * 16,
+            "ring_id": [0] * 16,
+            "is_hole": [False] * 16,
+            "vertex_id": [0, 1, 2, 3] * 4,
+            "x": [0.0, 10.0, 10.0, 0.0, 20.0, 30.0, 30.0, 20.0, 0.0, 10.0, 10.0, 0.0, 20.0, 30.0, 30.0, 20.0],
+            "y": [0.0, 0.0, 10.0, 10.0, 0.0, 0.0, 10.0, 10.0, 20.0, 20.0, 30.0, 30.0, 20.0, 20.0, 30.0, 30.0],
+            "assigned_structure": ["Tumor"] * 8 + ["Stroma"] * 8,
+            "classification_name": ["Tumor nests"] * 8 + ["Stromal islands"] * 8,
+            "structure_id": ["T"] * 8 + ["S"] * 8,
+        }
+    )
+
+    transcript_rows = []
+    transcript_specs = {
+        "case_1": ((2.0, 2.0), ["GENE_A", "GENE_A", "GENE_A", "GENE_B"]),
+        "case_2": ((22.0, 2.0), ["GENE_A", "GENE_A", "GENE_A", "GENE_A", "GENE_B"]),
+        "ref_1": ((2.0, 22.0), ["GENE_A", "GENE_B", "GENE_B", "GENE_B"]),
+        "ref_2": ((22.0, 22.0), ["GENE_A", "GENE_B", "GENE_B", "GENE_B", "GENE_B"]),
+    }
+    for contour_id, ((x0, y0), genes) in transcript_specs.items():
+        for offset, gene in enumerate(genes):
+            transcript_rows.append(
+                {
+                    "x": x0 + 0.2 * offset,
+                    "y": y0 + 0.2 * offset,
+                    "gene_identity": 1 if gene == "GENE_A" else 2,
+                    "gene_name": gene,
+                    "quality_score": 40.0,
+                    "contour_hint": contour_id,
+                }
+            )
+    transcripts = pd.DataFrame.from_records(transcript_rows)
+
+    if streamed_transcripts:
+        midpoint = len(transcripts) // 2
+        chunk_1 = transcripts.iloc[:midpoint].copy()
+        chunk_2 = transcripts.iloc[midpoint:].copy()
+        point_source = XeniumFrameChunkSource(
+            columns=tuple(transcripts.columns),
+            column_types={
+                "x": "float64",
+                "y": "float64",
+                "gene_identity": "int64",
+                "gene_name": "string",
+                "quality_score": "float64",
+                "contour_hint": "string",
+            },
+            chunk_iter_factory=lambda: iter([chunk_1, chunk_2]),
+        )
+        return XeniumSData(
+            table=adata,
+            shapes={"biology_contours": contour_frame},
+            point_sources={"transcripts": point_source},
+            metadata={"units": "micron", "contours": {"biology_contours": {"units": "micron"}}},
+        )
+
+    return XeniumSData(
+        table=adata,
+        points={"transcripts": transcripts},
+        shapes={"biology_contours": contour_frame},
+        metadata={"units": "micron", "contours": {"biology_contours": {"units": "micron"}}},
+    )
 
 
 def _xenium_explorer_geojson() -> dict:
@@ -903,6 +1019,200 @@ def test_expand_contours_validation():
     expand_contours(sdata, contour_key="contours", distance=1.0)
     with pytest.raises(KeyError, match="contours_expanded"):
         expand_contours(sdata, contour_key="contours", distance=1.0)
+
+
+def test_summarize_contour_composition_counts_cells_and_genes():
+    sdata = _make_biology_sdata()
+
+    result = summarize_contour_composition(
+        sdata,
+        contour_key="biology_contours",
+        genes=["GENE_A", "GENE_B"],
+        gene_sets={
+            "tumor_program": ["GENE_A"],
+            "mixed_program": ["GENE_A", "GENE_B"],
+        },
+    )
+
+    cell_composition = result["cell_composition"]
+    case_1_tumor = cell_composition.loc[
+        (cell_composition["contour_id"] == "case_1")
+        & (cell_composition["cell_type"] == "Tumor")
+    ].iloc[0]
+    assert case_1_tumor["n_cells"] == 2
+    assert case_1_tumor["fraction"] == pytest.approx(2 / 3)
+    assert np.allclose(
+        cell_composition.groupby("contour_id")["fraction"].sum().to_numpy(dtype=float),
+        np.ones(4),
+    )
+
+    gene_composition = result["gene_composition"]
+    case_1_gene_a = gene_composition.loc[
+        (gene_composition["contour_id"] == "case_1")
+        & (gene_composition["gene"] == "GENE_A")
+    ].iloc[0]
+    assert case_1_gene_a["count"] == 3
+    assert case_1_gene_a["total_transcripts"] == 4
+    assert case_1_gene_a["fraction"] == pytest.approx(0.75)
+    assert case_1_gene_a["transcripts_per_cell"] == pytest.approx(1.0)
+    assert case_1_gene_a["transcripts_per_um2"] == pytest.approx(3 / 100)
+
+    program_composition = result["program_composition"]
+    case_1_program = program_composition.loc[
+        (program_composition["contour_id"] == "case_1")
+        & (program_composition["program"] == "tumor_program")
+    ].iloc[0]
+    assert case_1_program["count"] == 3
+    assert case_1_program["fraction"] == pytest.approx(0.75)
+
+    summary = result["contour_summary"].set_index("contour_id")
+    assert summary.loc["case_1", "n_cells"] == 3
+    assert summary.loc["case_1", "n_transcripts"] == 4
+    assert summary.loc["case_1", "dominant_cell_type"] == "Tumor"
+    assert summary.loc["case_1", "assigned_structure"] == "Tumor"
+
+
+def test_summarize_contour_composition_matches_streamed_transcripts():
+    materialized = summarize_contour_composition(
+        _make_biology_sdata(streamed_transcripts=False),
+        contour_key="biology_contours",
+        genes=["GENE_A", "GENE_B"],
+        gene_sets={"tumor_program": ["GENE_A"]},
+    )
+    streamed = summarize_contour_composition(
+        _make_biology_sdata(streamed_transcripts=True),
+        contour_key="biology_contours",
+        genes=["GENE_A", "GENE_B"],
+        gene_sets={"tumor_program": ["GENE_A"]},
+    )
+
+    pd.testing.assert_frame_equal(
+        materialized["gene_composition"].sort_values(["contour_id", "gene"]).reset_index(drop=True),
+        streamed["gene_composition"].sort_values(["contour_id", "gene"]).reset_index(drop=True),
+    )
+    pd.testing.assert_frame_equal(
+        materialized["program_composition"].sort_values(["contour_id", "program"]).reset_index(drop=True),
+        streamed["program_composition"].sort_values(["contour_id", "program"]).reset_index(drop=True),
+    )
+
+
+def test_compare_contour_de_uses_contour_pseudobulk_replicates():
+    sdata = _make_biology_sdata()
+
+    result = compare_contour_de(
+        sdata,
+        contour_key="biology_contours",
+        groupby="assigned_structure",
+        case="Tumor",
+        reference="Stroma",
+        genes=["GENE_A", "GENE_B"],
+    ).set_index("gene")
+
+    assert result.loc["GENE_A", "status"] == "ok"
+    assert result.loc["GENE_A", "n_case_contours"] == 2
+    assert result.loc["GENE_A", "n_reference_contours"] == 2
+    assert result.loc["GENE_A", "log2fc"] > 0
+    assert np.isfinite(result.loc["GENE_A", "p_value"])
+    assert np.isfinite(result.loc["GENE_A", "fdr"])
+    assert result.loc["GENE_B", "log2fc"] < 0
+
+    insufficient = compare_contour_de(
+        sdata,
+        contour_key="biology_contours",
+        contour_query='contour_id in ["case_1", "ref_1"]',
+        groupby="assigned_structure",
+        case="Tumor",
+        reference="Stroma",
+        genes=["GENE_A"],
+    )
+    assert insufficient["status"].tolist() == ["insufficient_contour_replicates"]
+    assert np.isfinite(insufficient["mean_case"].iloc[0])
+    assert np.isfinite(insufficient["mean_reference"].iloc[0])
+    assert np.isnan(insufficient["p_value"].iloc[0])
+
+
+def test_generate_contour_shells_creates_independent_overlapping_shells():
+    sdata = _make_nearby_contour_sdata()
+
+    copied = generate_contour_shells(
+        sdata,
+        contour_key="neighbor_contours",
+        inward=2.0,
+        outward=3.0,
+        step_size=1.0,
+        output_key="neighbor_shells",
+        copy=True,
+    )
+
+    assert copied is not None
+    assert "neighbor_shells" not in sdata.shapes
+    assert "neighbor_shells" in copied.shapes
+    frame = copied.shapes["neighbor_shells"]
+    assert frame["source_contour_id"].nunique() == 2
+    assert set(frame["shell_direction"]) == {"inward", "outward"}
+    assert {"source_contour_id", "shell_id", "shell_start", "shell_end", "shell_mid"}.issubset(frame.columns)
+    assert frame.loc[frame["source_contour_id"] == "left", "assigned_structure"].unique().tolist() == ["Left"]
+
+    table = contour_frame_to_geometry_table(frame, contour_key="neighbor_shells")
+    left_outward = table.loc[
+        (table["source_contour_id"] == "left") & (table["shell_direction"] == "outward"),
+        "geometry",
+    ].to_list()
+    right_outward = table.loc[
+        (table["source_contour_id"] == "right") & (table["shell_direction"] == "outward"),
+        "geometry",
+    ].to_list()
+    assert any(left.intersection(right).area > 0 for left in left_outward for right in right_outward)
+
+    metadata = copied.metadata["contours"]["neighbor_shells"]
+    assert metadata["generator"] == "generate_contour_shells"
+    assert metadata["shell_mode"] == "per_contour"
+    assert metadata["step_size_um"] == 1.0
+
+
+def test_contour_biology_validation_paths():
+    sdata = _make_biology_sdata()
+
+    no_cell_type = _make_biology_sdata()
+    no_cell_type.table.obs = no_cell_type.table.obs.drop(columns=["cell_type"])
+    with pytest.raises(KeyError, match="cell_type_key"):
+        summarize_contour_composition(no_cell_type, contour_key="biology_contours")
+
+    broken_transcripts = _make_biology_sdata()
+    broken_transcripts.points["transcripts"] = broken_transcripts.points["transcripts"].drop(columns=["gene_name"])
+    with pytest.raises(ValueError, match="gene_name"):
+        summarize_contour_composition(
+            broken_transcripts,
+            contour_key="biology_contours",
+            genes=["GENE_A"],
+        )
+
+    with pytest.raises(KeyError, match="MISSING"):
+        compare_contour_de(
+            sdata,
+            contour_key="biology_contours",
+            groupby="assigned_structure",
+            case="Tumor",
+            reference="Stroma",
+            genes=["MISSING"],
+        )
+    with pytest.raises(KeyError, match="missing_group"):
+        compare_contour_de(
+            sdata,
+            contour_key="biology_contours",
+            groupby="missing_group",
+            case="Tumor",
+            reference="Stroma",
+            genes=["GENE_A"],
+        )
+    with pytest.raises(ValueError, match="`step_size` must be greater than 0"):
+        generate_contour_shells(
+            sdata,
+            contour_key="biology_contours",
+            inward=1.0,
+            outward=1.0,
+            step_size=0.0,
+        )
 
 
 def test_generate_xenium_explorer_annotations_error_is_actionable(tmp_path, monkeypatch):
