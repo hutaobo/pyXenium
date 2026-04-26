@@ -34,6 +34,30 @@ from .benchmarking import (
 )
 from .io.io import copy_bundled_dataset, load_toy
 from .io.spatialdata_export import DEFAULT_SPATIALDATA_STORE_NAME, export_xenium_to_spatialdata_zarr
+from .mechanostress import (
+    DEFAULT_HNSCC_ROOT,
+    DEFAULT_MECHANOSTRESS_RADII_UM,
+    DEFAULT_SUZUKI_ER_RESULTS_ROOT,
+    DEFAULT_SUZUKI_STRENGTH_ROOT,
+    DEFAULT_SUZUKI_XENIUM_ROOT,
+    AxisStrengthConfig,
+    MechanostressConfig,
+    PolarityConfig,
+    TumorStromaGrowthConfig,
+    classify_tumor_stroma_growth,
+    compute_ane_density,
+    compute_cell_polarity,
+    estimate_cell_axes,
+    run_mechanostress_cohort,
+    run_mechanostress_workflow,
+    summarize_axial_orientation,
+    summarize_cell_polarity,
+    summarize_tumor_growth,
+    validate_hnscc_mechanostress_outputs,
+    validate_suzuki_luad_mechanostress_outputs,
+    write_mechanostress_artifacts,
+)
+
 from .multimodal import (
     DEFAULT_DATASET_PATH,
     run_renal_immune_resistance_pilot,
@@ -62,6 +86,218 @@ def benchmark_group():
 def benchmark_atera_lr_group():
     """Atera Xenium ligand-receptor benchmark commands."""
 
+
+@app.group("mechanostress")
+def mechanostress_group():
+    """Mechanical stress state analysis from Xenium morphology and spatial context."""
+
+
+def _mechanostress_config_from_options(**kwargs) -> MechanostressConfig:
+    radii = tuple(float(value) for value in kwargs.get("radii_um", DEFAULT_MECHANOSTRESS_RADII_UM))
+    axis = AxisStrengthConfig(
+        er_threshold=float(kwargs.get("er_threshold", 2.0)),
+        radii_um=radii,
+        groupby=tuple(kwargs.get("axis_groupby", ("cluster",))),
+        local_k=int(kwargs.get("local_k", 15)),
+        cell_query=kwargs.get("axis_cell_query"),
+    )
+    tumor_stroma = TumorStromaGrowthConfig(
+        annotation_col=kwargs.get("annotation_col", "Annotation"),
+        tumor_label=kwargs.get("tumor_label", "Tumor"),
+        stroma_label=kwargs.get("stroma_label", "Stromal"),
+        x_col=kwargs.get("x_col", "x_centroid"),
+        y_col=kwargs.get("y_col", "y_centroid"),
+        cell_id_col=kwargs.get("cell_id_col", "cell_id"),
+        method=kwargs.get("growth_method", "delaunay_hop"),
+    )
+    polarity = PolarityConfig(
+        offset_norm_threshold=float(kwargs.get("offset_norm_threshold", 0.30)),
+        cell_id_col=kwargs.get("cell_id_col", "cell_id"),
+    )
+    return MechanostressConfig(
+        axis=axis,
+        tumor_stroma=tumor_stroma,
+        polarity=polarity,
+        coupling_genes=tuple(kwargs.get("coupling_genes", ())),
+        sample_id=kwargs.get("sample_id"),
+    )
+
+
+@mechanostress_group.command("axis-strength")
+@click.argument("base_path")
+@click.option("--output-dir", required=True)
+@click.option("--radius", "radii_um", multiple=True, type=float, default=DEFAULT_MECHANOSTRESS_RADII_UM, show_default=True)
+@click.option("--er-threshold", type=float, default=2.0, show_default=True)
+@click.option("--groupby", "axis_groupby", multiple=True, default=("cluster",), show_default=True)
+@click.option("--local-k", type=int, default=15, show_default=True)
+@click.option("--cell-query", "axis_cell_query", default=None)
+@click.option("--sample-id", default=None)
+def mechanostress_axis_strength(base_path, output_dir, radii_um, er_threshold, axis_groupby, local_k, axis_cell_query, sample_id):
+    """Compute nucleus-axis orientation and ANE density from Xenium boundaries."""
+    config = _mechanostress_config_from_options(
+        radii_um=radii_um,
+        er_threshold=er_threshold,
+        axis_groupby=axis_groupby,
+        local_k=local_k,
+        axis_cell_query=axis_cell_query,
+        sample_id=sample_id,
+    )
+    result = run_mechanostress_workflow(base_path=base_path, config=config, output_dir=output_dir)
+    click.echo(json.dumps(result.summary, indent=2, default=str))
+
+
+@mechanostress_group.command("tumor-stroma-growth")
+@click.argument("cell_table")
+@click.option("--output-dir", required=True)
+@click.option("--annotation-col", default="Annotation", show_default=True)
+@click.option("--tumor-label", default="Tumor", show_default=True)
+@click.option("--stroma-label", default="Stromal", show_default=True)
+@click.option("--x-col", default="x_centroid", show_default=True)
+@click.option("--y-col", default="y_centroid", show_default=True)
+@click.option("--method", "growth_method", type=click.Choice(["delaunay_hop", "nearest_distance_ratio"]), default="delaunay_hop", show_default=True)
+@click.option("--sample-id", default=None)
+def mechanostress_tumor_stroma_growth(
+    cell_table,
+    output_dir,
+    annotation_col,
+    tumor_label,
+    stroma_label,
+    x_col,
+    y_col,
+    growth_method,
+    sample_id,
+):
+    """Classify tumor growth as infiltrative or expanding from tumor-stroma geometry."""
+    frame = pd.read_csv(cell_table)
+    growth = classify_tumor_stroma_growth(
+        frame,
+        annotation_col=annotation_col,
+        tumor_label=tumor_label,
+        stroma_label=stroma_label,
+        x_col=x_col,
+        y_col=y_col,
+        method=growth_method,
+    )
+    summary = summarize_tumor_growth(growth, annotation_col=annotation_col, tumor_label=tumor_label, sample_id=sample_id)
+    out = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    cells_path = out / "tumor_growth_cells.csv"
+    summary_path = out / "tumor_growth_summary.csv"
+    growth.to_csv(cells_path, index=False)
+    summary.to_csv(summary_path, index=False)
+    click.echo(json.dumps({"tumor_growth_cells": str(cells_path), "tumor_growth_summary": str(summary_path), "summary": summary.iloc[0].to_dict()}, indent=2, default=str))
+
+
+@mechanostress_group.command("polarity")
+@click.argument("base_path")
+@click.option("--output-dir", required=True)
+@click.option("--offset-norm-threshold", type=float, default=0.30, show_default=True)
+@click.option("--cell-id-col", default="cell_id", show_default=True)
+@click.option("--sample-id", default=None)
+def mechanostress_polarity(base_path, output_dir, offset_norm_threshold, cell_id_col, sample_id):
+    """Compute cell polarity from cell and nucleus centroid offsets."""
+    from .io import read_xenium
+
+    sdata = read_xenium(base_path, as_="sdata", include_transcripts=False, include_boundaries=True)
+    if "cell_boundaries" not in sdata.shapes or "nucleus_boundaries" not in sdata.shapes:
+        raise click.ClickException("Both cell_boundaries and nucleus_boundaries are required for polarity analysis.")
+    polarity = compute_cell_polarity(
+        cell_boundaries=sdata.shapes["cell_boundaries"],
+        nucleus_boundaries=sdata.shapes["nucleus_boundaries"],
+        cell_id_col=cell_id_col,
+        offset_norm_threshold=offset_norm_threshold,
+    )
+    summary = summarize_cell_polarity(polarity, sample_id=sample_id)
+    out = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    polarity_path = out / "cell_polarity.csv"
+    summary_path = out / "polarity_summary.csv"
+    polarity.to_csv(polarity_path, index=False)
+    summary.to_csv(summary_path, index=False)
+    click.echo(json.dumps({"cell_polarity": str(polarity_path), "polarity_summary": str(summary_path), "summary": summary.iloc[0].to_dict() if not summary.empty else {}}, indent=2, default=str))
+
+
+@mechanostress_group.command("run-cohort")
+@click.argument("cohort_root")
+@click.option("--output-dir", required=True)
+@click.option("--sample-glob", default="*", show_default=True)
+@click.option("--annotation-glob", default="*_cell_clusters_with_annotation_and_coord.csv", show_default=True)
+@click.option("--prefer", type=click.Choice(["auto", "zarr", "h5", "mex"]), default="auto", show_default=True)
+@click.option("--radius", "radii_um", multiple=True, type=float, default=DEFAULT_MECHANOSTRESS_RADII_UM, show_default=True)
+@click.option("--er-threshold", type=float, default=2.0, show_default=True)
+@click.option("--annotation-col", default="Annotation", show_default=True)
+@click.option("--growth-method", type=click.Choice(["delaunay_hop", "nearest_distance_ratio"]), default="delaunay_hop", show_default=True)
+@click.option("--sample-limit", type=int, default=None)
+@click.option("--fail-fast/--continue-on-error", default=False, show_default=True)
+def mechanostress_run_cohort(
+    cohort_root,
+    output_dir,
+    sample_glob,
+    annotation_glob,
+    prefer,
+    radii_um,
+    er_threshold,
+    annotation_col,
+    growth_method,
+    sample_limit,
+    fail_fast,
+):
+    """Run mechanostress workflow for each immediate sample directory in a cohort."""
+    config = _mechanostress_config_from_options(
+        radii_um=radii_um,
+        er_threshold=er_threshold,
+        annotation_col=annotation_col,
+        growth_method=growth_method,
+    )
+    result = run_mechanostress_cohort(
+        cohort_root,
+        output_dir=output_dir,
+        config=config,
+        sample_glob=sample_glob,
+        annotation_glob=annotation_glob,
+        prefer=prefer,
+        sample_limit=sample_limit,
+        fail_fast=fail_fast,
+    )
+    click.echo(
+        json.dumps(
+            {
+                "n_completed": int(len(result.results)),
+                "n_failed": int(len(result.errors)),
+                "files": result.files,
+            },
+            indent=2,
+            default=str,
+        )
+    )
+
+
+@mechanostress_group.command("validate-hnscc")
+@click.option("--root", default=DEFAULT_HNSCC_ROOT, show_default=True)
+@click.option("--recomputed-dir", default=None)
+@click.option("--tolerance", type=float, default=1e-6, show_default=True)
+def mechanostress_validate_hnscc(root, recomputed_dir, tolerance):
+    """Validate HNSCC mechanostress reference outputs."""
+    payload = validate_hnscc_mechanostress_outputs(root=root, recomputed_dir=recomputed_dir, tolerance=tolerance)
+    click.echo(json.dumps(payload, indent=2, default=str))
+
+
+@mechanostress_group.command("validate-suzuki-luad")
+@click.option("--xenium-root", default=DEFAULT_SUZUKI_XENIUM_ROOT, show_default=True)
+@click.option("--er-results-root", default=DEFAULT_SUZUKI_ER_RESULTS_ROOT, show_default=True)
+@click.option("--strength-root", default=DEFAULT_SUZUKI_STRENGTH_ROOT, show_default=True)
+@click.option("--recomputed-dir", default=None)
+@click.option("--tolerance", type=float, default=1e-6, show_default=True)
+def mechanostress_validate_suzuki_luad(xenium_root, er_results_root, strength_root, recomputed_dir, tolerance):
+    """Validate Suzuki LUAD/TSU ER and ANE reference outputs."""
+    payload = validate_suzuki_luad_mechanostress_outputs(
+        xenium_root=xenium_root,
+        er_results_root=er_results_root,
+        strength_root=strength_root,
+        recomputed_dir=recomputed_dir,
+        tolerance=tolerance,
+    )
+    click.echo(json.dumps(payload, indent=2, default=str))
 
 def _run_validate_renal_ffpe_protein(
     *,

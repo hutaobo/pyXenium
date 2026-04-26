@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyXenium"
 dynamic = ["version"]
-description = "Xenium I/O, multimodal analysis, topology workflows, and contour-native spatial profiling."
+description = "Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, and mechanostress analysis."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "LicenseRef-Proprietary-NonCommercial"
@@ -44,6 +44,7 @@ dependencies = [
   "fsspec>=2024.6.0",
   "requests>=2.31",
   "PyYAML>=6.0",
+  "pyarrow>=14.0",
   "aiohttp",
   "click>=8.1",
 ]

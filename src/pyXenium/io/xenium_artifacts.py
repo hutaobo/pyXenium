@@ -38,6 +38,11 @@ try:
 except Exception:  # pragma: no cover
     tifffile = None
 
+try:
+    import pyarrow.dataset as pyarrow_dataset
+except Exception:  # pragma: no cover
+    pyarrow_dataset = None
+
 
 REMOTE_PREFIXES = ("http://", "https://", "s3://", "gs://")
 DEFAULT_IMAGE_PYRAMID_MIN_SIZE = 256
@@ -432,6 +437,48 @@ def _first_local_match(base_path: str, patterns: Iterable[str]) -> str | None:
     return matches[0] if matches else None
 
 
+def _resolve_artifact_path(
+    base_path: str,
+    *,
+    exact_names: Iterable[str],
+    prefixed_patterns: Iterable[str] = (),
+    kind: str,
+) -> str | None:
+    for name in exact_names:
+        path = join_path(base_path, name)
+        if exists(path):
+            return path
+
+    if is_remote_path(base_path):
+        return None
+
+    for pattern in prefixed_patterns:
+        matches = _find_local_matches(base_path, (pattern,))
+        if len(matches) == 1:
+            return matches[0]
+        if len(matches) > 1:
+            joined = "\n".join(matches)
+            raise FileExistsError(
+                f"Multiple candidate {kind} artifacts matched pattern {pattern!r} under {base_path!r}. "
+                f"Pass an explicit path/name or keep one matching file.\n{joined}"
+            )
+    return None
+
+
+def _read_parquet_table(path_or_url: str) -> pd.DataFrame:
+    try:
+        if str(path_or_url).lower().endswith(".parquet.gz"):
+            with fsspec.open(path_or_url, mode="rb").open() as raw:
+                with gzip.GzipFile(fileobj=raw) as stream:
+                    return pd.read_parquet(stream)
+        return pd.read_parquet(path_or_url)
+    except ImportError as exc:
+        raise ImportError(
+            "Reading Xenium parquet artifacts requires pyarrow or fastparquet. "
+            f"Install pyarrow or use a non-parquet artifact: {path_or_url}"
+        ) from exc
+
+
 def _coerce_feature_frame(features: pd.DataFrame) -> pd.DataFrame:
     frame = features.copy()
     rename_map = {}
@@ -503,15 +550,15 @@ def read_cell_feature_matrix_zarr(base_path: str) -> tuple[sparse.csr_matrix, pd
     if zarr is None:
         raise ImportError("zarr is required to read Xenium Zarr matrices.")
 
-    candidates = []
-    for name in ("cell_feature_matrix.zarr", "cell_feature_matrix"):
-        path = join_path(base_path, name)
-        if exists(path):
-            candidates.append(path)
-    if not candidates:
+    matrix_path = _resolve_artifact_path(
+        base_path,
+        exact_names=("cell_feature_matrix.zarr", "cell_feature_matrix"),
+        kind="Xenium Zarr cell_feature_matrix",
+    )
+    if matrix_path is None:
         raise FileNotFoundError("No Xenium Zarr cell_feature_matrix found.")
 
-    store = open_zarr_group(candidates[0])
+    store = open_zarr_group(matrix_path)
     data = np.asarray(store["X/data"][:])
     indices = np.asarray(store["X/indices"][:])
     indptr = np.asarray(store["X/indptr"][:])
@@ -620,21 +667,26 @@ def read_cell_feature_matrix(
     mex_features_name: str = "features.tsv.gz",
     mex_barcodes_name: str = "barcodes.tsv.gz",
 ) -> tuple[sparse.csr_matrix, pd.DataFrame, pd.Index, str]:
-    zarr_available = any(
-        exists(join_path(base_path, name))
-        for name in ("cell_feature_matrix.zarr", "cell_feature_matrix")
+    zarr_path = _resolve_artifact_path(
+        base_path,
+        exact_names=("cell_feature_matrix.zarr", "cell_feature_matrix"),
+        kind="Xenium Zarr cell_feature_matrix",
     )
-    h5_path = join_path(base_path, "cell_feature_matrix.h5")
+    h5_path = _resolve_artifact_path(
+        base_path,
+        exact_names=("cell_feature_matrix.h5",),
+        prefixed_patterns=("*_cell_feature_matrix.h5",),
+        kind="Xenium HDF5 cell_feature_matrix",
+    )
     mex_dir = join_path(base_path, mex_dirname)
-    h5_available = exists(h5_path)
     mex_available = exists(mex_dir)
 
     order = ["zarr", "h5", "mex"] if prefer == "auto" else [prefer]
     for backend in order:
-        if backend == "zarr" and zarr_available:
+        if backend == "zarr" and zarr_path is not None:
             matrix, features, barcodes = read_cell_feature_matrix_zarr(base_path)
             return matrix, features, barcodes, "zarr"
-        if backend == "h5" and h5_available:
+        if backend == "h5" and h5_path is not None:
             matrix, features, barcodes = read_cell_feature_matrix_h5(h5_path)
             return matrix, features, barcodes, "h5"
         if backend == "mex" and mex_available:
@@ -720,13 +772,27 @@ def read_cells_table(
     cells_parquet: str | None = None,
     barcodes: pd.Index | None = None,
 ) -> pd.DataFrame | None:
-    parquet_path = join_path(base_path, cells_parquet) if cells_parquet else None
-    csv_path = join_path(base_path, cells_csv)
+    parquet_path = (
+        join_path(base_path, cells_parquet)
+        if cells_parquet
+        else _resolve_artifact_path(
+            base_path,
+            exact_names=("cells.parquet", "cells.parquet.gz"),
+            prefixed_patterns=("*_cells.parquet", "*_cells.parquet.gz"),
+            kind="Xenium cells parquet",
+        )
+    )
+    csv_path = _resolve_artifact_path(
+        base_path,
+        exact_names=(cells_csv, "cells.csv"),
+        prefixed_patterns=("*_cells.csv.gz", "*_cells.csv"),
+        kind="Xenium cells CSV",
+    )
 
     if parquet_path and exists(parquet_path):
-        obs = pd.read_parquet(parquet_path)
+        obs = _read_parquet_table(parquet_path)
         return normalize_obs_index(obs, barcodes=barcodes)
-    if exists(csv_path):
+    if csv_path and exists(csv_path):
         with open_text(csv_path) as stream:
             obs = pd.read_csv(stream)
         return normalize_obs_index(obs, barcodes=barcodes)
@@ -1096,17 +1162,45 @@ def read_boundary_tables(
     include_nucleus: bool = True,
 ) -> dict[str, pd.DataFrame]:
     boundaries: dict[str, pd.DataFrame] = {}
-    for filename, key, enabled in (
-        ("cell_boundaries.csv.gz", "cell_boundaries", include_cell),
-        ("nucleus_boundaries.csv.gz", "nucleus_boundaries", include_nucleus),
+    for exact_names, prefixed_patterns, key, enabled in (
+        (
+            ("cell_boundaries.csv.gz", "cell_boundaries.csv", "cell_boundaries.parquet", "cell_boundaries.parquet.gz"),
+            ("*_cell_boundaries.parquet", "*_cell_boundaries.parquet.gz", "*_cell_boundaries.csv.gz", "*_cell_boundaries.csv"),
+            "cell_boundaries",
+            include_cell,
+        ),
+        (
+            (
+                "nucleus_boundaries.csv.gz",
+                "nucleus_boundaries.csv",
+                "nucleus_boundaries.parquet",
+                "nucleus_boundaries.parquet.gz",
+            ),
+            (
+                "*_nucleus_boundaries.parquet",
+                "*_nucleus_boundaries.parquet.gz",
+                "*_nucleus_boundaries.csv.gz",
+                "*_nucleus_boundaries.csv",
+            ),
+            "nucleus_boundaries",
+            include_nucleus,
+        ),
     ):
         if not enabled:
             continue
-        path = join_path(base_path, filename)
-        if not exists(path):
+        path = _resolve_artifact_path(
+            base_path,
+            exact_names=exact_names,
+            prefixed_patterns=prefixed_patterns,
+            kind=key,
+        )
+        if path is None:
             continue
-        with open_text(path) as stream:
-            frame = pd.read_csv(stream)
+        if str(path).lower().endswith((".parquet", ".parquet.gz")):
+            frame = _read_parquet_table(path)
+        else:
+            with open_text(path) as stream:
+                frame = pd.read_csv(stream)
         boundaries[key] = normalize_boundary_frame(frame)
     return boundaries
 
@@ -1258,11 +1352,169 @@ def _transcript_level_group(root: Any):
     return root
 
 
+def _first_present_column(available: Iterable[str], *candidates: str) -> str | None:
+    available_set = {str(value) for value in available}
+    for candidate in candidates:
+        if candidate in available_set:
+            return candidate
+    return None
+
+
+def _iter_transcript_parquet_chunks(
+    transcripts_path: str,
+    *,
+    genes: set[str] | None = None,
+    batch_size: int = 250_000,
+) -> Iterator[pd.DataFrame]:
+    if str(transcripts_path).lower().endswith(".parquet.gz"):
+        frame = _read_parquet_table(transcripts_path)
+        schema_names = [str(name) for name in frame.columns]
+        x_col = _first_present_column(schema_names, "x", "x_location")
+        y_col = _first_present_column(schema_names, "y", "y_location")
+        gene_col = _first_present_column(schema_names, "gene_name", "feature_name")
+        z_col = _first_present_column(schema_names, "z", "z_location")
+        quality_col = _first_present_column(schema_names, "quality_score", "qv")
+        valid_col = _first_present_column(schema_names, "valid")
+        cell_id_col = _first_present_column(schema_names, "cell_id")
+        is_gene_col = _first_present_column(schema_names, "is_gene")
+        if x_col is None or y_col is None or gene_col is None:
+            raise ValueError(
+                "Transcript parquet is missing required spatial columns. "
+                f"Available columns: {schema_names!r}"
+            )
+
+        if is_gene_col is not None:
+            frame = frame.loc[frame[is_gene_col].astype(bool)].copy()
+        frame[gene_col] = frame[gene_col].astype(str)
+        if genes:
+            frame = frame.loc[frame[gene_col].isin(genes)].copy()
+        if frame.empty:
+            return
+
+        codes, _ = pd.factorize(frame[gene_col], sort=False)
+        out = pd.DataFrame(
+            {
+                "x": pd.to_numeric(frame[x_col], errors="coerce").astype(float),
+                "y": pd.to_numeric(frame[y_col], errors="coerce").astype(float),
+                "gene_identity": codes.astype(np.int64),
+                "gene_name": frame[gene_col].astype(str),
+            }
+        )
+        if z_col is not None:
+            out["z"] = pd.to_numeric(frame[z_col], errors="coerce").astype(float)
+        out["quality_score"] = (
+            pd.to_numeric(frame[quality_col], errors="coerce").astype(float)
+            if quality_col is not None
+            else np.nan
+        )
+        out["valid"] = frame[valid_col].astype(bool).to_numpy() if valid_col is not None else True
+        if cell_id_col is not None:
+            out["cell_id"] = frame[cell_id_col].astype(str)
+
+        for start in range(0, len(out), int(batch_size)):
+            yield out.iloc[start : start + int(batch_size)].reset_index(drop=True)
+        return
+
+    if pyarrow_dataset is None:  # pragma: no cover
+        raise ImportError("pyarrow is required to stream transcripts from parquet files.")
+
+    dataset = pyarrow_dataset.dataset(transcripts_path, format="parquet")
+    schema_names = [str(name) for name in dataset.schema.names]
+
+    x_col = _first_present_column(schema_names, "x", "x_location")
+    y_col = _first_present_column(schema_names, "y", "y_location")
+    gene_col = _first_present_column(schema_names, "gene_name", "feature_name")
+    z_col = _first_present_column(schema_names, "z", "z_location")
+    quality_col = _first_present_column(schema_names, "quality_score", "qv")
+    valid_col = _first_present_column(schema_names, "valid")
+    cell_id_col = _first_present_column(schema_names, "cell_id")
+    is_gene_col = _first_present_column(schema_names, "is_gene")
+
+    if x_col is None or y_col is None or gene_col is None:
+        raise ValueError(
+            "Transcript parquet is missing required spatial columns. "
+            f"Available columns: {schema_names!r}"
+        )
+
+    selected_columns = [x_col, y_col, gene_col]
+    for optional in (z_col, quality_col, valid_col, cell_id_col, is_gene_col):
+        if optional is not None and optional not in selected_columns:
+            selected_columns.append(optional)
+
+    filter_expression = None
+    if is_gene_col is not None:
+        filter_expression = pyarrow_dataset.field(is_gene_col) == True
+    if genes:
+        gene_filter = pyarrow_dataset.field(gene_col).isin(sorted(str(value) for value in genes))
+        filter_expression = gene_filter if filter_expression is None else filter_expression & gene_filter
+
+    scanner = dataset.scanner(
+        columns=selected_columns,
+        filter=filter_expression,
+        batch_size=int(batch_size),
+        use_threads=True,
+    )
+
+    gene_to_identity: dict[str, int] = {}
+    next_identity = 0
+
+    for record_batch in scanner.to_batches():
+        frame = record_batch.to_pandas()
+        if frame.empty:
+            continue
+
+        frame[gene_col] = frame[gene_col].astype(str)
+        if genes:
+            frame = frame.loc[frame[gene_col].isin(genes)].copy()
+        if frame.empty:
+            continue
+
+        gene_identity: list[int] = []
+        for gene_name in frame[gene_col].tolist():
+            resolved = gene_to_identity.get(gene_name)
+            if resolved is None:
+                resolved = next_identity
+                gene_to_identity[gene_name] = resolved
+                next_identity += 1
+            gene_identity.append(resolved)
+
+        out = pd.DataFrame(
+            {
+                "x": pd.to_numeric(frame[x_col], errors="coerce").astype(float),
+                "y": pd.to_numeric(frame[y_col], errors="coerce").astype(float),
+                "gene_identity": np.asarray(gene_identity, dtype=np.int64),
+                "gene_name": frame[gene_col].astype(str),
+            }
+        )
+
+        if z_col is not None:
+            out["z"] = pd.to_numeric(frame[z_col], errors="coerce").astype(float)
+        if quality_col is not None:
+            out["quality_score"] = pd.to_numeric(frame[quality_col], errors="coerce").astype(float)
+        else:
+            out["quality_score"] = np.nan
+        if valid_col is not None:
+            out["valid"] = frame[valid_col].astype(bool).to_numpy()
+        elif is_gene_col is not None:
+            out["valid"] = frame[is_gene_col].astype(bool).to_numpy()
+        else:
+            out["valid"] = True
+        if cell_id_col is not None:
+            out["cell_id"] = frame[cell_id_col].astype(str)
+
+        yield out.reset_index(drop=True)
+
+
 def iter_transcript_chunks(
     transcripts_path: str,
     *,
     genes: set[str] | None = None,
 ) -> Iterator[pd.DataFrame]:
+    lower_path = str(transcripts_path).lower()
+    if lower_path.endswith((".parquet", ".parquet.gz")):
+        yield from _iter_transcript_parquet_chunks(transcripts_path, genes=genes)
+        return
+
     root = open_zarr_group(transcripts_path)
     gene_names = _resolve_gene_names(root)
     level = _transcript_level_group(root)
@@ -1355,16 +1607,21 @@ def read_transcripts_table(
 
 
 def resolve_transcripts_path(base_path: str) -> str | None:
-    for candidate in (
-        "transcripts.zarr.zip",
-        "transcripts.zarr",
-        "analysis/transcripts.zarr.zip",
-        "analysis/transcripts.zarr",
-    ):
-        resolved = join_path(base_path, candidate)
-        if exists(resolved):
-            return resolved
-    return None
+    return _resolve_artifact_path(
+        base_path,
+        exact_names=(
+            "transcripts.parquet",
+            "transcripts.parquet.gz",
+            "transcripts.zarr.zip",
+            "transcripts.zarr",
+            "analysis/transcripts.parquet",
+            "analysis/transcripts.parquet.gz",
+            "analysis/transcripts.zarr.zip",
+            "analysis/transcripts.zarr",
+        ),
+        prefixed_patterns=("*_transcripts.parquet", "*_transcripts.parquet.gz"),
+        kind="Xenium transcripts",
+    )
 
 
 def read_experiment_metadata(base_path: str) -> dict[str, Any]:

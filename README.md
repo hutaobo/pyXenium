@@ -5,7 +5,7 @@
 <h1 align="center">pyXenium</h1>
 
 <p align="center">
-  Xenium I/O, multimodal analysis, topology workflows, and contour-native spatial profiling.
+  Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, and mechanostress analysis.
 </p>
 
 <p align="center">
@@ -28,13 +28,14 @@
   <a href="https://github.com/hutaobo/pyXenium/releases">Releases</a>
 </p>
 
-pyXenium is a Python toolkit for **10x Genomics Xenium** with five canonical public surfaces:
+pyXenium is a Python toolkit for **10x Genomics Xenium** with six canonical public surfaces:
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
 - `pyXenium.multimodal`: canonical RNA + protein loading, joint analysis, immune-resistance scoring, and packaged workflows.
 - `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis.
 - `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
 - `pyXenium.contour`: contour import, contour expansion, and contour-aware density profiling around polygon annotations.
+- `pyXenium.mechanostress`: morphology-derived mechanical stress states, including fibroblast axis strength, tumor-stroma growth patterning, and cell polarity.
 
 Legacy compatibility entry points under `pyXenium.analysis`, `pyXenium.validation`, and
 `pyXenium.io.load_xenium_gene_protein(...)` remain importable, but new code should target the
@@ -42,7 +43,7 @@ canonical namespaces above.
 
 ## Release & Build
 
-- Current repository version: `0.2.3`
+- Current repository version: `0.4.0`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
@@ -52,7 +53,7 @@ canonical namespaces above.
 ## Install
 
 ```bash
-pip install pyXenium
+pip install pyXenium==0.4.0
 ```
 
 For local development:
@@ -102,6 +103,35 @@ expand_contours(
     mode="voronoi",
 )
 ```
+
+### Mechanostress analysis
+
+```python
+from pyXenium.io import read_xenium
+from pyXenium.mechanostress import MechanostressConfig, run_mechanostress_workflow
+
+sdata = read_xenium("/path/to/xenium_export", as_="sdata", include_boundaries=True)
+result = run_mechanostress_workflow(
+    sdata,
+    output_dir="pyxenium_mechanostress_outputs/sample_1",
+    config=MechanostressConfig(),
+)
+```
+
+For cohorts organized as one Xenium sample per directory, use:
+
+```python
+from pyXenium.mechanostress import MechanostressConfig, run_mechanostress_cohort
+
+cohort = run_mechanostress_cohort(
+    "/path/to/headandneckSCC",
+    output_dir="pyxenium_mechanostress_outputs/hnscc",
+    config=MechanostressConfig(coupling_genes=("KRT5", "EPCAM")),
+)
+```
+
+`pyXenium.mechanostress` is a canonical beta surface for extracting mechanical stress
+signals from Xenium morphology and spatial cell context.
 
 ## Documentation structure
 

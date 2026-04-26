@@ -9,6 +9,7 @@ multimodal
 ligand_receptor
 pathway
 contour
+mechanostress
 ```
 
 The API reference is organized around pyXenium’s canonical namespaces rather than the legacy
@@ -45,5 +46,11 @@ Pathway topology and activity scoring.
 :link: contour
 :link-type: doc
 GeoJSON contour import and contour-aware density profiling.
+:::
+
+:::{grid-item-card} pyXenium.mechanostress
+:link: mechanostress
+:link-type: doc
+Mechanical stress state analysis from Xenium morphology and tumor-stroma geometry.
 :::
 ::::

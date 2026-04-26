@@ -13,11 +13,13 @@ changelog
 ```
 
 <div class="pyxenium-hero">
-  <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, and contour-native spatial profiling.</p>
+  <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, and mechanostress analysis.</p>
   <p class="pyxenium-lead">
     pyXenium is a Python toolkit for 10x Genomics Xenium with a layered public surface:
     canonical Xenium I/O, multimodal RNA + protein analysis, topology-native ligand-receptor
-    and pathway methods, and contour-aware geometry workflows. This site is organized to mirror
+    and pathway methods, contour-aware geometry workflows,
+    and morphology-derived mechanostress analysis.
+    This site is organized to mirror
     the crisp, research-oriented experience of the SpatialData docs while staying specific to
     pyXenium’s package architecture.
   </p>
@@ -46,7 +48,7 @@ changelog
   <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-non--commercial-d97706.svg" alt="License"></a>
 </p>
 
-- Current repository version: `0.2.3`
+- Current repository version: `0.4.0`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [Read the Docs latest](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
@@ -86,10 +88,16 @@ Work with the canonical `pyXenium.multimodal` surface for RNA + protein preparat
 Run packaged renal and Atera workflows with report-ready outputs and artifact bundles.
 :::
 
+:::{grid-item-card} Mechanostress
+:link: api/mechanostress
+:link-type: doc
+Compute fibroblast axis strength, tumor-stroma growth patterning, and cell polarity from Xenium morphology.
+:::
+
 :::{grid-item-card} API
 :link: api/index
 :link-type: doc
-Browse curated autosummary pages for `io`, `multimodal`, `ligand_receptor`, `pathway`, and `contour`.
+Browse curated autosummary pages for `io`, `multimodal`, `ligand_receptor`, `pathway`, `contour`, and `mechanostress`.
 :::
 
 :::{grid-item-card} Changelog
@@ -106,6 +114,7 @@ Track documentation, branding, and package-level changes.
 - `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis primitives.
 - `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
 - `pyXenium.contour`: GeoJSON contour import and contour-aware density profiling around polygon annotations.
+- `pyXenium.mechanostress`: morphology-derived mechanical stress states from cell/nucleus boundaries and tumor-stroma context.
 
 :::{admonition} GitHub branding asset
 :class: pyxenium-brand-note

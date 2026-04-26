@@ -424,6 +424,35 @@ def test_read_xenium_anndata_backends(tmp_path, prefer):
     assert adata.uns["xenium_io"]["backend"] == prefer
 
 
+def test_read_xenium_discovers_prefixed_hnscc_artifacts(tmp_path):
+    if h5py is None:
+        pytest.skip("h5py is not available")
+    base = make_xenium_dataset(
+        tmp_path / "prefixed",
+        include_backends=("h5",),
+        include_boundaries=True,
+        include_transcripts=False,
+    )
+    sample = "GSM000001_Apr_13_24"
+    (base / "cell_feature_matrix.h5").rename(base / f"{sample}_cell_feature_matrix.h5")
+
+    cells = pd.read_csv(base / "cells.csv.gz")
+    cells.to_parquet(base / f"{sample}_cells.parquet")
+    (base / "cells.csv.gz").unlink()
+
+    for stem in ("cell_boundaries", "nucleus_boundaries"):
+        frame = pd.read_csv(base / f"{stem}.csv.gz")
+        frame.to_parquet(base / f"{sample}_{stem}.parquet")
+        (base / f"{stem}.csv.gz").unlink()
+
+    sdata = read_xenium(str(base), as_="sdata", prefer="h5", include_transcripts=False)
+
+    assert sdata.table.n_obs == 3
+    assert "cell_boundaries" in sdata.shapes
+    assert "nucleus_boundaries" in sdata.shapes
+    assert {"cell_id", "vertex_id", "x", "y"}.issubset(sdata.shapes["cell_boundaries"].columns)
+
+
 def test_read_xenium_imports_all_clusterings_and_projections(tmp_path):
     dataset = make_xenium_dataset(
         tmp_path / "dataset",

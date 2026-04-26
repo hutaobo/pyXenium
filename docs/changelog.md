@@ -6,6 +6,13 @@ All notable changes to pyXenium are documented here.
 
 - No unreleased changes yet.
 
+## 0.4.0 - 2026-04-26
+
+- Add `pyXenium.mechanostress` as a canonical beta public surface for morphology-derived mechanical stress analysis.
+- Support HNSCC-style prefixed Xenium artifacts, including `*_cell_feature_matrix.h5`, cells parquet, boundary parquet, and transcript parquet variants.
+- Add cohort-level mechanostress workflow APIs and CLI output summaries.
+- Add `pyarrow` as a runtime dependency so PyPI installs can read parquet-based Xenium exports directly.
+
 ## 0.2.3 - 2026-04-22
 
 - Add missing runtime dependencies required by the public import surface in clean environments, including `seaborn`, `statsmodels`, `scanpy`, and `PyYAML`.
