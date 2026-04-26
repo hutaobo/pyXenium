@@ -1,0 +1,10 @@
+s_class,mechanostress_class,axis_pool,n_cells
+S1,Stromal,S1_CAF,4001
+S1,Tumor,Other,68872
+S2,Other,Other,23298
+S3,Other,Other,21754
+S3,Other,S3_CXCL14_fibroblast,4936
+S4,Other,Other,9311
+S4,Other,S4_CAF,24442
+S5,Tumor,Other,13431
+Unassigned,Other,Other,12

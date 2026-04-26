@@ -115,13 +115,37 @@ def _join_axis_metadata(axes: pd.DataFrame, cell_table: pd.DataFrame) -> pd.Data
 def _expression_frame_for_genes(sdata: XeniumSData, genes: tuple[str, ...]) -> pd.DataFrame | None:
     if not genes:
         return None
-    present = [gene for gene in genes if gene in sdata.table.var_names]
-    if not present:
+    var_names = pd.Index(sdata.table.var_names.astype(str))
+    symbol_columns = [
+        column
+        for column in ("name", "gene_symbol", "symbol", "gene_name")
+        if column in sdata.table.var.columns
+    ]
+    selected_var_names: list[str] = []
+    output_names: list[str] = []
+    seen: set[str] = set()
+    for gene in genes:
+        query = str(gene)
+        selected: str | None = None
+        if query in var_names:
+            selected = query
+        else:
+            for column in symbol_columns:
+                matches = var_names[sdata.table.var[column].astype(str).to_numpy() == query]
+                if len(matches):
+                    selected = str(matches[0])
+                    break
+        if selected is None or selected in seen:
+            continue
+        seen.add(selected)
+        selected_var_names.append(selected)
+        output_names.append(query)
+    if not selected_var_names:
         return pd.DataFrame(index=sdata.table.obs_names.astype(str), columns=[])
-    subset = sdata.table[:, present]
+    subset = sdata.table[:, selected_var_names]
     matrix = subset.X
     values = matrix.toarray() if hasattr(matrix, "toarray") else np.asarray(matrix)
-    return pd.DataFrame(values, index=subset.obs_names.astype(str), columns=present)
+    return pd.DataFrame(values, index=subset.obs_names.astype(str), columns=output_names)
 
 
 def _apply_axis_filters(axes: pd.DataFrame, *, config: MechanostressConfig) -> pd.DataFrame:

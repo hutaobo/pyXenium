@@ -1,0 +1,2 @@
+axis_pool,cluster,n_axes,axial_rbar,mean_axis_degrees,kappa,rayleigh_p,local_rbar_median,local_rbar_q25,local_rbar_q75,local_rbar_n_cells
+S1_CAF,"CAFs, Invasive Associated",2493,0.07327158711209968,52.0450822264206,0.14693830919622036,1.53922330453472e-06,0.44884402236897974,0.2745298744791528,0.6416019343879275,2493

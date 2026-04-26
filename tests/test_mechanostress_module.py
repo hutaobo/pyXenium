@@ -284,6 +284,18 @@ def test_mechanostress_workflow_merges_external_cell_table():
     assert not result.distance_expression_coupling.empty
 
 
+def test_mechanostress_workflow_resolves_coupling_gene_symbols_from_var_name():
+    sdata = _toy_sdata()
+    sdata.table.var["name"] = ["SYMBOL1", "SYMBOL2"]
+
+    result = run_mechanostress_workflow(
+        sdata,
+        config=MechanostressConfig(coupling_genes=("SYMBOL1", "MISSING")),
+    )
+
+    assert result.distance_expression_coupling["gene"].tolist() == ["SYMBOL1"]
+
+
 def test_run_mechanostress_cohort_writes_cohort_artifacts(tmp_path):
     cohort_root = tmp_path / "cohort"
     _write_mechanostress_xenium_sample(cohort_root / "S1", sample_id="S1")

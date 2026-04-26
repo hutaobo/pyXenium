@@ -1,0 +1,2 @@
+sample_id,n_tumor,n_infiltrative,n_expanding,n_tumor_valid,infiltrative_proportion,mean_infil_dist_to_stromal,mean_expand_dist_to_stromal
+WTA_Preview_FFPE_Breast_Cancer_outs,82303,9026,73277,82303,0.10966793434018202,33.61992883561506,124.81032478936972

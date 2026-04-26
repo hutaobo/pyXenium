@@ -1,0 +1,19 @@
+{
+  "sample_id": "WTA_Preview_FFPE_Breast_Cancer_outs",
+  "n_axes": 168335,
+  "n_axis_strength_rows": 12,
+  "n_orientation_summary_rows": 1,
+  "n_tumor_growth_cells": 170057,
+  "n_distance_expression_coupling_rows": 12,
+  "n_polarity_cells": 168335,
+  "tumor_growth": {
+    "sample_id": "WTA_Preview_FFPE_Breast_Cancer_outs",
+    "n_tumor": 82303,
+    "n_infiltrative": 9026,
+    "n_expanding": 73277,
+    "n_tumor_valid": 82303,
+    "infiltrative_proportion": 0.10966793434018202,
+    "mean_infil_dist_to_stromal": 33.61992883561506,
+    "mean_expand_dist_to_stromal": 124.81032478936972
+  }
+}

@@ -1,0 +1,38 @@
+name: pyx-mechanostress
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - anndata
+  - scanpy
+  - pyarrow
+  - h5py
+  - click
+  - shapely
+  - statsmodels
+  - tifffile
+  - imagecodecs
+  - zarr
+  - fsspec
+  - requests
+  - pyyaml
+  - aiohttp
+  - nbclient
+  - nbconvert
+  - nbformat
+  - ipykernel
+  - jupyter
+  - sphinx
+  - myst-nb
+  - sphinx-design
+  - sphinx-copybutton
+  - pydata-sphinx-theme
+  - pip:
+      - -e ../../..

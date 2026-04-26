@@ -9,6 +9,8 @@ ligand_receptor
 pathway
 multimodal
 contour_index
+gmi
+mechanostress_atera_pdc
 ```
 
 The tutorials hub brings the canonical pyXenium tutorial series into one
@@ -53,6 +55,21 @@ discordance, niches, and branch-level hypotheses.
 :link-type: doc
 Generate HistoSeg-backed annotations, run contour-level transcript and cell
 composition analyses, and profile barrier-aware boundary density curves.
+:::
+
+:::{grid-item-card} pyXenium.gmi Tutorial
+:link: gmi
+:link-type: doc
+Use S1/S5 contours as samples for GMI main-effect, interaction, control, and
+heterogeneity analyses.
+:::
+
+:::{grid-item-card} pyXenium.mechanostress Tutorial
+:link: mechanostress_atera_pdc
+:link-type: doc
+Run the Atera WTA breast S1/S5 mechanostress workflow on PDC and inspect
+fibroblast axis strength, tumor-stroma growth states, polarity, and coupling
+artifacts.
 :::
 ::::
 
