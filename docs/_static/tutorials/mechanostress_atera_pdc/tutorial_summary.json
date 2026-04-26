@@ -30,5 +30,11 @@
     "NIBAN1",
     "SORL1"
   ],
-  "missing_coupling_genes": []
+  "missing_coupling_genes": [],
+  "caf_comparison": {
+    "highest_er_median": "S1 invasive CAF",
+    "highest_local_rbar_median": "S4 DCIS-associated CAF",
+    "highest_ane_density_100um": "S4 DCIS-associated CAF",
+    "highest_offset_norm_median": "S1 invasive CAF"
+  }
 }

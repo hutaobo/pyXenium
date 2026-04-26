@@ -1,0 +1,4 @@
+sample_id,axis_pool,cluster,n_cells,n_polarized,polarized_fraction,offset_norm_median,offset_distance_median_um,caf_pool_label
+WTA_Preview_FFPE_Breast_Cancer_outs,S1_CAF,"CAFs, Invasive Associated",3999,1886,0.471617904476119,0.28469009660116573,1.1409532600342442,S1 invasive CAF
+WTA_Preview_FFPE_Breast_Cancer_outs,S4_CAF,"CAFs, DCIS Associated",24376,10449,0.4286593370528389,0.264185016457436,1.035073175389671,S4 DCIS-associated CAF
+WTA_Preview_FFPE_Breast_Cancer_outs,S3_CXCL14_fibroblast,CXCL14+ Fibroblasts,4504,1652,0.36678507992895204,0.2332257175756258,0.6084660400108723,S3 CXCL14+ fibroblast
