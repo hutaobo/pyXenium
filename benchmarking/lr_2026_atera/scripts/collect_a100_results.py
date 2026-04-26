@@ -15,6 +15,7 @@ def main() -> None:
     parser.add_argument("--user", default=None)
     parser.add_argument("--transfer-mode", default="auto", choices=["auto", "rsync", "scp"])
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--since-last", action="store_true")
     parser.add_argument("--output-json", default=None)
     args = parser.parse_args()
 
@@ -25,6 +26,7 @@ def main() -> None:
         user=args.user,
         transfer_mode=args.transfer_mode,
         dry_run=not args.execute,
+        since_last=args.since_last,
     )
     if args.output_json:
         Path(args.output_json).parent.mkdir(parents=True, exist_ok=True)

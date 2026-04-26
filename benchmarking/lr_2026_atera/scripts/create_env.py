@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -29,11 +30,21 @@ def _run(command: list[str], *, dry_run: bool) -> dict[str, object]:
     }
 
 
+def _resolve_solver(preferred: str) -> str:
+    solver = str(preferred).strip().lower()
+    if solver == "mamba":
+        return "mamba"
+    if solver == "conda":
+        return "conda"
+    return "mamba" if shutil.which("mamba") else "conda"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Create and bootstrap an isolated benchmark environment.")
     parser.add_argument("--method", required=True, help="Environment or method name from methods.yaml or the env filename stem.")
     parser.add_argument("--methods-config", default=None)
     parser.add_argument("--benchmark-root", default=None)
+    parser.add_argument("--solver", choices=["auto", "conda", "mamba"], default="auto")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -53,15 +64,30 @@ def main() -> None:
     env_file = benchmark_root / selected["env_file"]
     env_name = selected["env_name"]
     bootstrap_script = benchmark_root / "envs" / "bootstrap_env.py"
+    solver = _resolve_solver(args.solver)
 
     commands = [
-        ["conda", "env", "create", "--file", str(env_file), "--name", str(env_name)],
-        ["conda", "run", "--name", str(env_name), "python", str(bootstrap_script), "--method", selected["slug"], "--repo-root", str(repo_root)],
+        [solver, "env", "create", "--file", str(env_file), "--name", str(env_name)],
+        [
+            "conda",
+            "run",
+            "--name",
+            str(env_name),
+            "python",
+            str(bootstrap_script),
+            "--method",
+            selected["slug"],
+            "--repo-root",
+            str(repo_root),
+            "--benchmark-root",
+            str(benchmark_root),
+        ],
     ]
     payload = {
         "method": selected["slug"],
         "env_name": env_name,
         "env_file": str(env_file),
+        "solver": solver,
         "commands": [],
     }
     for command in commands:

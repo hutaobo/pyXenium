@@ -6,12 +6,26 @@ All notable changes to pyXenium are documented here.
 
 - No unreleased changes yet.
 
+## 0.4.1 - 2026-04-26
+
+- Complete the PDC Dardel Slurm validation for the contour-GMI Atera S1/S5 workflow across all 8 stages.
+- Add final contour-GMI biological readout: QC20, RNA-only, and no-coordinate stages support an S5/DCIS RNA program led by `NIBAN1` and `SORL1`.
+- Document spatial-only and all-nonempty sensitivity behavior, including composition-driven contour context and QC sensitivity to low-cell contours.
+- Add PDC validation summaries and release documentation for the GitHub-only `v0.4.1` release.
+
 ## 0.4.0 - 2026-04-26
 
-- Add `pyXenium.mechanostress` as a canonical beta public surface for morphology-derived mechanical stress analysis.
+- Add `pyXenium.mechanostress` as the seventh canonical public surface for morphology-derived mechanical stress analysis.
 - Support HNSCC-style prefixed Xenium artifacts, including `*_cell_feature_matrix.h5`, cells parquet, boundary parquet, and transcript parquet variants.
 - Add cohort-level mechanostress workflow APIs and CLI output summaries.
 - Add `pyarrow` as a runtime dependency so PyPI installs can read parquet-based Xenium exports directly.
+
+## 0.3.0 - 2026-04-25
+
+- Promote `pyXenium.gmi` to the sixth canonical public surface for contour-level GMI modeling.
+- Add contour-GMI API, tutorial, user-guide, and Atera reproducibility workflow documentation.
+- Expose core GMI types and workflow functions from the top-level `pyXenium` namespace.
+- Keep the vendored local `Gmi` R source as the only runtime installation source.
 
 ## 0.2.3 - 2026-04-22
 

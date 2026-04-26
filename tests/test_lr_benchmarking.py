@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import sys
+import types
 from pathlib import Path
 
 import anndata as ad
@@ -11,6 +13,7 @@ from scipy.io import mmwrite
 
 from pyXenium.benchmarking.lr_atera import (
     STANDARDIZED_RESULT_COLUMNS,
+    aggregate_standardized_results,
     compute_canonical_recovery,
     compute_novelty_support,
     compute_pathway_relevance,
@@ -24,20 +27,28 @@ from pyXenium.benchmarking.lr_atera import (
 )
 from pyXenium.benchmarking.lr_a100 import (
     DEFAULT_A100_READONLY_XENIUM_ROOT,
+    build_a100_job_matrix,
     build_a100_job_manifest,
+    build_a100_sidecar_matrix,
     build_a100_stage_plan,
     build_engineering_summary,
     collect_a100_results,
     execute_a100_stage_plan,
+    finalize_a100_all,
+    monitor_a100_jobs,
     prepare_a100_bundle,
     run_a100_plan,
     summarize_run_status,
+    submit_a100_matrix,
     validate_a100_path_policy,
     write_failed_method_card,
 )
 from pyXenium.benchmarking.lr_adapters import (
+    _call_liana_bivariate,
     aggregate_commot_obsp_result,
     aggregate_liana_bivariate_result,
+    estimate_commot_distance_threshold,
+    ensure_categorical_obs,
     ensure_spatial_connectivities,
     flatten_squidpy_ligrec_result,
     read_sparse_bundle_as_adata,
@@ -94,7 +105,7 @@ def test_harmonize_adata_for_benchmark_promotes_gene_symbols_and_spatial_coords(
 
 
 def test_prepare_atera_lr_benchmark_writes_sparse_bundle_and_manifest(monkeypatch, tmp_path):
-    monkeypatch.setattr("pyXenium.benchmarking.lr_atera.read_xenium", lambda *args, **kwargs: _toy_adata())
+    monkeypatch.setattr("pyXenium.io.read_xenium", lambda *args, **kwargs: _toy_adata())
 
     payload = prepare_atera_lr_benchmark(
         dataset_root=tmp_path / "dataset",
@@ -127,7 +138,7 @@ def test_prepare_atera_lr_benchmark_writes_sparse_bundle_and_manifest(monkeypatc
 
 
 def test_prepare_atera_lr_benchmark_can_skip_full_h5ad_but_keep_sparse_full_bundle(monkeypatch, tmp_path):
-    monkeypatch.setattr("pyXenium.benchmarking.lr_atera.read_xenium", lambda *args, **kwargs: _toy_adata())
+    monkeypatch.setattr("pyXenium.io.read_xenium", lambda *args, **kwargs: _toy_adata())
 
     payload = prepare_atera_lr_benchmark(
         dataset_root=tmp_path / "dataset",
@@ -325,6 +336,34 @@ def test_standardize_uses_pvalue_to_break_score_ties():
     assert list(standardized["score_std"]) == [1.0, 0.5]
 
 
+def test_aggregate_standardized_results_reads_gzip_outputs(tmp_path):
+    standardized = standardize_result_table(
+        pd.DataFrame(
+            [
+                {
+                    "ligand": "CXCL12",
+                    "receptor": "CXCR4",
+                    "sender_celltype": "CAFs, DCIS Associated",
+                    "receiver_celltype": "T Lymphocytes",
+                    "LR_score": 1.0,
+                }
+            ]
+        ),
+        method="laris",
+        database_mode="common-db",
+        spatial_support_type="knn_diffusion_lr",
+    )
+    gz_path = tmp_path / "standardized.tsv.gz"
+    output_path = tmp_path / "combined.tsv"
+    standardized.to_csv(gz_path, sep="\t", index=False, compression="gzip")
+
+    combined = aggregate_standardized_results([gz_path], output_path=output_path)
+
+    assert output_path.exists()
+    assert len(combined) == 1
+    assert combined.iloc[0]["method"] == "laris"
+
+
 def test_flatten_squidpy_ligrec_result_handles_multiindex_columns():
     means = pd.DataFrame(
         [[0.8, 0.2], [0.1, 0.5]],
@@ -370,6 +409,32 @@ def test_aggregate_liana_bivariate_result_uses_spatial_neighbor_mix():
     assert flat["LR_score"].max() > 0
 
 
+def test_call_liana_bivariate_disables_raw_lookup(monkeypatch):
+    source = harmonize_adata_for_benchmark(_toy_adata())
+    ensure_spatial_connectivities(source, n_neighbors=1)
+    captured: dict[str, object] = {}
+
+    def fake_bivariate(adata: ad.AnnData, **kwargs):
+        captured.update(kwargs)
+        captured["var_index_name"] = adata.var_names.name
+        return ad.AnnData(
+            X=np.array([[0.9], [0.7], [0.2], [0.1]]),
+            obs=adata.obs.copy(),
+            var=pd.DataFrame({"ligand": ["CXCL12"], "receptor": ["CXCR4"]}, index=["CXCL12^CXCR4"]),
+        )
+
+    fake_liana = types.SimpleNamespace(method=types.SimpleNamespace(bivariate=fake_bivariate))
+    monkeypatch.setitem(sys.modules, "liana", fake_liana)
+
+    result = _call_liana_bivariate(source, None, n_perms=7)
+
+    assert isinstance(result, ad.AnnData)
+    assert captured["use_raw"] is False
+    assert captured["n_perms"] == 7
+    assert captured["connectivity_key"] == "spatial_connectivities"
+    assert captured["var_index_name"] is None
+
+
 def test_aggregate_commot_obsp_result_collapses_cell_pair_matrix():
     adata = harmonize_adata_for_benchmark(_toy_adata())
     matrix = sparse.csr_matrix(
@@ -393,6 +458,24 @@ def test_aggregate_commot_obsp_result_collapses_cell_pair_matrix():
     assert row["receiver_celltype"] == "T Lymphocytes"
     assert row["LR_score"] == 3.0
     assert row["edge_count"] == 2.0
+
+
+def test_estimate_commot_distance_threshold_uses_neighbor_radius():
+    adata = harmonize_adata_for_benchmark(_toy_adata())
+
+    threshold = estimate_commot_distance_threshold(adata, n_neighbors=2, quantile=0.5)
+
+    assert threshold > 0
+    assert round(threshold, 6) == 4.5
+
+
+def test_ensure_categorical_obs_promotes_string_labels():
+    adata = harmonize_adata_for_benchmark(_toy_adata())
+
+    promoted = ensure_categorical_obs(adata, "cell_type")
+
+    assert isinstance(promoted.obs["cell_type"].dtype, pd.CategoricalDtype)
+    assert list(promoted.obs["cell_type"].astype(str)) == list(adata.obs["cell_type"].astype(str))
 
 
 def test_build_a100_stage_and_job_manifest(tmp_path, monkeypatch):
@@ -444,6 +527,9 @@ def test_build_a100_stage_and_job_manifest(tmp_path, monkeypatch):
     assert jobs["jobs"][0]["input_root"] == DEFAULT_A100_READONLY_XENIUM_ROOT
     assert "--xenium-root" in jobs["jobs"][0]["command"]
     assert DEFAULT_A100_READONLY_XENIUM_ROOT in jobs["jobs"][0]["command"]
+    assert 'PATH="$HOME/miniconda3/bin:$HOME/miniconda3/condabin:$PATH"' in jobs["jobs"][0]["command"]
+    assert "PYTHONNOUSERSITE=1" in jobs["jobs"][0]["command"]
+    assert 'LD_LIBRARY_PATH="$HOME/miniconda3/envs/pyx-lr-prep/lib:$HOME/miniconda3/lib:${LD_LIBRARY_PATH:-}"' in jobs["jobs"][0]["command"]
     assert "TMPDIR=/data/taobo.hu/test/tmp" in jobs["jobs"][0]["command"]
     assert jobs["jobs"][0]["output_dir"] == "/data/taobo.hu/test/data"
     assert jobs["run_group"] == "full_common"
@@ -451,6 +537,134 @@ def test_build_a100_stage_and_job_manifest(tmp_path, monkeypatch):
     assert any(job["job_id"] == "full_common_db_pyxenium" for job in jobs["jobs"])
     assert any(job["output_dir"] == "/data/taobo.hu/test/runs/full_common/pyxenium" for job in jobs["jobs"])
     assert any("Rscript" in job["command"] for job in jobs["jobs"] if job["method"] == "cellchat")
+
+
+def test_build_a100_job_matrix_chunks_commot_and_assigns_gpu_slots(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    benchmark = repo / "benchmarking" / "lr_2026_atera"
+    (benchmark / "configs").mkdir(parents=True)
+    (benchmark / "runs").mkdir(parents=True)
+    (benchmark / "results").mkdir(parents=True)
+    (repo / "src").mkdir()
+    (repo / "pyproject.toml").write_text("[project]\nname='toy'\n", encoding="utf-8")
+    (benchmark / "configs" / "methods.yaml").write_text(
+        """methods:
+  - slug: commot
+    display_name: COMMOT
+    language: python
+    env_name: pyx-lr-commot
+    runner: scripts/run_method.py
+  - slug: cellnest
+    display_name: CellNEST
+    language: python
+    env_name: pyx-lr-cellnest
+    runner: scripts/run_method.py
+  - slug: giotto
+    display_name: Giotto
+    language: r
+    env_name: r-lr-giotto
+    runner: runners/r/run_external_lr_method.R
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(repo)
+
+    matrix = build_a100_job_matrix(
+        benchmark_root=benchmark,
+        remote_root="/data/taobo.hu/test",
+        methods=["commot", "cellnest", "giotto"],
+        phase="full",
+        database_mode="common-db",
+        max_lr_pairs=25,
+        commot_chunks=4,
+        gpu_count=8,
+        include_bootstrap=True,
+        include_audit=True,
+    )
+
+    bootstrap = next(job for job in matrix["jobs"] if job["job_id"] == "bootstrap_pyx_lr_commot")
+    commot_jobs = [job for job in matrix["jobs"] if job["method"] == "commot" and job["job_type"] == "method_run"]
+    cellnest_job = next(job for job in matrix["jobs"] if job["method"] == "cellnest" and job["job_type"] == "method_run")
+    giotto_audit = next(job for job in matrix["jobs"] if job["job_id"] == "audit_giotto")
+
+    assert matrix["path_policy"]["valid"] is True
+    assert matrix["include_bootstrap"] is True
+    assert bootstrap["job_type"] == "env_bootstrap"
+    assert "conda env create" in bootstrap["command"]
+    assert "bootstrap_env.py" in bootstrap["command"]
+    assert len(commot_jobs) == 4
+    assert commot_jobs[0]["chunk_id"] == 0
+    assert commot_jobs[0]["num_chunks"] == 4
+    assert "--chunk-id 0" in commot_jobs[0]["command"]
+    assert "--num-chunks 4" in commot_jobs[0]["command"]
+    assert "--gzip-standardized" in commot_jobs[0]["command"]
+    assert "OMP_NUM_THREADS=8" in commot_jobs[0]["command"]
+    assert cellnest_job["gpu_id"] == 0
+    assert "CUDA_VISIBLE_DEVICES=0" in cellnest_job["command"]
+    assert "Rscript" in giotto_audit["command"]
+    assert "renv::load" in giotto_audit["command"]
+    assert "intToUtf8(10)" in giotto_audit["command"]
+    assert "chr(10)" not in giotto_audit["command"]
+    assert "'/n'" not in giotto_audit["command"]
+
+
+def test_build_a100_sidecar_matrix_uses_distinct_outputs_and_pilot_manifest(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    benchmark = repo / "benchmarking" / "lr_2026_atera"
+    (benchmark / "configs").mkdir(parents=True)
+    (repo / "src").mkdir()
+    (repo / "pyproject.toml").write_text("[project]\nname='toy'\n", encoding="utf-8")
+    (benchmark / "configs" / "methods.yaml").write_text(
+        """methods:
+  - slug: spatialdm
+    display_name: SpatialDM
+    language: python
+    env_name: pyx-lr-spatialdm
+    runner: scripts/run_method.py
+  - slug: cellnest
+    display_name: CellNEST
+    language: python
+    env_name: pyx-lr-cellnest
+    runner: scripts/run_method.py
+  - slug: giotto
+    display_name: Giotto
+    language: r
+    env_name: r-lr-giotto
+    runner: runners/r/run_external_lr_method.R
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(repo)
+
+    matrix = build_a100_sidecar_matrix(
+        benchmark_root=benchmark,
+        remote_root="/data/taobo.hu/test",
+        methods=["spatialdm", "cellnest", "giotto"],
+        ready_methods=["spatialdm", "cellnest"],
+        completed_job_ids=["sidecar_audit_spatialdm"],
+        smoke_max_lr_pairs=25,
+        pilot_max_lr_pairs=100,
+        gpu_start=3,
+    )
+
+    job_ids = {job["job_id"] for job in matrix["jobs"]}
+    smoke = next(job for job in matrix["jobs"] if job["job_id"] == "sidecar_smoke_common_db_spatialdm")
+    pilot = next(job for job in matrix["jobs"] if job["job_id"] == "sidecar_pilot50k_common_db_spatialdm")
+    gpu_smoke = next(job for job in matrix["jobs"] if job["job_id"] == "sidecar_smoke_common_db_cellnest")
+
+    assert matrix["kind"] == "a100_sidecar_matrix"
+    assert matrix["ready_methods"] == ["spatialdm", "cellnest"]
+    assert "sidecar_audit_spatialdm" not in job_ids
+    assert "smoke_sidecar_common" in smoke["output_dir"]
+    assert "/data/taobo.hu/test/data/input_manifest.json" in smoke["command"]
+    assert "pilot50k_common" in pilot["output_dir"]
+    assert "/data/taobo.hu/test/data/pilot50k/input_manifest.json" in pilot["command"]
+    prep = next(job for job in matrix["jobs"] if job["job_id"] == "prepare_pilot50k_bundle")
+    assert 'chr(10)' in prep["command"]
+    assert '"/n"' not in prep["command"]
+    assert gpu_smoke["gpu_id"] == 3
+    assert "CUDA_VISIBLE_DEVICES=3" in gpu_smoke["command"]
+    assert matrix["path_policy"]["valid"] is True
 
 
 def test_a100_path_policy_flags_write_targets_in_readonly_root():
@@ -642,6 +856,113 @@ def test_collect_a100_results_scp_dry_run(tmp_path, monkeypatch):
     assert payload["transfer_mode"] == "scp"
     assert len(payload["commands"]) == 4
     assert all(command.startswith('scp -r taobo.hu@sscb-a100.scilifelab.se:"/data/taobo.hu/test/') for command in payload["commands"])
+
+
+def test_collect_a100_results_records_since_last_flag(tmp_path, monkeypatch):
+    benchmark = tmp_path / "benchmarking" / "lr_2026_atera"
+    (tmp_path / "pyproject.toml").write_text("[project]\nname='toy'\n", encoding="utf-8")
+    (benchmark / "configs").mkdir(parents=True)
+    (benchmark / "results").mkdir()
+    (benchmark / "logs").mkdir()
+    (benchmark / "runs").mkdir()
+    (benchmark / "reports").mkdir()
+    monkeypatch.chdir(tmp_path)
+
+    payload = collect_a100_results(
+        benchmark_root=benchmark,
+        remote_root="/data/taobo.hu/test",
+        transfer_mode="scp",
+        dry_run=True,
+        since_last=True,
+    )
+
+    assert payload["since_last"] is True
+
+
+def test_submit_monitor_and_finalize_a100_matrix_dry_run(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    benchmark = repo / "benchmarking" / "lr_2026_atera"
+    (benchmark / "configs").mkdir(parents=True)
+    (benchmark / "runs" / "a100_collected" / "full_common" / "laris").mkdir(parents=True)
+    (benchmark / "results").mkdir(parents=True)
+    (repo / "src").mkdir()
+    (repo / "pyproject.toml").write_text("[project]\nname='toy'\n", encoding="utf-8")
+    (benchmark / "configs" / "methods.yaml").write_text(
+        """methods:
+  - slug: laris
+    display_name: LARIS
+    language: python
+    env_name: pyx-lr-laris
+    runner: scripts/run_method.py
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(repo)
+    matrix = build_a100_job_matrix(
+        benchmark_root=benchmark,
+        remote_root="/data/taobo.hu/test",
+        methods=["laris"],
+        phase="full",
+        database_mode="common-db",
+        max_lr_pairs=3,
+    )
+    matrix_json = benchmark / "logs" / "matrix.json"
+    matrix_json.parent.mkdir(parents=True, exist_ok=True)
+    matrix_json.write_text(json.dumps(matrix, indent=2), encoding="utf-8")
+
+    submit = submit_a100_matrix(
+        matrix_json=matrix_json,
+        dry_run=True,
+        remote=True,
+        host="sscb-a100.scilifelab.se",
+        user="taobo.hu",
+        job_types=["method_run"],
+    )
+    assert submit["jobs"][0]["status"] == "dry-run"
+    assert all(job["job_type"] == "method_run" for job in submit["jobs"])
+    assert "nohup bash -lc" in submit["jobs"][0]["background_command"]
+
+    standardized = standardize_result_table(
+        pd.DataFrame(
+            [
+                {
+                    "ligand": "CXCL12",
+                    "receptor": "CXCR4",
+                    "sender_celltype": "A",
+                    "receiver_celltype": "B",
+                    "LR_score": 1.0,
+                }
+            ]
+        ),
+        method="laris",
+        database_mode="common-db",
+        spatial_support_type="knn_diffusion_lr",
+    )
+    run_dir = benchmark / "runs" / "a100_collected" / "full_common" / "laris"
+    standardized_path = run_dir / "standardized.tsv.gz"
+    standardized.to_csv(standardized_path, sep="\t", index=False, compression="gzip")
+    (run_dir / "run_summary.json").write_text(
+        json.dumps(
+            {
+                "method": "laris",
+                "phase": "full",
+                "database_mode": "common-db",
+                "status": "success",
+                "n_rows": 1,
+                "standardized_tsv": str(standardized_path),
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    status_tsv = benchmark / "results" / "a100_job_status.tsv"
+    monitored = monitor_a100_jobs(matrix_json=matrix_json, benchmark_root=benchmark, output_tsv=status_tsv)
+    finalized = finalize_a100_all(benchmark_root=benchmark, output_path=benchmark / "results" / "a100_all.tsv")
+
+    assert status_tsv.exists()
+    assert monitored.iloc[0]["observed_status"] == "success"
+    assert finalized["n_rows"] == 1
+    assert finalized["n_methods"] == 1
 
 
 def test_summarize_run_status_and_engineering_summary_and_method_card(tmp_path):

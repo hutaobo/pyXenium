@@ -1,0 +1,9 @@
+{
+  "upstream_url": "https://github.com/Moyu-nie/Gmi",
+  "upstream_commit": "9df6626494fd2acb2062960496bcbfd062df9752",
+  "vendored_date": "2026-04-24",
+  "license": "MIT + upstream LICENSE file",
+  "vendoring_method": "git clone/fetch checkout of the pinned commit, with .git removed",
+  "runtime_install_policy": "Install Gmi from this local vendored source directory only; do not install from GitHub at runtime.",
+  "local_patch_notes": []
+}

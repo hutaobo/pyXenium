@@ -9,6 +9,7 @@ multimodal
 ligand_receptor
 pathway
 contour
+gmi
 mechanostress
 ```
 
@@ -46,6 +47,12 @@ Pathway topology and activity scoring.
 :link: contour
 :link-type: doc
 GeoJSON contour import and contour-aware density profiling.
+:::
+
+:::{grid-item-card} pyXenium.gmi
+:link: gmi
+:link-type: doc
+Contour-level GMI modeling for sparse main effects, interactions, controls, and reports.
 :::
 
 :::{grid-item-card} pyXenium.mechanostress

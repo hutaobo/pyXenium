@@ -66,6 +66,7 @@ def build_contour_feature_table(
     outer_rim_um: float = 30.0,
     include_pathomics: bool = True,
     embedding_backend: Any = None,
+    precomputed_edge_gradients: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
     """
     Build a contour-centric multimodal feature table.
@@ -99,16 +100,20 @@ def build_contour_feature_table(
     else:
         whole_image = None
 
-    if contour_key not in sdata.contour_images:
-        raise ValueError(
-            "Contour feature extraction requires contour H&E patches. "
-            f"`sdata.contour_images[{contour_key!r}]` was not found."
-        )
-    contour_patches = sdata.contour_images[contour_key]
+    if include_pathomics:
+        if contour_key not in sdata.contour_images:
+            raise ValueError(
+                "Pathomics contour feature extraction requires contour H&E patches. "
+                f"`sdata.contour_images[{contour_key!r}]` was not found."
+            )
+        contour_patches = sdata.contour_images[contour_key]
+    else:
+        contour_patches = {}
 
     context = _prepare_multimodal_context(adata)
     cell_table = context["cell_table"]
     cell_points = context["cell_points"]
+    cell_xy = context["cell_xy"]
     state_categories = context["state_categories"]
     niche_categories = context["niche_categories"]
     expression = context["expression"]
@@ -132,12 +137,15 @@ def build_contour_feature_table(
         neighbor_k=_DEFAULT_NEIGHBOR_K,
         outer_rim_um=outer_rim_um,
     )
-    edge_gradients = _compute_edge_gradients(
-        sdata=sdata,
-        contour_key=contour_key,
-        inward=inner_rim_um,
-        outward=outer_rim_um,
-    )
+    if precomputed_edge_gradients is None:
+        edge_gradients = _compute_edge_gradients(
+            sdata=sdata,
+            contour_key=contour_key,
+            inward=inner_rim_um,
+            outward=outer_rim_um,
+        )
+    else:
+        edge_gradients = _coerce_edge_gradients(precomputed_edge_gradients, contour_key=contour_key)
 
     for _, contour_row in contour_table.iterrows():
         contour_id = str(contour_row["contour_id"])
@@ -159,7 +167,7 @@ def build_contour_feature_table(
         row.update(context_features.get(contour_id, {}))
 
         zone_memberships = {
-            zone_name: _geometry_membership_mask(zone_geometry, cell_points)
+            zone_name: _geometry_membership_mask(zone_geometry, cell_points, point_xy=cell_xy)
             for zone_name, zone_geometry in zones.items()
         }
         zone_area = {
@@ -209,12 +217,12 @@ def build_contour_feature_table(
 
         row.update(_edge_contrast_features(row))
 
-        if contour_id not in contour_patches:
-            raise KeyError(
-                f"`sdata.contour_images[{contour_key!r}]` does not contain contour {contour_id!r}."
-            )
-        contour_patch = contour_patches[contour_id]
         if include_pathomics and whole_image is not None:
+            if contour_id not in contour_patches:
+                raise KeyError(
+                    f"`sdata.contour_images[{contour_key!r}]` does not contain contour {contour_id!r}."
+                )
+            contour_patch = contour_patches[contour_id]
             pathomics, embeddings = _extract_image_view_features(
                 contour_geometry=contour_geometry,
                 contour_patch=contour_patch,
@@ -327,7 +335,8 @@ def build_contour_feature_table(
         "context": {
             "multimodal_context": context["context_summary"],
             "used_pathomics": bool(include_pathomics),
-            "used_embeddings": bool(embedding_backend is not None),
+            "used_embeddings": bool(include_pathomics and embedding_backend is not None),
+            "used_precomputed_edge_gradients": bool(precomputed_edge_gradients is not None),
         },
     }
 
@@ -420,6 +429,7 @@ def _prepare_multimodal_context(adata) -> dict[str, Any]:
     return {
         "cell_table": cell_table,
         "cell_points": cell_points,
+        "cell_xy": spatial[:, :2].copy(),
         "state_categories": sorted(pd.unique(cell_table["joint_cell_state"].astype(str)).tolist()),
         "niche_categories": sorted(pd.unique(cell_table["spatial_niche"].astype(str)).tolist()),
         "expression": expression,
@@ -651,6 +661,38 @@ def _compute_edge_gradients(
     return pd.DataFrame(rows)
 
 
+def _coerce_edge_gradients(edge_gradients: pd.DataFrame, *, contour_key: str) -> pd.DataFrame:
+    required = [
+        "contour_key",
+        "contour_id",
+        "gradient_key",
+        "inner_mean",
+        "outer_mean",
+        "outer_minus_inner",
+        "boundary_peak",
+        "center_of_mass",
+    ]
+    frame = edge_gradients.copy()
+    if frame.empty:
+        return pd.DataFrame(columns=required)
+    if "contour_key" not in frame.columns:
+        frame["contour_key"] = contour_key
+    if "contour_id" not in frame.columns:
+        raise KeyError("Precomputed edge gradients must contain a `contour_id` column.")
+    if "gradient_key" not in frame.columns:
+        frame["gradient_key"] = "precomputed"
+    for column in required:
+        if column not in frame.columns:
+            frame[column] = np.nan
+    frame["contour_key"] = frame["contour_key"].astype(str)
+    frame["contour_id"] = frame["contour_id"].astype(str)
+    frame["gradient_key"] = frame["gradient_key"].astype(str)
+    frame = frame.loc[frame["contour_key"] == str(contour_key)].copy()
+    for column in ("inner_mean", "outer_mean", "outer_minus_inner", "boundary_peak", "center_of_mass"):
+        frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    return frame.reset_index(drop=True)
+
+
 def _geometry_features(geometry: BaseGeometry) -> dict[str, float]:
     area = float(geometry.area)
     perimeter = float(geometry.length)
@@ -726,11 +768,31 @@ def _build_contour_zones(
     }
 
 
-def _geometry_membership_mask(geometry: BaseGeometry, point_array: np.ndarray) -> np.ndarray:
+def _geometry_membership_mask(
+    geometry: BaseGeometry,
+    point_array: np.ndarray,
+    *,
+    point_xy: np.ndarray | None = None,
+) -> np.ndarray:
     if geometry is None or geometry.is_empty or point_array.size == 0:
         return np.zeros(len(point_array), dtype=bool)
     buffered = geometry.buffer(_DEFAULT_RIM_EPSILON)
-    return np.asarray(intersects(buffered, point_array), dtype=bool)
+    if point_xy is None:
+        return np.asarray(intersects(buffered, point_array), dtype=bool)
+
+    xy = np.asarray(point_xy, dtype=float)
+    minx, miny, maxx, maxy = buffered.bounds
+    candidate_mask = (
+        (xy[:, 0] >= float(minx))
+        & (xy[:, 0] <= float(maxx))
+        & (xy[:, 1] >= float(miny))
+        & (xy[:, 1] <= float(maxy))
+    )
+    if not candidate_mask.any():
+        return np.zeros(len(point_array), dtype=bool)
+    membership = np.zeros(len(point_array), dtype=bool)
+    membership[candidate_mask] = np.asarray(intersects(buffered, point_array[candidate_mask]), dtype=bool)
+    return membership
 
 
 def _composition_features(

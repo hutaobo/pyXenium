@@ -2,6 +2,8 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
+.codex_deps/
+tmp_*.log
 build/
 dist/
 docs/_build/
@@ -16,3 +18,4 @@ benchmarking/lr_2026_atera/reports/*
 !benchmarking/lr_2026_atera/reports/.gitkeep
 benchmarking/lr_2026_atera/runs/*
 !benchmarking/lr_2026_atera/runs/.gitkeep
+benchmarking/lr_2026_atera/pdc_collected/

@@ -100,7 +100,46 @@ Generate result recovery commands:
 ```powershell
 python benchmarking/lr_2026_atera/scripts/collect_a100_results.py `
   --host your-a100-host `
+  --user taobo.hu `
+  --since-last
+```
+
+Build the second-wave all-method A100 smoke matrix. This creates env-audit and smoke jobs for `SpatialDM`, `stLearn`, `Giotto`, `LARIS`, `CellPhoneDB`, `SpaTalk`, `NICHES`, `CellNEST`, `CellAgentChat`, and `SCILD`, while assigning GPU slots to GPU-heavy methods and keeping every output under `/data`:
+
+```powershell
+pyxenium benchmark atera-lr build-a100-matrix `
+  --phase smoke `
+  --methods spatialdm,stlearn,giotto,laris,cellphonedb,spatalk,niches,cellnest,cellagentchat,scild `
+  --max-lr-pairs 25 `
+  --include-bootstrap `
+  --include-audit `
+  --output-json benchmarking/lr_2026_atera/logs/a100_second_wave_smoke_matrix.json
+```
+
+Dry-run submission and monitor collected status:
+
+```powershell
+pyxenium benchmark atera-lr submit-a100-matrix `
+  --matrix-json benchmarking/lr_2026_atera/logs/a100_second_wave_smoke_matrix.json `
+  --job-type env_bootstrap `
+  --host sscb-a100.scilifelab.se `
   --user taobo.hu
+
+pyxenium benchmark atera-lr submit-a100-matrix `
+  --matrix-json benchmarking/lr_2026_atera/logs/a100_second_wave_smoke_matrix.json `
+  --job-type env_audit `
+  --host sscb-a100.scilifelab.se `
+  --user taobo.hu
+
+pyxenium benchmark atera-lr submit-a100-matrix `
+  --matrix-json benchmarking/lr_2026_atera/logs/a100_second_wave_smoke_matrix.json `
+  --job-type method_run `
+  --host sscb-a100.scilifelab.se `
+  --user taobo.hu
+
+pyxenium benchmark atera-lr monitor-a100-jobs `
+  --matrix-json benchmarking/lr_2026_atera/logs/a100_second_wave_smoke_matrix.json `
+  --output-tsv benchmarking/lr_2026_atera/results/a100_second_wave_smoke_job_status.tsv
 ```
 
 ## Notes
@@ -108,7 +147,9 @@ python benchmarking/lr_2026_atera/scripts/collect_a100_results.py `
 - Full Xenium matrices are exported in sparse Matrix Market format. A dense `counts_symbol.tsv` is intentionally not emitted because it would be impractically large for the full `170,057 x 18,028` matrix.
 - The benchmark prep harmonizes gene identifiers by promoting `adata.var['name']` to benchmark-facing `var_names`, while preserving the original Ensembl IDs in `adata.var['ensembl_id']`.
 - The first-wave real adapters now cover `pyXenium`, `Squidpy ligrec`, `LIANA+ spatial bivariate`, `COMMOT`, and `CellChat v3 / SpatialCellChat`.
+- The second-wave scaffold now includes real/bounded adapters or reproducible method-card runners for `SpatialDM`, `stLearn`, `Giotto`, `LARIS`, `CellPhoneDB`, `SpaTalk`, `NICHES`, `CellNEST`, `CellAgentChat`, and `SCILD`.
 - Each adapter writes method-native raw artifacts, `params.json`, `run_summary.json`, and a standardized TSV that can be consumed by the existing aggregate/report steps.
+- The aggregator accepts both `standardized.tsv` and `standardized.tsv.gz`, so edge-level or chunked outputs can be compressed before collection.
 - Squidpy is run from its isolated `pyx-lr-squidpy` environment, which pins `zarr<3` to avoid the `ome-zarr`/`FSStore` import conflict seen in some base environments.
 - A100 planning never stores passwords or hard-codes hosts. Use `--plan-only` without host/user for a portable plan, then supply SSH details only when staging or collecting results.
 - On A100, `/mnt/taobo.hu/long/10X_datasets/Xenium/Atera/WTA_Preview_FFPE_Breast_Cancer_outs` is treated as read-only. The stage/job manifest includes a path-safety check that flags any output path under `/mnt`; all writable paths are organized under `/data/taobo.hu/pyxenium_lr_benchmark_2026-04`.

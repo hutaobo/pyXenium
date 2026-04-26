@@ -16,9 +16,8 @@ import yaml
 from scipy import sparse
 from scipy.io import mmwrite
 
-from pyXenium.io import read_xenium
 from pyXenium.ligand_receptor import ligand_receptor_topology_analysis
-from pyXenium.validation import (
+from pyXenium.validation.atera_wta_breast_topology import (
     DEFAULT_ATERA_WTA_BREAST_CELL_GROUPS,
     DEFAULT_ATERA_WTA_BREAST_DATASET_PATH,
     DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR,
@@ -57,6 +56,15 @@ class BenchmarkLayout:
     reports_dir: Path
     runs_dir: Path
     templates_dir: Path
+
+
+def _portable_path(value: str | Path) -> Path:
+    return Path(str(value).replace("\\", "/"))
+
+
+def _portable_join(base: str | Path, relative: str | Path) -> Path:
+    parts = [part for part in str(relative).replace("\\", "/").split("/") if part]
+    return Path(base).joinpath(*parts)
 
 
 def _find_repo_root(start: str | Path | None = None) -> Path:
@@ -298,10 +306,12 @@ def prepare_atera_lr_benchmark(
     export_full_bundle: bool = True,
     write_full_h5ad: bool = True,
 ) -> dict[str, Any]:
+    from pyXenium.io import read_xenium
+
     repo_root = _find_repo_root()
     layout = ensure_layout(resolve_layout(repo_root=repo_root, relative_root=benchmark_root or ATERA_BENCHMARK_RELATIVE_ROOT))
     dataset_root = Path(dataset_root or DEFAULT_ATERA_WTA_BREAST_DATASET_PATH)
-    tbc_path = Path(tbc_results) if tbc_results else dataset_root / DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR
+    tbc_path = _portable_path(tbc_results) if tbc_results else _portable_join(dataset_root, DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR)
 
     raw = read_xenium(
         str(dataset_root),
@@ -482,6 +492,7 @@ def run_pyxenium_smoke(
     output_dir.mkdir(parents=True, exist_ok=True)
     artifact_dir = output_dir / "artifacts"
     artifact_dir.mkdir(parents=True, exist_ok=True)
+    tbc_results = _portable_path(tbc_results)
 
     adata = ad.read_h5ad(input_h5ad)
     lr_pairs = pd.read_csv(lr_panel_path, sep="\t") if lr_panel_path else DEFAULT_LR_SMOKE_PANEL.copy()
@@ -542,7 +553,7 @@ def aggregate_standardized_results(result_paths: Sequence[str | Path], *, output
     frames = []
     extra_columns: list[str] = []
     for path in result_paths:
-        table = pd.read_csv(path, sep="\t")
+        table = pd.read_csv(path, sep="\t", compression="infer")
         missing = [col for col in STANDARDIZED_RESULT_COLUMNS if col not in table.columns]
         if missing:
             raise ValueError(f"Standardized result table {path} is missing columns: {missing}")

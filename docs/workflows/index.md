@@ -7,6 +7,7 @@ renal-multimodal
 atera-wta-breast-topology
 atera-breast-contour
 atera-contour-boundary-ecology
+atera-contour-gmi
 atera-wta-breast-lr-benchmark
 ```
 

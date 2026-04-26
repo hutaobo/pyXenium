@@ -51,11 +51,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Bootstrap the active method environment.")
     parser.add_argument("--method", required=True)
     parser.add_argument("--repo-root", required=True)
+    parser.add_argument("--benchmark-root", default=None)
     parser.add_argument("--methods-config", default=None)
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve()
-    benchmark_root = repo_root / "benchmarking" / "lr_2026_atera"
+    benchmark_root = Path(args.benchmark_root).resolve() if args.benchmark_root else repo_root / "benchmarking" / "lr_2026_atera"
     methods_path = Path(args.methods_config) if args.methods_config else benchmark_root / "configs" / "methods.yaml"
     methods = yaml.safe_load(methods_path.read_text(encoding="utf-8")).get("methods", [])
     method = next((item for item in methods if item.get("slug") == args.method or item.get("env_name") == args.method), None)

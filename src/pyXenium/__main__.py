@@ -6,10 +6,13 @@ import pandas as pd
 
 from .benchmarking import (
     aggregate_standardized_results,
+    DEFAULT_A100_ALL_METHODS,
     DEFAULT_A100_READONLY_XENIUM_ROOT,
     DEFAULT_A100_REMOTE_ROOT,
     build_a100_job_manifest,
+    build_a100_job_matrix,
     build_a100_resource_summary,
+    build_a100_sidecar_matrix,
     build_a100_stage_plan,
     build_engineering_summary,
     build_stage_manifest,
@@ -21,6 +24,8 @@ from .benchmarking import (
     compute_spatial_coherence,
     compute_robustness,
     execute_a100_stage_plan,
+    finalize_a100_all,
+    monitor_a100_jobs,
     prepare_a100_bundle,
     prepare_atera_lr_benchmark,
     render_atera_lr_benchmark_report,
@@ -31,9 +36,27 @@ from .benchmarking import (
     run_smoke_core,
     score_biological_performance,
     summarize_run_status,
+    submit_a100_matrix,
 )
 from .io.io import copy_bundled_dataset, load_toy
 from .io.spatialdata_export import DEFAULT_SPATIALDATA_STORE_NAME, export_xenium_to_spatialdata_zarr
+from .gmi import (
+    DEFAULT_GMI_A100_READONLY_XENIUM_ROOT,
+    DEFAULT_GMI_A100_REMOTE_ROOT,
+    DEFAULT_GMI_PDC_HISTOSEG_ROOT,
+    DEFAULT_GMI_PDC_ROOT,
+    DEFAULT_GMI_PDC_XENIUM_ROOT,
+    ContourGmiConfig,
+    build_contour_gmi_dataset,
+    build_gmi_a100_plan,
+    build_gmi_pdc_plan,
+    load_atera_breast_for_gmi,
+    run_atera_breast_contour_gmi,
+    summarize_gmi_pdc_runs,
+    write_gmi_a100_plan,
+    write_gmi_pdc_plan,
+    write_contour_gmi_dataset,
+)
 from .mechanostress import (
     DEFAULT_HNSCC_ROOT,
     DEFAULT_MECHANOSTRESS_RADII_UM,
@@ -57,7 +80,6 @@ from .mechanostress import (
     validate_suzuki_luad_mechanostress_outputs,
     write_mechanostress_artifacts,
 )
-
 from .multimodal import (
     DEFAULT_DATASET_PATH,
     run_renal_immune_resistance_pilot,
@@ -87,9 +109,43 @@ def benchmark_atera_lr_group():
     """Atera Xenium ligand-receptor benchmark commands."""
 
 
+@app.group("gmi")
+def gmi_group():
+    """Contour-native GMI spatial transcriptomics commands."""
+
+
 @app.group("mechanostress")
 def mechanostress_group():
     """Mechanical stress state analysis from Xenium morphology and spatial context."""
+
+
+def _gmi_config_from_options(**kwargs) -> ContourGmiConfig:
+    return ContourGmiConfig(
+        contour_key=kwargs.get("contour_key", "s1_s5_contours"),
+        contour_label_col=kwargs.get("contour_label_col", "assigned_structure"),
+        positive_label=kwargs.get("positive_label", "S1"),
+        negative_label=kwargs.get("negative_label", "S5"),
+        contour_geojson=kwargs.get("contour_geojson"),
+        feature_count=kwargs.get("feature_count", 500),
+        spatial_feature_count=kwargs.get("spatial_feature_count", 100),
+        min_cells_per_contour=kwargs.get("min_cells_per_contour", 20),
+        min_library_size=kwargs.get("min_library_size", 1.0),
+        min_feature_prevalence=kwargs.get("min_feature_prevalence", 0.05),
+        random_seed=kwargs.get("seed", 1),
+        exclude_coordinate_spatial_features=kwargs.get("exclude_coordinate_spatial_features", False),
+        rscript=kwargs.get("rscript", "Rscript"),
+        r_lib_path=kwargs.get("r_lib_path"),
+        install_gmi=kwargs.get("install_gmi", True),
+        force_reinstall_gmi=kwargs.get("force_reinstall_gmi", False),
+        spatial_cv_folds=kwargs.get("spatial_cv_folds", 0),
+        bootstrap_repeats=kwargs.get("bootstrap_repeats", 0),
+        run_label_permutation_control=kwargs.get("label_permutation_control", False),
+        run_coordinate_shuffle_control=kwargs.get("coordinate_shuffle_control", False),
+        run_spatial_feature_shuffle_control=kwargs.get("spatial_feature_shuffle_control", False),
+        run_within_label_heterogeneity=kwargs.get("within_label_heterogeneity", True),
+        write_spatial_visualizations=kwargs.get("write_spatial_visualizations", True),
+        visualization_genes=tuple(kwargs.get("visualization_genes", ("NIBAN1", "SORL1", "CCND1"))),
+    )
 
 
 def _mechanostress_config_from_options(**kwargs) -> MechanostressConfig:
@@ -298,6 +354,210 @@ def mechanostress_validate_suzuki_luad(xenium_root, er_results_root, strength_ro
         tolerance=tolerance,
     )
     click.echo(json.dumps(payload, indent=2, default=str))
+
+
+@gmi_group.command("prepare-atera-breast")
+@click.option("--dataset-root", default=DEFAULT_ATERA_WTA_BREAST_DATASET_PATH, show_default=True)
+@click.option("--output-dir", required=True)
+@click.option("--contour-geojson", default=None, help="Optional S1-S5 contour GeoJSON path.")
+@click.option("--contour-key", default="s1_s5_contours", show_default=True)
+@click.option("--rna-feature-count", "--feature-count", "feature_count", type=int, default=500, show_default=True)
+@click.option("--spatial-feature-count", type=int, default=100, show_default=True)
+@click.option("--min-cells-per-contour", type=int, default=20, show_default=True)
+@click.option("--exclude-coordinate-spatial-features", is_flag=True, default=False)
+@click.option("--visualization-gene", "visualization_genes", multiple=True, default=("NIBAN1", "SORL1", "CCND1"))
+@click.option("--spatial-visualizations/--skip-spatial-visualizations", "write_spatial_visualizations", default=True, show_default=True)
+@click.option("--seed", type=int, default=1, show_default=True)
+def gmi_prepare_atera_breast(
+    dataset_root,
+    output_dir,
+    contour_geojson,
+    contour_key,
+    feature_count,
+    spatial_feature_count,
+    min_cells_per_contour,
+    exclude_coordinate_spatial_features,
+    visualization_genes,
+    write_spatial_visualizations,
+    seed,
+):
+    """Prepare the Atera breast S1-vs-S5 contour GMI matrix."""
+    config = _gmi_config_from_options(
+        contour_geojson=contour_geojson,
+        contour_key=contour_key,
+        feature_count=feature_count,
+        spatial_feature_count=spatial_feature_count,
+        min_cells_per_contour=min_cells_per_contour,
+        exclude_coordinate_spatial_features=exclude_coordinate_spatial_features,
+        visualization_genes=visualization_genes,
+        write_spatial_visualizations=write_spatial_visualizations,
+        seed=seed,
+    )
+    sdata = load_atera_breast_for_gmi(dataset_root)
+    from .gmi._workflow import _ensure_atera_contours
+
+    geojson = _ensure_atera_contours(sdata, dataset_root=dataset_root, config=config)
+    dataset = build_contour_gmi_dataset(
+        sdata,
+        config=config,
+        provenance={"dataset_root": str(dataset_root), "sample_id": "atera_wta_ffpe_breast", "contour_geojson": str(geojson)},
+    )
+    files = write_contour_gmi_dataset(dataset, output_dir)
+    payload = {
+        "dataset_root": str(dataset_root),
+        "output_dir": str(output_dir),
+        "contour_geojson": str(geojson),
+        "n_contours": int(dataset.X.shape[0]),
+        "n_features": int(dataset.X.shape[1]),
+        "n_positive_contours": int((dataset.y == 1).sum()),
+        "n_negative_contours": int((dataset.y == 0).sum()),
+        "files": files,
+    }
+    click.echo(json.dumps(payload, indent=2))
+
+
+@gmi_group.command("run")
+@click.option("--dataset-root", default=DEFAULT_ATERA_WTA_BREAST_DATASET_PATH, show_default=True)
+@click.option("--output-dir", required=True)
+@click.option("--contour-geojson", default=None, help="Optional S1-S5 contour GeoJSON path.")
+@click.option("--contour-key", default="s1_s5_contours", show_default=True)
+@click.option("--rna-feature-count", "--feature-count", "feature_count", type=int, default=500, show_default=True)
+@click.option("--spatial-feature-count", type=int, default=100, show_default=True)
+@click.option("--min-cells-per-contour", type=int, default=20, show_default=True)
+@click.option("--exclude-coordinate-spatial-features", is_flag=True, default=False)
+@click.option("--visualization-gene", "visualization_genes", multiple=True, default=("NIBAN1", "SORL1", "CCND1"))
+@click.option("--spatial-visualizations/--skip-spatial-visualizations", "write_spatial_visualizations", default=True, show_default=True)
+@click.option("--seed", type=int, default=1, show_default=True)
+@click.option("--rscript", default="Rscript", show_default=True)
+@click.option("--r-lib-path", default=None)
+@click.option("--install-gmi/--skip-install-gmi", default=True, show_default=True)
+@click.option("--force-reinstall-gmi", is_flag=True, default=False)
+@click.option("--spatial-cv-folds", type=int, default=0, show_default=True)
+@click.option("--bootstrap-repeats", type=int, default=0, show_default=True)
+@click.option("--label-permutation-control", is_flag=True, default=False)
+@click.option("--coordinate-shuffle-control", is_flag=True, default=False)
+@click.option("--spatial-feature-shuffle-control", is_flag=True, default=False)
+@click.option("--within-label-heterogeneity/--skip-within-label-heterogeneity", default=True, show_default=True)
+def gmi_run(
+    dataset_root,
+    output_dir,
+    contour_geojson,
+    contour_key,
+    feature_count,
+    spatial_feature_count,
+    min_cells_per_contour,
+    exclude_coordinate_spatial_features,
+    visualization_genes,
+    write_spatial_visualizations,
+    seed,
+    rscript,
+    r_lib_path,
+    install_gmi,
+    force_reinstall_gmi,
+    spatial_cv_folds,
+    bootstrap_repeats,
+    label_permutation_control,
+    coordinate_shuffle_control,
+    spatial_feature_shuffle_control,
+    within_label_heterogeneity,
+):
+    """Run contour GMI on the Atera breast S1-vs-S5 task."""
+    config = _gmi_config_from_options(
+        contour_geojson=contour_geojson,
+        contour_key=contour_key,
+        feature_count=feature_count,
+        spatial_feature_count=spatial_feature_count,
+        min_cells_per_contour=min_cells_per_contour,
+        exclude_coordinate_spatial_features=exclude_coordinate_spatial_features,
+        visualization_genes=visualization_genes,
+        write_spatial_visualizations=write_spatial_visualizations,
+        seed=seed,
+        rscript=rscript,
+        r_lib_path=r_lib_path,
+        install_gmi=install_gmi,
+        force_reinstall_gmi=force_reinstall_gmi,
+        spatial_cv_folds=spatial_cv_folds,
+        bootstrap_repeats=bootstrap_repeats,
+        label_permutation_control=label_permutation_control,
+        coordinate_shuffle_control=coordinate_shuffle_control,
+        spatial_feature_shuffle_control=spatial_feature_shuffle_control,
+        within_label_heterogeneity=within_label_heterogeneity,
+    )
+    result = run_atera_breast_contour_gmi(dataset_root=dataset_root, output_dir=output_dir, config=config)
+    click.echo(json.dumps(result.summary, indent=2, default=str))
+
+
+@gmi_group.command("report")
+@click.option("--summary-json", required=True)
+def gmi_report(summary_json):
+    """Render a saved GMI summary as markdown."""
+    payload = json.loads(Path(summary_json).read_text(encoding="utf-8"))
+    report_path = payload.get("files", {}).get("report_md")
+    if report_path and Path(report_path).exists():
+        click.echo(Path(report_path).read_text(encoding="utf-8"))
+    else:
+        from .gmi import render_contour_gmi_report
+
+        click.echo(render_contour_gmi_report(payload))
+
+
+@gmi_group.command("a100-plan")
+@click.option("--remote-xenium-root", default=DEFAULT_GMI_A100_READONLY_XENIUM_ROOT, show_default=True)
+@click.option("--remote-root", default=DEFAULT_GMI_A100_REMOTE_ROOT, show_default=True)
+@click.option("--repo-dir", default=None)
+@click.option("--env-name", default="pyx-gmi", show_default=True)
+@click.option("--output-json", default=None)
+def gmi_a100_plan(remote_xenium_root, remote_root, repo_dir, env_name, output_json):
+    """Build the A100 GMI smoke/full/stability command plan."""
+    payload = build_gmi_a100_plan(
+        remote_xenium_root=remote_xenium_root,
+        remote_root=remote_root,
+        repo_dir=repo_dir,
+        env_name=env_name,
+    )
+    if not payload["path_policy"]["valid"]:
+        raise click.ClickException("; ".join(payload["path_policy"]["issues"]))
+    write_gmi_a100_plan(payload, output_json)
+    click.echo(json.dumps(payload, indent=2))
+
+
+@gmi_group.command("pdc-plan")
+@click.option("--pdc-xenium-root", default=DEFAULT_GMI_PDC_XENIUM_ROOT, show_default=True)
+@click.option("--pdc-root", default=DEFAULT_GMI_PDC_ROOT, show_default=True)
+@click.option("--repo-dir", default=None)
+@click.option("--conda-prefix", default=None)
+@click.option("--conda-pkgs-dir", default=None)
+@click.option("--histoseg-root", default=DEFAULT_GMI_PDC_HISTOSEG_ROOT, show_default=True)
+@click.option("--account", default=None, help="Optional Slurm account. If omitted, PDC_PROJECT/projinfo is used by submit scripts.")
+@click.option("--output-json", default=None)
+def gmi_pdc_plan(pdc_xenium_root, pdc_root, repo_dir, conda_prefix, conda_pkgs_dir, histoseg_root, account, output_json):
+    """Build the PDC Dardel Slurm plan for contour GMI validation."""
+    payload = build_gmi_pdc_plan(
+        pdc_xenium_root=pdc_xenium_root,
+        pdc_root=pdc_root,
+        repo_dir=repo_dir,
+        conda_prefix=conda_prefix,
+        conda_pkgs_dir=conda_pkgs_dir,
+        histoseg_root=histoseg_root,
+        account=account,
+    )
+    if not payload["path_policy"]["valid"]:
+        raise click.ClickException("; ".join(payload["path_policy"]["issues"]))
+    write_gmi_pdc_plan(payload, output_json)
+    click.echo(json.dumps(payload, indent=2))
+
+
+@gmi_group.command("pdc-monitor")
+@click.option("--pdc-root", default=DEFAULT_GMI_PDC_ROOT, show_default=True)
+@click.option("--output-json", default=None)
+def gmi_pdc_monitor(pdc_root, output_json):
+    """Summarize PDC contour GMI stage outputs under a PDC root."""
+    payload = summarize_gmi_pdc_runs(pdc_root)
+    if output_json:
+        Path(output_json).parent.mkdir(parents=True, exist_ok=True)
+        Path(output_json).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    click.echo(json.dumps(payload, indent=2, default=str))
+
 
 def _run_validate_renal_ffpe_protein(
     *,
@@ -644,6 +904,12 @@ def benchmark_atera_lr_smoke_pyxenium(benchmark_root, input_h5ad, output_dir, tb
 @click.option("--phase", type=click.Choice(["smoke", "full"]), default="smoke", show_default=True)
 @click.option("--max-lr-pairs", type=int, default=None, help="Optional cap for pilot runs.")
 @click.option("--n-perms", type=int, default=100, show_default=True, help="Permutation count for adapters that expose permutations.")
+@click.option("--chunk-id", type=int, default=None, help="Optional zero-based LR chunk id for chunked methods.")
+@click.option("--num-chunks", type=int, default=None, help="Optional total LR chunks for chunked methods.")
+@click.option("--bounded-mode", default=None, help="Optional bounded execution label, e.g. smoke_20k, pilot_50k, commot_chunk.")
+@click.option("--gpu-id", default=None, help="Optional GPU id assigned by the A100 job matrix.")
+@click.option("--job-id", default=None, help="Optional A100 job id/provenance label.")
+@click.option("--gzip-standardized", is_flag=True, default=False, help="Write standardized output as .tsv.gz when supported.")
 @click.option("--tbc-results", default=None, help="Optional topology bundle directory used by the pyXenium adapter.")
 @click.option("--export-figures/--no-export-figures", default=False, show_default=True)
 @click.option("--rscript", default=None, help="Optional Rscript executable for CellChat.")
@@ -657,6 +923,12 @@ def benchmark_atera_lr_run_method(
     phase,
     max_lr_pairs,
     n_perms,
+    chunk_id,
+    num_chunks,
+    bounded_mode,
+    gpu_id,
+    job_id,
+    gzip_standardized,
     tbc_results,
     export_figures,
     rscript,
@@ -673,6 +945,12 @@ def benchmark_atera_lr_run_method(
             phase=phase,
             max_lr_pairs=max_lr_pairs,
             n_perms=n_perms,
+            chunk_id=chunk_id,
+            num_chunks=num_chunks,
+            bounded_mode=bounded_mode,
+            gpu_id=gpu_id,
+            job_id=job_id,
+            gzip_standardized=gzip_standardized,
         )
     else:
         payload = run_registered_method(
@@ -684,6 +962,12 @@ def benchmark_atera_lr_run_method(
             phase=phase,
             max_lr_pairs=max_lr_pairs,
             n_perms=n_perms,
+            chunk_id=chunk_id,
+            num_chunks=num_chunks,
+            bounded_mode=bounded_mode,
+            gpu_id=gpu_id,
+            job_id=job_id,
+            gzip_standardized=gzip_standardized,
             tbc_results=tbc_results,
             export_figures=export_figures,
             rscript=rscript,
@@ -723,7 +1007,7 @@ def benchmark_atera_lr_smoke_core(benchmark_root, input_manifest, methods, datab
 def benchmark_atera_lr_aggregate(benchmark_root, result_paths, output_path):
     """Aggregate one or more standardized LR result tables."""
     layout = resolve_layout(relative_root=benchmark_root or Path("benchmarking") / "lr_2026_atera")
-    discovered = sorted(layout.runs_dir.glob("**/*standardized*.tsv"))
+    discovered = sorted([*layout.runs_dir.glob("**/*standardized*.tsv"), *layout.runs_dir.glob("**/*standardized*.tsv.gz")])
     selected = list(result_paths) if result_paths else [str(path) for path in discovered]
     if not selected:
         raise click.ClickException("No standardized result files were provided or discovered under the benchmark runs directory.")
@@ -904,6 +1188,165 @@ def benchmark_atera_lr_run_a100_plan(plan_json, job_ids, dry_run, remote, host, 
     click.echo(json.dumps(payload, indent=2))
 
 
+@benchmark_atera_lr_group.command("build-a100-matrix")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
+@click.option("--methods", default=",".join(DEFAULT_A100_ALL_METHODS), show_default=True)
+@click.option("--database-mode", default="common-db", show_default=True)
+@click.option("--phase", type=click.Choice(["smoke", "full"]), default="smoke", show_default=True)
+@click.option("--max-lr-pairs", type=int, default=None)
+@click.option("--n-perms", type=int, default=100, show_default=True)
+@click.option("--commot-chunks", type=int, default=16, show_default=True)
+@click.option("--gpu-count", type=int, default=8, show_default=True)
+@click.option("--gzip-edge-outputs/--plain-edge-outputs", default=True, show_default=True)
+@click.option("--include-bootstrap", is_flag=True, default=False)
+@click.option("--include-audit", is_flag=True, default=False)
+@click.option("--repeat-id", default=None)
+@click.option("--output-json", default=None)
+def benchmark_atera_lr_build_a100_matrix(
+    benchmark_root,
+    remote_root,
+    methods,
+    database_mode,
+    phase,
+    max_lr_pairs,
+    n_perms,
+    commot_chunks,
+    gpu_count,
+    gzip_edge_outputs,
+    include_bootstrap,
+    include_audit,
+    repeat_id,
+    output_json,
+):
+    """Build the parallel A100 job matrix for second-wave LR methods."""
+    payload = build_a100_job_matrix(
+        benchmark_root=benchmark_root,
+        remote_root=remote_root,
+        methods=[item.strip() for item in methods.split(",") if item.strip()],
+        database_mode=database_mode,
+        phase=phase,
+        max_lr_pairs=max_lr_pairs,
+        n_perms=n_perms,
+        commot_chunks=commot_chunks,
+        gpu_count=gpu_count,
+        gzip_edge_outputs=gzip_edge_outputs,
+        include_bootstrap=include_bootstrap,
+        include_audit=include_audit,
+        repeat_id=repeat_id,
+    )
+    if output_json:
+        Path(output_json).parent.mkdir(parents=True, exist_ok=True)
+        Path(output_json).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    click.echo(json.dumps(payload, indent=2))
+
+
+@benchmark_atera_lr_group.command("build-a100-sidecar")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
+@click.option("--methods", default="spatialdm,stlearn,giotto,laris,cellphonedb,spatalk,niches,cellnest,cellagentchat,scild", show_default=True)
+@click.option("--ready-methods", default=None, help="Comma-separated methods whose env bootstrap is already complete. Defaults to --methods.")
+@click.option("--database-mode", default="common-db", show_default=True)
+@click.option("--smoke-max-lr-pairs", type=int, default=25, show_default=True)
+@click.option("--pilot-max-lr-pairs", type=int, default=100, show_default=True)
+@click.option("--pilot-n-cells", type=int, default=50000, show_default=True)
+@click.option("--pilot-seed", type=int, default=1, show_default=True)
+@click.option("--include-audit/--skip-audit", default=True, show_default=True)
+@click.option("--include-smoke/--skip-smoke", default=True, show_default=True)
+@click.option("--include-pilot/--skip-pilot", default=True, show_default=True)
+@click.option("--completed-job-id", "completed_job_ids", multiple=True, help="Sidecar job ids already completed; omitted from the plan.")
+@click.option("--running-job-id", "running_job_ids", multiple=True, help="Sidecar job ids already running; omitted from the plan.")
+@click.option("--gpu-count", type=int, default=8, show_default=True)
+@click.option("--gpu-start", type=int, default=3, show_default=True)
+@click.option("--gzip-edge-outputs/--plain-edge-outputs", default=True, show_default=True)
+@click.option("--output-json", default=None)
+def benchmark_atera_lr_build_a100_sidecar(
+    benchmark_root,
+    remote_root,
+    methods,
+    ready_methods,
+    database_mode,
+    smoke_max_lr_pairs,
+    pilot_max_lr_pairs,
+    pilot_n_cells,
+    pilot_seed,
+    include_audit,
+    include_smoke,
+    include_pilot,
+    completed_job_ids,
+    running_job_ids,
+    gpu_count,
+    gpu_start,
+    gzip_edge_outputs,
+    output_json,
+):
+    """Build a balanced A100 sidecar matrix for already bootstrapped LR methods."""
+    payload = build_a100_sidecar_matrix(
+        benchmark_root=benchmark_root,
+        remote_root=remote_root,
+        methods=[item.strip() for item in methods.split(",") if item.strip()],
+        ready_methods=None if not ready_methods else [item.strip() for item in ready_methods.split(",") if item.strip()],
+        database_mode=database_mode,
+        smoke_max_lr_pairs=smoke_max_lr_pairs,
+        pilot_max_lr_pairs=pilot_max_lr_pairs,
+        pilot_n_cells=pilot_n_cells,
+        pilot_seed=pilot_seed,
+        include_audit=include_audit,
+        include_smoke=include_smoke,
+        include_pilot=include_pilot,
+        completed_job_ids=completed_job_ids or None,
+        running_job_ids=running_job_ids or None,
+        gpu_count=gpu_count,
+        gpu_start=gpu_start,
+        gzip_edge_outputs=gzip_edge_outputs,
+    )
+    if output_json:
+        Path(output_json).parent.mkdir(parents=True, exist_ok=True)
+        Path(output_json).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    click.echo(json.dumps(payload, indent=2))
+
+
+@benchmark_atera_lr_group.command("submit-a100-matrix")
+@click.option("--matrix-json", required=True, help="A100 job matrix JSON produced by build-a100-matrix.")
+@click.option("--job-id", "job_ids", multiple=True, help="Optional job id filter.")
+@click.option("--job-type", "job_types", multiple=True, help="Optional job type filter, e.g. env_bootstrap, env_audit, method_run.")
+@click.option("--dry-run/--execute", default=True, show_default=True)
+@click.option("--remote/--local", default=True, show_default=True)
+@click.option("--host", default=None)
+@click.option("--user", default=None)
+def benchmark_atera_lr_submit_a100_matrix(matrix_json, job_ids, job_types, dry_run, remote, host, user):
+    """Submit A100 matrix jobs with remote nohup wrappers."""
+    payload = submit_a100_matrix(
+        matrix_json=matrix_json,
+        dry_run=dry_run,
+        remote=remote,
+        host=host,
+        user=user,
+        job_ids=job_ids or None,
+        job_types=job_types or None,
+    )
+    click.echo(json.dumps(payload, indent=2))
+
+
+@benchmark_atera_lr_group.command("monitor-a100-jobs")
+@click.option("--matrix-json", required=True, help="A100 job matrix JSON.")
+@click.option("--benchmark-root", default=None)
+@click.option("--output-tsv", default=None)
+def benchmark_atera_lr_monitor_a100_jobs(matrix_json, benchmark_root, output_tsv):
+    """Summarize collected status for planned A100 jobs."""
+    table = monitor_a100_jobs(matrix_json=matrix_json, benchmark_root=benchmark_root, output_tsv=output_tsv)
+    click.echo(table.to_json(orient="records", indent=2))
+
+
+@benchmark_atera_lr_group.command("finalize-a100-all")
+@click.option("--benchmark-root", default=None)
+@click.option("--output-path", default=None)
+def benchmark_atera_lr_finalize_a100_all(benchmark_root, output_path):
+    """Aggregate all collected A100 standardized TSV/TSV.GZ outputs."""
+    payload = finalize_a100_all(benchmark_root=benchmark_root, output_path=output_path)
+    click.echo(json.dumps(payload, indent=2))
+
+
 @benchmark_atera_lr_group.command("collect-a100-results")
 @click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
 @click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
@@ -911,8 +1354,9 @@ def benchmark_atera_lr_run_a100_plan(plan_json, job_ids, dry_run, remote, host, 
 @click.option("--user", default=None)
 @click.option("--transfer-mode", type=click.Choice(["auto", "rsync", "scp"]), default="auto", show_default=True)
 @click.option("--dry-run/--execute", default=True, show_default=True)
+@click.option("--since-last", is_flag=True, default=False, help="Record that this collection pass should only fetch newly finished outputs when implemented by the transfer backend.")
 @click.option("--output-json", default=None)
-def benchmark_atera_lr_collect_a100_results(benchmark_root, remote_root, host, user, transfer_mode, dry_run, output_json):
+def benchmark_atera_lr_collect_a100_results(benchmark_root, remote_root, host, user, transfer_mode, dry_run, since_last, output_json):
     """Generate or execute result recovery commands from A100."""
     payload = collect_a100_results(
         benchmark_root=benchmark_root,
@@ -921,6 +1365,7 @@ def benchmark_atera_lr_collect_a100_results(benchmark_root, remote_root, host, u
         user=user,
         transfer_mode=transfer_mode,
         dry_run=dry_run,
+        since_last=since_last,
     )
     if output_json:
         Path(output_json).parent.mkdir(parents=True, exist_ok=True)

@@ -32,9 +32,13 @@ methods:
       cran:
         - renv
         - remotes
+      bioc:
+        - BiocGenerics
+        - Biobase
+        - BiocNeighbors
+        - ComplexHeatmap
       github:
         - jinworks/CellChat
-        - jinworks/SpatialCellChat
 
   - slug: commot
     display_name: COMMOT
@@ -78,10 +82,10 @@ methods:
   - slug: spatialdm
     display_name: SpatialDM
     language: python
-    status: scaffolded
+    status: adapter-implemented
     env_name: pyx-lr-spatialdm
     env_file: envs/pyx-lr-spatialdm.yml
-    runner: runners/python/run_method_stub.py
+    runner: scripts/run_method.py
     default_phase: smoke
     resolution: local_lr
     preferred_platform: local
@@ -89,16 +93,18 @@ methods:
     supports_native_db: true
     supports_common_db: true
     install:
+      pip_editable_repo: true
       pip:
-        - SpatialDM
+        - git+https://github.com/StatBiomed/SpatialDM.git
+        - SparseAEH
 
   - slug: stlearn
     display_name: stLearn CCI
     language: python
-    status: scaffolded
+    status: adapter-implemented
     env_name: pyx-lr-stlearn
     env_file: envs/pyx-lr-stlearn.yml
-    runner: runners/python/run_method_stub.py
+    runner: scripts/run_method.py
     default_phase: smoke
     resolution: local_lr
     preferred_platform: local
@@ -106,8 +112,29 @@ methods:
     supports_native_db: true
     supports_common_db: true
     install:
+      pip_editable_repo: true
       pip:
         - stlearn
+
+  - slug: giotto
+    display_name: Giotto spatCellCellcom
+    language: r
+    status: adapter-implemented
+    env_name: r-lr-giotto
+    env_file: envs/r-lr-giotto.yml
+    runner: runners/r/run_giotto.R
+    default_phase: smoke
+    resolution: celltype_pair
+    preferred_platform: a100
+    a100_preferred: true
+    supports_native_db: true
+    supports_common_db: true
+    install:
+      cran:
+        - renv
+        - remotes
+      github:
+        - drieslab/Giotto
 
   - slug: squidpy
     display_name: Squidpy ligrec
@@ -131,10 +158,10 @@ methods:
   - slug: spatalk
     display_name: SpaTalk
     language: r
-    status: scaffolded
+    status: adapter-implemented
     env_name: r-lr-spatalk
     env_file: envs/r-lr-spatalk.yml
-    runner: runners/r/run_method_stub.R
+    runner: runners/r/run_spatalk.R
     default_phase: smoke
     resolution: cell_pair
     preferred_platform: a100
@@ -151,10 +178,10 @@ methods:
   - slug: cellnest
     display_name: CellNEST
     language: python
-    status: scaffolded
+    status: adapter-pending
     env_name: pyx-lr-cellnest
     env_file: envs/pyx-lr-cellnest.yml
-    runner: runners/python/run_method_stub.py
+    runner: scripts/run_method.py
     default_phase: smoke
     resolution: cell_pair
     preferred_platform: a100
@@ -168,10 +195,10 @@ methods:
   - slug: cellagentchat
     display_name: CellAgentChat
     language: python
-    status: scaffolded
+    status: adapter-pending
     env_name: pyx-lr-cellagentchat
     env_file: envs/pyx-lr-cellagentchat.yml
-    runner: runners/python/run_method_stub.py
+    runner: scripts/run_method.py
     default_phase: smoke
     resolution: cell_pair
     preferred_platform: a100
@@ -185,10 +212,10 @@ methods:
   - slug: scild
     display_name: SCILD
     language: python
-    status: scaffolded
+    status: adapter-pending
     env_name: pyx-lr-scild
     env_file: envs/pyx-lr-scild.yml
-    runner: runners/python/run_method_stub.py
+    runner: scripts/run_method.py
     default_phase: appendix
     resolution: cell_pair
     preferred_platform: a100
@@ -196,16 +223,19 @@ methods:
     supports_native_db: true
     supports_common_db: true
     install:
-      manual_setup_required: true
-      notes: Add the official SCILD implementation URL before bootstrap.
+      source_git:
+        - https://github.com/jiatingyu-amss/SCILD.git
+      docs:
+        - https://scilddocs.readthedocs.io
+      notes: Official implementation is source-layout based rather than a standard pip package; clone under external_src/scild and run via PYTHONPATH against Models.SCILD_main.
 
   - slug: niches
     display_name: NICHES
     language: r
-    status: scaffolded
+    status: adapter-implemented
     env_name: r-lr-niches
     env_file: envs/r-lr-niches.yml
-    runner: runners/r/run_method_stub.R
+    runner: runners/r/run_niches.R
     default_phase: appendix
     resolution: cell_pair
     preferred_platform: a100
@@ -218,6 +248,42 @@ methods:
         - remotes
       github:
         - msraredon/NICHES
+
+  - slug: cellphonedb
+    display_name: CellPhoneDB v5 baseline
+    language: python
+    status: adapter-implemented
+    env_name: pyx-lr-cellphonedb
+    env_file: envs/pyx-lr-cellphonedb.yml
+    runner: scripts/run_method.py
+    default_phase: smoke
+    resolution: celltype_pair
+    preferred_platform: a100
+    a100_preferred: false
+    supports_native_db: false
+    supports_common_db: true
+    install:
+      pip_editable_repo: true
+      pip:
+        - cellphonedb
+
+  - slug: laris
+    display_name: LARIS
+    language: python
+    status: adapter-implemented
+    env_name: pyx-lr-laris
+    env_file: envs/pyx-lr-laris.yml
+    runner: scripts/run_method.py
+    default_phase: smoke
+    resolution: celltype_pair
+    preferred_platform: a100
+    a100_preferred: false
+    supports_native_db: false
+    supports_common_db: true
+    install:
+      pip_editable_repo: true
+      pip:
+        - laris
 
   - slug: prep
     display_name: Benchmark data prep

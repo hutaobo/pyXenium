@@ -1,0 +1,24 @@
+name: pyx-gmi
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - git
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - anndata
+  - scanpy
+  - pyarrow
+  - h5py
+  - click
+  - r-base=4.3
+  - r-mass
+  - r-rcpp
+  - r-rcpparmadillo
+  - r-rcppeigen
+  - r-remotes
+  - pip:
+      - -e ../../..

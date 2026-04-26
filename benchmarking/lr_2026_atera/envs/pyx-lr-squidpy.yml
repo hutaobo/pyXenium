@@ -11,4 +11,6 @@ dependencies:
   - pyyaml
   - anndata
   - scanpy
+  - pyarrow
+  - setuptools<81
   - zarr<3

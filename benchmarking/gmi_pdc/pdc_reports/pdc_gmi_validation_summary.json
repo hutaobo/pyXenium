@@ -1,0 +1,1836 @@
+{
+  "pdc_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04",
+  "runs_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs",
+  "n_stage_dirs": 8,
+  "n_completed": 8,
+  "stages": [
+    {
+      "stage_id": "full_contour_top500_spatial100",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/full_contour_top500_spatial100",
+      "summary_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/full_contour_top500_spatial100/summary.json",
+      "main_effects_head": [
+        {
+          "feature_index": "1",
+          "feature": "NIBAN1",
+          "coefficient": "-9.65329617197763"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-9.65636820697715"
+        }
+      ],
+      "interaction_effects_head": [],
+      "cv_metrics_head": [],
+      "stability_head": [],
+      "n_contours": 80,
+      "n_features": 600,
+      "n_rna_features": 500,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "top_main_effects": [
+        {
+          "feature_index": 1,
+          "feature": "NIBAN1",
+          "coefficient": -9.65329617197763
+        },
+        {
+          "feature_index": 88,
+          "feature": "SORL1",
+          "coefficient": -9.65636820697715
+        }
+      ],
+      "cv_folds_completed": 0,
+      "bootstrap_repeats_requested": 0
+    },
+    {
+      "stage_id": "full_contour_top500_spatial100_stability",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/full_contour_top500_spatial100_stability",
+      "summary_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/full_contour_top500_spatial100_stability/summary.json",
+      "main_effects_head": [
+        {
+          "feature_index": "1",
+          "feature": "NIBAN1",
+          "coefficient": "-9.65329617197763"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-9.65636820697715"
+        }
+      ],
+      "interaction_effects_head": [],
+      "cv_metrics_head": [
+        {
+          "fold": "1",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "2",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "3",
+          "n_train": "64",
+          "n_test": "16",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "18",
+          "n_test_positive": "12",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "4",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "1.0",
+          "accuracy": "0.9333333333333333",
+          "sensitivity": "1.0",
+          "specificity": "0.75",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "5",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        }
+      ],
+      "stability_head": [
+        {
+          "effect_type": "main",
+          "member": "NIBAN1",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "SORL1",
+          "selection_count": "5",
+          "selection_frequency": "0.5"
+        },
+        {
+          "effect_type": "main",
+          "member": "ALDH4A1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CACNA1D",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CCND1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "EFHD1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "n_contours": 80,
+      "n_features": 600,
+      "n_rna_features": 500,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "top_main_effects": [
+        {
+          "feature_index": 1,
+          "feature": "NIBAN1",
+          "coefficient": -9.65329617197763
+        },
+        {
+          "feature_index": 88,
+          "feature": "SORL1",
+          "coefficient": -9.65636820697715
+        }
+      ],
+      "cv_folds_completed": 5,
+      "bootstrap_repeats_requested": 10
+    },
+    {
+      "stage_id": "sensitivity_all_nonempty_top500_spatial100",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/sensitivity_all_nonempty_top500_spatial100",
+      "summary_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/sensitivity_all_nonempty_top500_spatial100/summary.json",
+      "main_effects_head": [
+        {
+          "feature_index": "526",
+          "feature": "omics__core__state_fraction__11q13_invasive_tumor_cells",
+          "coefficient": "2.87515693409687"
+        },
+        {
+          "feature_index": "528",
+          "feature": "omics__whole__state_fraction__11q13_invasive_tumor_cells",
+          "coefficient": "2.87383226569841"
+        }
+      ],
+      "interaction_effects_head": [],
+      "cv_metrics_head": [
+        {
+          "fold": "1",
+          "n_train": "80",
+          "n_test": "22",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "60",
+          "n_train_negative": "20",
+          "n_test_positive": "16",
+          "n_test_negative": "6",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "2",
+          "n_train": "82",
+          "n_test": "20",
+          "auc": "1.0",
+          "accuracy": "0.95",
+          "sensitivity": "1.0",
+          "specificity": "0.8",
+          "n_train_positive": "61",
+          "n_train_negative": "21",
+          "n_test_positive": "15",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "3",
+          "n_train": "82",
+          "n_test": "20",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "61",
+          "n_train_negative": "21",
+          "n_test_positive": "15",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "4",
+          "n_train": "82",
+          "n_test": "20",
+          "auc": "0.8133333333333334",
+          "accuracy": "0.8",
+          "sensitivity": "0.7333333333333333",
+          "specificity": "1.0",
+          "n_train_positive": "61",
+          "n_train_negative": "21",
+          "n_test_positive": "15",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "5",
+          "n_train": "82",
+          "n_test": "20",
+          "auc": "0.92",
+          "accuracy": "0.9",
+          "sensitivity": "0.8666666666666667",
+          "specificity": "1.0",
+          "n_train_positive": "61",
+          "n_train_negative": "21",
+          "n_test_positive": "15",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        }
+      ],
+      "stability_head": [
+        {
+          "effect_type": "main",
+          "member": "omics__whole__state_fraction__11q13_invasive_tumor_cells",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__core__state_fraction__11q13_invasive_tumor_cells",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "ERRFI1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "HSPB8",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "PBXIP1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CRNKL1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "edge_contrast__rna__cd44",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "n_contours": 102,
+      "n_features": 600,
+      "n_rna_features": 500,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 0.9498987854251013,
+        "accuracy": 0.9411764705882353,
+        "sensitivity": 0.9210526315789473,
+        "specificity": 1.0
+      },
+      "top_main_effects": [
+        {
+          "feature_index": 526,
+          "feature": "omics__core__state_fraction__11q13_invasive_tumor_cells",
+          "coefficient": 2.87515693409687
+        },
+        {
+          "feature_index": 528,
+          "feature": "omics__whole__state_fraction__11q13_invasive_tumor_cells",
+          "coefficient": 2.87383226569841
+        }
+      ],
+      "cv_folds_completed": 5,
+      "bootstrap_repeats_requested": 10
+    },
+    {
+      "stage_id": "sensitivity_top1000_spatial100_qc20",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/sensitivity_top1000_spatial100_qc20",
+      "summary_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/sensitivity_top1000_spatial100_qc20/summary.json",
+      "main_effects_head": [
+        {
+          "feature_index": "87",
+          "feature": "EFHD1",
+          "coefficient": "-6.81626379578751"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-6.81610420799711"
+        }
+      ],
+      "interaction_effects_head": [],
+      "cv_metrics_head": [
+        {
+          "fold": "1",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "2",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "3",
+          "n_train": "64",
+          "n_test": "16",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "18",
+          "n_test_positive": "12",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "4",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "1.0",
+          "accuracy": "0.9333333333333333",
+          "sensitivity": "1.0",
+          "specificity": "0.75",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "5",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        }
+      ],
+      "stability_head": [
+        {
+          "effect_type": "main",
+          "member": "SORL1",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "NIBAN1",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "EFHD1",
+          "selection_count": "3",
+          "selection_frequency": "0.3"
+        },
+        {
+          "effect_type": "main",
+          "member": "ALDH4A1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CACNA1D",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "n_contours": 80,
+      "n_features": 1100,
+      "n_rna_features": 1000,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      },
+      "top_main_effects": [
+        {
+          "feature_index": 87,
+          "feature": "EFHD1",
+          "coefficient": -6.81626379578751
+        },
+        {
+          "feature_index": 88,
+          "feature": "SORL1",
+          "coefficient": -6.81610420799711
+        }
+      ],
+      "cv_folds_completed": 5,
+      "bootstrap_repeats_requested": 10
+    },
+    {
+      "stage_id": "smoke_contour_top200_spatial50",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/smoke_contour_top200_spatial50",
+      "summary_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/smoke_contour_top200_spatial50/summary.json",
+      "main_effects_head": [],
+      "interaction_effects_head": [],
+      "cv_metrics_head": [],
+      "stability_head": [],
+      "n_contours": 80,
+      "n_features": 250,
+      "n_rna_features": 200,
+      "n_spatial_features": 50,
+      "selected_main_effects": 0,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 0.5,
+        "accuracy": 0.725,
+        "sensitivity": 1.0,
+        "specificity": 0.0
+      },
+      "top_main_effects": [],
+      "cv_folds_completed": 0,
+      "bootstrap_repeats_requested": 0
+    },
+    {
+      "stage_id": "validation_no_coordinate_qc20",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/validation_no_coordinate_qc20",
+      "summary_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/validation_no_coordinate_qc20/summary.json",
+      "main_effects_head": [
+        {
+          "feature_index": "1",
+          "feature": "NIBAN1",
+          "coefficient": "-9.6532695918719"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-9.65632302149003"
+        }
+      ],
+      "interaction_effects_head": [],
+      "cv_metrics_head": [
+        {
+          "fold": "1",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "2",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "3",
+          "n_train": "64",
+          "n_test": "16",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "18",
+          "n_test_positive": "12",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "4",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "1.0",
+          "accuracy": "0.9333333333333333",
+          "sensitivity": "1.0",
+          "specificity": "0.75",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "5",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        }
+      ],
+      "stability_head": [
+        {
+          "effect_type": "main",
+          "member": "NIBAN1",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "SORL1",
+          "selection_count": "5",
+          "selection_frequency": "0.5"
+        },
+        {
+          "effect_type": "main",
+          "member": "EFHD1",
+          "selection_count": "2",
+          "selection_frequency": "0.2"
+        },
+        {
+          "effect_type": "main",
+          "member": "ATP8B2",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "ALDH4A1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CACNA1D",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CCND1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "n_contours": 80,
+      "n_features": 600,
+      "n_rna_features": 500,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "top_main_effects": [
+        {
+          "feature_index": 1,
+          "feature": "NIBAN1",
+          "coefficient": -9.6532695918719
+        },
+        {
+          "feature_index": 88,
+          "feature": "SORL1",
+          "coefficient": -9.65632302149003
+        }
+      ],
+      "cv_folds_completed": 5,
+      "bootstrap_repeats_requested": 10
+    },
+    {
+      "stage_id": "validation_rna_only_qc20",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/validation_rna_only_qc20",
+      "summary_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/validation_rna_only_qc20/summary.json",
+      "main_effects_head": [
+        {
+          "feature_index": "1",
+          "feature": "NIBAN1",
+          "coefficient": "-9.65322395344377"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-9.65618929687248"
+        }
+      ],
+      "interaction_effects_head": [],
+      "cv_metrics_head": [
+        {
+          "fold": "1",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "2",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "3",
+          "n_train": "64",
+          "n_test": "16",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "18",
+          "n_test_positive": "12",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "4",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "5",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        }
+      ],
+      "stability_head": [
+        {
+          "effect_type": "main",
+          "member": "NIBAN1",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "SORL1",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "EFHD1",
+          "selection_count": "3",
+          "selection_frequency": "0.3"
+        },
+        {
+          "effect_type": "main",
+          "member": "CCND1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "ALDH4A1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CACNA1D",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "n_contours": 80,
+      "n_features": 500,
+      "n_rna_features": 500,
+      "n_spatial_features": 0,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "top_main_effects": [
+        {
+          "feature_index": 1,
+          "feature": "NIBAN1",
+          "coefficient": -9.65322395344377
+        },
+        {
+          "feature_index": 88,
+          "feature": "SORL1",
+          "coefficient": -9.65618929687248
+        }
+      ],
+      "cv_folds_completed": 5,
+      "bootstrap_repeats_requested": 10
+    },
+    {
+      "stage_id": "validation_spatial_only_qc20",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/validation_spatial_only_qc20",
+      "summary_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/validation_spatial_only_qc20/summary.json",
+      "main_effects_head": [
+        {
+          "feature_index": "35",
+          "feature": "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells",
+          "coefficient": "-3.49337582446552"
+        },
+        {
+          "feature_index": "36",
+          "feature": "omics__core__state_fraction__luminal_like_amorphous_dcis_cells",
+          "coefficient": "-3.49370791270113"
+        }
+      ],
+      "interaction_effects_head": [],
+      "cv_metrics_head": [
+        {
+          "fold": "1",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "2",
+          "n_train": "63",
+          "n_test": "17",
+          "auc": "0.8",
+          "accuracy": "0.9411764705882353",
+          "sensitivity": "1.0",
+          "specificity": "0.8",
+          "n_train_positive": "46",
+          "n_train_negative": "17",
+          "n_test_positive": "12",
+          "n_test_negative": "5",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "3",
+          "n_train": "64",
+          "n_test": "16",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "46",
+          "n_train_negative": "18",
+          "n_test_positive": "12",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "4",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "0.875",
+          "accuracy": "0.9333333333333333",
+          "sensitivity": "1.0",
+          "specificity": "0.75",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        },
+        {
+          "fold": "5",
+          "n_train": "65",
+          "n_test": "15",
+          "auc": "1.0",
+          "accuracy": "1.0",
+          "sensitivity": "1.0",
+          "specificity": "1.0",
+          "n_train_positive": "47",
+          "n_train_negative": "18",
+          "n_test_positive": "11",
+          "n_test_negative": "4",
+          "requested_folds": "5",
+          "effective_folds": "5",
+          "skip_reason": ""
+        }
+      ],
+      "stability_head": [
+        {
+          "effect_type": "main",
+          "member": "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__core__state_fraction__luminal_like_amorphous_dcis_cells",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "geometry__compactness",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__inner_rim__state_fraction__luminal_like_amorphous_dcis_cells",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__core__state_fraction__11q13_invasive_tumor_cells",
+          "selection_count": "2",
+          "selection_frequency": "0.2"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__whole__state_fraction__11q13_invasive_tumor_cells",
+          "selection_count": "2",
+          "selection_frequency": "0.2"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__core__state_entropy",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "context__slide_x_fraction",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "n_contours": 80,
+      "n_features": 100,
+      "n_rna_features": 0,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 0.9772727272727273,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "top_main_effects": [
+        {
+          "feature_index": 35,
+          "feature": "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells",
+          "coefficient": -3.49337582446552
+        },
+        {
+          "feature_index": 36,
+          "feature": "omics__core__state_fraction__luminal_like_amorphous_dcis_cells",
+          "coefficient": -3.49370791270113
+        }
+      ],
+      "cv_folds_completed": 5,
+      "bootstrap_repeats_requested": 10
+    }
+  ],
+  "expected_stages": [
+    "smoke_contour_top200_spatial50",
+    "full_contour_top500_spatial100",
+    "full_contour_top500_spatial100_stability",
+    "validation_rna_only_qc20",
+    "validation_spatial_only_qc20",
+    "validation_no_coordinate_qc20",
+    "sensitivity_top1000_spatial100_qc20",
+    "sensitivity_all_nonempty_top500_spatial100"
+  ],
+  "n_expected": 8,
+  "n_completed_expected": 8,
+  "all_expected_stages_completed": true,
+  "stage_summaries": [
+    {
+      "stage_id": "smoke_contour_top200_spatial50",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/smoke_contour_top200_spatial50",
+      "n_contours": 80,
+      "n_retained_contours": 80,
+      "n_dropped_contours": 51,
+      "n_features": 250,
+      "n_rna_features": 200,
+      "n_spatial_features": 50,
+      "selected_main_effects": 0,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 0.5,
+        "accuracy": 0.725,
+        "sensitivity": 1.0,
+        "specificity": 0.0
+      },
+      "main_effects": [],
+      "main_features": [],
+      "cv_mean": {
+        "auc": null,
+        "accuracy": null,
+        "sensitivity": null,
+        "specificity": null
+      },
+      "cv_n_folds": 0,
+      "stability_top": [],
+      "heterogeneity_rows": 80,
+      "figures": [
+        "gene_CCND1_logcpm.png",
+        "gene_NIBAN1_logcpm.png",
+        "gene_SORL1_logcpm.png",
+        "gmi_prediction_score.png",
+        "qc_retained_vs_dropped.png",
+        "s1_s5_contour_overlay.png",
+        "visualization_manifest.json"
+      ]
+    },
+    {
+      "stage_id": "full_contour_top500_spatial100",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/full_contour_top500_spatial100",
+      "n_contours": 80,
+      "n_retained_contours": 80,
+      "n_dropped_contours": 51,
+      "n_features": 600,
+      "n_rna_features": 500,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "main_effects": [
+        {
+          "feature_index": "1",
+          "feature": "NIBAN1",
+          "coefficient": "-9.65329617197763"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-9.65636820697715"
+        }
+      ],
+      "main_features": [
+        "NIBAN1",
+        "SORL1"
+      ],
+      "cv_mean": {
+        "auc": null,
+        "accuracy": null,
+        "sensitivity": null,
+        "specificity": null
+      },
+      "cv_n_folds": 0,
+      "stability_top": [],
+      "heterogeneity_rows": 80,
+      "figures": [
+        "gene_CCND1_logcpm.png",
+        "gene_NIBAN1_logcpm.png",
+        "gene_SORL1_logcpm.png",
+        "gmi_prediction_score.png",
+        "qc_retained_vs_dropped.png",
+        "s1_s5_contour_overlay.png",
+        "visualization_manifest.json"
+      ]
+    },
+    {
+      "stage_id": "full_contour_top500_spatial100_stability",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/full_contour_top500_spatial100_stability",
+      "n_contours": 80,
+      "n_retained_contours": 80,
+      "n_dropped_contours": 51,
+      "n_features": 600,
+      "n_rna_features": 500,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "main_effects": [
+        {
+          "feature_index": "1",
+          "feature": "NIBAN1",
+          "coefficient": "-9.65329617197763"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-9.65636820697715"
+        }
+      ],
+      "main_features": [
+        "NIBAN1",
+        "SORL1"
+      ],
+      "cv_mean": {
+        "auc": 1.0,
+        "accuracy": 0.9866666666666667,
+        "sensitivity": 1.0,
+        "specificity": 0.95
+      },
+      "cv_n_folds": 5,
+      "stability_top": [
+        {
+          "effect_type": "main",
+          "member": "NIBAN1",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "SORL1",
+          "selection_count": "5",
+          "selection_frequency": "0.5"
+        },
+        {
+          "effect_type": "main",
+          "member": "ALDH4A1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CACNA1D",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CCND1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "EFHD1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "heterogeneity_rows": 80,
+      "figures": [
+        "gene_CCND1_logcpm.png",
+        "gene_NIBAN1_logcpm.png",
+        "gene_SORL1_logcpm.png",
+        "gmi_prediction_score.png",
+        "qc_retained_vs_dropped.png",
+        "s1_s5_contour_overlay.png",
+        "visualization_manifest.json"
+      ]
+    },
+    {
+      "stage_id": "validation_rna_only_qc20",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/validation_rna_only_qc20",
+      "n_contours": 80,
+      "n_retained_contours": 80,
+      "n_dropped_contours": 51,
+      "n_features": 500,
+      "n_rna_features": 500,
+      "n_spatial_features": 0,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "main_effects": [
+        {
+          "feature_index": "1",
+          "feature": "NIBAN1",
+          "coefficient": "-9.65322395344377"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-9.65618929687248"
+        }
+      ],
+      "main_features": [
+        "NIBAN1",
+        "SORL1"
+      ],
+      "cv_mean": {
+        "auc": 1.0,
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      },
+      "cv_n_folds": 5,
+      "stability_top": [
+        {
+          "effect_type": "main",
+          "member": "NIBAN1",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "SORL1",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "EFHD1",
+          "selection_count": "3",
+          "selection_frequency": "0.3"
+        },
+        {
+          "effect_type": "main",
+          "member": "CCND1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "ALDH4A1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CACNA1D",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "heterogeneity_rows": 80,
+      "figures": [
+        "gene_CCND1_logcpm.png",
+        "gene_NIBAN1_logcpm.png",
+        "gene_SORL1_logcpm.png",
+        "gmi_prediction_score.png",
+        "qc_retained_vs_dropped.png",
+        "s1_s5_contour_overlay.png",
+        "visualization_manifest.json"
+      ]
+    },
+    {
+      "stage_id": "validation_spatial_only_qc20",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/validation_spatial_only_qc20",
+      "n_contours": 80,
+      "n_retained_contours": 80,
+      "n_dropped_contours": 51,
+      "n_features": 100,
+      "n_rna_features": 0,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 0.9772727272727273,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "main_effects": [
+        {
+          "feature_index": "35",
+          "feature": "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells",
+          "coefficient": "-3.49337582446552"
+        },
+        {
+          "feature_index": "36",
+          "feature": "omics__core__state_fraction__luminal_like_amorphous_dcis_cells",
+          "coefficient": "-3.49370791270113"
+        }
+      ],
+      "main_features": [
+        "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells",
+        "omics__core__state_fraction__luminal_like_amorphous_dcis_cells"
+      ],
+      "cv_mean": {
+        "auc": 0.935,
+        "accuracy": 0.9749019607843137,
+        "sensitivity": 1.0,
+        "specificity": 0.91
+      },
+      "cv_n_folds": 5,
+      "stability_top": [
+        {
+          "effect_type": "main",
+          "member": "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__core__state_fraction__luminal_like_amorphous_dcis_cells",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "geometry__compactness",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__inner_rim__state_fraction__luminal_like_amorphous_dcis_cells",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__core__state_fraction__11q13_invasive_tumor_cells",
+          "selection_count": "2",
+          "selection_frequency": "0.2"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__whole__state_fraction__11q13_invasive_tumor_cells",
+          "selection_count": "2",
+          "selection_frequency": "0.2"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__core__state_entropy",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "context__slide_x_fraction",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "heterogeneity_rows": 80,
+      "figures": [
+        "gmi_prediction_score.png",
+        "qc_retained_vs_dropped.png",
+        "s1_s5_contour_overlay.png",
+        "visualization_manifest.json"
+      ]
+    },
+    {
+      "stage_id": "validation_no_coordinate_qc20",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/validation_no_coordinate_qc20",
+      "n_contours": 80,
+      "n_retained_contours": 80,
+      "n_dropped_contours": 51,
+      "n_features": 600,
+      "n_rna_features": 500,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 0.9875,
+        "sensitivity": 1.0,
+        "specificity": 0.9545454545454546
+      },
+      "main_effects": [
+        {
+          "feature_index": "1",
+          "feature": "NIBAN1",
+          "coefficient": "-9.6532695918719"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-9.65632302149003"
+        }
+      ],
+      "main_features": [
+        "NIBAN1",
+        "SORL1"
+      ],
+      "cv_mean": {
+        "auc": 1.0,
+        "accuracy": 0.9866666666666667,
+        "sensitivity": 1.0,
+        "specificity": 0.95
+      },
+      "cv_n_folds": 5,
+      "stability_top": [
+        {
+          "effect_type": "main",
+          "member": "NIBAN1",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "SORL1",
+          "selection_count": "5",
+          "selection_frequency": "0.5"
+        },
+        {
+          "effect_type": "main",
+          "member": "EFHD1",
+          "selection_count": "2",
+          "selection_frequency": "0.2"
+        },
+        {
+          "effect_type": "main",
+          "member": "ATP8B2",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "ALDH4A1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CACNA1D",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CCND1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "heterogeneity_rows": 80,
+      "figures": [
+        "gene_CCND1_logcpm.png",
+        "gene_NIBAN1_logcpm.png",
+        "gene_SORL1_logcpm.png",
+        "gmi_prediction_score.png",
+        "qc_retained_vs_dropped.png",
+        "s1_s5_contour_overlay.png",
+        "visualization_manifest.json"
+      ]
+    },
+    {
+      "stage_id": "sensitivity_top1000_spatial100_qc20",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/sensitivity_top1000_spatial100_qc20",
+      "n_contours": 80,
+      "n_retained_contours": 80,
+      "n_dropped_contours": 51,
+      "n_features": 1100,
+      "n_rna_features": 1000,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 1.0,
+        "accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0
+      },
+      "main_effects": [
+        {
+          "feature_index": "87",
+          "feature": "EFHD1",
+          "coefficient": "-6.81626379578751"
+        },
+        {
+          "feature_index": "88",
+          "feature": "SORL1",
+          "coefficient": "-6.81610420799711"
+        }
+      ],
+      "main_features": [
+        "EFHD1",
+        "SORL1"
+      ],
+      "cv_mean": {
+        "auc": 1.0,
+        "accuracy": 0.9866666666666667,
+        "sensitivity": 1.0,
+        "specificity": 0.95
+      },
+      "cv_n_folds": 5,
+      "stability_top": [
+        {
+          "effect_type": "main",
+          "member": "SORL1",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "NIBAN1",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "EFHD1",
+          "selection_count": "3",
+          "selection_frequency": "0.3"
+        },
+        {
+          "effect_type": "main",
+          "member": "ALDH4A1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CACNA1D",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "heterogeneity_rows": 80,
+      "figures": [
+        "gene_CCND1_logcpm.png",
+        "gene_NIBAN1_logcpm.png",
+        "gene_SORL1_logcpm.png",
+        "gmi_prediction_score.png",
+        "qc_retained_vs_dropped.png",
+        "s1_s5_contour_overlay.png",
+        "visualization_manifest.json"
+      ]
+    },
+    {
+      "stage_id": "sensitivity_all_nonempty_top500_spatial100",
+      "status": "completed",
+      "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/runs/sensitivity_all_nonempty_top500_spatial100",
+      "n_contours": 102,
+      "n_retained_contours": 102,
+      "n_dropped_contours": 29,
+      "n_features": 600,
+      "n_rna_features": 500,
+      "n_spatial_features": 100,
+      "selected_main_effects": 2,
+      "selected_interactions": 0,
+      "train_metrics": {
+        "auc": 0.9498987854251013,
+        "accuracy": 0.9411764705882353,
+        "sensitivity": 0.9210526315789473,
+        "specificity": 1.0
+      },
+      "main_effects": [
+        {
+          "feature_index": "526",
+          "feature": "omics__core__state_fraction__11q13_invasive_tumor_cells",
+          "coefficient": "2.87515693409687"
+        },
+        {
+          "feature_index": "528",
+          "feature": "omics__whole__state_fraction__11q13_invasive_tumor_cells",
+          "coefficient": "2.87383226569841"
+        }
+      ],
+      "main_features": [
+        "omics__core__state_fraction__11q13_invasive_tumor_cells",
+        "omics__whole__state_fraction__11q13_invasive_tumor_cells"
+      ],
+      "cv_mean": {
+        "auc": 0.9466666666666667,
+        "accuracy": 0.93,
+        "sensitivity": 0.92,
+        "specificity": 0.96
+      },
+      "cv_n_folds": 5,
+      "stability_top": [
+        {
+          "effect_type": "main",
+          "member": "omics__whole__state_fraction__11q13_invasive_tumor_cells",
+          "selection_count": "8",
+          "selection_frequency": "0.8"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__core__state_fraction__11q13_invasive_tumor_cells",
+          "selection_count": "7",
+          "selection_frequency": "0.7"
+        },
+        {
+          "effect_type": "main",
+          "member": "ERRFI1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "HSPB8",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "PBXIP1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "CRNKL1",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        },
+        {
+          "effect_type": "main",
+          "member": "edge_contrast__rna__cd44",
+          "selection_count": "1",
+          "selection_frequency": "0.1"
+        }
+      ],
+      "heterogeneity_rows": 102,
+      "figures": [
+        "gene_CCND1_logcpm.png",
+        "gene_NIBAN1_logcpm.png",
+        "gmi_prediction_score.png",
+        "qc_retained_vs_dropped.png",
+        "s1_s5_contour_overlay.png",
+        "visualization_manifest.json"
+      ]
+    }
+  ],
+  "biological_summary": {
+    "primary_qc20_main_features": [
+      "NIBAN1",
+      "SORL1"
+    ],
+    "primary_qc20_selected_niban1_sorl1": true,
+    "stability_top_features": [
+      {
+        "effect_type": "main",
+        "member": "NIBAN1",
+        "selection_count": "7",
+        "selection_frequency": "0.7"
+      },
+      {
+        "effect_type": "main",
+        "member": "SORL1",
+        "selection_count": "5",
+        "selection_frequency": "0.5"
+      },
+      {
+        "effect_type": "main",
+        "member": "ALDH4A1",
+        "selection_count": "1",
+        "selection_frequency": "0.1"
+      },
+      {
+        "effect_type": "main",
+        "member": "CACNA1D",
+        "selection_count": "1",
+        "selection_frequency": "0.1"
+      },
+      {
+        "effect_type": "main",
+        "member": "CCND1",
+        "selection_count": "1",
+        "selection_frequency": "0.1"
+      },
+      {
+        "effect_type": "main",
+        "member": "EFHD1",
+        "selection_count": "1",
+        "selection_frequency": "0.1"
+      }
+    ],
+    "rna_only_retains_niban1_sorl1": true,
+    "no_coordinate_retains_niban1_sorl1": true,
+    "spatial_only_features": [
+      "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells",
+      "omics__core__state_fraction__luminal_like_amorphous_dcis_cells"
+    ],
+    "spatial_only_feature_classes": {
+      "omics__whole__state_fraction__luminal_like_amorphous_dcis_cells": "composition",
+      "omics__core__state_fraction__luminal_like_amorphous_dcis_cells": "composition"
+    },
+    "spatial_only_coordinate_driven": false,
+    "spatial_only_composition_driven": true,
+    "top1000_features": [
+      "SORL1",
+      "EFHD1"
+    ],
+    "top1000_new_features_vs_qc20": [
+      "EFHD1"
+    ],
+    "all_nonempty_features": [
+      "omics__core__state_fraction__11q13_invasive_tumor_cells",
+      "omics__whole__state_fraction__11q13_invasive_tumor_cells"
+    ],
+    "all_nonempty_changes_primary_features": [
+      "NIBAN1",
+      "SORL1",
+      "omics__core__state_fraction__11q13_invasive_tumor_cells",
+      "omics__whole__state_fraction__11q13_invasive_tumor_cells"
+    ],
+    "interpretation": "The QC20 S1/S5 contrast is primarily driven by an S5/DCIS RNA expression program led by NIBAN1 and SORL1 when those features are retained by the full, RNA-only, and no-coordinate stages. Spatial-only signal should be read as contour context, especially composition, unless coordinate features dominate. All-nonempty sensitivity is a QC stress test and does not replace the QC20 primary result."
+  }
+}

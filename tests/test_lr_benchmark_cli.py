@@ -258,6 +258,41 @@ def test_benchmark_run_method_dry_run_command(tmp_path):
     assert payload["output_dir"].endswith("squidpy_smoke_common_db")
 
 
+def test_benchmark_run_method_dry_run_accepts_chunk_and_gzip_options(tmp_path):
+    benchmark = _write_adapter_dry_run_fixture(tmp_path)
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "benchmark",
+            "atera-lr",
+            "run-method",
+            "--method",
+            "commot",
+            "--benchmark-root",
+            str(benchmark),
+            "--phase",
+            "full",
+            "--chunk-id",
+            "2",
+            "--num-chunks",
+            "8",
+            "--bounded-mode",
+            "commot_chunked_full",
+            "--gzip-standardized",
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.output)
+    assert payload["method"] == "commot"
+    assert payload["chunk_id"] == 2
+    assert payload["num_chunks"] == 8
+    assert payload["bounded_mode"] == "commot_chunked_full"
+    assert payload["gzip_standardized"] is True
+
+
 def test_benchmark_smoke_core_dry_run_command(tmp_path):
     benchmark = _write_adapter_dry_run_fixture(tmp_path)
 
@@ -402,11 +437,132 @@ def test_benchmark_collect_a100_results_dry_run_command(tmp_path, monkeypatch):
             str(benchmark),
             "--transfer-mode",
             "scp",
+            "--since-last",
         ],
     )
 
     assert result.exit_code == 0
     payload = json.loads(result.output)
     assert payload["dry_run"] is True
+    assert payload["since_last"] is True
     assert payload["transfer_mode"] == "scp"
     assert len(payload["commands"]) == 4
+
+
+def test_benchmark_a100_matrix_submit_monitor_finalize_commands(tmp_path, monkeypatch):
+    benchmark = _write_adapter_dry_run_fixture(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    matrix_json = benchmark / "logs" / "matrix.json"
+    status_tsv = benchmark / "results" / "status.tsv"
+
+    build = CliRunner().invoke(
+        app,
+        [
+            "benchmark",
+            "atera-lr",
+            "build-a100-matrix",
+            "--benchmark-root",
+            str(benchmark),
+            "--methods",
+            "commot,cellchat",
+            "--phase",
+            "full",
+            "--commot-chunks",
+            "4",
+            "--include-bootstrap",
+            "--include-audit",
+            "--output-json",
+            str(matrix_json),
+        ],
+    )
+    assert build.exit_code == 0
+    build_payload = json.loads(build.output)
+    assert matrix_json.exists()
+    assert build_payload["kind"] == "a100_job_matrix"
+    assert build_payload["include_bootstrap"] is True
+    assert any(job["job_type"] == "env_bootstrap" for job in build_payload["jobs"])
+    assert any(job["chunk_id"] == 0 for job in build_payload["jobs"] if job["method"] == "commot" and job["job_type"] == "method_run")
+
+    submit = CliRunner().invoke(
+        app,
+        [
+            "benchmark",
+            "atera-lr",
+            "submit-a100-matrix",
+            "--matrix-json",
+            str(matrix_json),
+            "--host",
+            "sscb-a100.scilifelab.se",
+            "--user",
+            "taobo.hu",
+            "--job-type",
+            "env_bootstrap",
+        ],
+    )
+    assert submit.exit_code == 0
+    submit_payload = json.loads(submit.output)
+    assert submit_payload["dry_run"] is True
+    assert submit_payload["jobs"][0]["status"] == "dry-run"
+    assert all(job["job_type"] == "env_bootstrap" for job in submit_payload["jobs"])
+
+    monitor = CliRunner().invoke(
+        app,
+        [
+            "benchmark",
+            "atera-lr",
+            "monitor-a100-jobs",
+            "--matrix-json",
+            str(matrix_json),
+            "--benchmark-root",
+            str(benchmark),
+            "--output-tsv",
+            str(status_tsv),
+        ],
+    )
+    assert monitor.exit_code == 0
+    assert status_tsv.exists()
+
+    finalize = CliRunner().invoke(
+        app,
+        [
+            "benchmark",
+            "atera-lr",
+            "finalize-a100-all",
+            "--benchmark-root",
+            str(benchmark),
+        ],
+    )
+    assert finalize.exit_code == 0
+    finalize_payload = json.loads(finalize.output)
+    assert finalize_payload["n_rows"] == 0
+
+
+def test_benchmark_build_a100_sidecar_command(tmp_path, monkeypatch):
+    benchmark = _write_adapter_dry_run_fixture(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    output_json = benchmark / "logs" / "sidecar.json"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "benchmark",
+            "atera-lr",
+            "build-a100-sidecar",
+            "--benchmark-root",
+            str(benchmark),
+            "--methods",
+            "squidpy,cellchat",
+            "--ready-methods",
+            "squidpy",
+            "--output-json",
+            str(output_json),
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.output)
+    assert output_json.exists()
+    assert payload["kind"] == "a100_sidecar_matrix"
+    assert payload["ready_methods"] == ["squidpy"]
+    assert any(job["job_id"] == "sidecar_smoke_common_db_squidpy" for job in payload["jobs"])
+    assert not any(job["method"] == "cellchat" for job in payload["jobs"])

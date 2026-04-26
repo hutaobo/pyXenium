@@ -1,82 +1,118 @@
 from __future__ import annotations
 
+from importlib import import_module
+
 from ._version import __version__
-from . import benchmarking, contour, io, ligand_receptor, mechanostress, multimodal, pathway, validation
-from .contour import (
-    add_contours_from_geojson,
-    build_contour_feature_table,
-    expand_contours,
-    ring_density,
-    smooth_density_by_distance,
-)
-from .datasets import PUBLIC_DATASET_SOURCES, get_public_dataset_sources
-from .io import (
-    XeniumSData,
-    load_anndata_from_partial,
-    load_xenium_gene_protein,
-    read_sdata,
-    read_xenium,
-    write_xenium,
-)
-from .ligand_receptor import ligand_receptor_topology_analysis
-from .mechanostress import (
-    AxisStrengthConfig,
-    MechanostressCohortResult,
-    MechanostressConfig,
-    MechanostressResult,
-    PolarityConfig,
-    TumorStromaGrowthConfig,
-    classify_tumor_stroma_growth,
-    compute_ane_density,
-    compute_cell_polarity,
-    compute_distance_expression_coupling,
-    estimate_cell_axes,
-    render_mechanostress_report,
-    run_mechanostress_cohort,
-    run_mechanostress_workflow,
-    summarize_axial_orientation,
-    summarize_cell_polarity,
-    summarize_tumor_growth,
-    validate_hnscc_mechanostress_outputs,
-    validate_suzuki_luad_mechanostress_outputs,
-    write_mechanostress_artifacts,
-)
-from .multimodal import (
-    DEFAULT_BOUNDARY_PROGRAM_LIBRARY,
-    ProteinMicroEnv,
-    ProteinModelResult,
-    aggregate_multi_sample_study,
-    annotate_joint_cell_states,
-    build_cohort_handoff_spec,
-    build_panel_gap_table,
-    build_serializable_pilot_summary,
-    build_spatial_niches,
-    build_summary,
-    build_top_hypotheses_table,
-    compute_rna_protein_discordance,
-    extract_ranked_patches,
-    load_rna_protein_anndata,
-    plot_auc_heatmap,
-    plot_DE_volcano,
-    plot_model_diagnostics,
-    plot_topk_per_cluster,
-    protein_gene_correlation,
-    render_contour_boundary_ecology_report,
-    render_markdown_report,
-    render_renal_immune_resistance_report,
-    rna_protein_cluster_analysis,
-    run_contour_boundary_ecology_pilot,
-    run_renal_immune_resistance_pilot,
-    run_validated_renal_ffpe_smoke,
-    score_contour_boundary_programs,
-    score_immune_resistance_program,
-    validate_summary,
-    write_contour_boundary_ecology_artifacts,
-    write_model_scores,
-    write_output_artifacts,
-    write_renal_immune_resistance_artifacts,
-)
-from .pathway import compute_pathway_activity_matrix, pathway_topology_analysis
+
+_MODULE_EXPORTS = {
+    "benchmarking": ".benchmarking",
+    "contour": ".contour",
+    "gmi": ".gmi",
+    "io": ".io",
+    "ligand_receptor": ".ligand_receptor",
+    "mechanostress": ".mechanostress",
+    "multimodal": ".multimodal",
+    "pathway": ".pathway",
+    "validation": ".validation",
+}
+
+_ATTRIBUTE_EXPORTS = {
+    "PUBLIC_DATASET_SOURCES": (".datasets", "PUBLIC_DATASET_SOURCES"),
+    "get_public_dataset_sources": (".datasets", "get_public_dataset_sources"),
+    "ProteinMicroEnv": (".multimodal", "ProteinMicroEnv"),
+    "ProteinModelResult": (".multimodal", "ProteinModelResult"),
+    "XeniumSData": (".io", "XeniumSData"),
+    "DEFAULT_BOUNDARY_PROGRAM_LIBRARY": (".multimodal", "DEFAULT_BOUNDARY_PROGRAM_LIBRARY"),
+    "ContourGmiConfig": (".gmi", "ContourGmiConfig"),
+    "ContourGmiDataset": (".gmi", "ContourGmiDataset"),
+    "ContourGmiResult": (".gmi", "ContourGmiResult"),
+    "AxisStrengthConfig": (".mechanostress", "AxisStrengthConfig"),
+    "MechanostressCohortResult": (".mechanostress", "MechanostressCohortResult"),
+    "MechanostressConfig": (".mechanostress", "MechanostressConfig"),
+    "MechanostressResult": (".mechanostress", "MechanostressResult"),
+    "PolarityConfig": (".mechanostress", "PolarityConfig"),
+    "TumorStromaGrowthConfig": (".mechanostress", "TumorStromaGrowthConfig"),
+    "add_contours_from_geojson": (".contour", "add_contours_from_geojson"),
+    "build_contour_gmi_dataset": (".gmi", "build_contour_gmi_dataset"),
+    "build_contour_feature_table": (".contour", "build_contour_feature_table"),
+    "classify_tumor_stroma_growth": (".mechanostress", "classify_tumor_stroma_growth"),
+    "expand_contours": (".contour", "expand_contours"),
+    "aggregate_multi_sample_study": (".multimodal", "aggregate_multi_sample_study"),
+    "annotate_joint_cell_states": (".multimodal", "annotate_joint_cell_states"),
+    "build_cohort_handoff_spec": (".multimodal", "build_cohort_handoff_spec"),
+    "build_panel_gap_table": (".multimodal", "build_panel_gap_table"),
+    "build_serializable_pilot_summary": (".multimodal", "build_serializable_pilot_summary"),
+    "build_spatial_niches": (".multimodal", "build_spatial_niches"),
+    "build_summary": (".multimodal", "build_summary"),
+    "build_top_hypotheses_table": (".multimodal", "build_top_hypotheses_table"),
+    "compute_pathway_activity_matrix": (".pathway", "compute_pathway_activity_matrix"),
+    "compute_ane_density": (".mechanostress", "compute_ane_density"),
+    "compute_cell_polarity": (".mechanostress", "compute_cell_polarity"),
+    "compute_distance_expression_coupling": (".mechanostress", "compute_distance_expression_coupling"),
+    "compute_rna_protein_discordance": (".multimodal", "compute_rna_protein_discordance"),
+    "estimate_cell_axes": (".mechanostress", "estimate_cell_axes"),
+    "extract_ranked_patches": (".multimodal", "extract_ranked_patches"),
+    "ligand_receptor_topology_analysis": (".ligand_receptor", "ligand_receptor_topology_analysis"),
+    "load_anndata_from_partial": (".io", "load_anndata_from_partial"),
+    "load_rna_protein_anndata": (".multimodal", "load_rna_protein_anndata"),
+    "load_xenium_gene_protein": (".io", "load_xenium_gene_protein"),
+    "pathway_topology_analysis": (".pathway", "pathway_topology_analysis"),
+    "plot_auc_heatmap": (".multimodal", "plot_auc_heatmap"),
+    "plot_DE_volcano": (".multimodal", "plot_DE_volcano"),
+    "plot_model_diagnostics": (".multimodal", "plot_model_diagnostics"),
+    "plot_topk_per_cluster": (".multimodal", "plot_topk_per_cluster"),
+    "protein_gene_correlation": (".multimodal", "protein_gene_correlation"),
+    "read_sdata": (".io", "read_sdata"),
+    "read_xenium": (".io", "read_xenium"),
+    "render_contour_boundary_ecology_report": (".multimodal", "render_contour_boundary_ecology_report"),
+    "render_contour_gmi_report": (".gmi", "render_contour_gmi_report"),
+    "render_mechanostress_report": (".mechanostress", "render_mechanostress_report"),
+    "render_markdown_report": (".multimodal", "render_markdown_report"),
+    "render_renal_immune_resistance_report": (".multimodal", "render_renal_immune_resistance_report"),
+    "ring_density": (".contour", "ring_density"),
+    "rna_protein_cluster_analysis": (".multimodal", "rna_protein_cluster_analysis"),
+    "run_contour_boundary_ecology_pilot": (".multimodal", "run_contour_boundary_ecology_pilot"),
+    "run_contour_gmi": (".gmi", "run_contour_gmi"),
+    "run_atera_breast_contour_gmi": (".gmi", "run_atera_breast_contour_gmi"),
+    "run_mechanostress_cohort": (".mechanostress", "run_mechanostress_cohort"),
+    "run_mechanostress_workflow": (".mechanostress", "run_mechanostress_workflow"),
+    "run_renal_immune_resistance_pilot": (".multimodal", "run_renal_immune_resistance_pilot"),
+    "run_validated_renal_ffpe_smoke": (".multimodal", "run_validated_renal_ffpe_smoke"),
+    "score_contour_boundary_programs": (".multimodal", "score_contour_boundary_programs"),
+    "score_immune_resistance_program": (".multimodal", "score_immune_resistance_program"),
+    "smooth_density_by_distance": (".contour", "smooth_density_by_distance"),
+    "summarize_axial_orientation": (".mechanostress", "summarize_axial_orientation"),
+    "summarize_cell_polarity": (".mechanostress", "summarize_cell_polarity"),
+    "summarize_tumor_growth": (".mechanostress", "summarize_tumor_growth"),
+    "validate_summary": (".multimodal", "validate_summary"),
+    "validate_hnscc_mechanostress_outputs": (".mechanostress", "validate_hnscc_mechanostress_outputs"),
+    "validate_suzuki_luad_mechanostress_outputs": (".mechanostress", "validate_suzuki_luad_mechanostress_outputs"),
+    "write_contour_boundary_ecology_artifacts": (".multimodal", "write_contour_boundary_ecology_artifacts"),
+    "write_mechanostress_artifacts": (".mechanostress", "write_mechanostress_artifacts"),
+    "write_model_scores": (".multimodal", "write_model_scores"),
+    "write_output_artifacts": (".multimodal", "write_output_artifacts"),
+    "write_renal_immune_resistance_artifacts": (".multimodal", "write_renal_immune_resistance_artifacts"),
+    "write_xenium": (".io", "write_xenium"),
+}
+
+
+def __getattr__(name: str):
+    if name in _MODULE_EXPORTS:
+        value = import_module(_MODULE_EXPORTS[name], __name__)
+        globals()[name] = value
+        return value
+    if name in _ATTRIBUTE_EXPORTS:
+        module_name, attribute_name = _ATTRIBUTE_EXPORTS[name]
+        module = import_module(module_name, __name__)
+        value = getattr(module, attribute_name)
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(_MODULE_EXPORTS) | set(_ATTRIBUTE_EXPORTS))
+
 
 __all__ = [
     "__version__",
@@ -85,6 +121,9 @@ __all__ = [
     "ProteinModelResult",
     "XeniumSData",
     "DEFAULT_BOUNDARY_PROGRAM_LIBRARY",
+    "ContourGmiConfig",
+    "ContourGmiDataset",
+    "ContourGmiResult",
     "AxisStrengthConfig",
     "MechanostressCohortResult",
     "MechanostressConfig",
@@ -92,6 +131,7 @@ __all__ = [
     "PolarityConfig",
     "TumorStromaGrowthConfig",
     "add_contours_from_geojson",
+    "build_contour_gmi_dataset",
     "build_contour_feature_table",
     "classify_tumor_stroma_growth",
     "expand_contours",
@@ -110,9 +150,10 @@ __all__ = [
     "compute_pathway_activity_matrix",
     "compute_rna_protein_discordance",
     "contour",
-    "estimate_cell_axes",
     "extract_ranked_patches",
+    "estimate_cell_axes",
     "get_public_dataset_sources",
+    "gmi",
     "io",
     "ligand_receptor_topology_analysis",
     "ligand_receptor",
@@ -131,12 +172,15 @@ __all__ = [
     "read_sdata",
     "read_xenium",
     "render_contour_boundary_ecology_report",
+    "render_contour_gmi_report",
     "render_mechanostress_report",
     "ring_density",
     "render_markdown_report",
     "render_renal_immune_resistance_report",
     "rna_protein_cluster_analysis",
     "run_contour_boundary_ecology_pilot",
+    "run_contour_gmi",
+    "run_atera_breast_contour_gmi",
     "run_mechanostress_cohort",
     "run_mechanostress_workflow",
     "run_renal_immune_resistance_pilot",

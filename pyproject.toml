@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyXenium"
 dynamic = ["version"]
-description = "Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, and mechanostress analysis."
+description = "Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, and mechanostress analysis."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "LicenseRef-Proprietary-NonCommercial"
@@ -91,6 +91,15 @@ pyXenium = [
   "config/*.yaml",
   "datasets/toy_slide/*.zip",
   "notebooks/*.ipynb",
+  "_vendor/Gmi/*",
+  "_vendor/Gmi/.*",
+  "_vendor/Gmi/.github/*",
+  "_vendor/Gmi/.github/workflows/*",
+  "_vendor/Gmi/R/*",
+  "_vendor/Gmi/man/*",
+  "_vendor/Gmi/man/figures/*",
+  "_vendor/Gmi/renv/*",
+  "_vendor/Gmi/src/*",
 ]
 
 [tool.setuptools.packages.find]

@@ -21,6 +21,37 @@ from .lr_adapters import SUPPORTED_REAL_ADAPTERS, load_input_manifest, validate_
 DEFAULT_A100_REMOTE_ROOT = "/data/taobo.hu/pyxenium_lr_benchmark_2026-04"
 DEFAULT_A100_READONLY_XENIUM_ROOT = "/mnt/taobo.hu/long/10X_datasets/Xenium/Atera/WTA_Preview_FFPE_Breast_Cancer_outs"
 DEFAULT_A100_METHOD_ORDER = ("pyxenium", "squidpy", "liana", "commot", "cellchat")
+DEFAULT_A100_ALL_METHODS = (
+    "pyxenium",
+    "squidpy",
+    "liana",
+    "cellchat",
+    "commot",
+    "spatialdm",
+    "stlearn",
+    "giotto",
+    "laris",
+    "cellphonedb",
+    "spatalk",
+    "niches",
+    "cellnest",
+    "cellagentchat",
+    "scild",
+)
+A100_GPU_METHODS = {"cellnest", "cellagentchat", "scild"}
+A100_R_HEAVY_METHODS = {"cellchat", "spatalk", "niches", "giotto"}
+A100_PYTHON_AUDIT_MODULES = {
+    "commot": ("commot",),
+    "liana": ("liana",),
+    "squidpy": ("squidpy",),
+    "spatialdm": ("spatialdm",),
+    "stlearn": ("stlearn",),
+    "cellphonedb": ("cellphonedb",),
+    "laris": ("laris",),
+    "cellnest": ("cellnest",),
+    "cellagentchat": ("CellAgentChat",),
+    "scild": ("scild",),
+}
 DEFAULT_A100_WRITABLE_SUBDIRS = (
     "repo",
     "configs",
@@ -118,6 +149,9 @@ def _a100_prefix(remote_root: str | Path) -> str:
     repo_dir = _remote_path(remote_root, "repo")
     repo_src = _remote_path(remote_root, "repo", "src")
     return (
+        'export PATH="$HOME/miniconda3/bin:$HOME/miniconda3/condabin:$PATH" && '
+        'if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then . "$HOME/miniconda3/etc/profile.d/conda.sh"; fi && '
+        "export PYTHONNOUSERSITE=1 && "
         f"export TMPDIR={_q(tmp_dir)} && "
         f"mkdir -p { _q(tmp_dir) } && "
         f"export PYTHONPATH={_q(repo_src)}:${{PYTHONPATH:-}} && "
@@ -125,9 +159,38 @@ def _a100_prefix(remote_root: str | Path) -> str:
     )
 
 
-def _wrap_a100_job(inner_command: str, *, remote_root: str | Path, job_id: str) -> tuple[str, str]:
+def _resource_profile(method: str) -> dict[str, Any]:
+    method = str(method).lower()
+    if method in A100_GPU_METHODS:
+        return {"gpu_required": True, "max_parallel_group": "gpu", "omp_threads": 8, "mkl_threads": 8}
+    if method in A100_R_HEAVY_METHODS:
+        return {"gpu_required": False, "max_parallel_group": "r_heavy", "omp_threads": 8, "mkl_threads": 8}
+    if method in {"commot", "spatialdm", "stlearn"}:
+        return {"gpu_required": False, "max_parallel_group": "cpu_heavy", "omp_threads": 8, "mkl_threads": 8}
+    return {"gpu_required": False, "max_parallel_group": "cpu_light", "omp_threads": 4, "mkl_threads": 4}
+
+
+def _wrap_a100_job(
+    inner_command: str,
+    *,
+    remote_root: str | Path,
+    job_id: str,
+    env_name: str | None = None,
+    gpu_id: int | str | None = None,
+    omp_threads: int = 8,
+    mkl_threads: int = 8,
+) -> tuple[str, str]:
     resource_log = _remote_path(remote_root, "logs", f"{job_id}.resource.log")
-    command = f"{_a100_prefix(remote_root)} && /usr/bin/time -v -o {_q(resource_log)} {inner_command}"
+    env_prefix = ""
+    if env_name:
+        env_prefix = f'export LD_LIBRARY_PATH="$HOME/miniconda3/envs/{env_name}/lib:$HOME/miniconda3/lib:${{LD_LIBRARY_PATH:-}}" && '
+    cuda_value = "" if gpu_id is None or str(gpu_id) == "" else str(gpu_id)
+    thread_prefix = (
+        f"export CUDA_VISIBLE_DEVICES={_q(cuda_value)} && "
+        f"export OMP_NUM_THREADS={int(omp_threads)} && "
+        f"export MKL_NUM_THREADS={int(mkl_threads)} && "
+    )
+    command = f"{_a100_prefix(remote_root)} && {env_prefix}{thread_prefix}/usr/bin/time -v -o {_q(resource_log)} {inner_command}"
     return command, resource_log
 
 
@@ -165,7 +228,12 @@ def _prepare_full_bundle_command(
         "--output-json",
         _remote_path(remote_root, "logs", "prepare_full_bundle.json"),
     ]
-    return _wrap_a100_job(_join_command(parts), remote_root=remote_root, job_id=job_id)
+    return _wrap_a100_job(
+        _join_command(parts),
+        remote_root=remote_root,
+        job_id=job_id,
+        env_name="pyx-lr-prep",
+    )
 
 
 def _method_run_command(
@@ -178,20 +246,34 @@ def _method_run_command(
     run_group: str,
     max_lr_pairs: int | None,
     n_perms: int,
+    input_manifest: str | Path | None = None,
     repeat_id: str | None = None,
     job_id: str,
+    chunk_id: int | None = None,
+    num_chunks: int | None = None,
+    bounded_mode: str | None = None,
+    gpu_id: int | str | None = None,
+    gzip_standardized: bool = False,
 ) -> tuple[str, str]:
     env_name = str(method_info.get("env_name", ""))
-    output_dir = _remote_path(remote_root, "runs", run_group, method if repeat_id is None else f"{method}_{repeat_id}")
-    input_manifest = _remote_path(remote_root, "data", "input_manifest.json")
-    if method_info.get("language") == "r" and method == "cellchat":
+    if chunk_id is not None and num_chunks is not None:
+        output_name = f"{method}/chunk_{int(chunk_id):03d}_of_{int(num_chunks):03d}"
+    elif repeat_id is not None:
+        output_name = f"{method}_{repeat_id}"
+    else:
+        output_name = method
+    output_dir = _remote_path(remote_root, "runs", run_group, output_name)
+    input_manifest = str(input_manifest) if input_manifest is not None else _remote_path(remote_root, "data", "input_manifest.json")
+    python_contract_runner = method_info.get("language") != "r"
+    if method_info.get("language") == "r":
+        runner_name = "run_cellchat.R" if method == "cellchat" else "run_external_lr_method.R"
         parts = [
             "conda",
             "run",
             "--name",
             env_name,
             "Rscript",
-            _remote_path(remote_root, "runners", "r", "run_cellchat.R"),
+            _remote_path(remote_root, "runners", "r", runner_name),
             "--method",
             method,
             "--input-manifest",
@@ -228,20 +310,109 @@ def _method_run_command(
         ]
     if max_lr_pairs is not None:
         parts.extend(["--max-lr-pairs", str(max_lr_pairs)])
-    return _wrap_a100_job(_join_command(parts), remote_root=remote_root, job_id=job_id)
+    if python_contract_runner:
+        if chunk_id is not None:
+            parts.extend(["--chunk-id", str(chunk_id)])
+        if num_chunks is not None:
+            parts.extend(["--num-chunks", str(num_chunks)])
+        if bounded_mode:
+            parts.extend(["--bounded-mode", str(bounded_mode)])
+        if gpu_id is not None and str(gpu_id) != "":
+            parts.extend(["--gpu-id", str(gpu_id)])
+        parts.extend(["--job-id", str(job_id)])
+        if gzip_standardized:
+            parts.append("--gzip-standardized")
+    profile = _resource_profile(method)
+    return _wrap_a100_job(
+        _join_command(parts),
+        remote_root=remote_root,
+        job_id=job_id,
+        env_name=env_name,
+        gpu_id=gpu_id if profile["gpu_required"] else None,
+        omp_threads=int(profile["omp_threads"]),
+        mkl_threads=int(profile["mkl_threads"]),
+    )
 
 
 def _audit_command(method: str, method_info: Mapping[str, Any], remote_root: str | Path, *, job_id: str) -> tuple[str, str]:
     env_name = str(method_info.get("env_name", ""))
     if method_info.get("language") == "r":
-        expr = "cat(R.version.string, '\\n'); cat('R ok\\n')"
+        project_dir = _remote_path(remote_root, "envs", f"{env_name}_project")
+        prefix = (
+            f"project <- '{project_dir}'; "
+            "if (dir.exists(project)) { setwd(project); "
+            "if (requireNamespace('renv', quietly=TRUE)) renv::load(project=project, quiet=TRUE) }; "
+        )
+        expr = prefix + "cat(R.version.string, intToUtf8(10)); cat('R ok', intToUtf8(10))"
         if method == "cellchat":
-            expr = "cat(R.version.string, '\\n'); if (!requireNamespace('CellChat', quietly=TRUE)) stop('CellChat missing')"
+            expr = prefix + "cat(R.version.string, intToUtf8(10)); if (!requireNamespace('CellChat', quietly=TRUE)) stop('CellChat missing')"
+        elif method == "giotto":
+            expr = prefix + "cat(R.version.string, intToUtf8(10)); ok <- requireNamespace('Giotto', quietly=TRUE) || requireNamespace('GiottoClass', quietly=TRUE); if (!ok) stop('Giotto missing')"
+        elif method == "spatalk":
+            expr = prefix + "cat(R.version.string, intToUtf8(10)); if (!requireNamespace('SpaTalk', quietly=TRUE)) stop('SpaTalk missing')"
+        elif method == "niches":
+            expr = prefix + "cat(R.version.string, intToUtf8(10)); if (!requireNamespace('NICHES', quietly=TRUE)) stop('NICHES missing')"
         inner = _join_command(["conda", "run", "--name", env_name, "Rscript", "-e", expr])
-        return _wrap_a100_job(inner, remote_root=remote_root, job_id=job_id)
-    py_expr = "import importlib.metadata as m; import pyXenium; print('pyXenium ok'); print('pandas', m.version('pandas'))"
+        return _wrap_a100_job(
+            inner,
+            remote_root=remote_root,
+            job_id=job_id,
+            env_name=env_name,
+        )
+    modules = list(A100_PYTHON_AUDIT_MODULES.get(method, ()))
+    py_expr = (
+        "import importlib.metadata as m, importlib.util; "
+        "import pyXenium; "
+        "print('pyXenium ok'); "
+        "print('pandas', m.version('pandas')); "
+        f"mods={modules!r}; "
+        "missing=[name for name in mods if importlib.util.find_spec(name) is None]; "
+        "[print('module', name, 'ok') for name in mods if name not in missing]; "
+        "assert not missing, 'Missing modules: ' + ','.join(missing)"
+    )
     inner = _join_command(["conda", "run", "--name", env_name, "python", "-c", py_expr])
-    return _wrap_a100_job(inner, remote_root=remote_root, job_id=job_id)
+    return _wrap_a100_job(
+        inner,
+        remote_root=remote_root,
+        job_id=job_id,
+        env_name=env_name,
+    )
+
+
+def _bootstrap_env_command(method: str, method_info: Mapping[str, Any], remote_root: str | Path, *, job_id: str) -> tuple[str, str]:
+    env_name = str(method_info.get("env_name", ""))
+    env_file = _remote_path(remote_root, str(method_info.get("env_file", "")).lstrip("/"))
+    bootstrap_script = _remote_path(remote_root, "envs", "bootstrap_env.py")
+    repo_root = _remote_path(remote_root, "repo")
+    benchmark_root = str(remote_root)
+    env_exists = f"conda env list | awk '{{print $1}}' | grep -qx {_q(env_name)}"
+    create_or_update = (
+        f"({env_exists} && conda env update --name {_q(env_name)} --file {_q(env_file)} --prune "
+        f"|| conda env create --name {_q(env_name)} --file {_q(env_file)})"
+    )
+    bootstrap = _join_command(
+        [
+            "conda",
+            "run",
+            "--name",
+            env_name,
+            "python",
+            bootstrap_script,
+            "--method",
+            method,
+            "--repo-root",
+            repo_root,
+            "--benchmark-root",
+            benchmark_root,
+        ]
+    )
+    inner = _join_command(["bash", "-lc", f"{create_or_update} && {bootstrap}"])
+    return _wrap_a100_job(
+        inner,
+        remote_root=remote_root,
+        job_id=job_id,
+        env_name=env_name,
+    )
 
 
 def validate_a100_path_policy(
@@ -753,6 +924,7 @@ def collect_a100_results(
     user: str | None = None,
     transfer_mode: str | None = None,
     dry_run: bool = True,
+    since_last: bool = False,
 ) -> dict[str, Any]:
     layout = resolve_layout(relative_root=benchmark_root or ATERA_BENCHMARK_RELATIVE_ROOT)
     mode = _normalize_transfer_mode(transfer_mode if transfer_mode is not None else ("scp" if not shutil.which("rsync") else "rsync"))
@@ -771,6 +943,7 @@ def collect_a100_results(
             commands.append(f'scp -r {remote_target}:"{remote_path_value}" "{local_path}"')
     payload = {
         "dry_run": dry_run,
+        "since_last": since_last,
         "transfer_mode": mode,
         "remote_root": str(remote_root),
         "host": host,
@@ -915,3 +1088,551 @@ def write_failed_method_card(output_dir: str | Path, payload: Mapping[str, Any])
     path = output_dir / "method_card.md"
     path.write_text("\n".join(lines), encoding="utf-8")
     return path
+
+
+def build_a100_job_matrix(
+    *,
+    benchmark_root: str | Path | None = None,
+    remote_root: str | Path = DEFAULT_A100_REMOTE_ROOT,
+    methods: Sequence[str] = DEFAULT_A100_ALL_METHODS,
+    database_mode: str = "common-db",
+    phase: str = "smoke",
+    max_lr_pairs: int | None = None,
+    n_perms: int = 100,
+    commot_chunks: int = 16,
+    gpu_count: int = 8,
+    gzip_edge_outputs: bool = True,
+    include_bootstrap: bool = False,
+    include_audit: bool = False,
+    repeat_id: str | None = None,
+) -> dict[str, Any]:
+    layout = resolve_layout(relative_root=benchmark_root or ATERA_BENCHMARK_RELATIVE_ROOT)
+    registry = _method_registry_by_slug(layout)
+    run_group = _run_group(phase, database_mode, repeat_id=repeat_id)
+    jobs: list[dict[str, Any]] = []
+    gpu_cursor = 0
+    bootstrapped_envs: set[str] = set()
+
+    for method_value in methods:
+        method = str(method_value).strip().lower()
+        if not method:
+            continue
+        if method not in registry:
+            raise ValueError(f"Method {method!r} is not registered in methods.yaml.")
+        method_info = registry[method]
+        profile = _resource_profile(method)
+        env_name = str(method_info.get("env_name", ""))
+        if include_bootstrap and env_name and env_name not in bootstrapped_envs:
+            bootstrapped_envs.add(env_name)
+            bootstrap_id = f"bootstrap_{_safe_slug(env_name)}"
+            bootstrap_command, bootstrap_resource_log = _bootstrap_env_command(method, method_info, remote_root, job_id=bootstrap_id)
+            jobs.append(
+                {
+                    "job_id": bootstrap_id,
+                    "job_type": "env_bootstrap",
+                    "method": method,
+                    "phase": "bootstrap",
+                    "database_mode": database_mode,
+                    "env_name": env_name,
+                    "command": bootstrap_command,
+                    "output_dir": _remote_path(remote_root, "logs", bootstrap_id),
+                    "stdout": _remote_path(remote_root, "logs", f"{bootstrap_id}.stdout.log"),
+                    "stderr": _remote_path(remote_root, "logs", f"{bootstrap_id}.stderr.log"),
+                    "resource_log": bootstrap_resource_log,
+                    "status": "planned",
+                    "gpu_required": False,
+                    "max_parallel_group": "bootstrap",
+                    "omp_threads": 8,
+                    "mkl_threads": 8,
+                }
+            )
+        if include_audit:
+            audit_id = f"audit_{method}"
+            audit_command, audit_resource_log = _audit_command(method, method_info, remote_root, job_id=audit_id)
+            jobs.append(
+                {
+                    "job_id": audit_id,
+                    "job_type": "env_audit",
+                    "method": method,
+                    "phase": "audit",
+                    "database_mode": database_mode,
+                    "env_name": method_info.get("env_name"),
+                    "command": audit_command,
+                    "output_dir": _remote_path(remote_root, "logs", audit_id),
+                    "stdout": _remote_path(remote_root, "logs", f"{audit_id}.stdout.log"),
+                    "stderr": _remote_path(remote_root, "logs", f"{audit_id}.stderr.log"),
+                    "resource_log": audit_resource_log,
+                    "status": "planned",
+                    **profile,
+                }
+            )
+
+        chunk_ids: list[int | None]
+        num_chunks: int | None
+        if method == "commot" and phase == "full" and commot_chunks > 1:
+            chunk_ids = list(range(int(commot_chunks)))
+            num_chunks = int(commot_chunks)
+        else:
+            chunk_ids = [None]
+            num_chunks = None
+
+        for chunk_id in chunk_ids:
+            gpu_id = None
+            if profile["gpu_required"]:
+                gpu_id = gpu_cursor % max(1, int(gpu_count))
+                gpu_cursor += 1
+            chunk_suffix = "" if chunk_id is None else f"_chunk_{chunk_id:03d}_of_{num_chunks:03d}"
+            repeat_suffix = "" if repeat_id is None else f"_{_safe_slug(repeat_id)}"
+            job_id = f"{phase}_{_safe_slug(database_mode)}{repeat_suffix}_{method}{chunk_suffix}"
+            command, resource_log = _method_run_command(
+                method=method,
+                method_info=method_info,
+                remote_root=remote_root,
+                phase=phase,
+                database_mode=database_mode,
+                run_group=run_group,
+                max_lr_pairs=max_lr_pairs,
+                n_perms=n_perms,
+                repeat_id=repeat_id,
+                job_id=job_id,
+                chunk_id=chunk_id,
+                num_chunks=num_chunks,
+                bounded_mode=("commot_chunked_full" if method == "commot" and chunk_id is not None else None),
+                gpu_id=gpu_id,
+                gzip_standardized=gzip_edge_outputs and method in {"commot", "spatialdm", "stlearn", "laris", "cellnest", "cellagentchat", "scild", "niches", "spatalk"},
+            )
+            jobs.append(
+                {
+                    "job_id": job_id,
+                    "job_type": "method_run",
+                    "method": method,
+                    "phase": phase,
+                    "database_mode": database_mode,
+                    "repeat_id": repeat_id,
+                    "chunk_id": chunk_id,
+                    "num_chunks": num_chunks,
+                    "gpu_id": gpu_id,
+                    "env_name": method_info.get("env_name"),
+                    "command": command,
+                    "input_manifest": _remote_path(remote_root, "data", "input_manifest.json"),
+                    "output_dir": _remote_path(remote_root, "runs", run_group, method if chunk_id is None else f"{method}/chunk_{chunk_id:03d}_of_{num_chunks:03d}"),
+                    "stdout": _remote_path(remote_root, "logs", f"{job_id}.stdout.log"),
+                    "stderr": _remote_path(remote_root, "logs", f"{job_id}.stderr.log"),
+                    "resource_log": resource_log,
+                    "status": "planned",
+                    "runtime_seconds": None,
+                    "peak_memory_gb": None,
+                    "exit_code": None,
+                    **profile,
+                }
+            )
+
+    payload = {
+        "kind": "a100_job_matrix",
+        "remote_root": str(remote_root),
+        "phase": phase,
+        "database_mode": database_mode,
+        "methods": [str(item).strip().lower() for item in methods if str(item).strip()],
+        "run_group": run_group,
+        "max_lr_pairs": max_lr_pairs,
+        "n_perms": n_perms,
+        "include_bootstrap": include_bootstrap,
+        "include_audit": include_audit,
+        "parallel_policy": {
+            "gpu_count": int(gpu_count),
+            "gpu_method_slots": 1,
+            "max_r_heavy_parallel": 2,
+            "max_cpu_heavy_parallel": 3,
+            "max_commot_chunks_parallel": 4,
+        },
+        "jobs": jobs,
+    }
+    payload["path_policy"] = validate_a100_path_policy(payload, remote_root=remote_root, readonly_xenium_root=DEFAULT_A100_READONLY_XENIUM_ROOT)
+    return payload
+
+
+def _prepare_pilot_bundle_command(
+    *,
+    remote_root: str | Path,
+    n_cells: int = 50_000,
+    seed: int = 1,
+    force: bool = False,
+    job_id: str = "prepare_pilot50k_bundle",
+) -> tuple[str, str]:
+    root = str(remote_root).replace("\\", "/").rstrip("/")
+    force_literal = "True" if force else "False"
+    python_code = f"""
+import json
+from pathlib import Path
+
+root = Path({root!r})
+input_manifest_path = root / "data" / "input_manifest.json"
+pilot_dir = root / "data" / "pilot50k"
+pilot_manifest_path = pilot_dir / "input_manifest.json"
+if pilot_manifest_path.exists() and not {force_literal}:
+    print(json.dumps({{"status": "exists", "input_manifest": str(pilot_manifest_path)}}))
+    raise SystemExit(0)
+
+from pyXenium.benchmarking.lr_adapters import read_sparse_bundle_as_adata
+from pyXenium.benchmarking.lr_atera import _bundle_fingerprints, _write_sparse_bundle, stratified_subset
+
+manifest = json.loads(input_manifest_path.read_text(encoding="utf-8"))
+full_bundle = manifest.get("full_bundle") or {{}}
+if not full_bundle:
+    raise SystemExit("input_manifest.json does not contain a full_bundle for pilot50k creation")
+
+pilot_dir.mkdir(parents=True, exist_ok=True)
+adata = read_sparse_bundle_as_adata(full_bundle)
+pilot = stratified_subset(adata, n_cells={int(n_cells)}, stratify_key="cell_type", seed={int(seed)})
+bundle = _write_sparse_bundle(pilot, pilot_dir)
+pilot_manifest = dict(manifest)
+pilot_manifest["full_h5ad"] = None
+pilot_manifest["full_bundle"] = bundle
+pilot_manifest["full_bundle_fingerprints"] = _bundle_fingerprints(bundle)
+pilot_manifest["full_n_cells"] = int(pilot.n_obs)
+pilot_manifest["full_n_genes"] = int(pilot.n_vars)
+pilot_manifest["pilot_source_manifest"] = str(input_manifest_path)
+pilot_manifest["pilot_n_cells"] = int(pilot.n_obs)
+pilot_manifest["pilot_seed"] = {int(seed)}
+pilot_manifest["pilot_note"] = "50k stratified pilot bundle used for A100 LR method runtime projection."
+pilot_manifest_path.write_text(json.dumps(pilot_manifest, indent=2, default=str) + chr(10), encoding="utf-8")
+print(json.dumps({{"status": "created", "input_manifest": str(pilot_manifest_path), "n_cells": int(pilot.n_obs)}}))
+""".strip()
+    inner = _join_command(["conda", "run", "--name", "pyx-lr-prep", "python", "-c", python_code])
+    return _wrap_a100_job(
+        inner,
+        remote_root=remote_root,
+        job_id=job_id,
+        env_name="pyx-lr-prep",
+    )
+
+
+def build_a100_sidecar_matrix(
+    *,
+    benchmark_root: str | Path | None = None,
+    remote_root: str | Path = DEFAULT_A100_REMOTE_ROOT,
+    methods: Sequence[str] = DEFAULT_A100_ALL_METHODS,
+    ready_methods: Sequence[str] | None = None,
+    database_mode: str = "common-db",
+    smoke_max_lr_pairs: int | None = 25,
+    pilot_max_lr_pairs: int | None = 100,
+    pilot_n_cells: int = 50_000,
+    pilot_seed: int = 1,
+    include_audit: bool = True,
+    include_smoke: bool = True,
+    include_pilot: bool = True,
+    completed_job_ids: Sequence[str] | None = None,
+    running_job_ids: Sequence[str] | None = None,
+    gpu_count: int = 8,
+    gpu_start: int = 3,
+    gzip_edge_outputs: bool = True,
+) -> dict[str, Any]:
+    layout = resolve_layout(relative_root=benchmark_root or ATERA_BENCHMARK_RELATIVE_ROOT)
+    registry = _method_registry_by_slug(layout)
+    requested = [str(item).strip().lower() for item in methods if str(item).strip()]
+    ready = {str(item).strip().lower() for item in (ready_methods or requested) if str(item).strip()}
+    blocked = set(str(item) for item in (completed_job_ids or [])) | set(str(item) for item in (running_job_ids or []))
+    selected_methods = [method for method in requested if method in ready]
+    jobs: list[dict[str, Any]] = []
+    gpu_cursor = 0
+
+    if include_pilot and "prepare_pilot50k_bundle" not in blocked:
+        command, resource_log = _prepare_pilot_bundle_command(
+            remote_root=remote_root,
+            n_cells=pilot_n_cells,
+            seed=pilot_seed,
+            job_id="prepare_pilot50k_bundle",
+        )
+        jobs.append(
+            {
+                "job_id": "prepare_pilot50k_bundle",
+                "job_type": "pilot_bundle",
+                "method": "data",
+                "phase": "pilot_prep",
+                "database_mode": database_mode,
+                "env_name": "pyx-lr-prep",
+                "command": command,
+                "input_manifest": _remote_path(remote_root, "data", "input_manifest.json"),
+                "output_dir": _remote_path(remote_root, "data", "pilot50k"),
+                "stdout": _remote_path(remote_root, "logs", "prepare_pilot50k_bundle.stdout.log"),
+                "stderr": _remote_path(remote_root, "logs", "prepare_pilot50k_bundle.stderr.log"),
+                "resource_log": resource_log,
+                "status": "planned_sidecar",
+                "gpu_required": False,
+                "max_parallel_group": "pilot_prep",
+                "omp_threads": 8,
+                "mkl_threads": 8,
+            }
+        )
+
+    for method in selected_methods:
+        if method not in registry:
+            raise ValueError(f"Method {method!r} is not registered in methods.yaml.")
+        method_info = registry[method]
+        profile = _resource_profile(method)
+        if include_audit:
+            job_id = f"sidecar_audit_{method}"
+            if job_id not in blocked:
+                command, resource_log = _audit_command(method, method_info, remote_root, job_id=job_id)
+                jobs.append(
+                    {
+                        "job_id": job_id,
+                        "job_type": "env_audit",
+                        "method": method,
+                        "phase": "audit",
+                        "database_mode": database_mode,
+                        "env_name": method_info.get("env_name"),
+                        "command": command,
+                        "output_dir": _remote_path(remote_root, "logs", job_id),
+                        "stdout": _remote_path(remote_root, "logs", f"{job_id}.stdout.log"),
+                        "stderr": _remote_path(remote_root, "logs", f"{job_id}.stderr.log"),
+                        "resource_log": resource_log,
+                        "status": "planned_sidecar",
+                        **profile,
+                    }
+                )
+        if include_smoke:
+            job_id = f"sidecar_smoke_common_db_{method}"
+            if job_id not in blocked:
+                gpu_id = None
+                if profile["gpu_required"]:
+                    available = max(1, int(gpu_count) - int(gpu_start))
+                    gpu_id = int(gpu_start) + (gpu_cursor % available)
+                    gpu_cursor += 1
+                command, resource_log = _method_run_command(
+                    method=method,
+                    method_info=method_info,
+                    remote_root=remote_root,
+                    phase="smoke",
+                    database_mode=database_mode,
+                    run_group="smoke_sidecar_common",
+                    max_lr_pairs=smoke_max_lr_pairs,
+                    n_perms=100,
+                    job_id=job_id,
+                    bounded_mode="sidecar_smoke_20k",
+                    gpu_id=gpu_id,
+                    gzip_standardized=gzip_edge_outputs
+                    and method in {"commot", "spatialdm", "stlearn", "laris", "cellnest", "cellagentchat", "scild", "niches", "spatalk"},
+                )
+                jobs.append(
+                    {
+                        "job_id": job_id,
+                        "job_type": "method_run",
+                        "method": method,
+                        "phase": "smoke",
+                        "database_mode": database_mode,
+                        "bounded_mode": "sidecar_smoke_20k",
+                        "gpu_id": gpu_id,
+                        "env_name": method_info.get("env_name"),
+                        "command": command,
+                        "input_manifest": _remote_path(remote_root, "data", "input_manifest.json"),
+                        "output_dir": _remote_path(remote_root, "runs", "smoke_sidecar_common", method),
+                        "stdout": _remote_path(remote_root, "logs", f"{job_id}.stdout.log"),
+                        "stderr": _remote_path(remote_root, "logs", f"{job_id}.stderr.log"),
+                        "resource_log": resource_log,
+                        "status": "planned_sidecar",
+                        "runtime_seconds": None,
+                        "peak_memory_gb": None,
+                        "exit_code": None,
+                        **profile,
+                    }
+                )
+        if include_pilot:
+            job_id = f"sidecar_pilot50k_common_db_{method}"
+            if job_id not in blocked:
+                gpu_id = None
+                if profile["gpu_required"]:
+                    available = max(1, int(gpu_count) - int(gpu_start))
+                    gpu_id = int(gpu_start) + (gpu_cursor % available)
+                    gpu_cursor += 1
+                command, resource_log = _method_run_command(
+                    method=method,
+                    method_info=method_info,
+                    remote_root=remote_root,
+                    phase="full",
+                    database_mode=database_mode,
+                    run_group="pilot50k_common",
+                    max_lr_pairs=pilot_max_lr_pairs,
+                    n_perms=100,
+                    input_manifest=_remote_path(remote_root, "data", "pilot50k", "input_manifest.json"),
+                    job_id=job_id,
+                    bounded_mode=f"pilot50k_{pilot_max_lr_pairs or 'all'}lr",
+                    gpu_id=gpu_id,
+                    gzip_standardized=gzip_edge_outputs
+                    and method in {"commot", "spatialdm", "stlearn", "laris", "cellnest", "cellagentchat", "scild", "niches", "spatalk"},
+                )
+                jobs.append(
+                    {
+                        "job_id": job_id,
+                        "job_type": "method_run",
+                        "method": method,
+                        "phase": "full",
+                        "database_mode": database_mode,
+                        "bounded_mode": f"pilot50k_{pilot_max_lr_pairs or 'all'}lr",
+                        "gpu_id": gpu_id,
+                        "env_name": method_info.get("env_name"),
+                        "command": command,
+                        "input_manifest": _remote_path(remote_root, "data", "pilot50k", "input_manifest.json"),
+                        "output_dir": _remote_path(remote_root, "runs", "pilot50k_common", method),
+                        "stdout": _remote_path(remote_root, "logs", f"{job_id}.stdout.log"),
+                        "stderr": _remote_path(remote_root, "logs", f"{job_id}.stderr.log"),
+                        "resource_log": resource_log,
+                        "status": "planned_sidecar",
+                        "runtime_seconds": None,
+                        "peak_memory_gb": None,
+                        "exit_code": None,
+                        **profile,
+                    }
+                )
+
+    payload = {
+        "kind": "a100_sidecar_matrix",
+        "remote_root": str(remote_root),
+        "methods": requested,
+        "ready_methods": selected_methods,
+        "database_mode": database_mode,
+        "smoke_run_group": "smoke_sidecar_common",
+        "pilot_run_group": "pilot50k_common",
+        "smoke_max_lr_pairs": smoke_max_lr_pairs,
+        "pilot_max_lr_pairs": pilot_max_lr_pairs,
+        "pilot_n_cells": int(pilot_n_cells),
+        "pilot_seed": int(pilot_seed),
+        "completed_job_ids": sorted(set(completed_job_ids or [])),
+        "running_job_ids": sorted(set(running_job_ids or [])),
+        "parallel_policy": {
+            "profile": "balanced",
+            "gpu_count": int(gpu_count),
+            "gpu_start": int(gpu_start),
+            "gpu_method_slots": 1,
+            "max_r_heavy_parallel": 2,
+            "max_cpu_heavy_parallel": 4,
+            "max_cpu_light_parallel": 4,
+        },
+        "jobs": jobs,
+    }
+    payload["path_policy"] = validate_a100_path_policy(payload, remote_root=remote_root, readonly_xenium_root=DEFAULT_A100_READONLY_XENIUM_ROOT)
+    return payload
+
+
+def _remote_background_command(job: Mapping[str, Any]) -> str:
+    stdout = _q(str(job["stdout"]))
+    stderr = _q(str(job["stderr"]))
+    command = str(job["command"])
+    return f"mkdir -p $(dirname {stdout}) $(dirname {stderr}) {_q(str(job['output_dir']))} && nohup bash -lc {_q(command)} > {stdout} 2> {stderr} < /dev/null & echo $!"
+
+
+def submit_a100_matrix(
+    *,
+    matrix_json: str | Path,
+    dry_run: bool = True,
+    remote: bool = True,
+    host: str | None = None,
+    user: str | None = None,
+    job_ids: Sequence[str] | None = None,
+    job_types: Sequence[str] | None = None,
+    ssh_executable: str = "ssh",
+) -> dict[str, Any]:
+    matrix = json.loads(Path(matrix_json).read_text(encoding="utf-8"))
+    selected = set(job_ids or [])
+    selected_types = {str(item) for item in (job_types or [])}
+    remote_target = _remote_target(host, user) if remote else None
+    if remote and not dry_run and not (host and user):
+        raise ValueError("host and user are required when submitting A100 jobs remotely.")
+    rows: list[dict[str, Any]] = []
+    for job in matrix.get("jobs", []):
+        if selected and job.get("job_id") not in selected:
+            continue
+        if selected_types and job.get("job_type") not in selected_types:
+            continue
+        background = _remote_background_command(job)
+        wrapper = f'{ssh_executable} {remote_target} "{background}"' if remote else background
+        if dry_run:
+            rows.append({**job, "status": "dry-run", "submit_command": wrapper, "background_command": background})
+            continue
+        started = time.perf_counter()
+        if remote:
+            completed = subprocess.run([ssh_executable, str(remote_target), background], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        else:
+            completed = subprocess.run(background, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        rows.append(
+            {
+                **job,
+                "status": "submitted" if completed.returncode == 0 else "submit_failed",
+                "submit_runtime_seconds": float(time.perf_counter() - started),
+                "submit_exit_code": completed.returncode,
+                "remote_pid": completed.stdout.strip(),
+                "submit_stderr": completed.stderr,
+                "submit_command": wrapper,
+            }
+        )
+    return {"dry_run": dry_run, "remote": remote, "host": host, "user": user, "jobs": rows}
+
+
+def monitor_a100_jobs(
+    *,
+    matrix_json: str | Path,
+    benchmark_root: str | Path | None = None,
+    output_tsv: str | Path | None = None,
+) -> pd.DataFrame:
+    matrix = json.loads(Path(matrix_json).read_text(encoding="utf-8"))
+    layout = resolve_layout(relative_root=benchmark_root or ATERA_BENCHMARK_RELATIVE_ROOT)
+    local_runs = layout.runs_dir / "a100_collected"
+    run_status = summarize_run_status(local_runs) if local_runs.exists() else pd.DataFrame()
+    status_lookup: dict[tuple[str, str, str], dict[str, Any]] = {}
+    if not run_status.empty:
+        for _, row in run_status.iterrows():
+            key = (str(row.get("method")), str(row.get("phase")), str(row.get("database_mode")))
+            status_lookup[key] = row.to_dict()
+    rows: list[dict[str, Any]] = []
+    for job in matrix.get("jobs", []):
+        key = (str(job.get("method")), str(job.get("phase")), str(job.get("database_mode")))
+        observed = status_lookup.get(key, {})
+        rows.append(
+            {
+                "job_id": job.get("job_id"),
+                "method": job.get("method"),
+                "phase": job.get("phase"),
+                "database_mode": job.get("database_mode"),
+                "chunk_id": job.get("chunk_id"),
+                "gpu_id": job.get("gpu_id"),
+                "planned_status": job.get("status"),
+                "observed_status": observed.get("status", "not_collected"),
+                "n_rows": observed.get("n_rows"),
+                "elapsed_seconds": observed.get("elapsed_seconds"),
+                "standardized_tsv": observed.get("standardized_tsv"),
+                "stdout": job.get("stdout"),
+                "stderr": job.get("stderr"),
+                "resource_log": job.get("resource_log"),
+            }
+        )
+    table = pd.DataFrame(rows)
+    if output_tsv:
+        Path(output_tsv).parent.mkdir(parents=True, exist_ok=True)
+        table.to_csv(output_tsv, sep="\t", index=False)
+    return table
+
+
+def finalize_a100_all(
+    *,
+    benchmark_root: str | Path | None = None,
+    output_path: str | Path | None = None,
+) -> dict[str, Any]:
+    from .lr_atera import aggregate_standardized_results
+
+    layout = resolve_layout(relative_root=benchmark_root or ATERA_BENCHMARK_RELATIVE_ROOT)
+    discovered = sorted(
+        [
+            *layout.runs_dir.glob("a100_collected/**/*standardized.tsv"),
+            *layout.runs_dir.glob("a100_collected/**/*standardized.tsv.gz"),
+        ]
+    )
+    resolved_output = Path(output_path) if output_path else layout.results_dir / "a100_all_combined_standardized.tsv"
+    combined = aggregate_standardized_results(discovered, output_path=resolved_output) if discovered else pd.DataFrame()
+    payload = {
+        "output_path": str(resolved_output),
+        "n_rows": int(len(combined)),
+        "n_methods": int(combined["method"].nunique()) if not combined.empty and "method" in combined.columns else 0,
+        "inputs": [str(path) for path in discovered],
+    }
+    _write_json(layout.results_dir / "a100_all_finalize_summary.json", payload)
+    return payload

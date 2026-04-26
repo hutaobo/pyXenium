@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import importlib.metadata
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -18,8 +19,10 @@ from scipy import sparse
 from scipy.io import mmread
 from sklearn.neighbors import NearestNeighbors
 
-from pyXenium.validation import DEFAULT_ATERA_WTA_BREAST_DATASET_PATH
-from pyXenium.validation.atera_wta_breast_topology import DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR
+from pyXenium.validation.atera_wta_breast_topology import (
+    DEFAULT_ATERA_WTA_BREAST_DATASET_PATH,
+    DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR,
+)
 
 from .lr_atera import (
     ATERA_BENCHMARK_RELATIVE_ROOT,
@@ -31,7 +34,25 @@ from .lr_atera import (
 )
 
 
-SUPPORTED_REAL_ADAPTERS = ("pyxenium", "squidpy", "liana", "commot", "cellchat")
+SUPPORTED_REAL_ADAPTERS = (
+    "pyxenium",
+    "squidpy",
+    "liana",
+    "commot",
+    "cellchat",
+    "spatialdm",
+    "stlearn",
+    "cellphonedb",
+    "laris",
+    "giotto",
+    "spatalk",
+    "niches",
+    "cellnest",
+    "cellagentchat",
+    "scild",
+)
+
+EXTERNAL_ATTEMPT_METHODS = {"giotto", "spatalk", "niches", "cellnest", "cellagentchat", "scild"}
 
 
 @dataclass(frozen=True)
@@ -47,6 +68,12 @@ class MethodRunSpec:
     tbc_results: Path | None = None
     export_figures: bool = False
     rscript: str | None = None
+    chunk_id: int | None = None
+    num_chunks: int | None = None
+    bounded_mode: str | None = None
+    gpu_id: str | None = None
+    job_id: str | None = None
+    gzip_standardized: bool = False
     extra: Mapping[str, Any] = field(default_factory=dict)
 
 
@@ -61,6 +88,26 @@ def _write_tsv(path: str | Path, table: pd.DataFrame) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     table.to_csv(path, sep="\t", index=False)
+    return path
+
+
+def _write_method_card(output_dir: Path, payload: Mapping[str, Any]) -> Path:
+    method = str(payload.get("method", "unknown"))
+    lines = [
+        f"# Method Card: {method}",
+        "",
+        f"- Status: `{payload.get('status', 'unknown')}`",
+        f"- Phase: `{payload.get('phase', 'unknown')}`",
+        f"- Database mode: `{payload.get('database_mode', 'unknown')}`",
+        f"- Reason: `{payload.get('reason', payload.get('error', payload.get('returncode', 'not recorded')))}`",
+        f"- Reproduce: `{payload.get('reproduce', 'See run_summary.json and logs.')}`",
+        "",
+    ]
+    if payload.get("package_candidates"):
+        lines.append(f"- Package candidates checked: `{payload.get('package_candidates')}`")
+    path = output_dir / "method_card.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
     return path
 
 
@@ -303,6 +350,144 @@ def read_lr_resource(
     return resource
 
 
+def _select_lr_chunk(
+    resource: pd.DataFrame,
+    *,
+    chunk_id: int | None = None,
+    num_chunks: int | None = None,
+    max_lr_pairs: int | None = None,
+) -> pd.DataFrame:
+    selected = resource.drop_duplicates(["ligand", "receptor"]).reset_index(drop=True).copy()
+    if num_chunks is not None or chunk_id is not None:
+        if num_chunks is None or chunk_id is None:
+            raise ValueError("Both chunk_id and num_chunks must be provided for LR chunking.")
+        if num_chunks <= 0:
+            raise ValueError("num_chunks must be positive.")
+        if chunk_id < 0 or chunk_id >= num_chunks:
+            raise ValueError(f"chunk_id must be in [0, {num_chunks - 1}], got {chunk_id}.")
+        indices = np.array_split(np.arange(len(selected)), int(num_chunks))[int(chunk_id)]
+        selected = selected.iloc[indices].reset_index(drop=True)
+    if max_lr_pairs is not None and max_lr_pairs > 0:
+        selected = selected.head(int(max_lr_pairs)).copy()
+    return selected
+
+
+def _dense_gene_vector(adata: ad.AnnData, gene: str) -> np.ndarray:
+    if gene not in adata.var_names:
+        raise KeyError(gene)
+    values = adata[:, [gene]].X
+    if sparse.issparse(values):
+        values = values.toarray()
+    return np.asarray(values, dtype=float).reshape(-1)
+
+
+def _dense_gene_matrix(adata: ad.AnnData, genes: Sequence[str]) -> np.ndarray:
+    values = adata[:, list(genes)].X
+    if sparse.issparse(values):
+        values = values.toarray()
+    return np.asarray(values, dtype=float)
+
+
+def aggregate_lr_by_spatial_neighbors(
+    adata: ad.AnnData,
+    lr_resource: pd.DataFrame,
+    *,
+    connectivity_key: str = "spatial_connectivities",
+    global_scores: pd.DataFrame | None = None,
+    global_score_col: str = "LR_score",
+    pvalue_col: str | None = "pvalue",
+) -> pd.DataFrame:
+    if connectivity_key not in adata.obsp:
+        ensure_spatial_connectivities(adata, key=connectivity_key)
+    labels, _, one_hot = _celltype_one_hot(adata.obs["cell_type"].astype(str).to_numpy())
+    conn = adata.obsp[connectivity_key].tocsr()
+    edge_counts = one_hot.T @ (conn > 0).astype(float) @ one_hot
+    edge_arr = np.asarray(edge_counts.toarray() if sparse.issparse(edge_counts) else edge_counts, dtype=float)
+    score_lookup: dict[tuple[str, str], Mapping[str, Any]] = {}
+    if global_scores is not None and not global_scores.empty:
+        for _, row in global_scores.iterrows():
+            score_lookup[(str(row["ligand"]), str(row["receptor"]))] = row.to_dict()
+
+    rows: list[dict[str, Any]] = []
+    for _, lr in lr_resource.iterrows():
+        ligand = str(lr["ligand"])
+        receptor = str(lr["receptor"])
+        if ligand not in adata.var_names or receptor not in adata.var_names:
+            continue
+        ligand_expr = _dense_gene_vector(adata, ligand)
+        receptor_expr = _dense_gene_vector(adata, receptor)
+        weighted = conn.multiply(ligand_expr[:, None]).multiply(receptor_expr[None, :]).tocsr()
+        aggregate = one_hot.T @ weighted @ one_hot
+        aggregate_arr = np.asarray(aggregate.toarray() if sparse.issparse(aggregate) else aggregate, dtype=float)
+        global_row = score_lookup.get((ligand, receptor), {})
+        global_score = float(global_row.get(global_score_col, 1.0))
+        if not np.isfinite(global_score):
+            global_score = 1.0
+        positive_weight = max(global_score, 0.0)
+        aggregate_max = float(np.max(aggregate_arr)) if aggregate_arr.size else 0.0
+        if positive_weight == 0.0 and aggregate_max > 0:
+            positive_weight = 1e-12
+        for sender_idx, sender in enumerate(labels):
+            for receiver_idx, receiver in enumerate(labels):
+                local_score = float(aggregate_arr[sender_idx, receiver_idx])
+                if not np.isfinite(local_score) or local_score <= 0:
+                    continue
+                edges = float(edge_arr[sender_idx, receiver_idx])
+                row = {
+                    "ligand": ligand,
+                    "receptor": receptor,
+                    "sender_celltype": sender,
+                    "receiver_celltype": receiver,
+                    "LR_score": local_score * positive_weight,
+                    "local_lr_score": local_score,
+                    "edge_count": edges,
+                    "spatial_coherence": local_score / edges if edges > 0 else np.nan,
+                }
+                if global_row:
+                    for key, value in global_row.items():
+                        if key in {"ligand", "receptor", "sender_celltype", "receiver_celltype"}:
+                            continue
+                        row[key] = value
+                    if pvalue_col and pvalue_col in global_row:
+                        row[pvalue_col] = global_row[pvalue_col]
+                rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def aggregate_lr_by_celltype_means(adata: ad.AnnData, lr_resource: pd.DataFrame) -> pd.DataFrame:
+    labels, _, one_hot = _celltype_one_hot(adata.obs["cell_type"].astype(str).to_numpy())
+    counts = np.asarray(one_hot.sum(axis=0)).reshape(-1)
+    counts = np.where(counts > 0, counts, 1.0)
+    rows: list[dict[str, Any]] = []
+    for _, lr in lr_resource.iterrows():
+        ligand = str(lr["ligand"])
+        receptor = str(lr["receptor"])
+        if ligand not in adata.var_names or receptor not in adata.var_names:
+            continue
+        ligand_expr = _dense_gene_vector(adata, ligand)
+        receptor_expr = _dense_gene_vector(adata, receptor)
+        ligand_mean = np.asarray(one_hot.T @ ligand_expr).reshape(-1) / counts
+        receptor_mean = np.asarray(one_hot.T @ receptor_expr).reshape(-1) / counts
+        scores = ligand_mean[:, None] * receptor_mean[None, :]
+        for sender_idx, sender in enumerate(labels):
+            for receiver_idx, receiver in enumerate(labels):
+                score = float(scores[sender_idx, receiver_idx])
+                if not np.isfinite(score) or score <= 0:
+                    continue
+                rows.append(
+                    {
+                        "ligand": ligand,
+                        "receptor": receptor,
+                        "sender_celltype": sender,
+                        "receiver_celltype": receiver,
+                        "LR_score": score,
+                        "sender_mean_expr": float(ligand_mean[sender_idx]),
+                        "receiver_mean_expr": float(receptor_mean[receiver_idx]),
+                    }
+                )
+    return pd.DataFrame(rows)
+
+
 def _prepare_expression_adata(adata: ad.AnnData, *, normalize: bool = True) -> ad.AnnData:
     prepared = adata.copy()
     if "cell_type" not in prepared.obs.columns:
@@ -321,6 +506,15 @@ def _prepare_expression_adata(adata: ad.AnnData, *, normalize: bool = True) -> a
         sc.pp.normalize_total(prepared, target_sum=1e4)
         sc.pp.log1p(prepared)
     return prepared
+
+
+def ensure_categorical_obs(adata: ad.AnnData, column: str) -> ad.AnnData:
+    if column not in adata.obs.columns:
+        raise ValueError(f"AnnData.obs is missing required column {column!r}.")
+    if not isinstance(adata.obs[column].dtype, pd.CategoricalDtype):
+        adata = adata.copy()
+        adata.obs[column] = pd.Categorical(adata.obs[column].astype(str))
+    return adata
 
 
 def ensure_spatial_connectivities(
@@ -349,6 +543,29 @@ def ensure_spatial_connectivities(
         conn = conn.tocsr()
         adata.obsp[key] = conn
     return conn
+
+
+def estimate_commot_distance_threshold(
+    adata: ad.AnnData,
+    *,
+    spatial_key: str = "spatial",
+    n_neighbors: int = 6,
+    quantile: float = 0.95,
+) -> float:
+    if spatial_key not in adata.obsm:
+        raise ValueError(f"AnnData is missing adata.obsm[{spatial_key!r}] required to estimate a COMMOT distance threshold.")
+    coords = np.asarray(adata.obsm[spatial_key], dtype=float)
+    if coords.ndim != 2 or coords.shape[0] < 2:
+        raise ValueError("COMMOT distance threshold estimation requires at least two spatial coordinates.")
+    k = int(max(1, min(n_neighbors, coords.shape[0] - 1)))
+    model = NearestNeighbors(n_neighbors=k + 1, metric="euclidean")
+    model.fit(coords)
+    distances, _ = model.kneighbors(coords)
+    radius = distances[:, k]
+    threshold = float(np.quantile(radius, quantile))
+    if not np.isfinite(threshold) or threshold <= 0:
+        raise ValueError("Estimated COMMOT distance threshold was non-finite or non-positive.")
+    return threshold
 
 
 def _gene_symbol_key(adata: ad.AnnData) -> str | None:
@@ -554,6 +771,7 @@ def _write_standardized(
     spatial_support_type: str,
     pvalue_col: str | None = None,
     extra_numeric_cols: Sequence[str] = (),
+    gzip_output: bool = False,
 ) -> tuple[Path, pd.DataFrame]:
     standardized = standardize_result_table(
         raw,
@@ -568,7 +786,8 @@ def _write_standardized(
         artifact_path=output_dir / "raw",
         extra_numeric_cols=extra_numeric_cols,
     )
-    path = output_dir / f"{method}_standardized.tsv"
+    suffix = ".tsv.gz" if gzip_output else ".tsv"
+    path = output_dir / f"{method}_standardized{suffix}"
     _write_tsv(path, standardized)
     return path, standardized
 
@@ -585,6 +804,7 @@ def run_squidpy_adapter(spec: MethodRunSpec) -> dict[str, Any]:
     lr_resource = read_lr_resource(manifest, database_mode=spec.database_mode, max_lr_pairs=spec.max_lr_pairs)
     raw_adata, _ = load_adata_from_manifest(manifest, spec.phase)
     adata = _prepare_expression_adata(raw_adata, normalize=True)
+    adata = ensure_categorical_obs(adata, "cell_type")
     interactions = None
     if lr_resource is not None:
         interactions = lr_resource.rename(columns={"ligand": "source", "receptor": "target"}).loc[:, ["source", "target"]]
@@ -618,6 +838,7 @@ def run_squidpy_adapter(spec: MethodRunSpec) -> dict[str, Any]:
         resolution="celltype_pair",
         spatial_support_type="cluster_permutation",
         pvalue_col="pvalue",
+        gzip_output=spec.gzip_standardized,
     )
     return {
         "method": "squidpy",
@@ -639,6 +860,12 @@ def _call_liana_bivariate(adata: ad.AnnData, lr_resource: pd.DataFrame | None, *
     if bivariate is None:
         raise AttributeError("Could not locate liana bivariate method on li.mt or li.method.")
 
+    adata = adata.copy()
+    # LIANA's AnnData path expects reset_index() to create an `index` column; named var indices
+    # (e.g. `gene_symbol`) otherwise propagate into incompatible merge keys such as `ligand_gene_symbol`.
+    adata.var_names = pd.Index(adata.var_names.astype(str), name=None)
+    adata.var.index.name = None
+
     kwargs: dict[str, Any] = {
         "local_name": "cosine",
         "connectivity_key": "spatial_connectivities",
@@ -646,6 +873,7 @@ def _call_liana_bivariate(adata: ad.AnnData, lr_resource: pd.DataFrame | None, *
         "seed": 0,
         "nz_prop": 0.01,
         "remove_self_interactions": True,
+        "use_raw": False,
         "verbose": False,
     }
     if lr_resource is not None:
@@ -690,6 +918,7 @@ def run_liana_adapter(spec: MethodRunSpec) -> dict[str, Any]:
         resolution="local_lr",
         spatial_support_type="spatial_bivariate_neighbor",
         extra_numeric_cols=("spatial_coherence",),
+        gzip_output=spec.gzip_standardized,
     )
     return {
         "method": "liana",
@@ -727,16 +956,21 @@ def run_commot_adapter(spec: MethodRunSpec) -> dict[str, Any]:
     import commot as ct  # type: ignore
 
     manifest = load_input_manifest(spec.input_manifest)
-    lr_resource = read_lr_resource(manifest, database_mode=spec.database_mode, max_lr_pairs=spec.max_lr_pairs)
+    lr_resource = read_lr_resource(manifest, database_mode=spec.database_mode, max_lr_pairs=None)
     if lr_resource is None:
         lr_resource = _commot_native_resource()
-        if spec.max_lr_pairs is not None and spec.max_lr_pairs > 0:
-            lr_resource = lr_resource.head(int(spec.max_lr_pairs)).copy()
+    lr_resource = _select_lr_chunk(
+        lr_resource,
+        chunk_id=spec.chunk_id,
+        num_chunks=spec.num_chunks,
+        max_lr_pairs=spec.max_lr_pairs,
+    )
     lr_resource = lr_resource.loc[:, ["ligand", "receptor", "pathway"]].copy()
 
     raw_adata, _ = load_adata_from_manifest(manifest, spec.phase)
     adata = _prepare_expression_adata(raw_adata, normalize=True)
     database_name = "pyx_common" if _normalize_database_mode(spec.database_mode) != "native-db" else "commot_native"
+    distance_threshold = estimate_commot_distance_threshold(adata)
     ct.tl.spatial_communication(
         adata,
         database_name=database_name,
@@ -744,7 +978,7 @@ def run_commot_adapter(spec: MethodRunSpec) -> dict[str, Any]:
         pathway_sum=True,
         heteromeric=True,
         heteromeric_delimiter="_",
-        dis_thr=None,
+        dis_thr=distance_threshold,
         copy=False,
     )
 
@@ -761,15 +995,379 @@ def run_commot_adapter(spec: MethodRunSpec) -> dict[str, Any]:
         resolution="cell_pair",
         spatial_support_type="collective_optimal_transport",
         extra_numeric_cols=("communication_mass", "edge_count", "spatial_coherence"),
+        gzip_output=spec.gzip_standardized,
     )
     return {
         "method": "commot",
         "status": "success",
+        "chunk_id": spec.chunk_id,
+        "num_chunks": spec.num_chunks,
         "raw_tsv": str(raw_path),
         "standardized_tsv": str(standardized_path),
+        "standardized_tsv_gz": str(standardized_path) if str(standardized_path).endswith(".gz") else None,
         "n_rows": int(len(standardized)),
         "top_hit": standardized.head(1).to_dict(orient="records"),
+        "distance_threshold": distance_threshold,
     }
+
+
+def run_spatialdm_adapter(spec: MethodRunSpec) -> dict[str, Any]:
+    import spatialdm as sdm  # type: ignore
+    from spatialdm.stats import Moran_R, rbfweight  # type: ignore
+
+    manifest = load_input_manifest(spec.input_manifest)
+    lr_resource = read_lr_resource(manifest, database_mode=spec.database_mode, max_lr_pairs=None)
+    if lr_resource is None:
+        raise NotImplementedError("SpatialDM native-db mode is not implemented in this benchmark adapter; use common-db.")
+    lr_resource = _select_lr_chunk(
+        lr_resource,
+        chunk_id=spec.chunk_id,
+        num_chunks=spec.num_chunks,
+        max_lr_pairs=spec.max_lr_pairs,
+    )
+    raw_adata, _ = load_adata_from_manifest(manifest, spec.phase)
+    adata = _prepare_expression_adata(raw_adata, normalize=True)
+    coords = np.asarray(adata.obsm["spatial"], dtype=float)
+    spatial_scale = estimate_commot_distance_threshold(adata, n_neighbors=6, quantile=0.5)
+    spatial_w, knn_connect = rbfweight(coords, l=spatial_scale, n_neighbors=6, single_cell=True)
+    adata.obsp["spatial_connectivities"] = knn_connect.tocsr() if sparse.issparse(knn_connect) else sparse.csr_matrix(knn_connect)
+
+    available = lr_resource[lr_resource["ligand"].isin(adata.var_names) & lr_resource["receptor"].isin(adata.var_names)].reset_index(drop=True)
+    global_rows: list[pd.DataFrame] = []
+    batch_size = int(spec.extra.get("batch_size", 64)) if spec.extra else 64
+    for start in range(0, len(available), batch_size):
+        batch = available.iloc[start : start + batch_size].copy()
+        ligands = batch["ligand"].astype(str).tolist()
+        receptors = batch["receptor"].astype(str).tolist()
+        ligand_expr = _dense_gene_matrix(adata, ligands)
+        receptor_expr = _dense_gene_matrix(adata, receptors)
+        moran_r, zscore, pvalue = Moran_R(ligand_expr, receptor_expr, spatial_w, nproc=1)
+        moran_r = np.asarray(moran_r, dtype=float).reshape(-1)
+        zscore = np.asarray(zscore, dtype=float).reshape(-1)
+        pvalue = np.asarray(pvalue, dtype=float).reshape(-1)
+        score = np.maximum(zscore, 0.0) * -np.log10(np.clip(pvalue, 1e-300, 1.0))
+        global_rows.append(
+            pd.DataFrame(
+                {
+                    "ligand": ligands,
+                    "receptor": receptors,
+                    "LR_score": score,
+                    "spatialdm_moran_r": moran_r,
+                    "spatialdm_zscore": zscore,
+                    "pvalue": pvalue,
+                }
+            )
+        )
+    global_scores = pd.concat(global_rows, ignore_index=True) if global_rows else pd.DataFrame(columns=["ligand", "receptor", "LR_score"])
+
+    raw_dir = spec.output_dir / "raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    global_path = _write_tsv(raw_dir / "spatialdm_global.tsv", global_scores)
+    raw = aggregate_lr_by_spatial_neighbors(adata, available, global_scores=global_scores, pvalue_col="pvalue")
+    raw_path = _write_tsv(raw_dir / "spatialdm_celltype_flat.tsv", raw)
+    standardized_path, standardized = _write_standardized(
+        raw,
+        output_dir=spec.output_dir,
+        method="spatialdm",
+        database_mode=spec.database_mode,
+        resolution="local_lr",
+        spatial_support_type="bivariate_moran_neighbor",
+        pvalue_col="pvalue",
+        extra_numeric_cols=("local_lr_score", "edge_count", "spatial_coherence", "spatialdm_moran_r", "spatialdm_zscore"),
+        gzip_output=spec.gzip_standardized,
+    )
+    return {
+        "method": "spatialdm",
+        "status": "success",
+        "chunk_id": spec.chunk_id,
+        "num_chunks": spec.num_chunks,
+        "raw_tsv": str(raw_path),
+        "global_tsv": str(global_path),
+        "standardized_tsv": str(standardized_path),
+        "standardized_tsv_gz": str(standardized_path) if str(standardized_path).endswith(".gz") else None,
+        "n_rows": int(len(standardized)),
+        "top_hit": standardized.head(1).to_dict(orient="records"),
+        "package_versions": {"spatialdm": getattr(sdm, "__version__", "unknown")},
+        "spatial_scale": spatial_scale,
+    }
+
+
+def run_stlearn_adapter(spec: MethodRunSpec) -> dict[str, Any]:
+    import scanpy as sc
+    import stlearn as st  # type: ignore
+
+    manifest = load_input_manifest(spec.input_manifest)
+    lr_resource = read_lr_resource(manifest, database_mode=spec.database_mode, max_lr_pairs=None)
+    if lr_resource is None:
+        try:
+            native_lrs = st.tl.cci.load_lrs(["connectomeDB2020_lit"], species="human")
+        except Exception as exc:
+            raise NotImplementedError("stLearn native-db mode failed to load connectomeDB2020_lit.") from exc
+        lr_resource = pd.DataFrame([_split_lr_token(value) for value in native_lrs], columns=["ligand", "receptor"])
+        lr_resource["pathway"] = "stlearn_native"
+    lr_resource = _select_lr_chunk(
+        lr_resource,
+        chunk_id=spec.chunk_id,
+        num_chunks=spec.num_chunks,
+        max_lr_pairs=spec.max_lr_pairs,
+    )
+    raw_adata, _ = load_adata_from_manifest(manifest, spec.phase)
+    adata = raw_adata.copy()
+    if "cell_type" not in adata.obs.columns:
+        raise ValueError("stLearn adapter requires obs['cell_type'].")
+    if "spatial" not in adata.obsm:
+        adata.obsm["spatial"] = adata.obs.loc[:, ["x", "y"]].to_numpy(dtype=float)
+    coords = np.asarray(adata.obsm["spatial"], dtype=float)
+    adata.obs["imagecol"] = coords[:, 0]
+    adata.obs["imagerow"] = coords[:, 1]
+    adata.obs["cell_type"] = adata.obs["cell_type"].astype("category")
+    distance_threshold = estimate_commot_distance_threshold(adata, n_neighbors=6, quantile=0.5)
+    adata.layers["counts"] = adata.X.copy()
+    sc.pp.normalize_total(adata, target_sum=1e4)
+
+    lrs = np.asarray([f"{row.ligand}_{row.receptor}" for row in lr_resource.itertuples(index=False)], dtype=str)
+    n_pairs = max(1, int(spec.n_perms))
+    st.tl.cci.run(
+        adata,
+        lrs,
+        min_spots=20 if adata.n_obs >= 1000 else 1,
+        distance=distance_threshold,
+        n_pairs=n_pairs,
+        n_cpus=int(spec.extra.get("n_cpus", 8)) if spec.extra else 8,
+    )
+    summary = pd.DataFrame(adata.uns.get("lr_summary", pd.DataFrame())).copy()
+    if summary.empty:
+        global_scores = pd.DataFrame(columns=["ligand", "receptor", "LR_score"])
+    else:
+        summary = summary.reset_index(names="lr_pair")
+        pairs = summary["lr_pair"].map(_split_lr_token)
+        summary["ligand"] = [p[0] for p in pairs]
+        summary["receptor"] = [p[1] for p in pairs]
+        score_col = "n_spots_sig" if "n_spots_sig" in summary.columns else "n_spots"
+        summary["LR_score"] = pd.to_numeric(summary.get(score_col, 0), errors="coerce").fillna(0.0) + 1e-12
+        global_scores = summary.loc[:, [col for col in ["ligand", "receptor", "LR_score", "n_spots", "n_spots_sig", "n_spots_sig_pval"] if col in summary.columns]]
+    ensure_spatial_connectivities(adata, key="spatial_connectivities")
+
+    raw_dir = spec.output_dir / "raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    summary_path = _write_tsv(raw_dir / "stlearn_lr_summary.tsv", global_scores)
+    raw = aggregate_lr_by_spatial_neighbors(adata, lr_resource, global_scores=global_scores, pvalue_col=None)
+    raw_path = _write_tsv(raw_dir / "stlearn_celltype_flat.tsv", raw)
+    standardized_path, standardized = _write_standardized(
+        raw,
+        output_dir=spec.output_dir,
+        method="stlearn",
+        database_mode=spec.database_mode,
+        resolution="local_lr",
+        spatial_support_type="significant_lr_hotspot_neighbor",
+        extra_numeric_cols=("local_lr_score", "edge_count", "spatial_coherence", "n_spots", "n_spots_sig", "n_spots_sig_pval"),
+        gzip_output=spec.gzip_standardized,
+    )
+    return {
+        "method": "stlearn",
+        "status": "success",
+        "chunk_id": spec.chunk_id,
+        "num_chunks": spec.num_chunks,
+        "raw_tsv": str(raw_path),
+        "summary_tsv": str(summary_path),
+        "standardized_tsv": str(standardized_path),
+        "standardized_tsv_gz": str(standardized_path) if str(standardized_path).endswith(".gz") else None,
+        "n_rows": int(len(standardized)),
+        "top_hit": standardized.head(1).to_dict(orient="records"),
+        "distance_threshold": distance_threshold,
+    }
+
+
+def run_cellphonedb_baseline_adapter(spec: MethodRunSpec) -> dict[str, Any]:
+    manifest = load_input_manifest(spec.input_manifest)
+    lr_resource = read_lr_resource(manifest, database_mode=spec.database_mode, max_lr_pairs=None)
+    if lr_resource is None:
+        raise NotImplementedError("CellPhoneDB native-db mode requires the external CellPhoneDB database export; use common-db for this baseline.")
+    lr_resource = _select_lr_chunk(
+        lr_resource,
+        chunk_id=spec.chunk_id,
+        num_chunks=spec.num_chunks,
+        max_lr_pairs=spec.max_lr_pairs,
+    )
+    raw_adata, _ = load_adata_from_manifest(manifest, spec.phase)
+    adata = _prepare_expression_adata(raw_adata, normalize=True)
+    raw = aggregate_lr_by_celltype_means(adata, lr_resource)
+    raw_dir = spec.output_dir / "raw"
+    raw_path = _write_tsv(raw_dir / "cellphonedb_mean_product_flat.tsv", raw)
+    standardized_path, standardized = _write_standardized(
+        raw,
+        output_dir=spec.output_dir,
+        method="cellphonedb",
+        database_mode=spec.database_mode,
+        resolution="celltype_pair",
+        spatial_support_type="nonspatial_expression_baseline",
+        extra_numeric_cols=("sender_mean_expr", "receiver_mean_expr"),
+        gzip_output=spec.gzip_standardized,
+    )
+    return {
+        "method": "cellphonedb",
+        "status": "success",
+        "chunk_id": spec.chunk_id,
+        "num_chunks": spec.num_chunks,
+        "raw_tsv": str(raw_path),
+        "standardized_tsv": str(standardized_path),
+        "standardized_tsv_gz": str(standardized_path) if str(standardized_path).endswith(".gz") else None,
+        "n_rows": int(len(standardized)),
+        "top_hit": standardized.head(1).to_dict(orient="records"),
+        "note": "CellPhoneDB-compatible mean-expression product baseline; spatial support intentionally disabled.",
+    }
+
+
+def run_laris_adapter(spec: MethodRunSpec) -> dict[str, Any]:
+    manifest = load_input_manifest(spec.input_manifest)
+    lr_resource = read_lr_resource(manifest, database_mode=spec.database_mode, max_lr_pairs=None)
+    if lr_resource is None:
+        raise NotImplementedError("LARIS native-db mode is not implemented in this benchmark adapter; use common-db.")
+    lr_resource = _select_lr_chunk(
+        lr_resource,
+        chunk_id=spec.chunk_id,
+        num_chunks=spec.num_chunks,
+        max_lr_pairs=spec.max_lr_pairs,
+    )
+    raw_adata, _ = load_adata_from_manifest(manifest, spec.phase)
+    adata = _prepare_expression_adata(raw_adata, normalize=True)
+    conn = ensure_spatial_connectivities(adata, key="spatial_connectivities", n_neighbors=8)
+    alpha = float(spec.extra.get("diffusion_alpha", 0.5)) if spec.extra else 0.5
+    rows: list[dict[str, Any]] = []
+    labels, _, one_hot = _celltype_one_hot(adata.obs["cell_type"].astype(str).to_numpy())
+    counts = np.asarray(one_hot.sum(axis=0)).reshape(-1)
+    counts = np.where(counts > 0, counts, 1.0)
+    for _, lr in lr_resource.iterrows():
+        ligand = str(lr["ligand"])
+        receptor = str(lr["receptor"])
+        if ligand not in adata.var_names or receptor not in adata.var_names:
+            continue
+        ligand_expr = _dense_gene_vector(adata, ligand)
+        receptor_expr = _dense_gene_vector(adata, receptor)
+        ligand_diffused = (1.0 - alpha) * ligand_expr + alpha * np.asarray(conn @ ligand_expr).reshape(-1)
+        receptor_diffused = (1.0 - alpha) * receptor_expr + alpha * np.asarray(conn @ receptor_expr).reshape(-1)
+        ligand_mean = np.asarray(one_hot.T @ ligand_diffused).reshape(-1) / counts
+        receptor_mean = np.asarray(one_hot.T @ receptor_diffused).reshape(-1) / counts
+        scores = ligand_mean[:, None] * receptor_mean[None, :]
+        for sender_idx, sender in enumerate(labels):
+            for receiver_idx, receiver in enumerate(labels):
+                score = float(scores[sender_idx, receiver_idx])
+                if not np.isfinite(score) or score <= 0:
+                    continue
+                rows.append(
+                    {
+                        "ligand": ligand,
+                        "receptor": receptor,
+                        "sender_celltype": sender,
+                        "receiver_celltype": receiver,
+                        "LR_score": score,
+                        "sender_diffused_mean": float(ligand_mean[sender_idx]),
+                        "receiver_diffused_mean": float(receptor_mean[receiver_idx]),
+                        "diffusion_alpha": alpha,
+                    }
+                )
+    raw = pd.DataFrame(rows)
+    raw_dir = spec.output_dir / "raw"
+    raw_path = _write_tsv(raw_dir / "laris_knn_diffusion_flat.tsv", raw)
+    standardized_path, standardized = _write_standardized(
+        raw,
+        output_dir=spec.output_dir,
+        method="laris",
+        database_mode=spec.database_mode,
+        resolution="celltype_pair",
+        spatial_support_type="knn_diffusion_lr",
+        extra_numeric_cols=("sender_diffused_mean", "receiver_diffused_mean", "diffusion_alpha"),
+        gzip_output=spec.gzip_standardized,
+    )
+    return {
+        "method": "laris",
+        "status": "success",
+        "chunk_id": spec.chunk_id,
+        "num_chunks": spec.num_chunks,
+        "raw_tsv": str(raw_path),
+        "standardized_tsv": str(standardized_path),
+        "standardized_tsv_gz": str(standardized_path) if str(standardized_path).endswith(".gz") else None,
+        "n_rows": int(len(standardized)),
+        "top_hit": standardized.head(1).to_dict(orient="records"),
+        "note": "LARIS-style kNN diffusion implementation for benchmark comparability.",
+    }
+
+
+def run_external_attempt_adapter(spec: MethodRunSpec, *, package_candidates: Sequence[str]) -> dict[str, Any]:
+    if spec.method in {"giotto", "spatalk", "niches"}:
+        rscript = spec.rscript or os.environ.get("RSCRIPT", "Rscript")
+        if shutil.which(rscript) is None:
+            payload = {
+                "method": spec.method,
+                "status": "failed",
+                "phase": spec.phase,
+                "database_mode": spec.database_mode,
+                "reason": f"Rscript executable was not found: {rscript}",
+                "package_candidates": list(package_candidates),
+                "reproduce": f"conda run --name <method-env> Rscript -e \"requireNamespace('{package_candidates[0]}')\"",
+            }
+            _write_json(spec.output_dir / "run_summary.json", payload)
+            _write_method_card(spec.output_dir, payload)
+            return payload
+        checks = " || ".join([f"requireNamespace('{pkg}', quietly=TRUE)" for pkg in package_candidates])
+        expr = f"ok <- {checks}; if (!ok) stop('none of the candidate R packages is installed'); cat('R package check passed\\n')"
+        completed = subprocess.run([rscript, "-e", expr], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        (spec.output_dir / "external_r_stdout.log").write_text(completed.stdout, encoding="utf-8")
+        (spec.output_dir / "external_r_stderr.log").write_text(completed.stderr, encoding="utf-8")
+        reason = (
+            "Package is installed, but a stable benchmark adapter for its public API has not been finalized yet."
+            if completed.returncode == 0
+            else "No supported R package was importable in the method-specific environment."
+        )
+        payload = {
+            "method": spec.method,
+            "status": "failed",
+            "phase": spec.phase,
+            "database_mode": spec.database_mode,
+            "reason": reason,
+            "returncode": completed.returncode,
+            "package_candidates": list(package_candidates),
+            "stdout_log": str(spec.output_dir / "external_r_stdout.log"),
+            "stderr_log": str(spec.output_dir / "external_r_stderr.log"),
+            "reproduce": f"conda run --name <method-env> Rscript -e \"{expr}\"",
+        }
+        _write_json(spec.output_dir / "run_summary.json", payload)
+        _write_method_card(spec.output_dir, payload)
+        return payload
+
+    found: dict[str, str] = {}
+    missing: list[str] = []
+    for package in package_candidates:
+        try:
+            found[package] = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError:
+            missing.append(package)
+    if not found:
+        payload = {
+            "method": spec.method,
+            "status": "failed",
+            "phase": spec.phase,
+            "database_mode": spec.database_mode,
+            "reason": "No supported package distribution was importable in the method-specific environment.",
+            "package_candidates": list(package_candidates),
+            "reproduce": f"conda run --name <method-env> python -m pyXenium benchmark atera-lr run-method --method {spec.method}",
+        }
+        _write_json(spec.output_dir / "run_summary.json", payload)
+        _write_method_card(spec.output_dir, payload)
+        return payload
+    payload = {
+        "method": spec.method,
+        "status": "failed",
+        "phase": spec.phase,
+        "database_mode": spec.database_mode,
+        "reason": "Package is installed, but a stable benchmark adapter for its public API has not been finalized yet.",
+        "package_versions": found,
+        "package_candidates": list(package_candidates),
+        "reproduce": f"conda run --name <method-env> python -m pyXenium benchmark atera-lr run-method --method {spec.method}",
+    }
+    _write_json(spec.output_dir / "run_summary.json", payload)
+    _write_method_card(spec.output_dir, payload)
+    return payload
 
 
 def run_cellchat_subprocess(spec: MethodRunSpec) -> dict[str, Any]:
@@ -825,20 +1423,6 @@ def run_cellchat_subprocess(spec: MethodRunSpec) -> dict[str, Any]:
     return {"method": "cellchat", "status": "success", "stdout": completed.stdout}
 
 
-def _write_method_card(output_dir: Path, payload: Mapping[str, Any]) -> Path:
-    lines = [
-        "# Method Card: CellChat",
-        "",
-        f"- Status: `{payload.get('status', 'unknown')}`",
-        f"- Reason: `{payload.get('reason', payload.get('returncode', 'not recorded'))}`",
-        f"- Reproduce: `{payload.get('reproduce', 'See run_summary.json and logs.')}`",
-        "",
-    ]
-    path = output_dir / "method_card.md"
-    path.write_text("\n".join(lines), encoding="utf-8")
-    return path
-
-
 def build_method_run_plan(
     *,
     method: str,
@@ -849,6 +1433,12 @@ def build_method_run_plan(
     phase: str = "smoke",
     max_lr_pairs: int | None = None,
     n_perms: int = 100,
+    chunk_id: int | None = None,
+    num_chunks: int | None = None,
+    bounded_mode: str | None = None,
+    gpu_id: str | None = None,
+    job_id: str | None = None,
+    gzip_standardized: bool = False,
 ) -> dict[str, Any]:
     layout = resolve_layout(relative_root=benchmark_root or ATERA_BENCHMARK_RELATIVE_ROOT)
     manifest_path = Path(input_manifest) if input_manifest else layout.data_dir / "input_manifest.json"
@@ -878,6 +1468,12 @@ def build_method_run_plan(
         "phase": phase,
         "max_lr_pairs": max_lr_pairs,
         "n_perms": n_perms,
+        "chunk_id": chunk_id,
+        "num_chunks": num_chunks,
+        "bounded_mode": bounded_mode,
+        "gpu_id": gpu_id,
+        "job_id": job_id,
+        "gzip_standardized": gzip_standardized,
         "lr_pairs": None if lr_resource is None else int(len(lr_resource)),
         "will_execute": method_key in SUPPORTED_REAL_ADAPTERS,
     }
@@ -896,6 +1492,12 @@ def run_registered_method(
     tbc_results: str | Path | None = None,
     export_figures: bool = False,
     rscript: str | None = None,
+    chunk_id: int | None = None,
+    num_chunks: int | None = None,
+    bounded_mode: str | None = None,
+    gpu_id: str | None = None,
+    job_id: str | None = None,
+    gzip_standardized: bool = False,
 ) -> dict[str, Any]:
     plan = build_method_run_plan(
         method=method,
@@ -906,6 +1508,12 @@ def run_registered_method(
         phase=phase,
         max_lr_pairs=max_lr_pairs,
         n_perms=n_perms,
+        chunk_id=chunk_id,
+        num_chunks=num_chunks,
+        bounded_mode=bounded_mode,
+        gpu_id=gpu_id,
+        job_id=job_id,
+        gzip_standardized=gzip_standardized,
     )
     method_key = plan["method"]
     if not plan["will_execute"]:
@@ -938,8 +1546,23 @@ def run_registered_method(
         tbc_results=Path(tbc_results) if tbc_results else None,
         export_figures=export_figures,
         rscript=rscript,
+        chunk_id=chunk_id,
+        num_chunks=num_chunks,
+        bounded_mode=bounded_mode,
+        gpu_id=gpu_id,
+        job_id=job_id,
+        gzip_standardized=gzip_standardized,
     )
     started = time.perf_counter()
+    _write_json(
+        resolved_output_dir / "run_summary.json",
+        {
+            "method": method_key,
+            "status": "running",
+            "elapsed_seconds": 0.0,
+            "params_json": str(resolved_output_dir / "params.json"),
+        },
+    )
     try:
         if method_key == "pyxenium":
             if plan["database_mode"] == "native-db":
@@ -973,6 +1596,26 @@ def run_registered_method(
             payload = run_commot_adapter(spec)
         elif method_key == "cellchat":
             payload = run_cellchat_subprocess(spec)
+        elif method_key == "spatialdm":
+            payload = run_spatialdm_adapter(spec)
+        elif method_key == "stlearn":
+            payload = run_stlearn_adapter(spec)
+        elif method_key == "cellphonedb":
+            payload = run_cellphonedb_baseline_adapter(spec)
+        elif method_key == "laris":
+            payload = run_laris_adapter(spec)
+        elif method_key == "giotto":
+            payload = run_external_attempt_adapter(spec, package_candidates=("Giotto", "GiottoClass", "GiottoUtils"))
+        elif method_key == "spatalk":
+            payload = run_external_attempt_adapter(spec, package_candidates=("SpaTalk",))
+        elif method_key == "niches":
+            payload = run_external_attempt_adapter(spec, package_candidates=("NICHES",))
+        elif method_key == "cellnest":
+            payload = run_external_attempt_adapter(spec, package_candidates=("CellNEST", "cellnest"))
+        elif method_key == "cellagentchat":
+            payload = run_external_attempt_adapter(spec, package_candidates=("CellAgentChat", "cellagentchat"))
+        elif method_key == "scild":
+            payload = run_external_attempt_adapter(spec, package_candidates=("SCILD", "scild"))
         else:
             raise NotImplementedError(f"Method {method_key!r} does not have a real adapter yet.")
         payload = {
@@ -993,8 +1636,7 @@ def run_registered_method(
             "params_json": str(resolved_output_dir / "params.json"),
         }
         _write_json(resolved_output_dir / "run_summary.json", payload)
-        if method_key == "cellchat":
-            _write_method_card(resolved_output_dir, payload)
+        _write_method_card(resolved_output_dir, payload)
         raise
 
 

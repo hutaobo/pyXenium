@@ -1,0 +1,23 @@
+Package: Gmi
+Title: Group-Level Main Effects and Interactions Selection for Generalized Linear Models
+Version: 0.1.0
+Authors@R: 
+    c(
+    person("Jinyu", "Nie", , "njysocialpredator@gmail.com", role = c("aut", "cre")),
+    person("Huazhen", "Lin", "aut"),
+    person("Li", "Liu", "aut"))
+Author: Jinyu Nie [aut, cre], Huazhen Lin [aut], Li Liu [aut]
+Maintainer: Jinyu Nie <njysocialpredator@gmail.com>
+Description: Within the framework of generalized linear models, we propose a novel group-level interaction model to identify pathway-pathway interactions, with pathways defined by clustering genes.
+URL: https://github.com/Moyu-nie/Gmi
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    cPCG,
+    MASS,
+    Rcpp
+LinkingTo: 
+    Rcpp,
+    RcppEigen

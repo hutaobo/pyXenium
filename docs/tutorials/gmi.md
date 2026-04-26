@@ -76,16 +76,31 @@ Each run writes:
 
 Use RNA-only, spatial-only, no-coordinate, label-permutation,
 coordinate-shuffle, and spatial-feature-shuffle runs to separate expression
-programs from spatial layout artifacts. The A100 workflow encodes these
-presets as reproducible stages.
+programs from spatial layout artifacts. The PDC workflow encodes these
+presets as reproducible Slurm stages.
 
 ## Biological interpretation
 
-The current A100 validation is still running for the promoted canonical beta
-surface. Earlier contour-GMI runs pointed to an S5/DCIS expression signal led by
-`NIBAN1` and `SORL1`, while spatial contour features were not yet selected as
-primary drivers. Treat that as provisional until the new 8-stage validation
-completes.
+The PDC Dardel validation for `v0.4.1` completed all 8 stages. The primary
+QC20 model retained 80 of 131 endpoint contours and selected the RNA features
+`NIBAN1` and `SORL1`, with train AUC 1.0 and 5-fold stratified spatial CV mean
+AUC 1.0 in the stability stage. RNA-only and no-coordinate validations also
+selected `NIBAN1` and `SORL1`, supporting the interpretation that the main
+S1/S5 separation is an S5/DCIS RNA expression program rather than a direct
+centroid or slide-position artifact.
+
+The spatial-only validation selected luminal-like amorphous DCIS composition
+features, not coordinate features. This means spatial context is predictive, but
+the sparse spatial signal is mainly endpoint composition rather than an
+independent CAF/ECM, vascular/pericyte, immune, Notch, IGF/MAPK, Wnt, or
+TGF-beta axis. The top1000 sensitivity kept `SORL1` in the main model and had
+bootstrap support for `NIBAN1`, but introduced `EFHD1`, so expanded RNA feature
+space should be interpreted as a sensitivity result.
+
+The all-nonempty sensitivity retained 102 contours and switched to
+`11q13 invasive tumor cell` composition features. This is useful as a QC warning:
+low-cell contours can move GMI toward label-composition structure, so QC20
+remains the primary biological result.
 
 ## Caveats
 
@@ -95,6 +110,7 @@ analysis. Zero-cell contours should not enter model fitting.
 
 ## Next steps
 
-Compare the full, RNA-only, spatial-only, no-coordinate, top1000, and
-all-nonempty outputs before promoting any selected feature to a biological
-claim.
+Archive the PDC scratch artifacts if they need long-term retention, then compare
+new datasets against the same QC20, RNA-only, spatial-only, no-coordinate,
+top1000, and all-nonempty template before promoting additional selected
+features to biological claims.

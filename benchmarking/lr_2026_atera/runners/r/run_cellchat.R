@@ -107,7 +107,9 @@ create_common_db <- function(lr_db) {
     interaction$interaction_name_2 <- paste(lr_db$ligand, lr_db$receptor, sep = " - ")
   }
   if ("pathway_name" %in% colnames(interaction)) {
-    interaction$pathway_name <- lr_db$pathway %||% "custom"
+    pathway_name <- if ("pathway" %in% colnames(lr_db)) as.character(lr_db$pathway) else rep("custom", nrow(lr_db))
+    pathway_name[is.na(pathway_name) | pathway_name == ""] <- "custom"
+    interaction$pathway_name <- pathway_name
   }
   interaction$ligand <- lr_db$ligand
   interaction$receptor <- lr_db$receptor
@@ -135,6 +137,7 @@ input_manifest <- opts[["input-manifest"]] %||% fail_run(output_dir, "--input-ma
 database_mode <- opts[["database-mode"]] %||% "common-db"
 phase <- opts[["phase"]] %||% "smoke"
 max_lr_pairs <- opts[["max-lr-pairs"]]
+disable_pathway <- isTRUE(opts[["disable-pathway"]])
 manifest <- jsonlite::fromJSON(input_manifest, simplifyVector = FALSE)
 if (phase == "full") {
   if (length(manifest$full_bundle) == 0) {
@@ -145,6 +148,17 @@ if (phase == "full") {
   bundle <- manifest$smoke_bundle
 }
 if (is.null(bundle$counts_symbol_mtx)) fail_run(output_dir, "Sparse counts bundle is missing counts_symbol_mtx.")
+
+write_json(file.path(output_dir, "params.json"), list(
+  method = "cellchat",
+  database_mode = database_mode,
+  phase = phase,
+  input_manifest = input_manifest,
+  output_dir = output_dir,
+  max_lr_pairs = max_lr_pairs,
+  disable_pathway = disable_pathway,
+  runner = "run_cellchat.R"
+))
 
 counts <- Matrix::readMM(bundle$counts_symbol_mtx)
 barcodes <- readLines(bundle$barcodes_tsv)
@@ -182,7 +196,7 @@ started <- Sys.time()
 spatial_fallback <- NULL
 result <- tryCatch({
   cellchat <- subsetData(cellchat)
-  cellchat <- identifyOverExpressedGenes(cellchat)
+  cellchat <- identifyOverExpressedGenes(cellchat, do.fast = FALSE)
   cellchat <- identifyOverExpressedInteractions(cellchat)
   cellchat <- tryCatch(
     computeCommunProb(cellchat, type = "truncatedMean", distance.use = TRUE),
@@ -192,9 +206,20 @@ result <- tryCatch({
     }
   )
   cellchat <- filterCommunication(cellchat, min.cells = 10)
-  cellchat <- computeCommunProbPathway(cellchat)
+  pathway_error <- NULL
+  if (disable_pathway) {
+    pathway_error <- "disabled_by_flag"
+  } else {
+    cellchat <- tryCatch(
+      computeCommunProbPathway(cellchat),
+      error = function(e) {
+        pathway_error <<- conditionMessage(e)
+        cellchat
+      }
+    )
+  }
   raw <- subsetCommunication(cellchat)
-  list(cellchat = cellchat, raw = raw)
+  list(cellchat = cellchat, raw = raw, pathway_error = pathway_error)
 }, error = function(e) {
   fail_run(output_dir, conditionMessage(e))
 })
@@ -205,6 +230,10 @@ saveRDS(result$cellchat, file.path(raw_dir, "cellchat_object.rds"))
 standardized <- standardize_cellchat(result$raw, database_mode = database_mode, artifact_path = raw_dir)
 standardized_path <- file.path(output_dir, "cellchat_standardized.tsv")
 write.table(standardized, standardized_path, sep = "\t", quote = FALSE, row.names = FALSE)
+standardized_path_gz <- file.path(output_dir, "cellchat_standardized.tsv.gz")
+gz_con <- gzfile(standardized_path_gz, open = "wt")
+write.table(standardized, gz_con, sep = "\t", quote = FALSE, row.names = FALSE)
+close(gz_con)
 
 summary <- list(
   method = "cellchat",
@@ -213,8 +242,11 @@ summary <- list(
   phase = phase,
   raw_tsv = raw_path,
   standardized_tsv = standardized_path,
+  standardized_tsv_gz = standardized_path_gz,
   n_rows = nrow(standardized),
   elapsed_seconds = as.numeric(difftime(Sys.time(), started, units = "secs")),
+  pathway_level = if (is.null(result$pathway_error)) "enabled" else "disabled",
+  pathway_error = result$pathway_error,
   spatial_fallback = spatial_fallback,
   package_versions = list(
     R = R.version.string,

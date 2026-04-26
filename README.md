@@ -5,7 +5,7 @@
 <h1 align="center">pyXenium</h1>
 
 <p align="center">
-  Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, and mechanostress analysis.
+  Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, and mechanostress analysis.
 </p>
 
 <p align="center">
@@ -28,13 +28,14 @@
   <a href="https://github.com/hutaobo/pyXenium/releases">Releases</a>
 </p>
 
-pyXenium is a Python toolkit for **10x Genomics Xenium** with six canonical public surfaces:
+pyXenium is a Python toolkit for **10x Genomics Xenium** with seven canonical public surfaces:
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
 - `pyXenium.multimodal`: canonical RNA + protein loading, joint analysis, immune-resistance scoring, and packaged workflows.
 - `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis.
 - `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
 - `pyXenium.contour`: contour import, contour expansion, and contour-aware density profiling around polygon annotations.
+- `pyXenium.gmi`: contour-level GMI modeling for sparse main-effect and interaction discovery in spatial transcriptomics.
 - `pyXenium.mechanostress`: morphology-derived mechanical stress states, including fibroblast axis strength, tumor-stroma growth patterning, and cell polarity.
 
 Legacy compatibility entry points under `pyXenium.analysis`, `pyXenium.validation`, and
@@ -43,7 +44,7 @@ canonical namespaces above.
 
 ## Release & Build
 
-- Current repository version: `0.4.0`
+- Current repository version: `0.4.1`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
@@ -53,7 +54,7 @@ canonical namespaces above.
 ## Install
 
 ```bash
-pip install pyXenium==0.4.0
+pip install pyXenium==0.4.1
 ```
 
 For local development:
@@ -103,6 +104,23 @@ expand_contours(
     mode="voronoi",
 )
 ```
+
+### Contour-GMI inference
+
+```python
+from pyXenium.gmi import ContourGmiConfig, run_atera_breast_contour_gmi
+
+result = run_atera_breast_contour_gmi(
+    dataset_root="/path/to/WTA_Preview_FFPE_Breast_Cancer_outs",
+    output_dir="pyxenium_gmi_outputs/atera_s1_s5",
+    config=ContourGmiConfig(feature_count=500, spatial_feature_count=100),
+)
+```
+
+`pyXenium.gmi` is a canonical beta surface: the API is public, while biological interpretation
+should be checked with the bundled controls, cross-validation, and PDC Slurm reproducibility workflow.
+The Atera S1/S5 validation completed on PDC Dardel in the `v0.4.1` release, supporting an
+S5/DCIS RNA program led by `NIBAN1` and `SORL1` under the QC20 primary model.
 
 ### Mechanostress analysis
 

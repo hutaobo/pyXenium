@@ -17,6 +17,12 @@ def main() -> None:
     parser.add_argument("--phase", choices=["smoke", "full"], default="smoke")
     parser.add_argument("--max-lr-pairs", type=int, default=None)
     parser.add_argument("--n-perms", type=int, default=100)
+    parser.add_argument("--chunk-id", type=int, default=None)
+    parser.add_argument("--num-chunks", type=int, default=None)
+    parser.add_argument("--bounded-mode", default=None)
+    parser.add_argument("--gpu-id", default=None)
+    parser.add_argument("--job-id", default=None)
+    parser.add_argument("--gzip-standardized", action="store_true")
     parser.add_argument("--rscript", default=None)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
@@ -30,6 +36,12 @@ def main() -> None:
         "phase": args.phase,
         "max_lr_pairs": args.max_lr_pairs,
         "n_perms": args.n_perms,
+        "chunk_id": args.chunk_id,
+        "num_chunks": args.num_chunks,
+        "bounded_mode": args.bounded_mode,
+        "gpu_id": args.gpu_id,
+        "job_id": args.job_id,
+        "gzip_standardized": args.gzip_standardized,
     }
     if args.dry_run:
         payload = build_method_run_plan(**kwargs)
