@@ -9,6 +9,7 @@ from ._biology import (
     summarize_contour_composition,
 )
 from ._feature_table import build_contour_feature_table
+from ._topology import summarize_contour_topology
 from ._transform import expand_contours
 from .generation import generate_xenium_explorer_annotations
 from .loading import add_contours_from_geojson
@@ -27,4 +28,5 @@ __all__ = [
     "ring_density",
     "smooth_density_by_distance",
     "summarize_contour_composition",
+    "summarize_contour_topology",
 ]

@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from shapely import union_all
+from shapely.geometry import box
 
 import pyXenium.contour as contour
 import pyXenium.contour.generation as contour_generation_module
@@ -23,8 +24,9 @@ from pyXenium.contour import (
     ring_density,
     smooth_density_by_distance,
     summarize_contour_composition,
+    summarize_contour_topology,
 )
-from pyXenium.contour._geometry import contour_frame_to_geometry_table
+from pyXenium.contour._geometry import contour_frame_to_geometry_table, geometry_table_to_contour_frame
 from pyXenium.io import XeniumFrameChunkSource, XeniumSData, read_sdata, read_xenium, write_xenium
 
 from test_xenium_io import make_xenium_dataset
@@ -250,6 +252,30 @@ def _make_nearby_contour_sdata() -> XeniumSData:
     return sdata
 
 
+def _make_topology_sdata() -> XeniumSData:
+    sdata = _make_contour_ready_sdata()
+    geometry_table = pd.DataFrame(
+        {
+            "contour_id": ["left", "right", "inner"],
+            "geometry": [
+                box(0.0, 0.0, 10.0, 10.0),
+                box(10.0, 0.0, 20.0, 10.0),
+                box(2.0, 2.0, 5.0, 5.0),
+            ],
+            "assigned_structure": ["S1", "S2", "S4"],
+            "classification_name": ["Invasive", "DCIS", "Nested"],
+            "annotation_source": ["synthetic"] * 3,
+            "structure_id": ["1", "2", "4"],
+        }
+    )
+    sdata.shapes["topology_contours"] = geometry_table_to_contour_frame(geometry_table)
+    sdata.metadata["contours"]["topology_contours"] = {
+        "units": "micron",
+        "annotation_source": "synthetic",
+    }
+    return sdata
+
+
 def _make_biology_sdata(*, streamed_transcripts: bool = False) -> XeniumSData:
     obs = pd.DataFrame(
         {
@@ -451,6 +477,84 @@ def test_contour_public_imports_smoke():
     assert callable(contour.generate_xenium_explorer_annotations)
     assert callable(contour.ring_density)
     assert callable(contour.smooth_density_by_distance)
+    assert callable(contour.summarize_contour_topology)
+
+
+def test_summarize_contour_topology_wraps_histoseg_tables():
+    pytest.importorskip("histoseg.contour")
+    sdata = _make_topology_sdata()
+
+    result = summarize_contour_topology(
+        sdata,
+        contour_key="topology_contours",
+        groupby="assigned_structure",
+        boundary_tolerance=0.0,
+    )
+
+    assert {
+        "boundary_overlap",
+        "enclosure",
+        "contour_summary",
+        "group_boundary_overlap",
+        "group_enclosure",
+    } == set(result)
+
+    boundary = result["boundary_overlap"]
+    left_right = boundary.loc[
+        boundary[["contour_id_a", "contour_id_b"]].apply(
+            lambda row: set(row) == {"left", "right"}, axis=1
+        )
+    ].iloc[0]
+    assert left_right["shared_boundary_length_um"] == pytest.approx(10.0)
+    assert left_right["assigned_structure_a"] in {"S1", "S2"}
+    assert bool(left_right["is_boundary_neighbor"]) is True
+
+    enclosure = result["enclosure"]
+    assert len(enclosure) == 1
+    assert enclosure.iloc[0]["outer_contour_id"] == "left"
+    assert enclosure.iloc[0]["inner_contour_id"] == "inner"
+    assert enclosure.iloc[0]["inner_area_covered_fraction"] == pytest.approx(1.0)
+
+    contour_summary = result["contour_summary"].set_index("contour_id")
+    assert contour_summary.loc["left", "n_boundary_neighbors"] == 1
+    assert contour_summary.loc["left", "n_contained_contours"] == 1
+    assert len(result["group_boundary_overlap"]) >= 1
+
+
+def test_summarize_contour_topology_respects_contour_query():
+    pytest.importorskip("histoseg.contour")
+    sdata = _make_topology_sdata()
+
+    result = summarize_contour_topology(
+        sdata,
+        contour_key="topology_contours",
+        contour_query="assigned_structure in ['S1', 'S2']",
+        groupby="assigned_structure",
+        boundary_tolerance=0.0,
+    )
+
+    assert set(result["contour_summary"]["contour_id"]) == {"left", "right"}
+    assert result["enclosure"].empty
+    assert len(result["boundary_overlap"]) == 1
+
+
+def test_summarize_contour_topology_missing_histoseg_error(monkeypatch):
+    import pyXenium.contour._topology as topology_module
+
+    real_import_module = topology_module.importlib.import_module
+
+    def fake_import_module(name, *args, **kwargs):
+        if name == "histoseg.contour":
+            raise ImportError("missing histoseg")
+        return real_import_module(name, *args, **kwargs)
+
+    monkeypatch.setattr(topology_module.importlib, "import_module", fake_import_module)
+
+    with pytest.raises(ImportError, match="requires HistoSeg"):
+        summarize_contour_topology(
+            _make_topology_sdata(),
+            contour_key="topology_contours",
+        )
 
 
 def test_add_contours_from_geojson_imports_scales_and_roundtrips(tmp_path):

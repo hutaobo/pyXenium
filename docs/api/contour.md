@@ -19,4 +19,5 @@
    ring_density
    smooth_density_by_distance
    summarize_contour_composition
+   summarize_contour_topology
 ```
