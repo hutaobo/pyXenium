@@ -5,7 +5,7 @@
 :maxdepth: 1
 
 io
-ligand_receptor
+ligand_receptor_index
 pathway
 multimodal
 contour_index
@@ -29,11 +29,11 @@ components, and see how I/O preserves the structures needed for downstream
 biology.
 :::
 
-:::{grid-item-card} pyXenium.ligand_receptor Tutorial
-:link: ligand_receptor
+:::{grid-item-card} pyXenium.ligand_receptor Tutorials
+:link: ligand_receptor_index
 :link-type: doc
-Walk through Atera WTA breast ligand-receptor topology outputs and interpret
-sender-receiver programs across tumor, immune, and vascular compartments.
+Walk through Atera WTA breast ligand-receptor topology outputs, then compare
+whole-dataset benchmark results across spatial and non-spatial LR methods.
 :::
 
 :::{grid-item-card} pyXenium.pathway Tutorial
