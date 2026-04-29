@@ -1,0 +1,75 @@
+{
+  "analysis": "S1-S5 contour adjacency network",
+  "histoseg_commit": "cca55df",
+  "config": {
+    "groupby": "structure",
+    "contour_id_col": "contour_id",
+    "geometry_col": "geometry",
+    "boundary_tolerance": 1.0,
+    "min_shared_boundary": 0.0,
+    "enclosure_min_fraction": 0.95,
+    "dpi": 220,
+    "save_preview_png": true
+  },
+  "n_contours": 1578,
+  "n_groups": 5,
+  "n_group_pairs": 10,
+  "n_positive_group_pairs": 9,
+  "boundary_pair_count": 2538,
+  "enclosure_pair_count": 254,
+  "total_adjacency_length_um": 536232.9968163774,
+  "top_edges": [
+    {
+      "group_a": "S3",
+      "group_b": "S4",
+      "boundary_pair_count": 557,
+      "boundary_shared_length_um": 169685.56730280418,
+      "enclosure_pair_count": 133,
+      "enclosure_inner_boundary_length_um": 80123.00712226218,
+      "total_adjacency_length_um": 249808.5744250664
+    },
+    {
+      "group_a": "S1",
+      "group_b": "S3",
+      "boundary_pair_count": 323,
+      "boundary_shared_length_um": 101743.96963546416,
+      "enclosure_pair_count": 24,
+      "enclosure_inner_boundary_length_um": 14576.789011925486,
+      "total_adjacency_length_um": 116320.75864738964
+    },
+    {
+      "group_a": "S2",
+      "group_b": "S3",
+      "boundary_pair_count": 672,
+      "boundary_shared_length_um": 61709.20641180116,
+      "enclosure_pair_count": 17,
+      "enclosure_inner_boundary_length_um": 2671.376605348045,
+      "total_adjacency_length_um": 64380.583017149205
+    },
+    {
+      "group_a": "S1",
+      "group_b": "S2",
+      "boundary_pair_count": 319,
+      "boundary_shared_length_um": 33515.63266161214,
+      "enclosure_pair_count": 25,
+      "enclosure_inner_boundary_length_um": 8347.356906261606,
+      "total_adjacency_length_um": 41862.98956787375
+    },
+    {
+      "group_a": "S2",
+      "group_b": "S4",
+      "boundary_pair_count": 374,
+      "boundary_shared_length_um": 20373.064893349485,
+      "enclosure_pair_count": 38,
+      "enclosure_inner_boundary_length_um": 4923.01398662503,
+      "total_adjacency_length_um": 25296.078879974517
+    }
+  ],
+  "static_outputs": {
+    "edges_csv": "s1_s5_contour_adjacency_edges.csv",
+    "matrix_csv": "s1_s5_contour_adjacency_matrix.csv",
+    "network_png": "s1_s5_contour_adjacency_network.png",
+    "heatmap_png": "s1_s5_contour_adjacency_heatmap.png",
+    "overview_png": "s1_s5_contour_adjacency_overview.png"
+  }
+}
