@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import importlib
+from pathlib import Path
 
 import pandas as pd
 
 from ._analysis import _prepare_contours
+from ._histoseg import load_histoseg_submodule
 from pyXenium.io.sdata_model import XeniumSData
 
 __all__ = ["summarize_contour_topology"]
@@ -19,6 +20,7 @@ def summarize_contour_topology(
     boundary_tolerance: float = 1.0,
     min_shared_boundary: float = 0.0,
     enclosure_min_fraction: float = 0.95,
+    histoseg_root: str | Path | None = None,
 ) -> dict[str, pd.DataFrame]:
     """
     Summarize contour boundary-neighbor and enclosure relationships.
@@ -31,7 +33,7 @@ def summarize_contour_topology(
     if not isinstance(sdata, XeniumSData):
         raise TypeError("`sdata` must be a XeniumSData instance.")
 
-    histoseg_topology = _load_histoseg_topology()
+    histoseg_topology = _load_histoseg_topology(histoseg_root=histoseg_root)
     contour_table = _prepare_contours(
         sdata=sdata,
         contour_key=contour_key,
@@ -55,22 +57,11 @@ def summarize_contour_topology(
     }
 
 
-def _load_histoseg_topology():
-    try:
-        histoseg_contour = importlib.import_module("histoseg.contour")
-    except ImportError as exc:
-        raise ImportError(
-            "pyXenium.contour.summarize_contour_topology requires HistoSeg. "
-            "Install it with `pip install histoseg` or, for local development, "
-            "`pip install -e D:/GitHub/HistoSeg`."
-        ) from exc
-
-    topology = getattr(histoseg_contour, "summarize_contour_topology", None)
-    if not callable(topology):
-        raise ImportError(
-            "The installed HistoSeg package does not expose "
-            "`histoseg.contour.summarize_contour_topology`. Upgrade HistoSeg "
-            "or install the local development version with "
-            "`pip install -e D:/GitHub/HistoSeg`."
-        )
-    return topology
+def _load_histoseg_topology(*, histoseg_root: str | Path | None):
+    histoseg_contour = load_histoseg_submodule(
+        "histoseg.contour",
+        required=("summarize_contour_topology",),
+        histoseg_root=histoseg_root,
+        purpose="summarize_contour_topology()",
+    )
+    return histoseg_contour.summarize_contour_topology

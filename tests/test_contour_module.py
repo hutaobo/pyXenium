@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 
 import anndata as ad
 import numpy as np
@@ -11,7 +12,6 @@ from shapely import union_all
 from shapely.geometry import box
 
 import pyXenium.contour as contour
-import pyXenium.contour.generation as contour_generation_module
 from pyXenium.contour import (
     add_contours_from_geojson,
     compare_contour_cell_composition,
@@ -539,22 +539,82 @@ def test_summarize_contour_topology_respects_contour_query():
 
 
 def test_summarize_contour_topology_missing_histoseg_error(monkeypatch):
-    import pyXenium.contour._topology as topology_module
+    import pyXenium.contour._histoseg as histoseg_loader
 
-    real_import_module = topology_module.importlib.import_module
+    def fake_import_and_validate(module_name, *, required):
+        raise ImportError("missing histoseg")
 
-    def fake_import_module(name, *args, **kwargs):
-        if name == "histoseg.contour":
-            raise ImportError("missing histoseg")
-        return real_import_module(name, *args, **kwargs)
+    monkeypatch.delenv("HISTOSEG_ROOT", raising=False)
+    monkeypatch.setattr(histoseg_loader, "_import_and_validate", fake_import_and_validate)
 
-    monkeypatch.setattr(topology_module.importlib, "import_module", fake_import_module)
-
-    with pytest.raises(ImportError, match="requires HistoSeg"):
+    with pytest.raises(ImportError, match="pass `histoseg_root`"):
         summarize_contour_topology(
             _make_topology_sdata(),
             contour_key="topology_contours",
         )
+
+
+def test_summarize_contour_topology_falls_back_to_histoseg_root(tmp_path, monkeypatch):
+    import pyXenium.contour._histoseg as histoseg_loader
+
+    checkout = tmp_path / "HistoSeg"
+    package_dir = checkout / "src" / "histoseg"
+    package_dir.mkdir(parents=True)
+    (package_dir / "__init__.py").write_text("", encoding="utf-8")
+    (package_dir / "contour.py").write_text(
+        "\n".join(
+            [
+                "from types import SimpleNamespace",
+                "import pandas as pd",
+                "",
+                "def summarize_contour_topology(contour_table, **kwargs):",
+                "    return SimpleNamespace(",
+                "        boundary_overlap=pd.DataFrame({'source': ['local_checkout']}),",
+                "        enclosure=pd.DataFrame(),",
+                "        contour_summary=contour_table[['contour_id']].copy(),",
+                "        group_boundary_overlap=pd.DataFrame(),",
+                "        group_enclosure=pd.DataFrame(),",
+                "    )",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    source_root = str(checkout / "src")
+    old_modules = {
+        name: sys.modules.get(name)
+        for name in list(sys.modules)
+        if name == "histoseg" or name.startswith("histoseg.")
+    }
+    real_import_and_validate = histoseg_loader._import_and_validate
+    attempts = {"count": 0}
+
+    def fake_import_and_validate(module_name, *, required):
+        if attempts["count"] == 0:
+            attempts["count"] += 1
+            raise ImportError("installed histoseg is missing histoseg.contour")
+        return real_import_and_validate(module_name, required=required)
+
+    monkeypatch.setattr(histoseg_loader, "_import_and_validate", fake_import_and_validate)
+    try:
+        result = summarize_contour_topology(
+            _make_topology_sdata(),
+            contour_key="topology_contours",
+            histoseg_root=checkout,
+        )
+    finally:
+        if source_root in sys.path:
+            sys.path.remove(source_root)
+        for module_name in list(sys.modules):
+            if module_name == "histoseg" or module_name.startswith("histoseg."):
+                sys.modules.pop(module_name, None)
+        for module_name, module in old_modules.items():
+            if module is not None:
+                sys.modules[module_name] = module
+
+    assert attempts["count"] == 1
+    assert result["boundary_overlap"]["source"].tolist() == ["local_checkout"]
+    assert set(result["contour_summary"]["contour_id"]) == {"left", "right", "inner"}
 
 
 def test_add_contours_from_geojson_imports_scales_and_roundtrips(tmp_path):
@@ -586,6 +646,7 @@ def test_add_contours_from_geojson_imports_scales_and_roundtrips(tmp_path):
     } <= set(frame.columns)
     assert copied.metadata["contours"]["protein_cluster_contours"]["n_contours"] == 2
     assert copied.metadata["contours"]["protein_cluster_contours"]["pixel_size_um"] == 0.5
+    assert copied.metadata["contours"]["protein_cluster_contours"]["pixel_size_um_source"] == "he_image"
 
     add_contours_from_geojson(sdata, geojson_path, key="protein_cluster_contours", copy=False)
     assert "protein_cluster_contours" in sdata.shapes
@@ -599,6 +660,71 @@ def test_add_contours_from_geojson_imports_scales_and_roundtrips(tmp_path):
     ).reset_index(drop=True)
     pd.testing.assert_frame_equal(frame, reloaded_frame)
     assert reloaded.metadata["contours"]["protein_cluster_contours"]["n_contours"] == 2
+
+
+def test_add_contours_from_geojson_uses_default_xenium_pixel_size(tmp_path):
+    sdata = XeniumSData(
+        table=ad.AnnData(X=np.zeros((0, 0), dtype=float)),
+        metadata={"units": "micron"},
+    )
+    geojson_path = tmp_path / "contours.geojson"
+    _write_geojson(geojson_path, _simple_contour_geojson())
+
+    imported = add_contours_from_geojson(
+        sdata,
+        geojson_path,
+        key="default_scaled_contours",
+        copy=True,
+    )
+
+    frame = imported.shapes["default_scaled_contours"]
+    metadata = imported.metadata["contours"]["default_scaled_contours"]
+    assert frame["x"].max() == pytest.approx(150.0 * 0.2125)
+    assert metadata["pixel_size_um"] == pytest.approx(0.2125)
+    assert metadata["pixel_size_um_source"] == "10x_xenium_default"
+
+
+def test_add_contours_from_geojson_keeps_xenium_um_coordinates_with_default_metadata(tmp_path):
+    sdata = XeniumSData(
+        table=ad.AnnData(X=np.zeros((0, 0), dtype=float)),
+        metadata={"units": "micron"},
+    )
+    geojson_path = tmp_path / "contours.geojson"
+    _write_geojson(geojson_path, _simple_contour_geojson())
+
+    imported = add_contours_from_geojson(
+        sdata,
+        geojson_path,
+        key="micron_contours",
+        coordinate_space="xenium_um",
+        copy=True,
+    )
+
+    frame = imported.shapes["micron_contours"]
+    metadata = imported.metadata["contours"]["micron_contours"]
+    assert frame["x"].max() == pytest.approx(150.0)
+    assert frame["y"].max() == pytest.approx(120.0)
+    assert metadata["pixel_size_um"] == pytest.approx(0.2125)
+    assert metadata["pixel_size_um_source"] == "10x_xenium_default"
+
+
+def test_add_contours_from_geojson_prefers_experiment_xenium_pixel_size(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
+    sdata = read_xenium(str(dataset), as_="sdata", include_images=False, prefer="zarr")
+    geojson_path = tmp_path / "contours.geojson"
+    _write_geojson(geojson_path, _simple_contour_geojson())
+
+    imported = add_contours_from_geojson(
+        sdata,
+        geojson_path,
+        key="experiment_scaled_contours",
+        copy=True,
+    )
+
+    metadata = imported.metadata["contours"]["experiment_scaled_contours"]
+    assert imported.shapes["experiment_scaled_contours"]["x"].max() == pytest.approx(75.0)
+    assert metadata["pixel_size_um"] == pytest.approx(0.5)
+    assert metadata["pixel_size_um_source"] == "experiment_xenium"
 
 
 def test_add_contours_from_geojson_extracts_he_patches_and_roundtrips(tmp_path):
@@ -1535,12 +1661,15 @@ def test_contour_biology_validation_paths():
 
 
 def test_generate_xenium_explorer_annotations_error_is_actionable(tmp_path, monkeypatch):
-    def _missing_histoseg(name):
-        raise ModuleNotFoundError(name)
+    import pyXenium.contour._histoseg as histoseg_loader
 
-    monkeypatch.setattr(contour_generation_module.importlib, "import_module", _missing_histoseg)
+    def _missing_histoseg(module_name, *, required):
+        raise ModuleNotFoundError(module_name)
 
-    with pytest.raises(ImportError, match="Install `histoseg` or pass `histoseg_root`"):
+    monkeypatch.delenv("HISTOSEG_ROOT", raising=False)
+    monkeypatch.setattr(histoseg_loader, "_import_and_validate", _missing_histoseg)
+
+    with pytest.raises(ImportError, match="pass `histoseg_root`"):
         generate_xenium_explorer_annotations(
             tmp_path,
             structures=[{"structure_name": "Macrophages", "cluster_ids": [1]}],

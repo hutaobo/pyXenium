@@ -1,5 +1,6 @@
 from importlib import import_module
 
+from ._xenium_defaults import DEFAULT_XENIUM_PIXEL_SIZE_UM
 from .api import DEFAULT_CLUSTER_RELPATH, read_sdata, read_xenium, write_xenium
 from .partial_xenium_loader import load_anndata_from_partial
 from .sdata_model import XeniumFrameChunkSource, XeniumImage, XeniumSData
@@ -8,6 +9,7 @@ from .spatialdata_export import DEFAULT_SPATIALDATA_STORE_NAME, export_xenium_to
 __all__ = [
     "DEFAULT_CLUSTER_RELPATH",
     "DEFAULT_SPATIALDATA_STORE_NAME",
+    "DEFAULT_XENIUM_PIXEL_SIZE_UM",
     "XeniumFrameChunkSource",
     "XeniumImage",
     "XeniumSData",

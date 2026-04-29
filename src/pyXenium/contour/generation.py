@@ -1,9 +1,17 @@
 from __future__ import annotations
 
-import importlib
 from pathlib import Path
-import sys
 from typing import Any, Mapping, Sequence
+
+from ._histoseg import load_histoseg_module
+from pyXenium.io._xenium_defaults import DEFAULT_XENIUM_PIXEL_SIZE_UM
+
+_HISTOSEG_CONTOUR_GENERATION_API = (
+    "MultiStructureContourConfig",
+    "MultiStructureContourResult",
+    "MultiStructureSpec",
+    "run_multi_structure_contours",
+)
 
 
 def generate_xenium_explorer_annotations(
@@ -28,7 +36,7 @@ def generate_xenium_explorer_annotations(
     fill_holes: bool = True,
     min_cells: int = 500,
     min_component_pixels: int = 180,
-    xenium_pixel_size_um: float = 0.2125,
+    xenium_pixel_size_um: float = DEFAULT_XENIUM_PIXEL_SIZE_UM,
     save_preview_png: bool = True,
 ) -> dict[str, str]:
     """Generate Xenium Explorer-compatible structure annotations via HistoSeg."""
@@ -83,50 +91,8 @@ def _resolve_dataset_path(dataset_root: Path, candidate: str | Path) -> Path:
 
 
 def _load_histoseg_module(*, histoseg_root: str | Path | None) -> Any:
-    try:
-        return _import_histoseg()
-    except Exception as exc:
-        if histoseg_root is None:
-            raise ImportError(
-                "HistoSeg is required for `generate_xenium_explorer_annotations()`. "
-                "Install `histoseg` or pass `histoseg_root` pointing to a local checkout."
-            ) from exc
-
-    histoseg_root_path = Path(histoseg_root).expanduser().resolve()
-    src_root = histoseg_root_path / "src"
-    if src_root.exists():
-        candidate = src_root
-    elif histoseg_root_path.name == "src":
-        candidate = histoseg_root_path
-    else:
-        raise ImportError(
-            f"Could not locate a `src` directory under histoseg_root={histoseg_root_path!s}."
-        )
-
-    candidate_str = str(candidate)
-    if candidate_str not in sys.path:
-        sys.path.insert(0, candidate_str)
-    try:
-        return _import_histoseg()
-    except Exception as exc:
-        raise ImportError(
-            "Unable to import the required HistoSeg multi-structure contour API from "
-            f"{candidate_str}."
-        ) from exc
-
-
-def _import_histoseg() -> Any:
-    module = importlib.import_module("histoseg")
-    required = (
-        "MultiStructureContourConfig",
-        "MultiStructureContourResult",
-        "MultiStructureSpec",
-        "run_multi_structure_contours",
+    return load_histoseg_module(
+        required=_HISTOSEG_CONTOUR_GENERATION_API,
+        histoseg_root=histoseg_root,
+        purpose="generate_xenium_explorer_annotations()",
     )
-    missing = [name for name in required if not hasattr(module, name)]
-    if missing:
-        raise ImportError(
-            "The installed HistoSeg package is missing the multi-structure contour API: "
-            f"{', '.join(missing)}"
-        )
-    return module

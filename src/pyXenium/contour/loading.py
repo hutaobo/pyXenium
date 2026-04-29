@@ -12,7 +12,12 @@ from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon, shape
 
 from ._geometry import contour_frame_to_geometry_table, geometry_table_to_contour_frame
+from pyXenium.io._xenium_defaults import (
+    DEFAULT_XENIUM_PIXEL_SIZE_UM,
+    DEFAULT_XENIUM_PIXEL_SIZE_UM_SOURCE,
+)
 from pyXenium.io.sdata_model import XeniumImage, XeniumSData
+from pyXenium.io.xenium_artifacts import read_experiment_metadata
 
 __all__ = ["add_contours_from_geojson"]
 
@@ -77,17 +82,17 @@ def add_contours_from_geojson(
             he_image_key=he_image_key,
         )
 
-    if pixel_size_um is not None:
-        resolved_pixel_size_um = float(pixel_size_um)
-    elif he_image is not None and he_image.pixel_size_um is not None:
-        resolved_pixel_size_um = float(he_image.pixel_size_um)
-    else:
-        resolved_pixel_size_um = _resolve_pixel_size_um(sdata=sdata, pixel_size_um=None)
+    resolved_pixel_size_um, pixel_size_um_source = _resolve_pixel_size_um(
+        sdata=sdata,
+        pixel_size_um=pixel_size_um,
+        he_image=he_image,
+    )
     contour_frame, contour_metadata = _read_contour_geojson(
         path=resolved_path,
         id_key=id_key,
         coordinate_space=resolved_coordinate_space,
         pixel_size_um=resolved_pixel_size_um,
+        pixel_size_um_source=pixel_size_um_source,
     )
 
     if copy:
@@ -134,24 +139,56 @@ def add_contours_from_geojson(
     return None
 
 
-def _resolve_pixel_size_um(sdata: XeniumSData, pixel_size_um: float | None) -> float:
+def _resolve_pixel_size_um(
+    sdata: XeniumSData,
+    pixel_size_um: float | None,
+    *,
+    he_image: XeniumImage | None = None,
+) -> tuple[float, str]:
     if pixel_size_um is not None:
-        return float(pixel_size_um)
+        return float(pixel_size_um), "explicit"
 
-    he_image = sdata.images.get("he")
     if he_image is not None and he_image.pixel_size_um is not None:
-        return float(he_image.pixel_size_um)
+        return float(he_image.pixel_size_um), "he_image"
+
+    default_he_image = sdata.images.get("he")
+    if default_he_image is not None and default_he_image.pixel_size_um is not None:
+        return float(default_he_image.pixel_size_um), "he_image"
 
     image_artifacts = sdata.metadata.get("image_artifacts", {})
     if isinstance(image_artifacts, dict):
         he_artifact = image_artifacts.get("he", {})
         if isinstance(he_artifact, dict) and he_artifact.get("pixel_size_um") is not None:
-            return float(he_artifact["pixel_size_um"])
+            return float(he_artifact["pixel_size_um"]), "image_artifacts"
 
-    raise ValueError(
-        "Unable to resolve `pixel_size_um` for contour import. "
-        "Pass it explicitly or load an H&E image with pixel-size metadata first."
-    )
+    experiment_pixel_size = _resolve_experiment_pixel_size_um(sdata)
+    if experiment_pixel_size is not None:
+        return experiment_pixel_size, "experiment_xenium"
+
+    return DEFAULT_XENIUM_PIXEL_SIZE_UM, DEFAULT_XENIUM_PIXEL_SIZE_UM_SOURCE
+
+
+def _resolve_experiment_pixel_size_um(sdata: XeniumSData) -> float | None:
+    for metadata_key in ("experiment", "experiment_xenium"):
+        experiment = sdata.metadata.get(metadata_key)
+        pixel_size = _pixel_size_from_experiment(experiment)
+        if pixel_size is not None:
+            return pixel_size
+
+    source_path = sdata.metadata.get("source_path")
+    if source_path is None:
+        return None
+    try:
+        experiment = read_experiment_metadata(str(source_path))
+    except Exception:
+        return None
+    return _pixel_size_from_experiment(experiment)
+
+
+def _pixel_size_from_experiment(experiment: Any) -> float | None:
+    if isinstance(experiment, dict) and experiment.get("pixel_size") is not None:
+        return float(experiment["pixel_size"])
+    return None
 
 
 def _read_contour_geojson(
@@ -160,6 +197,7 @@ def _read_contour_geojson(
     id_key: str,
     coordinate_space: str,
     pixel_size_um: float,
+    pixel_size_um_source: str,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     features = payload.get("features")
@@ -203,6 +241,7 @@ def _read_contour_geojson(
         "coordinate_space": coordinate_space,
         "units": "micron",
         "pixel_size_um": float(pixel_size_um),
+        "pixel_size_um_source": str(pixel_size_um_source),
         "id_key": str(id_key),
         "n_contours": int(frame["contour_id"].nunique()),
         "properties_by_id": properties_by_id,

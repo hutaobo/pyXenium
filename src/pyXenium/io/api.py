@@ -16,6 +16,7 @@ from .xenium_artifacts import (
     iter_transcript_chunks,
     join_path,
     load_xenium_analysis,
+    read_experiment_metadata,
     read_boundary_tables,
     read_cell_feature_matrix,
     read_cells_table,
@@ -53,12 +54,14 @@ def _metadata_for_source(
     features: pd.DataFrame,
     cluster_key: str | None,
     image_artifacts: dict[str, Any] | None = None,
+    experiment: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     return {
         "source_path": str(base_path),
         "backend": backend,
         "units": "micron",
         "cluster_key": cluster_key,
+        "experiment": experiment or {},
         "feature_summary": build_feature_summary(features),
         "image_artifacts": image_artifacts or {},
         "labels": {},
@@ -187,12 +190,14 @@ def _assemble_anndata(
     for key, payload in image_artifacts.items():
         adata.uns[key] = dict(payload)
 
+    experiment = read_experiment_metadata(base_path)
     metadata = _metadata_for_source(
         base_path=base_path,
         backend=backend,
         features=features,
         cluster_key=analysis.default_cluster_key,
         image_artifacts=image_artifacts,
+        experiment=experiment,
     )
     return adata, boundaries, metadata
 
