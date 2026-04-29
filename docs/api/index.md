@@ -6,11 +6,12 @@
 
 io
 multimodal
-ligand_receptor
+cci
 pathway
 contour
 gmi
 mechanostress
+perturb
 ```
 
 The API reference is organized around pyXenium’s canonical namespaces rather than the legacy
@@ -31,10 +32,10 @@ Xenium artifact readers, SData helpers, and compat export utilities.
 Canonical RNA + protein preparation, analysis, immune-resistance scoring, and workflows.
 :::
 
-:::{grid-item-card} pyXenium.ligand_receptor
-:link: ligand_receptor
+:::{grid-item-card} pyXenium.cci
+:link: cci
 :link-type: doc
-Topology-native ligand-receptor analysis.
+Topology-native cell-cell interaction analysis.
 :::
 
 :::{grid-item-card} pyXenium.pathway
@@ -59,5 +60,11 @@ Contour-level GMI modeling for sparse main effects, interactions, controls, and 
 :link: mechanostress
 :link-type: doc
 Mechanical stress state analysis from Xenium morphology and tumor-stroma geometry.
+:::
+
+:::{grid-item-card} pyXenium.perturb
+:link: perturb
+:link-type: doc
+SpatialPerturb Bridge handoff specs for optional Perturb-seq reference projection.
 :::
 ::::

@@ -6,10 +6,10 @@
 is an external workflow layer for AI-assisted pathology review around Xenium-scale spatial
 transcriptomics. The public Python package and CLI are named `spatho`.
 
-pyXenium treats this as an eighth feature area in the documentation, not as a new
-`pyXenium.spatho` namespace. The goal is to show where pyXenium hands a structured
-Xenium case to `spatho`, while keeping the AI workflow implementation in the
-AI-Driven Spatial Pathologist project.
+pyXenium treats this as an optional external workflow bridge, not as a new
+`pyXenium.spatho` namespace. The goal is to show where pyXenium hands a
+structured Xenium case to `spatho`, while keeping the AI workflow implementation
+in the AI-Driven Spatial Pathologist project.
 
 ## Relationship to XeniumSData
 

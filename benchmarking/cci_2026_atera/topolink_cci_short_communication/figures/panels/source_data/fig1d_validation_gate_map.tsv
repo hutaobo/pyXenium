@@ -1,0 +1,7 @@
+element	x	y	label	category	value
+gate	0.10500000000000001	0.3	cell-label permutation	CellPhoneDB/ Squidpy	1
+gate	0.26	0.3	group specificity	CellChat	2
+gate	0.415	0.3	spatial null + matched genes	stLearn/ SpatialDM	3
+gate	0.5700000000000001	0.3	receiver target support	NicheNet	4
+gate	0.7250000000000001	0.3	cross-method consensus	LIANA	5
+gate	0.8800000000000001	0.3	ablation + bootstrap	pyXenium	6

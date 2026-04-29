@@ -5,7 +5,7 @@
 <h1 align="center">pyXenium</h1>
 
 <p align="center">
-  Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and AI-driven spatial pathology handoff.
+  Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and optional external workflow bridges.
 </p>
 
 <p align="center">
@@ -28,21 +28,22 @@
   <a href="https://github.com/hutaobo/pyXenium/releases">Releases</a>
 </p>
 
-pyXenium is a Python toolkit for **10x Genomics Xenium** with eight feature areas:
+pyXenium is a Python toolkit for **10x Genomics Xenium** with nine feature areas:
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
 - `pyXenium.multimodal`: canonical RNA + protein loading, joint analysis, immune-resistance scoring, and packaged workflows.
-- `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis.
+- `pyXenium.cci`: topology-native cell-cell interaction analysis.
 - `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
 - `pyXenium.contour`: contour import, contour expansion, and contour-aware density profiling around polygon annotations.
 - `pyXenium.gmi`: contour-level GMI modeling for sparse main-effect and interaction discovery in spatial transcriptomics.
 - `pyXenium.mechanostress`: morphology-derived mechanical stress states, including fibroblast axis strength, tumor-stroma growth patterning, and cell polarity.
 - AI-Driven Spatial Pathologist via `spatho`: an optional external workflow layer for AI-driven spatial pathology, built on the Xenium data foundation provided by pyXenium's `XeniumSData` structure.
+- `pyXenium.perturb`: SpatialPerturb Bridge for optional Perturb-seq reference projection onto Xenium tissue through the external `SpatialPerturb` package.
 
 Legacy compatibility entry points under `pyXenium.analysis`, `pyXenium.validation`, and
 `pyXenium.io.load_xenium_gene_protein(...)` remain importable, but new code should target the
-canonical pyXenium namespaces above. The `spatho` workflow is installed and run separately; pyXenium
-does not vendor it or add it as a runtime dependency.
+canonical pyXenium namespaces above. The `spatho` and `SpatialPerturb` workflows are installed
+and run separately; pyXenium does not vendor them or add them as core runtime dependencies.
 
 ## Release & Build
 
@@ -71,6 +72,12 @@ For documentation work:
 
 ```bash
 pip install -e ".[docs]"
+```
+
+For the optional SpatialPerturb Bridge runtime on Python 3.9+:
+
+```bash
+pip install -e ".[perturb]"
 ```
 
 ## Quick examples
@@ -166,10 +173,38 @@ spatho doctor --config workflow.json
 spatho run --config workflow.json
 ```
 
-In pyXenium, this is documented as the eighth feature area rather than a new package namespace.
+In pyXenium, this is documented as an optional external workflow bridge rather than a new
+`pyXenium.spatho` namespace.
 The handoff is possible because `XeniumSData` keeps the cell table, transcript points,
 cell/nucleus boundaries, H&E image metadata, and SpatialData-compatible organization together
 for downstream tools.
+
+### SpatialPerturb Bridge via SpatialPerturb
+
+[`SpatialPerturb`](https://github.com/hutaobo/SpatialPerturb) is an external workflow package
+for combining spatial transcriptomics with Perturb-seq references. pyXenium exposes a lightweight
+`pyXenium.perturb` bridge that writes a handoff JSON and stable external CLI commands without
+vendoring the SpatialPerturb algorithms.
+
+```python
+from pyXenium.perturb import SpatialPerturbBridgeConfig, write_spatialperturb_handoff
+
+spec = write_spatialperturb_handoff(
+    SpatialPerturbBridgeConfig(
+        xenium_path="/path/to/Xenium_outs",
+        output_dir="spatialperturb_reports/breast_case_01",
+        cell_group_path="/path/to/cell_groups.csv",
+        roi_geojson_path="/path/to/xenium_explorer_annotations.geojson",
+        sample_name="breast_case_01",
+    ),
+    "spatialperturb_bridge.json",
+)
+print(spec["command_text"]["run_reference_benchmark"])
+```
+
+SpatialPerturb Bridge scores mean Perturb-seq-derived program similarity projected onto Xenium
+tissue. They do not mean the tissue cell contains the corresponding knockout, guide, or drug
+perturbation.
 
 ## Documentation structure
 
@@ -180,6 +215,7 @@ The docs mirror the package surfaces, high-level workflows, and external handoff
 - Workflows
 - API Reference
 - AI-Driven Spatial Pathologist via `spatho`
+- SpatialPerturb Bridge via `SpatialPerturb`
 - Changelog
 
 Start here: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)

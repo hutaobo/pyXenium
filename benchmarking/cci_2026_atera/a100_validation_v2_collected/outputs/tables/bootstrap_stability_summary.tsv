@@ -1,0 +1,8 @@
+axis_id	bootstrap_rank_median	bootstrap_rank_iqr	bootstrap_score_mean	bootstrap_score_sd	bootstrap_n
+CD48-CD2|T Lymphocytes->T Lymphocytes	5.0	0.0	1.925246611638054	0.015713655566381553	5
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	4.0	0.0	1.9739528093875909	0.0031410030934122366	5
+DLL4-NOTCH3|Endothelial Cells->Pericytes	6.0	0.0	1.634842418466564	0.014082178981952163	5
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	7.0	0.0	1.0246926473461682	0.0017333252101482156	5
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	2.0	0.0	2.48319603632674	0.009087646555426442	5
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	3.0	0.0	2.4760898894274397	0.003754003645322219	5
+VWF-SELP|Endothelial Cells->Endothelial Cells	1.0	0.0	2.5247310175523965	0.011933106345753796	5

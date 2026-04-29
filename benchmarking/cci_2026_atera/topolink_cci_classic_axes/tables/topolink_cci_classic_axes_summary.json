@@ -1,0 +1,34 @@
+{
+  "input": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\pdc_collected\\pdc_20260426_1327\\runs\\full_common\\pyxenium\\pyxenium_scores.tsv",
+  "input_rows": 1319600,
+  "headline_rows": 15,
+  "all_classic_rows": 10000,
+  "caveat_rows": 80,
+  "headline_top": [
+    {
+      "lr_pair": "VWF-SELP",
+      "sender_receiver": "Endothelial Cells -> Endothelial Cells",
+      "CCI_score": 0.7912892368005828
+    },
+    {
+      "lr_pair": "VWF-LRP1",
+      "sender_receiver": "Endothelial Cells -> CAFs, DCIS Associated",
+      "CCI_score": 0.7479758913021439
+    },
+    {
+      "lr_pair": "EFNB2-PECAM1",
+      "sender_receiver": "Endothelial Cells -> Endothelial Cells",
+      "CCI_score": 0.7469197326713805
+    },
+    {
+      "lr_pair": "MMRN2-CLEC14A",
+      "sender_receiver": "Endothelial Cells -> Endothelial Cells",
+      "CCI_score": 0.7322091602540813
+    },
+    {
+      "lr_pair": "HSPG2-LRP1",
+      "sender_receiver": "Endothelial Cells -> CAFs, DCIS Associated",
+      "CCI_score": 0.7279607350660221
+    }
+  ]
+}

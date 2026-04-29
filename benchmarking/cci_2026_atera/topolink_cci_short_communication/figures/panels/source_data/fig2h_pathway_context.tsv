@@ -1,0 +1,4 @@
+pathway	present_genes	spearman_rho_vs_vwf_selp_joint	p_value	x	y	value	category	label
+WPB_EndothelialActivation	VWF,SELP,ANGPT2,IL6,CXCL8,RAB27A,STXBP5,PLAT	0.1953464655866251	0.0	0.1953464655866251	WPB_EndothelialActivation	0.1953464655866251	pathway_correlation	WPB_EndothelialActivation
+Hemostasis_Thromboinflammation	VWF,SELP,THBD,PLAT,SERPINE1,ADAMTS13	0.2069526148852819	0.0	0.2069526148852819	Hemostasis_Thromboinflammation	0.2069526148852819	pathway_correlation	Hemostasis_Thromboinflammation
+VascularIdentity	PECAM1,EMCN,CDH5,KDR,FLT1,MMRN2,CLEC14A,EGFL7	0.2181908741315978	0.0	0.2181908741315978	VascularIdentity	0.2181908741315978	pathway_correlation	VascularIdentity

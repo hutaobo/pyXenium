@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -10,11 +11,18 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_rand_score, silhouette_score
 from sklearn.preprocessing import StandardScaler
 
-from pyXenium.contour import build_contour_feature_table
-from pyXenium.contour._feature_table import DEFAULT_CONTOUR_LR_PAIRS, DEFAULT_CONTOUR_PATHWAYS
+from pyXenium.contour._feature_table import (
+    DEFAULT_CONTOUR_CCI_PAIRS,
+    DEFAULT_CONTOUR_PATHWAYS,
+    build_contour_feature_table,
+)
 from pyXenium.io.sdata_model import XeniumSData
 
-__all__ = ["DEFAULT_BOUNDARY_PROGRAM_LIBRARY", "score_contour_boundary_programs"]
+__all__ = [
+    "DEFAULT_BOUNDARY_PROGRAM_LIBRARY",
+    "DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY",
+    "score_contour_boundary_programs",
+]
 
 _IDENTIFIER_COLUMNS = {"sample_id", "contour_key", "contour_id"}
 
@@ -30,7 +38,7 @@ DEFAULT_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = {
             "edge_contrast__omics__state_fraction__b_plasma_like": 0.8,
             "edge_contrast__omics__niche_fraction__immune_rich": 1.0,
             "edge_contrast__pathway__immune_activation": 1.0,
-            "lr__cxcl13_cxcr5__outer_minus_inner": 0.6,
+            "cci__cxcl13_cxcr5__outer_minus_inner": 0.6,
         },
         "spatial": {
             "gradient__immune__outer_minus_inner": 1.2,
@@ -49,8 +57,8 @@ DEFAULT_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = {
             "omics__outer_rim__state_fraction__endothelial_perivascular": 1.2,
             "pathway__outer_rim__myeloid_activation": 1.0,
             "pathway__outer_rim__vascular_stromal": 1.0,
-            "lr__spp1_cd44__cross_zone": 0.7,
-            "lr__vegfa_kdr__cross_zone": 0.7,
+            "cci__spp1_cd44__cross_zone": 0.7,
+            "cci__vegfa_kdr__cross_zone": 0.7,
         },
         "spatial": {
             "gradient__myeloid__outer_minus_inner": 1.0,
@@ -105,7 +113,7 @@ DEFAULT_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = {
             "omics__outer_rim__state_fraction__b_plasma_like": 1.1,
             "omics__outer_rim__state_fraction__t_cell_exhausted_cytotoxic": 0.9,
             "pathway__outer_rim__tls_activation": 1.1,
-            "lr__cxcl13_cxcr5__cross_zone": 0.8,
+            "cci__cxcl13_cxcr5__cross_zone": 0.8,
         },
         "spatial": {
             "gradient__immune__outer_minus_inner": 0.8,
@@ -131,6 +139,30 @@ DEFAULT_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = {
         },
     },
 }
+
+DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = copy.deepcopy(
+    DEFAULT_BOUNDARY_PROGRAM_LIBRARY
+)
+DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY["emt_invasive_front"]["image"].update(
+    {
+        "bmnet__outer_rim__invasive_prob": 0.8,
+        "bmnet__outer_minus_inner__invasive_prob": 0.7,
+        "bmnet__whole__tumor_prob": 0.4,
+    }
+)
+DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY["stromal_encapsulation"]["image"].update(
+    {
+        "bmnet__inner_rim__in_situ_prob": 0.5,
+        "bmnet__whole__in_situ_prob": 0.4,
+        "bmnet__outer_minus_inner__invasive_prob": -0.3,
+    }
+)
+DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY["necrotic_hypoxic_rim"]["image"].update(
+    {
+        "bmnet__whole__prediction_entropy": 0.3,
+        "bmnet__whole__tumor_prob": 0.2,
+    }
+)
 
 
 def score_contour_boundary_programs(
@@ -293,11 +325,23 @@ def associate_contour_image_omics(
 
     image_columns = _select_columns(
         merged,
-        prefixes=("pathomics__", "geometry__", "edge_contrast__pathomics__"),
+        prefixes=(
+            "pathomics__",
+            "geometry__",
+            "bmnet__",
+            "descriptor__",
+            "cellsam__",
+            "pathology__",
+            "edge_contrast__pathomics__",
+            "edge_contrast__bmnet__",
+            "edge_contrast__descriptor__",
+            "edge_contrast__cellsam__",
+            "edge_contrast__pathology__",
+        ),
     )
     omics_columns = _select_columns(
         merged,
-        prefixes=("omics__", "pathway__", "protein__", "rna__", "gradient__", "lr__", "edge_contrast__omics__", "edge_contrast__pathway__"),
+        prefixes=("omics__", "pathway__", "protein__", "rna__", "gradient__", "cci__", "edge_contrast__omics__", "edge_contrast__pathway__"),
     )
     correlation_rows: list[dict[str, Any]] = []
     for image_column in image_columns:
@@ -344,9 +388,11 @@ def _resolve_program_library(
     program_library: str | Mapping[str, Mapping[str, Mapping[str, float]]],
 ) -> dict[str, dict[str, dict[str, float]]]:
     if isinstance(program_library, str):
-        if program_library != "tumor_boundary_v1":
-            raise ValueError("`program_library` currently supports only 'tumor_boundary_v1'.")
-        return DEFAULT_BOUNDARY_PROGRAM_LIBRARY
+        if program_library == "tumor_boundary_v1":
+            return DEFAULT_BOUNDARY_PROGRAM_LIBRARY
+        if program_library == "breast_boundary_bmnet_v1":
+            return DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY
+        raise ValueError("`program_library` currently supports 'tumor_boundary_v1' and 'breast_boundary_bmnet_v1'.")
     resolved: dict[str, dict[str, dict[str, float]]] = {}
     for program_name, components in program_library.items():
         resolved[str(program_name)] = {
@@ -416,12 +462,16 @@ def _select_model_features(frame: pd.DataFrame) -> pd.DataFrame:
             "geometry__",
             "context__",
             "pathomics__",
+            "bmnet__",
+            "descriptor__",
+            "cellsam__",
+            "pathology__",
             "omics__",
             "pathway__",
             "protein__whole__",
             "rna__whole__",
             "gradient__",
-            "lr__",
+            "cci__",
             "edge_contrast__",
         ),
     ) + list(DEFAULT_BOUNDARY_PROGRAM_LIBRARY)
@@ -546,12 +596,37 @@ def _program_feature_delta_table(
     contour_index = merged.set_index("contour_id", drop=False)
     rna = feature_table["rna_pseudobulk"].set_index("contour_id", drop=False)
     pathways = feature_table["pathway_activity"].set_index("contour_id", drop=False)
-    lr = feature_table["ligand_receptor_summary"].set_index("contour_id", drop=False)
+    cci = feature_table["cci_summary"].set_index("contour_id", drop=False)
 
     tables = [
+        (
+            "image",
+            contour_index.loc[
+                :,
+                [
+                    column
+                    for column in contour_index.columns
+                    if column in _IDENTIFIER_COLUMNS
+                    or str(column).startswith(
+                        (
+                            "pathomics__",
+                            "bmnet__",
+                            "descriptor__",
+                            "cellsam__",
+                            "pathology__",
+                            "edge_contrast__pathomics__",
+                            "edge_contrast__bmnet__",
+                            "edge_contrast__descriptor__",
+                            "edge_contrast__cellsam__",
+                            "edge_contrast__pathology__",
+                        )
+                    )
+                ],
+            ],
+        ),
         ("gene", rna),
         ("pathway", pathways),
-        ("marker_pair", lr),
+        ("marker_pair", cci),
     ]
     rows: list[dict[str, Any]] = []
     for program_name, program_matches in matched_exemplars.groupby("program", sort=False, dropna=False):

@@ -5,20 +5,22 @@
 :maxdepth: 1
 
 pyXenium.io <io>
-pyXenium.ligand_receptor <ligand_receptor_index>
+pyXenium.cci <cci_index>
 pyXenium.pathway <pathway>
 pyXenium.multimodal <multimodal>
 pyXenium.contour <contour_index>
 pyXenium.gmi <gmi>
 pyXenium.mechanostress <mechanostress_atera_pdc>
 pyXenium.spatho <ai_driven_spatial_pathologist>
+pyXenium.perturb <spatialperturb_bridge>
 ```
 
 The tutorials hub brings the canonical pyXenium tutorial series into one
 place. The notebooks below use real pyXenium study outputs to explain what
 each module does, how to rerun it on local Xenium data, and why the result
-matters biologically. The final entry documents the optional handoff from
-pyXenium's `XeniumSData` structure to the external `spatho` pathology workflow.
+matters biologically. The final entries document optional bridges from
+pyXenium's Xenium data foundation to external `spatho` and `SpatialPerturb`
+workflows.
 
 ::::{grid} 1 1 2 2
 :gutter: 2
@@ -31,11 +33,11 @@ components, and see how I/O preserves the structures needed for downstream
 biology.
 :::
 
-:::{grid-item-card} pyXenium.ligand_receptor
-:link: ligand_receptor_index
+:::{grid-item-card} pyXenium.cci
+:link: cci_index
 :link-type: doc
-Walk through Atera WTA breast ligand-receptor topology outputs, then compare
-whole-dataset benchmark results across spatial and non-spatial LR methods.
+Walk through Atera WTA breast cell-cell interaction topology outputs, then compare
+whole-dataset benchmark results across spatial and non-spatial CCI methods.
 :::
 
 :::{grid-item-card} pyXenium.pathway
@@ -80,6 +82,13 @@ artifacts.
 Install and call the external `spatho` workflow, and see how pyXenium's
 `XeniumSData` structure supports AI-driven spatial pathology without adding
 spatho code to pyXenium.
+:::
+
+:::{grid-item-card} pyXenium.perturb
+:link: spatialperturb_bridge
+:link-type: doc
+Write a SpatialPerturb Bridge handoff spec for Perturb-seq reference projection
+onto Xenium tissue without adding SpatialPerturb as a core pyXenium dependency.
 :::
 ::::
 

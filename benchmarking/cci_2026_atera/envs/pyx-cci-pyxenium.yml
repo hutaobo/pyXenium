@@ -1,0 +1,25 @@
+name: pyx-cci-pyxenium
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - git
+  - numpy
+  - pandas
+  - scipy
+  - pyyaml
+  - anndata
+  - scanpy
+  - click
+  - matplotlib
+  - seaborn
+  - statsmodels
+  - pyarrow
+  - zarr
+  - fsspec
+  - requests
+  - aiohttp
+  - shapely
+  - tifffile
+  - imagecodecs

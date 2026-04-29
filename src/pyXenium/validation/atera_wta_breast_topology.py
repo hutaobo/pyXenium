@@ -7,8 +7,7 @@ from typing import Any
 
 import pandas as pd
 
-from pyXenium.io import read_xenium
-from pyXenium.ligand_receptor import ligand_receptor_topology_analysis
+from pyXenium.cci import cci_topology_analysis
 from pyXenium.pathway import pathway_topology_analysis
 
 DEFAULT_ATERA_WTA_BREAST_DATASET_PATH = (
@@ -18,7 +17,7 @@ DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR = r"sfplot_tbc_formal_wta\results"
 DEFAULT_ATERA_WTA_BREAST_CELL_GROUPS = "WTA_Preview_FFPE_Breast_Cancer_cell_groups.csv"
 DEFAULT_ATERA_WTA_BREAST_SAMPLE_ID = "atera_wta_ffpe_breast"
 
-DEFAULT_LR_SMOKE_PANEL = pd.DataFrame(
+DEFAULT_CCI_SMOKE_PANEL = pd.DataFrame(
     [
         {"ligand": "CSF1", "receptor": "CSF1R", "evidence_weight": 1.0},
         {"ligand": "CXCL12", "receptor": "CXCR4", "evidence_weight": 1.0},
@@ -51,6 +50,8 @@ def _default_tbc_results_path(dataset_root: str | Path) -> Path:
 
 
 def _load_atera_wta_breast_adata(dataset_root: str | Path):
+    from pyXenium.io import read_xenium
+
     return read_xenium(
         str(dataset_root),
         as_="anndata",
@@ -99,7 +100,7 @@ def _cluster_counts(adata) -> pd.DataFrame:
     return pd.DataFrame({"cluster": counts.index.astype(str), "n_cells": counts.to_numpy(dtype=int)})
 
 
-def _lr_pair_summary(scores: pd.DataFrame, ligand: str, receptor: str) -> dict[str, Any]:
+def _cci_pair_summary(scores: pd.DataFrame, ligand: str, receptor: str) -> dict[str, Any]:
     pair_scores = scores.loc[(scores["ligand"] == ligand) & (scores["receptor"] == receptor)].copy()
     if pair_scores.empty:
         return {
@@ -110,7 +111,7 @@ def _lr_pair_summary(scores: pd.DataFrame, ligand: str, receptor: str) -> dict[s
             "best_score": None,
             "top_rows": [],
         }
-    pair_scores = pair_scores.sort_values("LR_score", ascending=False).reset_index(drop=True)
+    pair_scores = pair_scores.sort_values("CCI_score", ascending=False).reset_index(drop=True)
     best = pair_scores.iloc[0]
     top_rows = []
     for _, row in pair_scores.head(5).iterrows():
@@ -118,7 +119,7 @@ def _lr_pair_summary(scores: pd.DataFrame, ligand: str, receptor: str) -> dict[s
             {
                 "sender_celltype": str(row["sender_celltype"]),
                 "receiver_celltype": str(row["receiver_celltype"]),
-                "LR_score": float(row["LR_score"]),
+                "CCI_score": float(row["CCI_score"]),
             }
         )
     return {
@@ -126,7 +127,7 @@ def _lr_pair_summary(scores: pd.DataFrame, ligand: str, receptor: str) -> dict[s
         "receptor": receptor,
         "best_sender_celltype": str(best["sender_celltype"]),
         "best_receiver_celltype": str(best["receiver_celltype"]),
-        "best_score": float(best["LR_score"]),
+        "best_score": float(best["CCI_score"]),
         "top_rows": top_rows,
     }
 
@@ -134,18 +135,18 @@ def _lr_pair_summary(scores: pd.DataFrame, ligand: str, receptor: str) -> dict[s
 def _rank_of_pair(pair_scores: pd.DataFrame, sender: str, receiver: str) -> int | None:
     if pair_scores.empty:
         return None
-    ranked = pair_scores.sort_values("LR_score", ascending=False).reset_index(drop=True)
+    ranked = pair_scores.sort_values("CCI_score", ascending=False).reset_index(drop=True)
     matches = ranked.index[(ranked["sender_celltype"] == sender) & (ranked["receiver_celltype"] == receiver)]
     if len(matches) == 0:
         return None
     return int(matches[0]) + 1
 
 
-def _build_lr_acceptance(scores: pd.DataFrame) -> list[dict[str, Any]]:
+def _build_cci_acceptance(scores: pd.DataFrame) -> list[dict[str, Any]]:
     checks: list[dict[str, Any]] = []
 
     csf1 = scores.loc[(scores["ligand"] == "CSF1") & (scores["receptor"] == "CSF1R")].copy()
-    csf1 = csf1.sort_values("LR_score", ascending=False).reset_index(drop=True)
+    csf1 = csf1.sort_values("CCI_score", ascending=False).reset_index(drop=True)
     csf1_sender = str(csf1.iloc[0]["sender_celltype"]) if not csf1.empty else None
     checks.append(
         {
@@ -170,7 +171,7 @@ def _build_lr_acceptance(scores: pd.DataFrame) -> list[dict[str, Any]]:
     )
 
     dll4 = scores.loc[(scores["ligand"] == "DLL4") & (scores["receptor"] == "NOTCH3")].copy()
-    dll4 = dll4.sort_values("LR_score", ascending=False).reset_index(drop=True)
+    dll4 = dll4.sort_values("CCI_score", ascending=False).reset_index(drop=True)
     if dll4.empty:
         dll4_sender = None
         dll4_receiver = None
@@ -247,15 +248,15 @@ def _build_pathway_acceptance(pathway_to_cell: pd.DataFrame) -> list[dict[str, A
 def build_serializable_breast_topology_summary(study: dict) -> dict[str, Any]:
     adata = study["adata"]
     cluster_counts = _cluster_counts(adata)
-    lr_scores = study["lr"]["scores"]
+    cci_scores = study["cci"]["scores"]
     pathway_to_cell = study["pathway"]["pathway_to_cell"]
     pathway_activity_to_cell = study["pathway"]["pathway_activity_to_cell"]
 
     metrics_summary = _load_metrics_summary(Path(study["dataset_root"]))
     experiment_metadata = _load_experiment_metadata(Path(study["dataset_root"]))
-    lr_pair_summaries = [
-        _lr_pair_summary(lr_scores, ligand=row["ligand"], receptor=row["receptor"])
-        for _, row in DEFAULT_LR_SMOKE_PANEL.iterrows()
+    cci_pair_summaries = [
+        _cci_pair_summary(cci_scores, ligand=row["ligand"], receptor=row["receptor"])
+        for _, row in DEFAULT_CCI_SMOKE_PANEL.iterrows()
     ]
 
     payload = {
@@ -271,12 +272,12 @@ def build_serializable_breast_topology_summary(study: dict) -> dict[str, Any]:
         "cluster_cell_counts": cluster_counts.to_dict(orient="records"),
         "metrics_summary": metrics_summary,
         "experiment_metadata": experiment_metadata,
-        "lr_smoke_panel": DEFAULT_LR_SMOKE_PANEL.to_dict(orient="records"),
+        "cci_smoke_panel": DEFAULT_CCI_SMOKE_PANEL.to_dict(orient="records"),
         "pathway_smoke_panel": [
             {"pathway": pathway, "genes": genes} for pathway, genes in DEFAULT_PATHWAY_PANEL.items()
         ],
-        "lr_pair_summaries": lr_pair_summaries,
-        "lr_acceptance": _build_lr_acceptance(lr_scores),
+        "cci_pair_summaries": cci_pair_summaries,
+        "cci_acceptance": _build_cci_acceptance(cci_scores),
         "pathway_primary_best": _pathway_best_assignments(pathway_to_cell),
         "pathway_activity_best": _pathway_best_assignments(pathway_activity_to_cell),
         "pathway_acceptance": _build_pathway_acceptance(pathway_to_cell),
@@ -305,11 +306,11 @@ def render_atera_wta_breast_topology_report(payload: dict) -> str:
         f"- median_transcripts_per_cell: `{payload['metrics_summary'].get('median_transcripts_per_cell')}`",
         f"- Runtime (s): `{payload['runtime_seconds']:.2f}`",
         "",
-        "## LR Smoke Panel",
+        "## CCI Smoke Panel",
         "",
     ]
 
-    for entry in payload["lr_pair_summaries"]:
+    for entry in payload["cci_pair_summaries"]:
         ligand = entry["ligand"]
         receptor = entry["receptor"]
         best_sender = entry["best_sender_celltype"]
@@ -320,8 +321,8 @@ def render_atera_wta_breast_topology_report(payload: dict) -> str:
             + (f" (`{best_score:.4f}`)" if best_score is not None else "")
         )
 
-    lines.extend(["", "## LR Acceptance", ""])
-    for check in payload["lr_acceptance"]:
+    lines.extend(["", "## CCI Acceptance", ""])
+    for check in payload["cci_acceptance"]:
         status = "PASS" if check["pass"] else "FAIL"
         lines.append(f"- `{status}` {check['check']}")
 
@@ -379,9 +380,9 @@ def run_atera_wta_breast_topology(
 
     adata = _load_atera_wta_breast_adata(dataset_root_path)
 
-    lr_result = ligand_receptor_topology_analysis(
+    cci_result = cci_topology_analysis(
         adata=adata,
-        lr_pairs=DEFAULT_LR_SMOKE_PANEL,
+        interaction_pairs=DEFAULT_CCI_SMOKE_PANEL,
         output_dir=resolved_output_dir,
         tbc_results=resolved_tbc_results,
         cluster_col="cluster",
@@ -389,7 +390,7 @@ def run_atera_wta_breast_topology(
         x_col="x",
         y_col="y",
         anchor_mode="precomputed",
-        top_n_pairs=len(DEFAULT_LR_SMOKE_PANEL),
+        top_n_pairs=len(DEFAULT_CCI_SMOKE_PANEL),
         min_cross_edges=50,
         export_figures=export_figures,
     )
@@ -415,7 +416,7 @@ def run_atera_wta_breast_topology(
 
     runtime_seconds = time.perf_counter() - start
     merged_files = {}
-    merged_files.update(lr_result.get("files", {}))
+    merged_files.update(cci_result.get("files", {}))
     merged_files.update(pathway_result.get("files", {}))
 
     study = {
@@ -423,7 +424,7 @@ def run_atera_wta_breast_topology(
         "dataset_root": str(dataset_root_path),
         "tbc_results": str(resolved_tbc_results),
         "adata": adata,
-        "lr": lr_result,
+        "cci": cci_result,
         "pathway": pathway_result,
         "files": merged_files,
         "runtime_seconds": runtime_seconds,
@@ -455,7 +456,7 @@ __all__ = [
     "DEFAULT_ATERA_WTA_BREAST_DATASET_PATH",
     "DEFAULT_ATERA_WTA_BREAST_SAMPLE_ID",
     "DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR",
-    "DEFAULT_LR_SMOKE_PANEL",
+    "DEFAULT_CCI_SMOKE_PANEL",
     "DEFAULT_PATHWAY_PANEL",
     "build_serializable_breast_topology_summary",
     "render_atera_wta_breast_topology_report",

@@ -54,7 +54,7 @@ Generate the reproducibility manifest with:
 
 ```bash
 pyxenium gmi pdc-plan \
-  --pdc-xenium-root /cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs \
+  --pdc-xenium-root /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs \
   --pdc-root /cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04 \
   --output-json /cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/logs/pdc_gmi_plan.json
 ```

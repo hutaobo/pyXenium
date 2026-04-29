@@ -119,7 +119,7 @@ def test_gmi_docs_and_package_data_are_canonical():
     api_gmi = (repo_root / "docs" / "api" / "gmi.md").read_text(encoding="utf-8")
     pyproject = (repo_root / "pyproject.toml").read_text(encoding="utf-8")
 
-    assert "seven canonical public surfaces" in readme
+    assert "nine feature areas" in readme
     assert "gmi" in api_index
     assert "pyXenium.gmi" in api_gmi
     assert "_vendor/Gmi/R/*" in pyproject

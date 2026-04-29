@@ -8,4 +8,3 @@ eigen_inv <- function(A) {
 eigen_matmul <- function(A, B) {
     .Call(`_Gmi_eigen_matmul`, A, B)
 }
-

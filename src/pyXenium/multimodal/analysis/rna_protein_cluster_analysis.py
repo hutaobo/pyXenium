@@ -341,4 +341,3 @@ def rna_protein_cluster_analysis(
 
 
 __all__ = ["rna_protein_cluster_analysis", "ProteinModelResult"]
-

@@ -1,0 +1,10 @@
+gene	present_in_existing_mechanostress_coupling	n_endothelial_cells	spearman_rho_vs_inverse_distance	p_value	median_distance_um
+VWF	False				
+SELP	False				
+PECAM1	False				
+EMCN	False				
+KDR	False				
+COL4A1	False				
+COL4A2	False				
+VWF_SELP_joint_vs_nearest_tumor		8624.0	-0.17571748524414474	9.287286776013043e-61	79.10240240786976
+VWF_SELP_joint_vs_nearest_caf		8624.0	-0.13095466389396854	2.6812155763431774e-34	17.59132695323779

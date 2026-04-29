@@ -4,7 +4,7 @@
 
 Core entrypoints:
 
-- `pyXenium.ligand_receptor.ligand_receptor_topology_analysis`
+- `pyXenium.cci.cci_topology_analysis`
 - `pyXenium.pathway.pathway_topology_analysis`
 - `pyXenium.pathway.compute_pathway_activity_matrix`
 - `pyXenium.validation.run_atera_wta_breast_topology`

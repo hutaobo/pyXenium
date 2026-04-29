@@ -102,7 +102,7 @@
     "panel_name": "Human WTA (pre-release)",
     "analysis_sw_version": "xenium-9.9.9.9"
   },
-  "lr_smoke_panel": [
+  "cci_smoke_panel": [
     {
       "ligand": "CSF1",
       "receptor": "CSF1R",
@@ -187,7 +187,7 @@
       ]
     }
   ],
-  "lr_pair_summaries": [
+  "cci_pair_summaries": [
     {
       "ligand": "CSF1",
       "receptor": "CSF1R",
@@ -198,27 +198,27 @@
         {
           "sender_celltype": "CAFs, DCIS Associated",
           "receiver_celltype": "Macrophages",
-          "LR_score": 0.5073865151280754
+          "CCI_score": 0.5073865151280754
         },
         {
           "sender_celltype": "Endothelial Cells",
           "receiver_celltype": "Macrophages",
-          "LR_score": 0.35154104870596287
+          "CCI_score": 0.35154104870596287
         },
         {
           "sender_celltype": "CAFs, DCIS Associated",
           "receiver_celltype": "Dendritic Cells",
-          "LR_score": 0.34326136269645735
+          "CCI_score": 0.34326136269645735
         },
         {
           "sender_celltype": "Pericytes",
           "receiver_celltype": "Macrophages",
-          "LR_score": 0.33750315954595617
+          "CCI_score": 0.33750315954595617
         },
         {
           "sender_celltype": "Mast Cells",
           "receiver_celltype": "Macrophages",
-          "LR_score": 0.2749259699199151
+          "CCI_score": 0.2749259699199151
         }
       ]
     },
@@ -232,27 +232,27 @@
         {
           "sender_celltype": "CAFs, DCIS Associated",
           "receiver_celltype": "T Lymphocytes",
-          "LR_score": 0.6338817490290192
+          "CCI_score": 0.6338817490290192
         },
         {
           "sender_celltype": "CAFs, DCIS Associated",
           "receiver_celltype": "Dendritic Cells",
-          "LR_score": 0.3944579384584832
+          "CCI_score": 0.3944579384584832
         },
         {
           "sender_celltype": "Endothelial Cells",
           "receiver_celltype": "T Lymphocytes",
-          "LR_score": 0.3019627849314387
+          "CCI_score": 0.3019627849314387
         },
         {
           "sender_celltype": "CAFs, DCIS Associated",
           "receiver_celltype": "Macrophages",
-          "LR_score": 0.29324002045756453
+          "CCI_score": 0.29324002045756453
         },
         {
           "sender_celltype": "Pericytes",
           "receiver_celltype": "T Lymphocytes",
-          "LR_score": 0.26668552231862974
+          "CCI_score": 0.26668552231862974
         }
       ]
     },
@@ -266,27 +266,27 @@
         {
           "sender_celltype": "Endothelial Cells",
           "receiver_celltype": "Endothelial Cells",
-          "LR_score": 0.5291256583902569
+          "CCI_score": 0.5291256583902569
         },
         {
           "sender_celltype": "T Lymphocytes",
           "receiver_celltype": "Endothelial Cells",
-          "LR_score": 0.4854183473543701
+          "CCI_score": 0.4854183473543701
         },
         {
           "sender_celltype": "CAFs, Invasive Associated",
           "receiver_celltype": "Endothelial Cells",
-          "LR_score": 0.4457506759627043
+          "CCI_score": 0.4457506759627043
         },
         {
           "sender_celltype": "Dendritic Cells",
           "receiver_celltype": "Endothelial Cells",
-          "LR_score": 0.42448941983499283
+          "CCI_score": 0.42448941983499283
         },
         {
           "sender_celltype": "Macrophages",
           "receiver_celltype": "Endothelial Cells",
-          "LR_score": 0.41532289004992023
+          "CCI_score": 0.41532289004992023
         }
       ]
     },
@@ -300,27 +300,27 @@
         {
           "sender_celltype": "11q13 Invasive Tumor Cells",
           "receiver_celltype": "Basal-like Structured DCIS Cells",
-          "LR_score": 0.5029093013588464
+          "CCI_score": 0.5029093013588464
         },
         {
           "sender_celltype": "11q13 Invasive Tumor Cells",
           "receiver_celltype": "11q13 Invasive Tumor Cells",
-          "LR_score": 0.47428572234409616
+          "CCI_score": 0.47428572234409616
         },
         {
           "sender_celltype": "11q13 Invasive Tumor Cells",
           "receiver_celltype": "Endothelial Cells",
-          "LR_score": 0.41047474995774563
+          "CCI_score": 0.41047474995774563
         },
         {
           "sender_celltype": "11q13 Invasive Tumor Cells",
           "receiver_celltype": "11q13 Invasive Tumor Cells (Mitotic)",
-          "LR_score": 0.29793464530167624
+          "CCI_score": 0.29793464530167624
         },
         {
           "sender_celltype": "11q13 Invasive Tumor Cells",
           "receiver_celltype": "Pericytes",
-          "LR_score": 0.2963946101502821
+          "CCI_score": 0.2963946101502821
         }
       ]
     },
@@ -334,32 +334,32 @@
         {
           "sender_celltype": "Endothelial Cells",
           "receiver_celltype": "Pericytes",
-          "LR_score": 0.6628108852003319
+          "CCI_score": 0.6628108852003319
         },
         {
           "sender_celltype": "Endothelial Cells",
           "receiver_celltype": "Endothelial Cells",
-          "LR_score": 0.47241153359396243
+          "CCI_score": 0.47241153359396243
         },
         {
           "sender_celltype": "Endothelial Cells",
           "receiver_celltype": "11q13 Invasive Tumor Cells",
-          "LR_score": 0.41116804232785686
+          "CCI_score": 0.41116804232785686
         },
         {
           "sender_celltype": "Pericytes",
           "receiver_celltype": "Pericytes",
-          "LR_score": 0.34812852252139787
+          "CCI_score": 0.34812852252139787
         },
         {
           "sender_celltype": "Endothelial Cells",
           "receiver_celltype": "CAFs, Invasive Associated",
-          "LR_score": 0.3222123016963357
+          "CCI_score": 0.3222123016963357
         }
       ]
     }
   ],
-  "lr_acceptance": [
+  "cci_acceptance": [
     {
       "check": "CSF1-CSF1R top sender should not be Mast Cells",
       "ligand": "CSF1",
@@ -502,17 +502,17 @@
   "files": {
     "ligand_to_cell": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\ligand_to_cell.csv",
     "receptor_to_cell": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\receptor_to_cell.csv",
-    "lr_sender_receiver_scores": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\lr_sender_receiver_scores.csv",
-    "lr_component_diagnostics": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\lr_component_diagnostics.csv",
-    "lr_summary_heatmap": [
-      "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\lr_summary_heatmap.png",
-      "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\lr_summary_heatmap.pdf"
+    "cci_sender_receiver_scores": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\cci_sender_receiver_scores.csv",
+    "cci_component_diagnostics": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\cci_component_diagnostics.csv",
+    "cci_summary_heatmap": [
+      "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\cci_summary_heatmap.png",
+      "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\cci_summary_heatmap.pdf"
     ],
-    "lr_hotspot_cells_csv": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\lr_hotspot_cells.csv",
-    "lr_hotspot_cells_parquet": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\lr_hotspot_cells.parquet",
-    "lr_hotspot_overlay": [
-      "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\lr_hotspot_overlay.png",
-      "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\lr_hotspot_overlay.pdf"
+    "cci_hotspot_cells_csv": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\cci_hotspot_cells.csv",
+    "cci_hotspot_cells_parquet": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\cci_hotspot_cells.parquet",
+    "cci_hotspot_overlay": [
+      "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\cci_hotspot_overlay.png",
+      "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\figures\\cci_hotspot_overlay.pdf"
     ],
     "pathway_to_cell": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\pathway_to_cell.csv",
     "pathway_structuremap": "D:\\GitHub\\pyXenium\\manuscript\\atera_wta_breast_topology\\pathway_structuremap.csv",

@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "runtime_seconds": 69.638,
+  "n_scores": 1319600,
+  "n_target_axes": 7,
+  "evidence_class_counts": {
+    "strong": 7
+  },
+  "outputs": {
+    "evidence": "/data/taobo.hu/topolink_cci_validation_20260428_v2/outputs/tables/topolink_cci_validation_v2_evidence.tsv",
+    "controls": "/data/taobo.hu/topolink_cci_validation_20260428_v2/outputs/tables/topolink_cci_validation_v2_false_positive_controls.tsv",
+    "report": "/data/taobo.hu/topolink_cci_validation_20260428_v2/outputs/reports/topolink_cci_validation_v2_report.md",
+    "figure": "/data/taobo.hu/topolink_cci_validation_20260428_v2/outputs/figures/topolink_cci_validation_v2_evidence_matrix.png"
+  }
+}

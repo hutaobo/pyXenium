@@ -1,0 +1,16 @@
+{
+  "target": {
+    "ligand": "VWF",
+    "receptor": "SELP",
+    "sender": "Endothelial Cells",
+    "receiver": "Endothelial Cells",
+    "CCI_score": 0.7912892368005828,
+    "local_contact": 0.2912449657481761,
+    "cross_edge_count": 12779
+  },
+  "outputs": {
+    "tables": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables",
+    "figures": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures",
+    "report": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\reports\\vwf_selp_deep_dive.md"
+  }
+}

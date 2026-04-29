@@ -25,10 +25,11 @@ from .benchmarking import (
     compute_robustness,
     execute_a100_stage_plan,
     finalize_a100_all,
+    finalize_cci_source_of_truth,
     monitor_a100_jobs,
     prepare_a100_bundle,
-    prepare_atera_lr_benchmark,
-    render_atera_lr_benchmark_report,
+    prepare_atera_cci_benchmark,
+    render_atera_cci_benchmark_report,
     resolve_layout,
     run_a100_plan,
     run_registered_method,
@@ -104,9 +105,9 @@ def benchmark_group():
     """Benchmark orchestration commands."""
 
 
-@benchmark_group.group("atera-lr")
-def benchmark_atera_lr_group():
-    """Atera Xenium ligand-receptor benchmark commands."""
+@benchmark_group.group("atera-cci")
+def benchmark_atera_cci_group():
+    """Atera Xenium cell-cell interaction benchmark commands."""
 
 
 @app.group("gmi")
@@ -831,7 +832,7 @@ def atera_wta_breast_topology(
     write_h5ad,
     export_figures,
 ):
-    """Run the fixed Atera WTA breast LR/pathway topology reproducibility workflow."""
+    """Run the fixed Atera WTA breast CCI/pathway topology reproducibility workflow."""
     study = run_atera_wta_breast_topology(
         dataset_root=dataset_root,
         tbc_results=tbc_results,
@@ -845,18 +846,18 @@ def atera_wta_breast_topology(
     click.echo(json.dumps(study["payload"], indent=2))
 
 
-@benchmark_atera_lr_group.command("prepare")
+@benchmark_atera_cci_group.command("prepare")
 @click.option("--dataset-root", "--xenium-root", "dataset_root", default=DEFAULT_ATERA_WTA_BREAST_DATASET_PATH, show_default=True)
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--tbc-results", default=None, help="Optional path to the topology bundle directory.")
 @click.option("--smoke-n-cells", type=int, default=20000, show_default=True)
 @click.option("--seed", type=int, default=0, show_default=True)
 @click.option("--prefer", type=click.Choice(["auto", "zarr", "h5", "mex"]), default="h5", show_default=True)
 @click.option("--export-full-bundle/--skip-full-bundle", default=True, show_default=True)
 @click.option("--write-full-h5ad/--skip-full-h5ad", default=True, show_default=True)
-def benchmark_atera_lr_prepare(dataset_root, benchmark_root, tbc_results, smoke_n_cells, seed, prefer, export_full_bundle, write_full_h5ad):
+def benchmark_atera_cci_prepare(dataset_root, benchmark_root, tbc_results, smoke_n_cells, seed, prefer, export_full_bundle, write_full_h5ad):
     """Freeze the Atera Xenium benchmark inputs and export the cross-language bundle."""
-    payload = prepare_atera_lr_benchmark(
+    payload = prepare_atera_cci_benchmark(
         dataset_root=dataset_root,
         benchmark_root=benchmark_root,
         tbc_results=tbc_results,
@@ -869,43 +870,43 @@ def benchmark_atera_lr_prepare(dataset_root, benchmark_root, tbc_results, smoke_
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("smoke-pyxenium")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("smoke-pyxenium")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--input-h5ad", default=None, help="Optional smoke h5ad path. Defaults to <benchmark_root>/data/smoke/adata_smoke.h5ad.")
 @click.option("--output-dir", default=None, help="Optional output directory. Defaults to <benchmark_root>/runs/pyxenium_smoke.")
 @click.option("--tbc-results", default=None, help="Optional path to the topology bundle directory.")
-@click.option("--lr-panel-path", default=None, help="Optional LR panel TSV. Defaults to <benchmark_root>/data/atera_smoke_panel.tsv.")
+@click.option("--cci-panel-path", default=None, help="Optional CCI resource TSV. Defaults to <benchmark_root>/data/atera_smoke_panel.tsv.")
 @click.option("--database-mode", default="smoke-panel", show_default=True)
 @click.option("--export-figures/--no-export-figures", default=False, show_default=True)
-def benchmark_atera_lr_smoke_pyxenium(benchmark_root, input_h5ad, output_dir, tbc_results, lr_panel_path, database_mode, export_figures):
+def benchmark_atera_cci_smoke_pyxenium(benchmark_root, input_h5ad, output_dir, tbc_results, cci_panel_path, database_mode, export_figures):
     """Run the pyXenium smoke benchmark and standardize the result table."""
-    layout = resolve_layout(relative_root=benchmark_root or Path("benchmarking") / "lr_2026_atera")
+    layout = resolve_layout(relative_root=benchmark_root or Path("benchmarking") / "cci_2026_atera")
     resolved_input_h5ad = input_h5ad or layout.data_dir / "smoke" / "adata_smoke.h5ad"
     resolved_output_dir = output_dir or layout.runs_dir / "pyxenium_smoke"
-    resolved_lr_panel = lr_panel_path or layout.data_dir / "atera_smoke_panel.tsv"
+    resolved_cci_panel = cci_panel_path or layout.data_dir / "atera_smoke_panel.tsv"
     resolved_tbc = tbc_results or Path(DEFAULT_ATERA_WTA_BREAST_DATASET_PATH) / DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR
     payload = run_pyxenium_smoke(
         input_h5ad=resolved_input_h5ad,
         output_dir=resolved_output_dir,
         tbc_results=resolved_tbc,
-        lr_panel_path=resolved_lr_panel,
+        cci_panel_path=resolved_cci_panel,
         database_mode=database_mode,
         export_figures=export_figures,
     )
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("run-method")
-@click.option("--method", required=True, help="Registered LR benchmark method slug, e.g. squidpy, liana, commot, cellchat.")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("run-method")
+@click.option("--method", required=True, help="Registered CCI benchmark method slug, e.g. squidpy, liana, commot, cellchat.")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--input-manifest", default=None, help="Optional input manifest. Defaults to <benchmark_root>/data/input_manifest.json.")
 @click.option("--output-dir", default=None, help="Optional output directory. Defaults to <benchmark_root>/runs/<method>_<phase>_<database-mode>.")
 @click.option("--database-mode", default="common-db", show_default=True, help="common-db, native-db, or smoke-panel.")
 @click.option("--phase", type=click.Choice(["smoke", "full"]), default="smoke", show_default=True)
-@click.option("--max-lr-pairs", type=int, default=None, help="Optional cap for pilot runs.")
+@click.option("--max-cci-pairs", type=int, default=None, help="Optional cap for pilot runs.")
 @click.option("--n-perms", type=int, default=100, show_default=True, help="Permutation count for adapters that expose permutations.")
-@click.option("--chunk-id", type=int, default=None, help="Optional zero-based LR chunk id for chunked methods.")
-@click.option("--num-chunks", type=int, default=None, help="Optional total LR chunks for chunked methods.")
+@click.option("--chunk-id", type=int, default=None, help="Optional zero-based CCI chunk id for chunked methods.")
+@click.option("--num-chunks", type=int, default=None, help="Optional total CCI chunks for chunked methods.")
 @click.option("--bounded-mode", default=None, help="Optional bounded execution label, e.g. smoke_20k, pilot_50k, commot_chunk.")
 @click.option("--gpu-id", default=None, help="Optional GPU id assigned by the A100 job matrix.")
 @click.option("--job-id", default=None, help="Optional A100 job id/provenance label.")
@@ -914,14 +915,14 @@ def benchmark_atera_lr_smoke_pyxenium(benchmark_root, input_h5ad, output_dir, tb
 @click.option("--export-figures/--no-export-figures", default=False, show_default=True)
 @click.option("--rscript", default=None, help="Optional Rscript executable for CellChat.")
 @click.option("--dry-run", is_flag=True, default=False, help="Validate the run contract without executing the adapter.")
-def benchmark_atera_lr_run_method(
+def benchmark_atera_cci_run_method(
     method,
     benchmark_root,
     input_manifest,
     output_dir,
     database_mode,
     phase,
-    max_lr_pairs,
+    max_cci_pairs,
     n_perms,
     chunk_id,
     num_chunks,
@@ -934,7 +935,7 @@ def benchmark_atera_lr_run_method(
     rscript,
     dry_run,
 ):
-    """Run one real LR benchmark adapter using the unified contract."""
+    """Run one real CCI benchmark adapter using the unified contract."""
     if dry_run:
         payload = build_method_run_plan(
             method=method,
@@ -943,7 +944,7 @@ def benchmark_atera_lr_run_method(
             benchmark_root=benchmark_root,
             database_mode=database_mode,
             phase=phase,
-            max_lr_pairs=max_lr_pairs,
+            max_cci_pairs=max_cci_pairs,
             n_perms=n_perms,
             chunk_id=chunk_id,
             num_chunks=num_chunks,
@@ -960,7 +961,7 @@ def benchmark_atera_lr_run_method(
             benchmark_root=benchmark_root,
             database_mode=database_mode,
             phase=phase,
-            max_lr_pairs=max_lr_pairs,
+            max_cci_pairs=max_cci_pairs,
             n_perms=n_perms,
             chunk_id=chunk_id,
             num_chunks=num_chunks,
@@ -975,24 +976,24 @@ def benchmark_atera_lr_run_method(
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("smoke-core")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("smoke-core")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--input-manifest", default=None, help="Optional input manifest. Defaults to <benchmark_root>/data/input_manifest.json.")
 @click.option("--methods", default="pyxenium,squidpy,liana,commot,cellchat", show_default=True, help="Comma-separated method slugs.")
 @click.option("--database-mode", default="common-db", show_default=True, help="common-db, native-db, or smoke-panel.")
-@click.option("--max-lr-pairs", type=int, default=None, help="Optional cap for pilot runs.")
+@click.option("--max-cci-pairs", type=int, default=None, help="Optional cap for pilot runs.")
 @click.option("--n-perms", type=int, default=100, show_default=True, help="Permutation count for adapters that expose permutations.")
 @click.option("--dry-run", is_flag=True, default=False, help="Validate all method contracts without executing adapters.")
 @click.option("--continue-on-error/--strict", default=True, show_default=True)
-def benchmark_atera_lr_smoke_core(benchmark_root, input_manifest, methods, database_mode, max_lr_pairs, n_perms, dry_run, continue_on_error):
-    """Run or dry-run the core LR adapter smoke benchmark."""
+def benchmark_atera_cci_smoke_core(benchmark_root, input_manifest, methods, database_mode, max_cci_pairs, n_perms, dry_run, continue_on_error):
+    """Run or dry-run the core CCI adapter smoke benchmark."""
     method_list = [item.strip() for item in methods.split(",") if item.strip()]
     payload = run_smoke_core(
         methods=method_list,
         input_manifest=input_manifest,
         benchmark_root=benchmark_root,
         database_mode=database_mode,
-        max_lr_pairs=max_lr_pairs,
+        max_cci_pairs=max_cci_pairs,
         n_perms=n_perms,
         dry_run=dry_run,
         continue_on_error=continue_on_error,
@@ -1000,13 +1001,13 @@ def benchmark_atera_lr_smoke_core(benchmark_root, input_manifest, methods, datab
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("aggregate")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("aggregate")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--result-path", "result_paths", multiple=True, help="One or more standardized TSV files.")
 @click.option("--output-path", default=None, help="Optional output path. Defaults to <benchmark_root>/results/combined_standardized.tsv.")
-def benchmark_atera_lr_aggregate(benchmark_root, result_paths, output_path):
-    """Aggregate one or more standardized LR result tables."""
-    layout = resolve_layout(relative_root=benchmark_root or Path("benchmarking") / "lr_2026_atera")
+def benchmark_atera_cci_aggregate(benchmark_root, result_paths, output_path):
+    """Aggregate one or more standardized CCI result tables."""
+    layout = resolve_layout(relative_root=benchmark_root or Path("benchmarking") / "cci_2026_atera")
     discovered = sorted([*layout.runs_dir.glob("**/*standardized*.tsv"), *layout.runs_dir.glob("**/*standardized*.tsv.gz")])
     selected = list(result_paths) if result_paths else [str(path) for path in discovered]
     if not selected:
@@ -1016,15 +1017,15 @@ def benchmark_atera_lr_aggregate(benchmark_root, result_paths, output_path):
     click.echo(json.dumps({"output_path": str(resolved_output), "n_rows": int(len(combined)), "inputs": selected}, indent=2))
 
 
-@benchmark_atera_lr_group.command("report")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("report")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--combined-results", default=None, help="Optional aggregated standardized TSV path.")
 @click.option("--canonical-config", default=None, help="Optional canonical axes YAML path.")
 @click.option("--pathway-config", default=None, help="Optional pathway YAML path.")
 @click.option("--output-path", default=None, help="Optional markdown report path.")
-def benchmark_atera_lr_report(benchmark_root, combined_results, canonical_config, pathway_config, output_path):
+def benchmark_atera_cci_report(benchmark_root, combined_results, canonical_config, pathway_config, output_path):
     """Build a markdown report from standardized benchmark outputs."""
-    layout = resolve_layout(relative_root=benchmark_root or Path("benchmarking") / "lr_2026_atera")
+    layout = resolve_layout(relative_root=benchmark_root or Path("benchmarking") / "cci_2026_atera")
     combined_path = Path(combined_results) if combined_results else layout.results_dir / "combined_standardized.tsv"
     if not combined_path.exists():
         raise click.ClickException(f"Combined standardized table does not exist: {combined_path}")
@@ -1052,7 +1053,7 @@ def benchmark_atera_lr_report(benchmark_root, combined_results, canonical_config
         robustness_summary=robustness_summary,
         novelty_summary=novelty_summary,
     )
-    markdown = render_atera_lr_benchmark_report(
+    markdown = render_atera_cci_benchmark_report(
         combined_results=combined,
         canonical_summary=canonical_summary,
         pathway_summary=pathway_summary,
@@ -1069,8 +1070,8 @@ def benchmark_atera_lr_report(benchmark_root, combined_results, canonical_config
     click.echo(json.dumps({"report_md": str(resolved_output), "n_methods": int(combined["method"].nunique()) if not combined.empty else 0}, indent=2))
 
 
-@benchmark_atera_lr_group.command("stage-a100")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("stage-a100")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--host", default=None, help="Remote SSH host or IP.")
 @click.option("--user", default=None, help="Remote SSH username.")
 @click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
@@ -1081,7 +1082,7 @@ def benchmark_atera_lr_report(benchmark_root, combined_results, canonical_config
 @click.option("--output-json", default=None, help="Optional JSON path to persist the staging manifest.")
 @click.option("--plan-only", is_flag=True, default=False, help="Generate a host-agnostic A100 stage plan without requiring host/user.")
 @click.option("--dry-run/--execute", default=True, show_default=True, help="When executing, run mkdir + transfer commands immediately.")
-def benchmark_atera_lr_stage_a100(benchmark_root, host, user, remote_root, remote_xenium_root, stage_data, transfer_mode, include_paths, output_json, plan_only, dry_run):
+def benchmark_atera_cci_stage_a100(benchmark_root, host, user, remote_root, remote_xenium_root, stage_data, transfer_mode, include_paths, output_json, plan_only, dry_run):
     """Generate SSH/SCP commands for staging the benchmark to A100."""
     payload = build_a100_stage_plan(
         benchmark_root=benchmark_root,
@@ -1105,15 +1106,15 @@ def benchmark_atera_lr_stage_a100(benchmark_root, host, user, remote_root, remot
     click.echo(json.dumps(response, indent=2))
 
 
-@benchmark_atera_lr_group.command("prepare-a100-bundle")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("prepare-a100-bundle")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
 @click.option("--remote-xenium-root", default=DEFAULT_A100_READONLY_XENIUM_ROOT, show_default=True, help="Read-only Xenium outs path on A100.")
 @click.option("--transfer-mode", type=click.Choice(["auto", "rsync", "scp", "tar-scp"]), default="auto", show_default=True)
 @click.option("--methods", default="pyxenium,squidpy,liana,commot,cellchat", show_default=True)
 @click.option("--database-mode", default="common-db", show_default=True)
 @click.option("--phase", type=click.Choice(["smoke", "full"]), default="full", show_default=True)
-@click.option("--max-lr-pairs", type=int, default=None)
+@click.option("--max-cci-pairs", type=int, default=None)
 @click.option("--n-perms", type=int, default=100, show_default=True)
 @click.option("--include-prepare/--skip-prepare", default=True, show_default=True, help="Include the A100 job that builds full sparse bundle from the read-only Xenium root.")
 @click.option("--stage-data/--skip-data", default=None, help="Whether to copy local data in the stage plan. Defaults to skip with remote Xenium root.")
@@ -1124,7 +1125,7 @@ def benchmark_atera_lr_stage_a100(benchmark_root, host, user, remote_root, remot
 @click.option("--user", default=None)
 @click.option("--require-full/--allow-missing-full", default=True, show_default=True)
 @click.option("--output-json", default=None)
-def benchmark_atera_lr_prepare_a100_bundle(
+def benchmark_atera_cci_prepare_a100_bundle(
     benchmark_root,
     remote_root,
     remote_xenium_root,
@@ -1132,7 +1133,7 @@ def benchmark_atera_lr_prepare_a100_bundle(
     methods,
     database_mode,
     phase,
-    max_lr_pairs,
+    max_cci_pairs,
     n_perms,
     include_prepare,
     stage_data,
@@ -1153,7 +1154,7 @@ def benchmark_atera_lr_prepare_a100_bundle(
         methods=[item.strip() for item in methods.split(",") if item.strip()],
         database_mode=database_mode,
         phase=phase,
-        max_lr_pairs=max_lr_pairs,
+        max_cci_pairs=max_cci_pairs,
         n_perms=n_perms,
         require_full=require_full,
         include_prepare=include_prepare,
@@ -1168,14 +1169,14 @@ def benchmark_atera_lr_prepare_a100_bundle(
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("run-a100-plan")
+@benchmark_atera_cci_group.command("run-a100-plan")
 @click.option("--plan-json", required=True, help="A100 job manifest or bundle plan JSON.")
 @click.option("--job-id", "job_ids", multiple=True, help="Optional job id filter.")
 @click.option("--dry-run/--execute", default=True, show_default=True)
 @click.option("--remote/--local", default=False, show_default=True, help="Execute the plan over SSH instead of locally.")
 @click.option("--host", default=None, help="Remote SSH host or IP.")
 @click.option("--user", default=None, help="Remote SSH username.")
-def benchmark_atera_lr_run_a100_plan(plan_json, job_ids, dry_run, remote, host, user):
+def benchmark_atera_cci_run_a100_plan(plan_json, job_ids, dry_run, remote, host, user):
     """Dry-run or execute commands from an A100 job manifest."""
     payload = run_a100_plan(
         plan_json=plan_json,
@@ -1188,30 +1189,32 @@ def benchmark_atera_lr_run_a100_plan(plan_json, job_ids, dry_run, remote, host, 
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("build-a100-matrix")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("build-a100-matrix")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
 @click.option("--methods", default=",".join(DEFAULT_A100_ALL_METHODS), show_default=True)
 @click.option("--database-mode", default="common-db", show_default=True)
 @click.option("--phase", type=click.Choice(["smoke", "full"]), default="smoke", show_default=True)
-@click.option("--max-lr-pairs", type=int, default=None)
+@click.option("--max-cci-pairs", type=int, default=None)
 @click.option("--n-perms", type=int, default=100, show_default=True)
 @click.option("--commot-chunks", type=int, default=16, show_default=True)
+@click.option("--cellagentchat-chunks", type=int, default=16, show_default=True)
 @click.option("--gpu-count", type=int, default=8, show_default=True)
 @click.option("--gzip-edge-outputs/--plain-edge-outputs", default=True, show_default=True)
 @click.option("--include-bootstrap", is_flag=True, default=False)
 @click.option("--include-audit", is_flag=True, default=False)
 @click.option("--repeat-id", default=None)
 @click.option("--output-json", default=None)
-def benchmark_atera_lr_build_a100_matrix(
+def benchmark_atera_cci_build_a100_matrix(
     benchmark_root,
     remote_root,
     methods,
     database_mode,
     phase,
-    max_lr_pairs,
+    max_cci_pairs,
     n_perms,
     commot_chunks,
+    cellagentchat_chunks,
     gpu_count,
     gzip_edge_outputs,
     include_bootstrap,
@@ -1219,16 +1222,17 @@ def benchmark_atera_lr_build_a100_matrix(
     repeat_id,
     output_json,
 ):
-    """Build the parallel A100 job matrix for second-wave LR methods."""
+    """Build the parallel A100 job matrix for second-wave CCI methods."""
     payload = build_a100_job_matrix(
         benchmark_root=benchmark_root,
         remote_root=remote_root,
         methods=[item.strip() for item in methods.split(",") if item.strip()],
         database_mode=database_mode,
         phase=phase,
-        max_lr_pairs=max_lr_pairs,
+        max_cci_pairs=max_cci_pairs,
         n_perms=n_perms,
         commot_chunks=commot_chunks,
+        cellagentchat_chunks=cellagentchat_chunks,
         gpu_count=gpu_count,
         gzip_edge_outputs=gzip_edge_outputs,
         include_bootstrap=include_bootstrap,
@@ -1241,14 +1245,14 @@ def benchmark_atera_lr_build_a100_matrix(
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("build-a100-sidecar")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("build-a100-sidecar")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
 @click.option("--methods", default="spatialdm,stlearn,giotto,laris,cellphonedb,spatalk,niches,cellnest,cellagentchat,scild", show_default=True)
 @click.option("--ready-methods", default=None, help="Comma-separated methods whose env bootstrap is already complete. Defaults to --methods.")
 @click.option("--database-mode", default="common-db", show_default=True)
-@click.option("--smoke-max-lr-pairs", type=int, default=25, show_default=True)
-@click.option("--pilot-max-lr-pairs", type=int, default=100, show_default=True)
+@click.option("--smoke-max-cci-pairs", type=int, default=25, show_default=True)
+@click.option("--pilot-max-cci-pairs", type=int, default=100, show_default=True)
 @click.option("--pilot-n-cells", type=int, default=50000, show_default=True)
 @click.option("--pilot-seed", type=int, default=1, show_default=True)
 @click.option("--include-audit/--skip-audit", default=True, show_default=True)
@@ -1260,14 +1264,14 @@ def benchmark_atera_lr_build_a100_matrix(
 @click.option("--gpu-start", type=int, default=3, show_default=True)
 @click.option("--gzip-edge-outputs/--plain-edge-outputs", default=True, show_default=True)
 @click.option("--output-json", default=None)
-def benchmark_atera_lr_build_a100_sidecar(
+def benchmark_atera_cci_build_a100_sidecar(
     benchmark_root,
     remote_root,
     methods,
     ready_methods,
     database_mode,
-    smoke_max_lr_pairs,
-    pilot_max_lr_pairs,
+    smoke_max_cci_pairs,
+    pilot_max_cci_pairs,
     pilot_n_cells,
     pilot_seed,
     include_audit,
@@ -1280,15 +1284,15 @@ def benchmark_atera_lr_build_a100_sidecar(
     gzip_edge_outputs,
     output_json,
 ):
-    """Build a balanced A100 sidecar matrix for already bootstrapped LR methods."""
+    """Build a balanced A100 sidecar matrix for already bootstrapped CCI methods."""
     payload = build_a100_sidecar_matrix(
         benchmark_root=benchmark_root,
         remote_root=remote_root,
         methods=[item.strip() for item in methods.split(",") if item.strip()],
         ready_methods=None if not ready_methods else [item.strip() for item in ready_methods.split(",") if item.strip()],
         database_mode=database_mode,
-        smoke_max_lr_pairs=smoke_max_lr_pairs,
-        pilot_max_lr_pairs=pilot_max_lr_pairs,
+        smoke_max_cci_pairs=smoke_max_cci_pairs,
+        pilot_max_cci_pairs=pilot_max_cci_pairs,
         pilot_n_cells=pilot_n_cells,
         pilot_seed=pilot_seed,
         include_audit=include_audit,
@@ -1306,7 +1310,7 @@ def benchmark_atera_lr_build_a100_sidecar(
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("submit-a100-matrix")
+@benchmark_atera_cci_group.command("submit-a100-matrix")
 @click.option("--matrix-json", required=True, help="A100 job matrix JSON produced by build-a100-matrix.")
 @click.option("--job-id", "job_ids", multiple=True, help="Optional job id filter.")
 @click.option("--job-type", "job_types", multiple=True, help="Optional job type filter, e.g. env_bootstrap, env_audit, method_run.")
@@ -1314,7 +1318,7 @@ def benchmark_atera_lr_build_a100_sidecar(
 @click.option("--remote/--local", default=True, show_default=True)
 @click.option("--host", default=None)
 @click.option("--user", default=None)
-def benchmark_atera_lr_submit_a100_matrix(matrix_json, job_ids, job_types, dry_run, remote, host, user):
+def benchmark_atera_cci_submit_a100_matrix(matrix_json, job_ids, job_types, dry_run, remote, host, user):
     """Submit A100 matrix jobs with remote nohup wrappers."""
     payload = submit_a100_matrix(
         matrix_json=matrix_json,
@@ -1328,27 +1332,45 @@ def benchmark_atera_lr_submit_a100_matrix(matrix_json, job_ids, job_types, dry_r
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("monitor-a100-jobs")
+@benchmark_atera_cci_group.command("monitor-a100-jobs")
 @click.option("--matrix-json", required=True, help="A100 job matrix JSON.")
 @click.option("--benchmark-root", default=None)
 @click.option("--output-tsv", default=None)
-def benchmark_atera_lr_monitor_a100_jobs(matrix_json, benchmark_root, output_tsv):
+def benchmark_atera_cci_monitor_a100_jobs(matrix_json, benchmark_root, output_tsv):
     """Summarize collected status for planned A100 jobs."""
     table = monitor_a100_jobs(matrix_json=matrix_json, benchmark_root=benchmark_root, output_tsv=output_tsv)
     click.echo(table.to_json(orient="records", indent=2))
 
 
-@benchmark_atera_lr_group.command("finalize-a100-all")
+@benchmark_atera_cci_group.command("finalize-a100-all")
 @click.option("--benchmark-root", default=None)
 @click.option("--output-path", default=None)
-def benchmark_atera_lr_finalize_a100_all(benchmark_root, output_path):
+def benchmark_atera_cci_finalize_a100_all(benchmark_root, output_path):
     """Aggregate all collected A100 standardized TSV/TSV.GZ outputs."""
     payload = finalize_a100_all(benchmark_root=benchmark_root, output_path=output_path)
     click.echo(json.dumps(payload, indent=2))
 
 
-@benchmark_atera_lr_group.command("collect-a100-results")
-@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/lr_2026_atera under the repo root.")
+@benchmark_atera_cci_group.command("finalize-source-of-truth")
+@click.option("--benchmark-root", default=None)
+@click.option("--output-prefix", default="source_of_truth_full_common", show_default=True)
+@click.option("--pdc-tag", default=None, help="Optional pdc_collected tag to use for PDC backfill outputs.")
+@click.option("--commot-chunks", type=int, default=16, show_default=True)
+@click.option("--render-report/--skip-report", default=True, show_default=True)
+def benchmark_atera_cci_finalize_source_of_truth(benchmark_root, output_prefix, pdc_tag, commot_chunks, render_report):
+    """Finalize CCI outputs using A100-first, PDC-backfill precedence."""
+    payload = finalize_cci_source_of_truth(
+        benchmark_root=benchmark_root,
+        output_prefix=output_prefix,
+        pdc_tag=pdc_tag,
+        commot_chunks=commot_chunks,
+        render_report=render_report,
+    )
+    click.echo(json.dumps(payload, indent=2))
+
+
+@benchmark_atera_cci_group.command("collect-a100-results")
+@click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--remote-root", default=DEFAULT_A100_REMOTE_ROOT, show_default=True)
 @click.option("--host", default=None)
 @click.option("--user", default=None)
@@ -1356,7 +1378,7 @@ def benchmark_atera_lr_finalize_a100_all(benchmark_root, output_path):
 @click.option("--dry-run/--execute", default=True, show_default=True)
 @click.option("--since-last", is_flag=True, default=False, help="Record that this collection pass should only fetch newly finished outputs when implemented by the transfer backend.")
 @click.option("--output-json", default=None)
-def benchmark_atera_lr_collect_a100_results(benchmark_root, remote_root, host, user, transfer_mode, dry_run, since_last, output_json):
+def benchmark_atera_cci_collect_a100_results(benchmark_root, remote_root, host, user, transfer_mode, dry_run, since_last, output_json):
     """Generate or execute result recovery commands from A100."""
     payload = collect_a100_results(
         benchmark_root=benchmark_root,

@@ -32,7 +32,7 @@ GMI receives one combined design matrix:
   transformed to contour-level logCPM.
 - Spatial features are numeric contour descriptors from
   `build_contour_feature_table(...)`, including geometry, composition, context,
-  rim, gradient, edge-contrast, and ligand-receptor summaries when available.
+  rim, gradient, edge-contrast, and cell-cell interaction summaries when available.
 - `feature_metadata.tsv` records `feature_block = rna|spatial` for every
   design-matrix column.
 

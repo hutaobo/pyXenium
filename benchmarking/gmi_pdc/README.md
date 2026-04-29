@@ -2,13 +2,13 @@
 
 This scaffold runs the canonical contour-GMI Atera S1-vs-S5 validation on PDC
 Dardel with Slurm. It reuses the Xenium source cache already being copied for
-the LR benchmark and writes all GMI-specific artifacts to a separate scratch
+the CCI benchmark and writes all GMI-specific artifacts to a separate scratch
 root.
 
 Default dataset:
 
 ```text
-/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs
+/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs
 ```
 
 Default GMI root:
@@ -23,7 +23,7 @@ From the staged repo on Dardel:
 
 ```bash
 export PDC_ROOT=/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04
-export PDC_XENIUM_ROOT=/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs
+export PDC_XENIUM_ROOT=/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs
 
 bash benchmarking/gmi_pdc/scripts/bootstrap_pdc_env.sh
 bash benchmarking/gmi_pdc/scripts/prepare_pdc_inputs.sh

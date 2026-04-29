@@ -1,0 +1,6 @@
+{
+  "root": "/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04",
+  "output_dir": "/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/runs/validation/topolink_cci_false_positive_controls_shared",
+  "n_matched_controls": 250,
+  "seed": 20260428
+}

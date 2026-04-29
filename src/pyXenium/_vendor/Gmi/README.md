@@ -36,7 +36,7 @@ n <- 500
 alpha2 <- c(rep(c(4,3,2),each = 2),rep(0,p-3*2))
 gamma2 <- rep(0,choose(p,2))
 mu2 <- 2 # intercept
-rho2 <- 0.3 # correlation 
+rho2 <- 0.3 # correlation
 
 # interact between group1 and group2
 aall = paste("X", combn(1 : p, 2, paste, collapse="X"), sep="")

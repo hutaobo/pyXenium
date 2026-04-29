@@ -1,0 +1,14 @@
+{
+  "root": "/data/taobo.hu/topolink_cci_benchmark_2026-04",
+  "output_dir": "/data/taobo.hu/topolink_cci_validation_20260428_v2/outputs",
+  "expected_score_rows": 1319600,
+  "n_label_permutations": 500,
+  "n_spatial_permutations": 300,
+  "n_spatial_matched_pairs": 120,
+  "n_matched_controls": 250,
+  "n_downstream_permutations": 120,
+  "n_bootstraps": 5,
+  "bootstrap_fraction": 0.8,
+  "k_neighbors": 10,
+  "seed": 20260428
+}

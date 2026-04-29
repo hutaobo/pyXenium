@@ -1,0 +1,15 @@
+name: pyx-cci-stlearn
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - git
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - pyyaml
+  - anndata
+  - scanpy
+  - pillow

@@ -1,0 +1,14 @@
+scenario	target_score	target_rank	top_ligand	top_receptor	top_sender	top_receiver	top_score
+original	0.7912892368005827	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7912892368005827
+remove_sender_anchor	0.7619681211528222	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7619681211528222
+set_sender_anchor_to_1	0.7972857506756545	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7972857506756545
+remove_receiver_anchor	0.7743141562550239	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7743141562550239
+set_receiver_anchor_to_1	0.8080365395595056	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.8080365395595056
+remove_structure_bridge	0.7550962427202288	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7550962427202288
+set_structure_bridge_to_1	0.7912892368005827	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7912892368005827
+remove_sender_expr	0.7550962427202288	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7550962427202288
+set_sender_expr_to_1	0.7912892368005827	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7912892368005827
+remove_receiver_expr	0.7550962427202288	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7550962427202288
+set_receiver_expr_to_1	0.7912892368005827	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7912892368005827
+remove_local_contact	0.9663859822050843	13	EDN1	ADGRL4	Endothelial Cells	Endothelial Cells	0.9823955378984156
+set_local_contact_to_1	0.9719088099018999	13	EDN1	ADGRL4	Endothelial Cells	Endothelial Cells	0.9853079457731662

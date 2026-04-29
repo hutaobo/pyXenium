@@ -1,0 +1,45 @@
+{
+  "title": "Expression specificity dotplot",
+  "source_tables": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\expression_specificity_full_wta.tsv"
+  ],
+  "rasterized_layers": false,
+  "biological_message": "VWF-SELP interpretation is supported by endothelial marker specificity and contamination controls.",
+  "caveat": "RNA expression specificity does not prove protein localization.",
+  "output_formats": [
+    "pdf",
+    "svg",
+    "png"
+  ],
+  "panel_id": "fig2e",
+  "slug": "expression_specificity_dotplot",
+  "generated_at": "2026-04-29T08:45:08.284994+00:00",
+  "outputs": {
+    "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\pdf\\fig2e_expression_specificity_dotplot.pdf",
+    "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\svg\\fig2e_expression_specificity_dotplot.svg",
+    "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\png\\fig2e_expression_specificity_dotplot.png",
+    "source_data": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\source_data\\fig2e_expression_specificity_dotplot.tsv",
+    "metadata": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\metadata\\fig2e_expression_specificity_dotplot.json"
+  },
+  "width_mm": 180.0,
+  "height_mm": 65.0,
+  "font_policy": {
+    "font_family": "Arial",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+    "svg.fonttype": "none",
+    "panel_label_pt": 8,
+    "title_pt": 7,
+    "axis_label_pt": 6,
+    "tick_label_pt": 5,
+    "legend_pt": 5
+  },
+  "svg_text_count": 42,
+  "svg_path_count": 302,
+  "pdffonts_status": "pdffonts_not_available",
+  "pdffonts_output": "",
+  "source_hashes": {
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\expression_specificity_full_wta.tsv": "22d656b1269d11c5"
+  },
+  "source_data_rows": 260
+}

@@ -1,0 +1,11 @@
+name: r-cci-spatalk
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pyyaml
+  - r-base=4.3
+  - r-renv
+  - r-remotes
+  - r-jsonlite
+  - git

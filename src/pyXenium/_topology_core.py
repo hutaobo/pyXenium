@@ -552,10 +552,10 @@ def summarize_expression_by_celltype(
     return raw, normalized
 
 
-def normalize_lr_prior(lr_pairs: pd.DataFrame, prior_col: Optional[str]) -> pd.Series:
-    if prior_col is None or prior_col not in lr_pairs.columns:
-        return pd.Series(np.ones(len(lr_pairs)), index=lr_pairs.index, name="prior_confidence")
-    prior = pd.to_numeric(lr_pairs[prior_col], errors="coerce").fillna(0.0).astype(float)
+def normalize_interaction_prior(interaction_pairs: pd.DataFrame, prior_col: Optional[str]) -> pd.Series:
+    if prior_col is None or prior_col not in interaction_pairs.columns:
+        return pd.Series(np.ones(len(interaction_pairs)), index=interaction_pairs.index, name="prior_confidence")
+    prior = pd.to_numeric(interaction_pairs[prior_col], errors="coerce").fillna(0.0).astype(float)
     return normalize_series(prior).rename("prior_confidence")
 
 

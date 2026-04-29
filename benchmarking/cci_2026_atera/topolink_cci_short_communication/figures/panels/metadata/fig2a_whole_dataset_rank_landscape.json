@@ -1,0 +1,47 @@
+{
+  "title": "Whole-dataset score landscape",
+  "source_tables": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\pdc_collected\\pdc_20260426_1327\\runs\\full_common\\pyxenium\\pyxenium_scores.tsv",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\pdc_validation_v2_collected\\topolink_cci_validation_v2\\tables\\topolink_cci_validation_v2_evidence.tsv"
+  ],
+  "rasterized_layers": false,
+  "biological_message": "TopoLink-CCI ranks 1,319,600 whole-dataset candidate axes and highlights validated discoveries.",
+  "caveat": "Histogram bins are source data; highlighted lines mark seven representative axes.",
+  "output_formats": [
+    "pdf",
+    "svg",
+    "png"
+  ],
+  "panel_id": "fig2a",
+  "slug": "whole_dataset_rank_landscape",
+  "generated_at": "2026-04-29T08:45:05.552683+00:00",
+  "outputs": {
+    "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\pdf\\fig2a_whole_dataset_rank_landscape.pdf",
+    "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\svg\\fig2a_whole_dataset_rank_landscape.svg",
+    "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\png\\fig2a_whole_dataset_rank_landscape.png",
+    "source_data": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\source_data\\fig2a_whole_dataset_rank_landscape.tsv",
+    "metadata": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\metadata\\fig2a_whole_dataset_rank_landscape.json"
+  },
+  "width_mm": 180.0,
+  "height_mm": 65.0,
+  "font_policy": {
+    "font_family": "Arial",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+    "svg.fonttype": "none",
+    "panel_label_pt": 8,
+    "title_pt": 7,
+    "axis_label_pt": 6,
+    "tick_label_pt": 5,
+    "legend_pt": 5
+  },
+  "svg_text_count": 19,
+  "svg_path_count": 21,
+  "pdffonts_status": "pdffonts_not_available",
+  "pdffonts_output": "",
+  "source_hashes": {
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\pdc_collected\\pdc_20260426_1327\\runs\\full_common\\pyxenium\\pyxenium_scores.tsv": "7bb7f9fcf3d2c589",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\pdc_validation_v2_collected\\topolink_cci_validation_v2\\tables\\topolink_cci_validation_v2_evidence.tsv": "d87a16edfce1c50e"
+  },
+  "source_data_rows": 126
+}

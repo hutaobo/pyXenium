@@ -1,0 +1,14 @@
+name: pyx-cci-cellphonedb
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - git
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - pyyaml
+  - anndata
+  - scanpy

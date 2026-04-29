@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "runtime_seconds": 70.934,
+  "n_scores": 1319600,
+  "n_target_axes": 7,
+  "evidence_class_counts": {
+    "strong": 7
+  },
+  "outputs": {
+    "evidence": "/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/runs/validation/topolink_cci_validation_v2/tables/topolink_cci_validation_v2_evidence.tsv",
+    "controls": "/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/runs/validation/topolink_cci_validation_v2/tables/topolink_cci_validation_v2_false_positive_controls.tsv",
+    "report": "/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/runs/validation/topolink_cci_validation_v2/reports/topolink_cci_validation_v2_report.md",
+    "figure": "/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/runs/validation/topolink_cci_validation_v2/figures/topolink_cci_validation_v2_evidence_matrix.png"
+  }
+}

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PDC_ROOT="${PDC_ROOT:-/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04}"
-PDC_XENIUM_ROOT="${PDC_XENIUM_ROOT:-/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs}"
+PDC_XENIUM_ROOT="${PDC_XENIUM_ROOT:-/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs}"
 REPO_DIR="${REPO_DIR:-${PDC_ROOT}/repo}"
 CONDA_PREFIX="${CONDA_PREFIX:-${PDC_ROOT}/conda/envs/pyx-gmi}"
 HISTOSEG_ROOT="${HISTOSEG_ROOT:-${PDC_ROOT}/external/HistoSeg}"

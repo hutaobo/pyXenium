@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="510.23622pt" height="184.251969pt" viewBox="0 0 510.23622 184.251969" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-04-29T10:44:59.723345</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.7, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 184.251969 
+L 510.23622 184.251969 
+L 510.23622 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 35.775563 105.816443 
+L 141.665069 105.816443 
+Q 154.270962 105.816443 154.270962 102.387566 
+L 154.270962 76.328104 
+Q 154.270962 72.899227 141.665069 72.899227 
+L 35.775563 72.899227 
+Q 23.16967 72.899227 23.16967 76.328104 
+L 23.16967 102.387566 
+Q 23.16967 105.816443 35.775563 105.816443 
+z
+" clip-path="url(#p4a8bda2581)" style="fill: #fef3c7; stroke: #e69f00; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 192.088643 105.816443 
+L 297.978148 105.816443 
+Q 310.584042 105.816443 310.584042 102.387566 
+L 310.584042 76.328104 
+Q 310.584042 72.899227 297.978148 72.899227 
+L 192.088643 72.899227 
+Q 179.482749 72.899227 179.482749 76.328104 
+L 179.482749 102.387566 
+Q 179.482749 105.816443 192.088643 105.816443 
+z
+" clip-path="url(#p4a8bda2581)" style="fill: #fee2e2; stroke: #b23a48; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 348.401722 105.816443 
+L 454.291228 105.816443 
+Q 466.897121 105.816443 466.897121 102.387566 
+L 466.897121 76.328104 
+Q 466.897121 72.899227 454.291228 72.899227 
+L 348.401722 72.899227 
+Q 335.795829 72.899227 335.795829 76.328104 
+L 335.795829 102.387566 
+Q 335.795829 105.816443 348.401722 105.816443 
+z
+" clip-path="url(#p4a8bda2581)" style="fill: #dbeafe; stroke: #2563eb; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 96.283852 164.793121 
+L 413.952368 164.793121 
+Q 426.558262 164.793121 426.558262 161.364244 
+L 426.558262 138.047883 
+Q 426.558262 134.619006 413.952368 134.619006 
+L 96.283852 134.619006 
+Q 83.677958 134.619006 83.677958 138.047883 
+L 83.677958 161.364244 
+Q 83.677958 164.793121 96.283852 164.793121 
+z
+" clip-path="url(#p4a8bda2581)" style="fill: #ecfdf5; stroke: #138a72; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'Arial'; text-anchor: start; fill: #1f2933" x="3.00024" y="8.700144" transform="rotate(-0 3.00024 8.700144)">Fig. 1a</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 7px; font-family: 'Arial'; text-anchor: start" x="13.084955" y="55.069068" transform="rotate(-0 13.084955 55.069068)">False-positive problem in spatial CCI</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 5.5px; font-family: 'Arial'; fill: #1f2933" transform="translate(69.462152 87.838804)">expression-only</text>
+    <text style="font-size: 5.5px; font-family: 'Arial'; fill: #1f2933" transform="translate(76.794769 93.720538)">candidate</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 5.5px; font-family: 'Arial'; fill: #1f2933" transform="translate(233.718864 87.87103)">database</text>
+    <text style="font-size: 5.5px; font-family: 'Arial'; fill: #1f2933" transform="translate(229.904099 93.688311)">membership</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 5.5px; font-family: 'Arial'; fill: #1f2933" transform="translate(393.397686 87.838804)">spatial</text>
+    <text style="font-size: 5.5px; font-family: 'Arial'; fill: #1f2933" transform="translate(390.345616 93.656085)">proximity</text>
+   </g>
+   <g id="patch_6">
+    <path d="M 146.184232 89.357835 
+Q 159.313758 89.357835 171.548856 89.357835 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 169.148856 88.157835 
+L 171.548856 89.357835 
+L 169.148856 90.557835 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 302.497312 89.357835 
+Q 315.626837 89.357835 327.861935 89.357835 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 325.461935 88.157835 
+L 327.861935 89.357835 
+L 325.461935 90.557835 
+" style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 6px; font-family: 'Arial'; text-anchor: middle; fill: #6b7280" x="255.11811" y="122.27505" transform="rotate(-0 255.11811 122.27505)">Any one layer alone can be misleading</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 5.5px; font-family: 'Arial'; fill: #1f2933" transform="translate(166.617095 148.188321)">TopoLink-CCI requires concordant topology + expression + local contact,</text>
+    <text style="font-size: 5.5px; font-family: 'Arial'; fill: #1f2933" transform="translate(198.560493 154.070056)">then tests candidates with orthogonal controls.</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p4a8bda2581">
+   <rect x="3.00024" y="44.096663" width="504.23574" height="137.155065"/>
+  </clipPath>
+ </defs>
+</svg>

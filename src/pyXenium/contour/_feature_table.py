@@ -21,7 +21,7 @@ from .loading import (
     _polygon_mask_for_bbox,
 )
 
-__all__ = ["DEFAULT_CONTOUR_LR_PAIRS", "DEFAULT_CONTOUR_PATHWAYS", "build_contour_feature_table"]
+__all__ = ["DEFAULT_CONTOUR_CCI_PAIRS", "DEFAULT_CONTOUR_PATHWAYS", "build_contour_feature_table"]
 
 _DEFAULT_NEIGHBOR_K = 6
 _DEFAULT_IMAGE_KEY = "he"
@@ -40,7 +40,7 @@ DEFAULT_CONTOUR_PATHWAYS: dict[str, list[str]] = {
     "hypoxia_necrosis": ["CA9", "ENO1", "LDHA", "HILPDA", "SLC2A1"],
 }
 
-DEFAULT_CONTOUR_LR_PAIRS: dict[str, tuple[str, str]] = {
+DEFAULT_CONTOUR_CCI_PAIRS: dict[str, tuple[str, str]] = {
     "spp1_cd44": ("SPP1", "CD44"),
     "cxcl13_cxcr5": ("CXCL13", "CXCR5"),
     "cxcl12_cxcr4": ("CXCL12", "CXCR4"),
@@ -66,6 +66,7 @@ def build_contour_feature_table(
     outer_rim_um: float = 30.0,
     include_pathomics: bool = True,
     embedding_backend: Any = None,
+    pathology_backends: Any = None,
     precomputed_edge_gradients: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
     """
@@ -127,8 +128,9 @@ def build_contour_feature_table(
     rna_rows: list[dict[str, Any]] = []
     protein_rows: list[dict[str, Any]] = []
     pathway_rows: list[dict[str, Any]] = []
-    lr_rows: list[dict[str, Any]] = []
+    cci_rows: list[dict[str, Any]] = []
     embedding_rows: list[dict[str, Any]] = []
+    pathology_backend_specs = _normalize_pathology_backends(pathology_backends)
 
     context_features = _compute_contour_context_features(
         contour_table=contour_table,
@@ -230,6 +232,7 @@ def build_contour_feature_table(
                 inner_rim_um=float(inner_rim_um),
                 outer_rim_um=float(outer_rim_um),
                 embedding_backend=embedding_backend,
+                pathology_backend_specs=pathology_backend_specs,
                 contour_key=contour_key,
                 contour_id=contour_id,
             )
@@ -264,20 +267,20 @@ def build_contour_feature_table(
         protein_rows.append(protein_row)
         pathway_rows.append(pathway_row)
 
-        lr_row = {
+        cci_row = {
             "sample_id": sample_id,
             "contour_key": contour_key,
             "contour_id": contour_id,
         }
-        lr_row.update(
-            _ligand_receptor_features(
+        cci_row.update(
+            _cci_features(
                 expression=expression,
                 inner_mask=zone_memberships["inner_rim"],
                 outer_mask=zone_memberships["outer_rim"],
             )
         )
-        lr_rows.append(lr_row)
-        row.update({f"lr__{key}": value for key, value in lr_row.items() if key not in {"sample_id", "contour_key", "contour_id"}})
+        cci_rows.append(cci_row)
+        row.update({f"cci__{key}": value for key, value in cci_row.items() if key not in {"sample_id", "contour_key", "contour_id"}})
 
         contour_gradients = edge_gradients.loc[edge_gradients["contour_id"] == contour_id]
         if not contour_gradients.empty:
@@ -297,7 +300,7 @@ def build_contour_feature_table(
     rna_pseudobulk = pd.DataFrame(rna_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
     protein_summary = pd.DataFrame(protein_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
     pathway_summary = pd.DataFrame(pathway_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
-    ligand_receptor_summary = pd.DataFrame(lr_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
+    cci_summary = pd.DataFrame(cci_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
     embedding_summary = (
         pd.DataFrame(embedding_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
         if embedding_rows
@@ -314,7 +317,7 @@ def build_contour_feature_table(
         "rna_pseudobulk": rna_pseudobulk,
         "protein_summary": protein_summary,
         "pathway_activity": pathway_summary,
-        "ligand_receptor_summary": ligand_receptor_summary,
+        "cci_summary": cci_summary,
         "edge_gradients": edge_gradients,
         "embedding_summary": embedding_summary,
         "available_states": state_categories,
@@ -329,13 +332,21 @@ def build_contour_feature_table(
             "rna": [column for column in contour_features.columns if column.startswith("rna__")],
             "edge_contrast": [column for column in contour_features.columns if column.startswith("edge_contrast__")],
             "gradient": [column for column in contour_features.columns if column.startswith("gradient__")],
-            "ligand_receptor": [column for column in contour_features.columns if column.startswith("lr__")],
+            "cci": [column for column in contour_features.columns if column.startswith("cci__")],
             "embedding": [column for column in contour_features.columns if column.startswith("embedding__")],
+            "bmnet": [column for column in contour_features.columns if column.startswith("bmnet__")],
+            "pathology_named": [
+                column
+                for column in contour_features.columns
+                if column.startswith(("bmnet__", "descriptor__", "cellsam__", "pathology__"))
+            ],
         },
         "context": {
             "multimodal_context": context["context_summary"],
             "used_pathomics": bool(include_pathomics),
             "used_embeddings": bool(include_pathomics and embedding_backend is not None),
+            "used_pathology_backends": bool(include_pathomics and pathology_backend_specs),
+            "pathology_backends": [name for name, _ in pathology_backend_specs],
             "used_precomputed_edge_gradients": bool(precomputed_edge_gradients is not None),
         },
     }
@@ -462,7 +473,7 @@ def _resolve_selected_genes(adata) -> list[str]:
             resolved = available.get(gene.casefold())
             if resolved is not None and resolved not in selected:
                 selected.append(resolved)
-    for ligand, receptor in DEFAULT_CONTOUR_LR_PAIRS.values():
+    for ligand, receptor in DEFAULT_CONTOUR_CCI_PAIRS.values():
         for gene in (ligand, receptor):
             resolved = available.get(gene.casefold())
             if resolved is not None and resolved not in selected:
@@ -843,6 +854,10 @@ def _edge_contrast_features(feature_row: Mapping[str, Any]) -> dict[str, float]:
     outputs: dict[str, float] = {}
     prefixes = (
         "pathomics",
+        "bmnet",
+        "descriptor",
+        "cellsam",
+        "pathology",
         "omics",
         "pathway",
         "protein",
@@ -872,6 +887,7 @@ def _extract_image_view_features(
     inner_rim_um: float,
     outer_rim_um: float,
     embedding_backend: Any,
+    pathology_backend_specs: Sequence[tuple[str, Any]],
     contour_key: str,
     contour_id: str,
 ) -> tuple[dict[str, float], dict[str, float]]:
@@ -921,6 +937,19 @@ def _extract_image_view_features(
             )
             for index, value in enumerate(vector):
                 embeddings[f"embedding__{zone_name}__dim_{index:03d}"] = float(value)
+        for backend_name, backend in pathology_backend_specs:
+            pathomics.update(
+                _call_named_pathology_backend(
+                    backend_name,
+                    backend,
+                    crop,
+                    mask=mask,
+                    axes=whole_image.axes,
+                    contour_key=contour_key,
+                    contour_id=contour_id,
+                    zone=zone_name,
+                )
+            )
 
     patch_array = np.asarray(contour_patch.levels[0])
     patch_metrics = _pathomics_from_mask(
@@ -931,7 +960,118 @@ def _extract_image_view_features(
     for name, value in patch_metrics.items():
         pathomics[f"pathomics__patch__{name}"] = value
 
+    pathomics.update(_named_pathology_zone_deltas(pathomics))
     return pathomics, embeddings
+
+
+def _normalize_pathology_backends(backends: Any) -> list[tuple[str, Any]]:
+    if backends is None:
+        return []
+    if isinstance(backends, Mapping):
+        items = list(backends.items())
+    elif isinstance(backends, Sequence) and not isinstance(backends, (str, bytes, bytearray)):
+        items = [(_pathology_backend_name(backend), backend) for backend in backends]
+    else:
+        items = [(_pathology_backend_name(backends), backends)]
+    normalized: list[tuple[str, Any]] = []
+    for name, backend in items:
+        normalized.append((_slug(str(name) or _pathology_backend_name(backend)), backend))
+    return normalized
+
+
+def _pathology_backend_name(backend: Any) -> str:
+    for attr in ("feature_prefix", "name", "__name__"):
+        value = getattr(backend, attr, None)
+        if value:
+            return str(value)
+    return backend.__class__.__name__
+
+
+def _call_named_pathology_backend(
+    backend_name: str,
+    backend: Any,
+    image: Any,
+    *,
+    mask: np.ndarray,
+    axes: str,
+    contour_key: str,
+    contour_id: str,
+    zone: str,
+) -> dict[str, float]:
+    yxc = _to_yxc(np.asarray(image), axes=axes).copy()
+    masked = yxc.copy()
+    masked[~mask] = 0
+    payload = _tight_crop(masked, mask)
+
+    candidate: Callable[..., Any] | None = None
+    if callable(backend):
+        candidate = backend
+    else:
+        for name in ("extract_features", "predict_patch", "predict_proba", "predict", "transform"):
+            if hasattr(backend, name):
+                candidate = getattr(backend, name)
+                break
+    if candidate is None:
+        raise TypeError(
+            "`pathology_backends` entries must be callable or expose one of "
+            "`extract_features`, `predict_patch`, `predict_proba`, `predict`, or `transform`."
+        )
+
+    try:
+        result = candidate(
+            payload,
+            contour_key=contour_key,
+            contour_id=contour_id,
+            zone=zone,
+            mask=mask,
+        )
+    except TypeError:
+        try:
+            result = candidate(
+                payload,
+                contour_key=contour_key,
+                contour_id=contour_id,
+                zone=zone,
+            )
+        except TypeError:
+            result = candidate(payload)
+
+    if isinstance(result, pd.Series):
+        mapping = result.to_dict()
+    elif isinstance(result, Mapping):
+        mapping = dict(result)
+    else:
+        vector = np.asarray(result, dtype=float).reshape(-1)
+        mapping = {f"dim_{index:03d}": value for index, value in enumerate(vector)}
+
+    features: dict[str, float] = {}
+    for key, value in mapping.items():
+        if value is None:
+            continue
+        numeric = float(value)
+        text = str(key)
+        if text.startswith(("bmnet__", "descriptor__", "cellsam__", "pathology__")):
+            feature_name = text
+        else:
+            feature_name = f"{backend_name}__{zone}__{_slug(text)}"
+        features[feature_name] = numeric
+    return features
+
+
+def _named_pathology_zone_deltas(features: Mapping[str, float]) -> dict[str, float]:
+    outputs: dict[str, float] = {}
+    for key, value in features.items():
+        text = str(key)
+        parts = text.split("__")
+        if len(parts) < 3 or parts[1] != "inner_rim":
+            continue
+        prefix = parts[0]
+        suffix = "__".join(parts[2:])
+        outer_key = f"{prefix}__outer_rim__{suffix}"
+        if outer_key not in features:
+            continue
+        outputs[f"{prefix}__outer_minus_inner__{suffix}"] = float(features[outer_key]) - float(value)
+    return outputs
 
 
 def _pathomics_from_mask(
@@ -1096,7 +1236,7 @@ def _tight_crop(image: np.ndarray, mask: np.ndarray) -> np.ndarray:
     return image[y0:y1, x0:x1].copy()
 
 
-def _ligand_receptor_features(
+def _cci_features(
     *,
     expression: pd.DataFrame,
     inner_mask: np.ndarray,
@@ -1105,7 +1245,7 @@ def _ligand_receptor_features(
     features: dict[str, float] = {}
     inner_mean = expression.loc[inner_mask].mean(axis=0) if inner_mask.any() else pd.Series(dtype=float)
     outer_mean = expression.loc[outer_mask].mean(axis=0) if outer_mask.any() else pd.Series(dtype=float)
-    for pair_name, (ligand, receptor) in DEFAULT_CONTOUR_LR_PAIRS.items():
+    for pair_name, (ligand, receptor) in DEFAULT_CONTOUR_CCI_PAIRS.items():
         ligand_inner = float(inner_mean.get(ligand, 0.0))
         receptor_inner = float(inner_mean.get(receptor, 0.0))
         ligand_outer = float(outer_mean.get(ligand, 0.0))

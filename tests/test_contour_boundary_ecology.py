@@ -410,3 +410,64 @@ def test_run_contour_boundary_ecology_pilot_pathomics_only_outputs_discovery_pac
     assert (tmp_path / "discovery_package" / "report.md").exists()
     assert (tmp_path / "discovery_package" / "summary.json").exists()
     assert (tmp_path / "discovery_package" / "exemplar_montage.png").exists()
+
+
+def test_contour_boundary_ecology_no_protein_fallback_uses_cluster_context(tmp_path: Path):
+    sdata = _make_boundary_ecology_sdata()
+    sdata.table.obsm["protein"] = pd.DataFrame(index=sdata.table.obs_names)
+    sdata.table.obs["cluster"] = [
+        "Tumor",
+        "Tumor",
+        "T-cell",
+        "B/Plasma",
+        "Tumor",
+        "Tumor",
+        "Myeloid",
+        "Vascular/Endocervical",
+        "Tumor",
+        "Tumor",
+        "Tumor",
+        "Stromal/Fibro/Muscle",
+        "Tumor",
+        "Tumor",
+        "B/Plasma",
+        "T-cell",
+    ]
+    sdata.table.obs = sdata.table.obs.drop(
+        columns=[
+            column
+            for column in ("joint_cell_state", "joint_cell_class", "spatial_niche")
+            if column in sdata.table.obs.columns
+        ],
+        errors="ignore",
+    )
+    sdata.table.obs = sdata.table.obs.drop(
+        columns=[
+            column
+            for column in sdata.table.obs.columns
+            if str(column).startswith("discordance__")
+        ],
+        errors="ignore",
+    )
+
+    feature_table = build_contour_feature_table(
+        sdata,
+        contour_key="tumor_boundary_contours",
+        inner_rim_um=20.0,
+        outer_rim_um=30.0,
+    )
+    context_messages = feature_table["context"]["multimodal_context"]
+
+    assert "joint_cell_state_from_cluster" in context_messages
+    assert "spatial_niche_fallback_no_protein" in context_messages
+    assert "discordance_skipped_no_protein" in context_messages
+
+    result = run_contour_boundary_ecology_pilot(
+        sdata,
+        contour_key="tumor_boundary_contours",
+        output_dir=tmp_path / "no_protein_discovery_package",
+    )
+
+    assert result["sample_summary"]["n_contours"] == 4
+    assert (tmp_path / "no_protein_discovery_package" / "report.md").exists()
+    assert (tmp_path / "no_protein_discovery_package" / "summary.json").exists()
