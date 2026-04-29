@@ -5,7 +5,7 @@
 <h1 align="center">pyXenium</h1>
 
 <p align="center">
-  Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and optional external workflow bridges.
+  Nine canonical sections for Xenium I/O, multimodal analysis, CCI, pathway topology, contour geometry, GMI inference, mechanostress analysis, and external workflow bridges.
 </p>
 
 <p align="center">
@@ -28,17 +28,19 @@
   <a href="https://github.com/hutaobo/pyXenium/releases">Releases</a>
 </p>
 
-pyXenium is a Python toolkit for **10x Genomics Xenium** with nine feature areas:
+pyXenium is a Python toolkit for **10x Genomics Xenium** organized around nine major sections.
 
-- `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
-- `pyXenium.multimodal`: canonical RNA + protein loading, joint analysis, immune-resistance scoring, and packaged workflows.
-- `pyXenium.cci`: topology-native cell-cell interaction analysis.
-- `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
-- `pyXenium.contour`: contour import, contour expansion, and contour-aware density profiling around polygon annotations.
-- `pyXenium.gmi`: contour-level GMI modeling for sparse main-effect and interaction discovery in spatial transcriptomics.
-- `pyXenium.mechanostress`: morphology-derived mechanical stress states, including fibroblast axis strength, tumor-stroma growth patterning, and cell polarity.
-- AI-Driven Spatial Pathologist via `spatho`: an optional external workflow layer for AI-driven spatial pathology, built on the Xenium data foundation provided by pyXenium's `XeniumSData` structure.
-- `pyXenium.perturb`: SpatialPerturb Bridge for optional Perturb-seq reference projection onto Xenium tissue through the external `SpatialPerturb` package.
+| Section | Canonical entry | Start here |
+| --- | --- | --- |
+| Xenium I/O | `pyXenium.io` | [Xenium data loading guide](https://pyxenium.readthedocs.io/en/latest/guides/xenium-data-loading.html) |
+| Multimodal Analysis | `pyXenium.multimodal` | [Multimodal overview](https://pyxenium.readthedocs.io/en/latest/user-guide/multimodal-overview.html) |
+| Cell-Cell Interaction | `pyXenium.cci` | [CCI tutorial hub](https://pyxenium.readthedocs.io/en/latest/tutorials/cci_index.html) |
+| Pathway Topology | `pyXenium.pathway` | [Pathway tutorial](https://pyxenium.readthedocs.io/en/latest/tutorials/pathway.html) |
+| Contour Geometry | `pyXenium.contour` | [Contour tutorial hub](https://pyxenium.readthedocs.io/en/latest/tutorials/contour_index.html) |
+| GMI Inference | `pyXenium.gmi` | [Contour GMI guide](https://pyxenium.readthedocs.io/en/latest/guides/gmi-contour.html) |
+| Mechanostress | `pyXenium.mechanostress` | [Mechanostress tutorial](https://pyxenium.readthedocs.io/en/latest/tutorials/mechanostress_atera_pdc.html) |
+| AI-Driven Spatial Pathologist | external `spatho` bridge | [RTD bridge guide](https://pyxenium.readthedocs.io/en/latest/tutorials/ai_driven_spatial_pathologist.html) |
+| SpatialPerturb Bridge | `pyXenium.perturb` | [SpatialPerturb bridge guide](https://pyxenium.readthedocs.io/en/latest/tutorials/spatialperturb_bridge.html) |
 
 Legacy compatibility entry points under `pyXenium.analysis`, `pyXenium.validation`, and
 `pyXenium.io.load_xenium_gene_protein(...)` remain importable, but new code should target the
@@ -80,7 +82,7 @@ For the optional SpatialPerturb Bridge runtime on Python 3.9+:
 pip install -e ".[perturb]"
 ```
 
-## Quick examples
+## Representative examples
 
 ### Xenium I/O
 
@@ -206,17 +208,16 @@ SpatialPerturb Bridge scores mean Perturb-seq-derived program similarity project
 tissue. They do not mean the tissue cell contains the corresponding knockout, guide, or drug
 perturbation.
 
-## Documentation structure
+## Documentation entry points
 
-The docs mirror the package surfaces, high-level workflows, and external handoffs:
+The docs now separate the nine feature sections from the main reading paths:
 
-- Installation / Quickstart
-- User Guide
-- Workflows
-- API Reference
-- AI-Driven Spatial Pathologist via `spatho`
-- SpatialPerturb Bridge via `SpatialPerturb`
-- Changelog
+- [Quickstart](https://pyxenium.readthedocs.io/en/latest/quickstart.html)
+- [Tutorials hub](https://pyxenium.readthedocs.io/en/latest/tutorials/index.html)
+- [User guide](https://pyxenium.readthedocs.io/en/latest/user-guide/index.html)
+- [Workflows](https://pyxenium.readthedocs.io/en/latest/workflows/index.html)
+- [API reference](https://pyxenium.readthedocs.io/en/latest/api/index.html)
+- [Changelog](https://pyxenium.readthedocs.io/en/latest/changelog.html)
 
 Start here: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 

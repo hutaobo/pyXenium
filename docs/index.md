@@ -13,17 +13,15 @@ changelog
 ```
 
 <div class="pyxenium-hero">
-  <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and optional external workflow bridges.</p>
+  <p class="pyxenium-tagline">Nine canonical sections for Xenium I/O, multimodal analysis, CCI, pathway topology, contour geometry, GMI inference, mechanostress analysis, and external workflow bridges.</p>
   <p class="pyxenium-lead">
-    pyXenium is a Python toolkit for 10x Genomics Xenium with nine feature areas:
-    canonical Xenium I/O, multimodal RNA + protein analysis, topology-native cell-cell interaction
-    and pathway methods, contour-aware geometry workflows, contour-level GMI modeling,
-    morphology-derived mechanostress analysis, and optional external workflow bridges for
-    AI-driven spatial pathology through <code>spatho</code> and Perturb-seq reference projection
-    through <code>SpatialPerturb</code>.
-    This site is organized to mirror
-    the crisp, research-oriented experience of the SpatialData docs while staying specific to
-    pyXenium’s package architecture.
+    pyXenium is a Python toolkit for 10x Genomics Xenium organized around nine major sections:
+    <code>pyXenium.io</code>, <code>pyXenium.multimodal</code>, <code>pyXenium.cci</code>,
+    <code>pyXenium.pathway</code>, <code>pyXenium.contour</code>, <code>pyXenium.gmi</code>,
+    <code>pyXenium.mechanostress</code>, the external AI pathology bridge via <code>spatho</code>,
+    and the Perturb-seq handoff bridge via <code>pyXenium.perturb</code>.
+    This site keeps those sections visible first, then maps them to tutorials, guides,
+    workflows, and API pages.
   </p>
   <div class="pyxenium-link-row">
     <a href="quickstart.html">Get started</a>
@@ -57,25 +55,15 @@ changelog
 - Releases: [GitHub releases](https://github.com/hutaobo/pyXenium/releases)
 - Changelog: [RTD changelog](https://pyxenium.readthedocs.io/en/latest/changelog.html)
 
+## Nine core sections
+
 ::::{grid} 1 2 3 3
 :gutter: 2
-
-:::{grid-item-card} Installation
-:link: quickstart
-:link-type: doc
-Install pyXenium, set up the docs environment, and run your first Xenium workflow.
-:::
 
 :::{grid-item-card} Xenium I/O
 :link: guides/xenium-data-loading
 :link-type: doc
 Load Xenium exports, recover partial bundles, round-trip `XeniumSData`, and export compat stores.
-:::
-
-:::{grid-item-card} Tutorials
-:link: tutorials/index
-:link-type: doc
-Follow notebook-style walkthroughs for pyXenium modules and optional external workflow bridges.
 :::
 
 :::{grid-item-card} Multimodal Analysis
@@ -84,20 +72,32 @@ Follow notebook-style walkthroughs for pyXenium modules and optional external wo
 Work with the canonical `pyXenium.multimodal` surface for RNA + protein preparation and joint analysis.
 :::
 
-:::{grid-item-card} Workflows
-:link: workflows/index
+:::{grid-item-card} Cell-Cell Interaction
+:link: tutorials/cci_index
 :link-type: doc
-Run packaged renal and Atera workflows with report-ready outputs and artifact bundles.
+Walk through topology-native cell-cell interaction analyses and compare Atera breast benchmark outputs.
 :::
 
-:::{grid-item-card} Contour-GMI
+:::{grid-item-card} Pathway Topology
+:link: tutorials/pathway
+:link-type: doc
+Connect pathway topology scoring to cell-state programs on the same Xenium study.
+:::
+
+:::{grid-item-card} Contour Geometry
+:link: tutorials/contour_index
+:link-type: doc
+Generate HistoSeg-backed annotations, contour-level transcript summaries, and boundary-aware density profiles.
+:::
+
+:::{grid-item-card} GMI Inference
 :link: guides/gmi-contour
 :link-type: doc
 Build contour pseudo-bulk matrices and run GMI main-effect, interaction, and validation workflows.
 :::
 
 :::{grid-item-card} Mechanostress
-:link: api/mechanostress
+:link: tutorials/mechanostress_atera_pdc
 :link-type: doc
 Compute fibroblast axis strength, tumor-stroma growth patterning, and cell polarity from Xenium morphology.
 :::
@@ -114,10 +114,41 @@ Call the external `spatho` workflow on Xenium cases structured by pyXenium `Xeni
 Generate handoff specs for Perturb-seq reference projection with the external `SpatialPerturb` CLI.
 :::
 
-:::{grid-item-card} API
+::::
+
+## Documentation entry points
+
+::::{grid} 1 2 3 3
+:gutter: 2
+
+:::{grid-item-card} Installation / Quickstart
+:link: quickstart
+:link-type: doc
+Install pyXenium, set up the docs environment, and run your first Xenium workflow.
+:::
+
+:::{grid-item-card} Tutorials hub
+:link: tutorials/index
+:link-type: doc
+Browse notebook-style walkthroughs for all nine sections, including the optional external bridges.
+:::
+
+:::{grid-item-card} User guide
+:link: user-guide/index
+:link-type: doc
+Read focused guides for Xenium I/O, multimodal preparation, contour analysis, and contour GMI inference.
+:::
+
+:::{grid-item-card} Workflows
+:link: workflows/index
+:link-type: doc
+Run packaged renal and Atera workflows with standardized artifact bundles and report-ready outputs.
+:::
+
+:::{grid-item-card} API reference
 :link: api/index
 :link-type: doc
-Browse curated autosummary pages for `io`, `multimodal`, `cci`, `pathway`, `contour`, `gmi`, `mechanostress`, and `perturb`.
+Browse curated autosummary pages for the canonical pyXenium namespaces and the SpatialPerturb bridge helpers.
 :::
 
 :::{grid-item-card} Changelog
