@@ -6,10 +6,11 @@
 
 multimodal_renal_rna_protein
 multimodal_rna_contour_he
+multimodal_bmnet_he_morphology_pdc
 ```
 
-The multimodal tutorials show two ways to combine Xenium molecular data with
-additional modalities.
+The multimodal tutorials show complementary ways to combine Xenium molecular
+data with additional modalities.
 
 ::::{grid} 1 1 2 2
 :gutter: 2
@@ -27,7 +28,17 @@ RNA/protein discordance, and summarize immune-resistance niches.
 Use contour-level H&E patches together with Xenium RNA to score
 boundary-ecology programs, match controls, and rank biological hypotheses.
 :::
+
+:::{grid-item-card} BM-Net/H&E morphology increment on PDC
+:link: multimodal_bmnet_he_morphology_pdc
+:link-type: doc
+Run the breast contour H&E morphology increment pilot on PDC, inspect the
+BM-Net-style feature schema, and compare H&E morphology against Xenium-native
+cell and nucleus morphology.
+:::
 ::::
 
-Both tutorials use checked artifact bundles for fast Read the Docs rendering,
-with optional rerun cells for local Xenium exports.
+The notebook tutorials use checked artifact bundles for fast Read the Docs
+rendering, with optional rerun cells for local Xenium exports. The BM-Net/PDC
+page documents the completed smoke run and the commands for scaling to real
+pathology backends.

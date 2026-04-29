@@ -48,8 +48,8 @@ same breast topology study and connect the scores to cell-state programs.
 :::{grid-item-card} pyXenium.multimodal
 :link: multimodal
 :link-type: doc
-Choose between renal RNA + protein analysis and the broader RNA + contour +
-H&E workflow for contour-level multimodal discovery.
+Choose among renal RNA + protein analysis, RNA + contour + H&E discovery, and
+the BM-Net/H&E morphology increment pilot on PDC.
 :::
 
 :::{grid-item-card} pyXenium.contour
