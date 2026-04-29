@@ -5,7 +5,7 @@
 :maxdepth: 1
 
 pyXenium.io <io>
-pyXenium.ligand_receptor <ligand_receptor_index>
+pyXenium.cci <cci_index>
 pyXenium.pathway <pathway>
 pyXenium.multimodal <multimodal>
 pyXenium.contour <contour_index>
@@ -31,11 +31,11 @@ components, and see how I/O preserves the structures needed for downstream
 biology.
 :::
 
-:::{grid-item-card} pyXenium.ligand_receptor
-:link: ligand_receptor_index
+:::{grid-item-card} pyXenium.cci
+:link: cci_index
 :link-type: doc
-Walk through Atera WTA breast ligand-receptor topology outputs, then compare
-whole-dataset benchmark results across spatial and non-spatial LR methods.
+Walk through Atera WTA breast cell-cell interaction topology outputs, then compare
+whole-dataset benchmark results across spatial and non-spatial CCI methods.
 :::
 
 :::{grid-item-card} pyXenium.pathway

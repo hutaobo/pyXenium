@@ -1,0 +1,13 @@
+name: pyx-cci-commot
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - git
+  - numpy<2
+  - pandas
+  - scipy
+  - pyyaml
+  - anndata
+  - scanpy

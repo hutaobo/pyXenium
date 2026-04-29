@@ -21,7 +21,7 @@ from .loading import (
     _polygon_mask_for_bbox,
 )
 
-__all__ = ["DEFAULT_CONTOUR_LR_PAIRS", "DEFAULT_CONTOUR_PATHWAYS", "build_contour_feature_table"]
+__all__ = ["DEFAULT_CONTOUR_CCI_PAIRS", "DEFAULT_CONTOUR_PATHWAYS", "build_contour_feature_table"]
 
 _DEFAULT_NEIGHBOR_K = 6
 _DEFAULT_IMAGE_KEY = "he"
@@ -40,7 +40,7 @@ DEFAULT_CONTOUR_PATHWAYS: dict[str, list[str]] = {
     "hypoxia_necrosis": ["CA9", "ENO1", "LDHA", "HILPDA", "SLC2A1"],
 }
 
-DEFAULT_CONTOUR_LR_PAIRS: dict[str, tuple[str, str]] = {
+DEFAULT_CONTOUR_CCI_PAIRS: dict[str, tuple[str, str]] = {
     "spp1_cd44": ("SPP1", "CD44"),
     "cxcl13_cxcr5": ("CXCL13", "CXCR5"),
     "cxcl12_cxcr4": ("CXCL12", "CXCR4"),
@@ -127,7 +127,7 @@ def build_contour_feature_table(
     rna_rows: list[dict[str, Any]] = []
     protein_rows: list[dict[str, Any]] = []
     pathway_rows: list[dict[str, Any]] = []
-    lr_rows: list[dict[str, Any]] = []
+    cci_rows: list[dict[str, Any]] = []
     embedding_rows: list[dict[str, Any]] = []
 
     context_features = _compute_contour_context_features(
@@ -264,20 +264,20 @@ def build_contour_feature_table(
         protein_rows.append(protein_row)
         pathway_rows.append(pathway_row)
 
-        lr_row = {
+        cci_row = {
             "sample_id": sample_id,
             "contour_key": contour_key,
             "contour_id": contour_id,
         }
-        lr_row.update(
-            _ligand_receptor_features(
+        cci_row.update(
+            _cci_features(
                 expression=expression,
                 inner_mask=zone_memberships["inner_rim"],
                 outer_mask=zone_memberships["outer_rim"],
             )
         )
-        lr_rows.append(lr_row)
-        row.update({f"lr__{key}": value for key, value in lr_row.items() if key not in {"sample_id", "contour_key", "contour_id"}})
+        cci_rows.append(cci_row)
+        row.update({f"cci__{key}": value for key, value in cci_row.items() if key not in {"sample_id", "contour_key", "contour_id"}})
 
         contour_gradients = edge_gradients.loc[edge_gradients["contour_id"] == contour_id]
         if not contour_gradients.empty:
@@ -297,7 +297,7 @@ def build_contour_feature_table(
     rna_pseudobulk = pd.DataFrame(rna_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
     protein_summary = pd.DataFrame(protein_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
     pathway_summary = pd.DataFrame(pathway_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
-    ligand_receptor_summary = pd.DataFrame(lr_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
+    cci_summary = pd.DataFrame(cci_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
     embedding_summary = (
         pd.DataFrame(embedding_rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
         if embedding_rows
@@ -314,7 +314,7 @@ def build_contour_feature_table(
         "rna_pseudobulk": rna_pseudobulk,
         "protein_summary": protein_summary,
         "pathway_activity": pathway_summary,
-        "ligand_receptor_summary": ligand_receptor_summary,
+        "cci_summary": cci_summary,
         "edge_gradients": edge_gradients,
         "embedding_summary": embedding_summary,
         "available_states": state_categories,
@@ -329,7 +329,7 @@ def build_contour_feature_table(
             "rna": [column for column in contour_features.columns if column.startswith("rna__")],
             "edge_contrast": [column for column in contour_features.columns if column.startswith("edge_contrast__")],
             "gradient": [column for column in contour_features.columns if column.startswith("gradient__")],
-            "ligand_receptor": [column for column in contour_features.columns if column.startswith("lr__")],
+            "cci": [column for column in contour_features.columns if column.startswith("cci__")],
             "embedding": [column for column in contour_features.columns if column.startswith("embedding__")],
         },
         "context": {
@@ -462,7 +462,7 @@ def _resolve_selected_genes(adata) -> list[str]:
             resolved = available.get(gene.casefold())
             if resolved is not None and resolved not in selected:
                 selected.append(resolved)
-    for ligand, receptor in DEFAULT_CONTOUR_LR_PAIRS.values():
+    for ligand, receptor in DEFAULT_CONTOUR_CCI_PAIRS.values():
         for gene in (ligand, receptor):
             resolved = available.get(gene.casefold())
             if resolved is not None and resolved not in selected:
@@ -1096,7 +1096,7 @@ def _tight_crop(image: np.ndarray, mask: np.ndarray) -> np.ndarray:
     return image[y0:y1, x0:x1].copy()
 
 
-def _ligand_receptor_features(
+def _cci_features(
     *,
     expression: pd.DataFrame,
     inner_mask: np.ndarray,
@@ -1105,7 +1105,7 @@ def _ligand_receptor_features(
     features: dict[str, float] = {}
     inner_mean = expression.loc[inner_mask].mean(axis=0) if inner_mask.any() else pd.Series(dtype=float)
     outer_mean = expression.loc[outer_mask].mean(axis=0) if outer_mask.any() else pd.Series(dtype=float)
-    for pair_name, (ligand, receptor) in DEFAULT_CONTOUR_LR_PAIRS.items():
+    for pair_name, (ligand, receptor) in DEFAULT_CONTOUR_CCI_PAIRS.items():
         ligand_inner = float(inner_mean.get(ligand, 0.0))
         receptor_inner = float(inner_mean.get(receptor, 0.0))
         ligand_outer = float(outer_mean.get(ligand, 0.0))

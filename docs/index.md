@@ -16,7 +16,7 @@ changelog
   <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and AI-driven spatial pathology handoff.</p>
   <p class="pyxenium-lead">
     pyXenium is a Python toolkit for 10x Genomics Xenium with eight feature areas:
-    canonical Xenium I/O, multimodal RNA + protein analysis, topology-native ligand-receptor
+    canonical Xenium I/O, multimodal RNA + protein analysis, topology-native cell-cell interaction
     and pathway methods, contour-aware geometry workflows, contour-level GMI modeling,
     morphology-derived mechanostress analysis, and an optional handoff to the external
     AI-Driven Spatial Pathologist workflow through <code>spatho</code>.
@@ -110,7 +110,7 @@ Call the external `spatho` workflow on Xenium cases structured by pyXenium `Xeni
 :::{grid-item-card} API
 :link: api/index
 :link-type: doc
-Browse curated autosummary pages for `io`, `multimodal`, `ligand_receptor`, `pathway`, `contour`, `gmi`, and `mechanostress`.
+Browse curated autosummary pages for `io`, `multimodal`, `cci`, `pathway`, `contour`, `gmi`, and `mechanostress`.
 :::
 
 :::{grid-item-card} Changelog
@@ -124,7 +124,7 @@ Track documentation, branding, and package-level changes.
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
 - `pyXenium.multimodal`: canonical RNA + protein loading, immune-resistance scoring, joint analyses, and packaged multimodal workflows.
-- `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis primitives.
+- `pyXenium.cci`: topology-native cell-cell interaction analysis primitives.
 - `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
 - `pyXenium.contour`: GeoJSON contour import and contour-aware density profiling around polygon annotations.
 - `pyXenium.gmi`: contour-level GMI modeling for sparse main-effect and interaction discovery in spatial transcriptomics.

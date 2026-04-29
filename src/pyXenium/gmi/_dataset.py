@@ -24,7 +24,7 @@ _SPATIAL_FEATURE_PREFIXES = {
     "protein__": "protein",
     "edge_contrast__": "edge_contrast",
     "gradient__": "gradient",
-    "lr__": "ligand_receptor",
+    "cci__": "cci",
     "pathomics__": "pathomics",
     "embedding__": "embedding",
 }

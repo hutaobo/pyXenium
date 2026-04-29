@@ -24,9 +24,9 @@ def test_pdc_path_policy_requires_separate_klemming_scratch_root():
         pdc_xenium_root=DEFAULT_GMI_PDC_XENIUM_ROOT,
         pdc_root="/cfs/klemming/home/h/hutaobo/pyxenium_gmi",
     )
-    lr_root = validate_pdc_gmi_path_policy(
+    cci_root = validate_pdc_gmi_path_policy(
         pdc_xenium_root=DEFAULT_GMI_PDC_XENIUM_ROOT,
-        pdc_root="/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/runs/gmi",
+        pdc_root="/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/runs/gmi",
     )
     inside_data = validate_pdc_gmi_path_policy(
         pdc_xenium_root=DEFAULT_GMI_PDC_XENIUM_ROOT,
@@ -36,8 +36,8 @@ def test_pdc_path_policy_requires_separate_klemming_scratch_root():
     assert valid["valid"] is True
     assert home["valid"] is False
     assert any("scratch" in issue or "home" in issue for issue in home["issues"])
-    assert lr_root["valid"] is False
-    assert any("separate from the LR benchmark root" in issue for issue in lr_root["issues"])
+    assert cci_root["valid"] is False
+    assert any("separate from the CCI benchmark root" in issue for issue in cci_root["issues"])
     assert inside_data["valid"] is False
     assert any("source cache" in issue for issue in inside_data["issues"])
 
@@ -78,7 +78,7 @@ def test_build_gmi_pdc_plan_uses_slurm_chain_and_expected_stages():
     assert "--dependency=afterok:${full_contour_top500_spatial100_JOB_ID}" in " ".join(stability["sbatch"])
     assert all("--account=naiss-test" in stage["sbatch"] for stage in payload["stages"])
     assert all("--contour-geojson" in stage["command"] for stage in payload["stages"])
-    assert all("/pyxenium_lr_benchmark_2026-04/" not in stage["output_dir"] for stage in payload["stages"])
+    assert all("/pyxenium_cci_benchmark_2026-04/" not in stage["output_dir"] for stage in payload["stages"])
     assert all("nohup" not in stage["sbatch_command"] for stage in payload["stages"])
     assert all("sbatch" == stage["sbatch"][0] for stage in payload["stages"])
 

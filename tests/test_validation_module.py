@@ -108,7 +108,7 @@ def test_renal_immune_resistance_helpers_render_expected_sections():
     assert not build_panel_gap_table().empty
 
 
-def test_atera_breast_topology_report_mentions_lr_and_pathway_sections():
+def test_atera_breast_topology_report_mentions_cci_and_pathway_sections():
     payload = {
         "sample_id": "atera_test",
         "dataset_root": "/tmp/atera",
@@ -121,8 +121,8 @@ def test_atera_breast_topology_report_mentions_lr_and_pathway_sections():
         "experiment_metadata": {"panel_num_targets_predesigned": 18028},
         "metrics_summary": {"median_transcripts_per_cell": 2116},
         "runtime_seconds": 1.23,
-        "lr_pair_summaries": [{"ligand": "CSF1", "receptor": "CSF1R", "best_sender_celltype": "CAFs", "best_receiver_celltype": "Macrophages", "best_score": 0.42}],
-        "lr_acceptance": [{"check": "CSF1-CSF1R top sender should not be Mast Cells", "pass": True}],
+        "cci_pair_summaries": [{"ligand": "CSF1", "receptor": "CSF1R", "best_sender_celltype": "CAFs", "best_receiver_celltype": "Macrophages", "best_score": 0.42}],
+        "cci_acceptance": [{"check": "CSF1-CSF1R top sender should not be Mast Cells", "pass": True}],
         "pathway_primary_best": [{"pathway": "MacrophageProgram", "best_celltype": "Macrophages", "best_distance": 0.02}],
         "pathway_acceptance": [{"pathway": "MacrophageProgram", "expected_best_celltypes": ["Macrophages"], "observed_best_celltype": "Macrophages", "pass": True}],
         "files": {"summary_json": "/tmp/atera/summary.json"},
@@ -131,5 +131,5 @@ def test_atera_breast_topology_report_mentions_lr_and_pathway_sections():
     report = render_atera_wta_breast_topology_report(payload)
 
     assert "# Atera WTA Breast Topology Reproducibility Bundle" in report
-    assert "## LR Smoke Panel" in report
+    assert "## CCI Smoke Panel" in report
     assert "## Pathway Primary Results" in report

@@ -6,7 +6,7 @@
 
 io
 multimodal
-ligand_receptor
+cci
 pathway
 contour
 gmi
@@ -31,10 +31,10 @@ Xenium artifact readers, SData helpers, and compat export utilities.
 Canonical RNA + protein preparation, analysis, immune-resistance scoring, and workflows.
 :::
 
-:::{grid-item-card} pyXenium.ligand_receptor
-:link: ligand_receptor
+:::{grid-item-card} pyXenium.cci
+:link: cci
 :link-type: doc
-Topology-native ligand-receptor analysis.
+Topology-native cell-cell interaction analysis.
 :::
 
 :::{grid-item-card} pyXenium.pathway

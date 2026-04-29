@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pyXenium._compat import deprecated_callable, deprecated_symbol
-from pyXenium.ligand_receptor import ligand_receptor_topology_analysis as _ligand_receptor_topology_analysis
+from pyXenium.cci import cci_topology_analysis as _cci_topology_analysis
 from pyXenium.multimodal import (
     plot_auc_heatmap as _plot_auc_heatmap,
     plot_DE_volcano as _plot_DE_volcano,
@@ -62,10 +62,10 @@ plot_topk_per_cluster = deprecated_callable(
     old_path="pyXenium.analysis.plot_topk_per_cluster",
     new_path="pyXenium.multimodal.plot_topk_per_cluster",
 )
-ligand_receptor_topology_analysis = deprecated_callable(
-    _ligand_receptor_topology_analysis,
-    old_path="pyXenium.analysis.ligand_receptor_topology_analysis",
-    new_path="pyXenium.ligand_receptor.ligand_receptor_topology_analysis",
+cci_topology_analysis = deprecated_callable(
+    _cci_topology_analysis,
+    old_path="pyXenium.analysis.cci_topology_analysis",
+    new_path="pyXenium.cci.cci_topology_analysis",
 )
 pathway_topology_analysis = deprecated_callable(
     _pathway_topology_analysis,
@@ -109,7 +109,7 @@ def __getattr__(name: str):
 __all__ = [
     "compute_pathway_activity_matrix",
     "differential",
-    "ligand_receptor_topology_analysis",
+    "cci_topology_analysis",
     "microenv_analysis",
     "pathway_topology_analysis",
     "plot_auc_heatmap",

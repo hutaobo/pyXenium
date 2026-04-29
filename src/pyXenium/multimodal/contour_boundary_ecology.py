@@ -11,7 +11,7 @@ from sklearn.metrics import adjusted_rand_score, silhouette_score
 from sklearn.preprocessing import StandardScaler
 
 from pyXenium.contour import build_contour_feature_table
-from pyXenium.contour._feature_table import DEFAULT_CONTOUR_LR_PAIRS, DEFAULT_CONTOUR_PATHWAYS
+from pyXenium.contour._feature_table import DEFAULT_CONTOUR_CCI_PAIRS, DEFAULT_CONTOUR_PATHWAYS
 from pyXenium.io.sdata_model import XeniumSData
 
 __all__ = ["DEFAULT_BOUNDARY_PROGRAM_LIBRARY", "score_contour_boundary_programs"]
@@ -30,7 +30,7 @@ DEFAULT_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = {
             "edge_contrast__omics__state_fraction__b_plasma_like": 0.8,
             "edge_contrast__omics__niche_fraction__immune_rich": 1.0,
             "edge_contrast__pathway__immune_activation": 1.0,
-            "lr__cxcl13_cxcr5__outer_minus_inner": 0.6,
+            "cci__cxcl13_cxcr5__outer_minus_inner": 0.6,
         },
         "spatial": {
             "gradient__immune__outer_minus_inner": 1.2,
@@ -49,8 +49,8 @@ DEFAULT_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = {
             "omics__outer_rim__state_fraction__endothelial_perivascular": 1.2,
             "pathway__outer_rim__myeloid_activation": 1.0,
             "pathway__outer_rim__vascular_stromal": 1.0,
-            "lr__spp1_cd44__cross_zone": 0.7,
-            "lr__vegfa_kdr__cross_zone": 0.7,
+            "cci__spp1_cd44__cross_zone": 0.7,
+            "cci__vegfa_kdr__cross_zone": 0.7,
         },
         "spatial": {
             "gradient__myeloid__outer_minus_inner": 1.0,
@@ -105,7 +105,7 @@ DEFAULT_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = {
             "omics__outer_rim__state_fraction__b_plasma_like": 1.1,
             "omics__outer_rim__state_fraction__t_cell_exhausted_cytotoxic": 0.9,
             "pathway__outer_rim__tls_activation": 1.1,
-            "lr__cxcl13_cxcr5__cross_zone": 0.8,
+            "cci__cxcl13_cxcr5__cross_zone": 0.8,
         },
         "spatial": {
             "gradient__immune__outer_minus_inner": 0.8,
@@ -297,7 +297,7 @@ def associate_contour_image_omics(
     )
     omics_columns = _select_columns(
         merged,
-        prefixes=("omics__", "pathway__", "protein__", "rna__", "gradient__", "lr__", "edge_contrast__omics__", "edge_contrast__pathway__"),
+        prefixes=("omics__", "pathway__", "protein__", "rna__", "gradient__", "cci__", "edge_contrast__omics__", "edge_contrast__pathway__"),
     )
     correlation_rows: list[dict[str, Any]] = []
     for image_column in image_columns:
@@ -421,7 +421,7 @@ def _select_model_features(frame: pd.DataFrame) -> pd.DataFrame:
             "protein__whole__",
             "rna__whole__",
             "gradient__",
-            "lr__",
+            "cci__",
             "edge_contrast__",
         ),
     ) + list(DEFAULT_BOUNDARY_PROGRAM_LIBRARY)
@@ -546,12 +546,12 @@ def _program_feature_delta_table(
     contour_index = merged.set_index("contour_id", drop=False)
     rna = feature_table["rna_pseudobulk"].set_index("contour_id", drop=False)
     pathways = feature_table["pathway_activity"].set_index("contour_id", drop=False)
-    lr = feature_table["ligand_receptor_summary"].set_index("contour_id", drop=False)
+    cci = feature_table["cci_summary"].set_index("contour_id", drop=False)
 
     tables = [
         ("gene", rna),
         ("pathway", pathways),
-        ("marker_pair", lr),
+        ("marker_pair", cci),
     ]
     rows: list[dict[str, Any]] = []
     for program_name, program_matches in matched_exemplars.groupby("program", sort=False, dropna=False):

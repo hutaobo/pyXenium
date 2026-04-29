@@ -32,7 +32,7 @@ It expects the standard Xenium export plus:
 2. Imports a tutorial-sized subset of Xenium Explorer contours from GeoJSON.
 3. Cuts one level-0 H&E patch per contour into `XeniumSData.contour_images`.
 4. Builds a contour study table with geometry, pathomics, cell-level
-   pseudobulk RNA, pathway scores, ligand-receptor summaries, and context
+   pseudobulk RNA, pathway scores, cell-cell interaction summaries, and context
    features.
 5. Scores the six default boundary programs:
    `immune_exclusion`, `myeloid_vascular_belt`, `emt_invasive_front`,

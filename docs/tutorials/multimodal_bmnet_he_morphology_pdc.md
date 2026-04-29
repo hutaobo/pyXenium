@@ -66,7 +66,7 @@ The completed smoke run used the Atera WTA FFPE breast cancer Xenium export on
 PDC:
 
 ```text
-/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs
+/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs
 ```
 
 The expected input files are:
@@ -89,7 +89,7 @@ From the staged pyXenium repository on PDC:
 
 ```bash
 export PDC_ROOT=/cfs/klemming/scratch/h/hutaobo/pyxenium_bmnet_morphology_2026-04
-export PDC_XENIUM_ROOT=/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs
+export PDC_XENIUM_ROOT=/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs
 
 bash benchmarking/bmnet_pdc/scripts/bootstrap_pdc_env.sh
 ```

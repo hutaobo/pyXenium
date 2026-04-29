@@ -5,10 +5,10 @@ import pytest
 
 from pyXenium import (
     compute_pathway_activity_matrix,
-    ligand_receptor_topology_analysis,
+    cci_topology_analysis,
     pathway_topology_analysis,
 )
-from pyXenium.ligand_receptor import ligand_receptor_topology_analysis as ligand_receptor_topology_analysis_direct
+from pyXenium.cci import cci_topology_analysis as cci_topology_analysis_direct
 from pyXenium.pathway import (
     compute_pathway_activity_matrix as compute_pathway_activity_matrix_direct,
     pathway_topology_analysis as pathway_topology_analysis_direct,
@@ -61,18 +61,18 @@ def _toy_structure_map() -> pd.DataFrame:
 
 
 def test_public_topology_exports_are_importable():
-    assert callable(ligand_receptor_topology_analysis)
+    assert callable(cci_topology_analysis)
     assert callable(pathway_topology_analysis)
     assert callable(compute_pathway_activity_matrix)
-    assert callable(ligand_receptor_topology_analysis_direct)
+    assert callable(cci_topology_analysis_direct)
     assert callable(pathway_topology_analysis_direct)
     assert callable(compute_pathway_activity_matrix_direct)
 
 
 def test_analysis_topology_compatibility_imports_warn_and_resolve():
     with pytest.warns(DeprecationWarning):
-        from pyXenium.analysis.ligand_receptor_topology import (
-            ligand_receptor_topology_analysis as legacy_lr_topology_analysis,
+        from pyXenium.analysis.cci_topology import (
+            cci_topology_analysis as analysis_cci_topology_analysis,
         )
 
     with pytest.warns(DeprecationWarning):
@@ -81,22 +81,22 @@ def test_analysis_topology_compatibility_imports_warn_and_resolve():
             pathway_topology_analysis as legacy_pathway_topology_analysis,
         )
 
-    assert legacy_lr_topology_analysis is ligand_receptor_topology_analysis_direct
+    assert analysis_cci_topology_analysis is cci_topology_analysis_direct
     assert legacy_pathway_topology_analysis is pathway_topology_analysis_direct
     assert legacy_compute_pathway_activity_matrix is compute_pathway_activity_matrix_direct
 
 
-def test_ligand_receptor_precomputed_anchors_match_supplied_topology():
+def test_cci_precomputed_anchors_match_supplied_topology():
     reference = _toy_reference()
     expression = _toy_expression(reference)
     t_and_c = _toy_t_and_c()
     structure_map = _toy_structure_map()
-    lr_pairs = pd.DataFrame([{"ligand": "L1", "receptor": "R1", "evidence_weight": 1.0}])
+    interaction_pairs = pd.DataFrame([{"ligand": "L1", "receptor": "R1", "evidence_weight": 1.0}])
 
-    result = ligand_receptor_topology_analysis(
+    result = cci_topology_analysis(
         reference_df=reference,
         expression_df=expression,
-        lr_pairs=lr_pairs,
+        interaction_pairs=interaction_pairs,
         t_and_c_df=t_and_c,
         structure_map_df=structure_map,
         export_figures=False,
@@ -108,17 +108,17 @@ def test_ligand_receptor_precomputed_anchors_match_supplied_topology():
     assert set(result["scores"]["anchor_source_receptor"]) == {"precomputed"}
 
 
-def test_ligand_receptor_hybrid_marks_fallback_sources_and_zeroes_sparse_contact():
+def test_cci_hybrid_marks_fallback_sources_and_zeroes_sparse_contact():
     reference = _toy_reference()
     expression = _toy_expression(reference)
     t_and_c = _toy_t_and_c().drop(index=["R2"])
     structure_map = _toy_structure_map()
-    lr_pairs = pd.DataFrame([{"ligand": "L2", "receptor": "R2", "evidence_weight": 1.0}])
+    interaction_pairs = pd.DataFrame([{"ligand": "L2", "receptor": "R2", "evidence_weight": 1.0}])
 
-    result = ligand_receptor_topology_analysis(
+    result = cci_topology_analysis(
         reference_df=reference,
         expression_df=expression,
-        lr_pairs=lr_pairs,
+        interaction_pairs=interaction_pairs,
         t_and_c_df=t_and_c,
         structure_map_df=structure_map,
         anchor_mode="hybrid",

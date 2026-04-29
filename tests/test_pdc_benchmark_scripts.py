@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PDC_SCRIPT_DIR = REPO_ROOT / "benchmarking" / "lr_2026_atera" / "scripts" / "pdc"
+PDC_SCRIPT_DIR = REPO_ROOT / "benchmarking" / "cci_2026_atera" / "scripts" / "pdc"
 
 
 def _load_script(name: str):
@@ -31,7 +31,7 @@ def test_pdc_stage_plan_uses_scratch_outputs_and_minimal_raw_inputs(tmp_path):
     plan = stage.build_stage_plan(
         repo_root=tmp_path,
         local_xenium_root=source,
-        remote_root="/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04",
+        remote_root="/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04",
         host="pdc",
         include_smoke=True,
         include_spatialdata_zarr=True,
@@ -51,7 +51,7 @@ def test_pdc_submit_matrix_builds_slurm_dependencies_and_path_policy():
 
     jobs = submit.build_jobs(
         ["pyxenium", "cellchat"],
-        "/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04",
+        "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04",
         "naiss2026-4-680",
         {"prepare", "env", "smoke", "pilot"},
         include_full=False,

@@ -8,7 +8,7 @@ from typing import Any
 
 DEFAULT_GMI_PDC_ROOT = "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04"
 DEFAULT_GMI_PDC_XENIUM_ROOT = (
-    "/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/"
+    "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/"
     "data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs"
 )
 DEFAULT_GMI_PDC_CONTOUR_GEOJSON = "xenium_explorer_annotations.s1_s5.generated.geojson"
@@ -41,8 +41,8 @@ def validate_pdc_gmi_path_policy(*, pdc_xenium_root: str, pdc_root: str) -> dict
         issues.append("pdc_root should be under /cfs/klemming/scratch for PDC GMI runs.")
     if root.startswith("/cfs/klemming/home/"):
         issues.append("pdc_root must not write into the PDC home area.")
-    if "/pyxenium_lr_benchmark_2026-04/" in root:
-        issues.append("pdc_root must be separate from the LR benchmark root.")
+    if "/pyxenium_cci_benchmark_2026-04/" in root:
+        issues.append("pdc_root must be separate from the CCI benchmark root.")
     if root == xenium or root.startswith(xenium + "/"):
         issues.append("pdc_root must not be inside the read-only Xenium source cache.")
     return {"valid": not issues, "issues": issues, "pdc_xenium_root": xenium, "pdc_root": root}

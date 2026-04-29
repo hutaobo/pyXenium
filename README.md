@@ -32,7 +32,7 @@ pyXenium is a Python toolkit for **10x Genomics Xenium** with eight feature area
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
 - `pyXenium.multimodal`: canonical RNA + protein loading, joint analysis, immune-resistance scoring, and packaged workflows.
-- `pyXenium.ligand_receptor`: topology-native ligand-receptor analysis.
+- `pyXenium.cci`: topology-native cell-cell interaction analysis.
 - `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
 - `pyXenium.contour`: contour import, contour expansion, and contour-aware density profiling around polygon annotations.
 - `pyXenium.gmi`: contour-level GMI modeling for sparse main-effect and interaction discovery in spatial transcriptomics.
