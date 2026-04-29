@@ -43,11 +43,11 @@ Compare pathway topology aggregation with activity point-cloud scoring on the
 same breast topology study and connect the scores to cell-state programs.
 :::
 
-:::{grid-item-card} pyXenium.multimodal Tutorial
+:::{grid-item-card} pyXenium.multimodal Tutorials
 :link: multimodal
 :link-type: doc
-Review the renal immune-resistance pilot from loading through joint states,
-discordance, niches, and branch-level hypotheses.
+Choose between renal RNA + protein analysis and the broader RNA + contour +
+H&E workflow for contour-level multimodal discovery.
 :::
 
 :::{grid-item-card} pyXenium.contour Tutorials
