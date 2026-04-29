@@ -1,0 +1,23 @@
+	Command being timed: "/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/envs/python/pyxenium/bin/python /cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/repo/benchmarking/cci_2026_atera/scripts/topolink_cci_validation_framework.py --root /cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04 --output-dir /cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/runs/validation/topolink_cci_false_positive_controls_shared --n-matched-controls 250 --seed 20260428"
+	User time (seconds): 61.97
+	System time (seconds): 6.23
+	Percent of CPU this job got: 97%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:10.11
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 8749684
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 3035
+	Minor (reclaiming a frame) page faults: 424067
+	Voluntary context switches: 14563
+	Involuntary context switches: 615
+	Swaps: 0
+	File system inputs: 1822958
+	File system outputs: 688
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

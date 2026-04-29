@@ -1,0 +1,47 @@
+{
+  "title": "VWF-SELP spatial hotspots",
+  "source_tables": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\vwf_selp_hotspot_endothelial_cells.tsv",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\pdc_collected\\pdc_20260426_1327\\runs\\full_common\\pyxenium\\input_cache\\adata_full_from_sparse_bundle.h5ad"
+  ],
+  "rasterized_layers": true,
+  "biological_message": "VWF-SELP hotspots localize to a subset of endothelial neighborhoods.",
+  "caveat": "Dense background cells are rasterized to keep Illustrator files usable.",
+  "output_formats": [
+    "pdf",
+    "svg",
+    "png"
+  ],
+  "panel_id": "fig2f",
+  "slug": "vwf_selp_spatial_hotspots",
+  "generated_at": "2026-04-29T08:45:14.178306+00:00",
+  "outputs": {
+    "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\pdf\\fig2f_vwf_selp_spatial_hotspots.pdf",
+    "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\svg\\fig2f_vwf_selp_spatial_hotspots.svg",
+    "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\png\\fig2f_vwf_selp_spatial_hotspots.png",
+    "source_data": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\source_data\\fig2f_vwf_selp_spatial_hotspots.tsv",
+    "metadata": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\metadata\\fig2f_vwf_selp_spatial_hotspots.json"
+  },
+  "width_mm": 85.0,
+  "height_mm": 85.0,
+  "font_policy": {
+    "font_family": "Arial",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+    "svg.fonttype": "none",
+    "panel_label_pt": 8,
+    "title_pt": 7,
+    "axis_label_pt": 6,
+    "tick_label_pt": 5,
+    "legend_pt": 5
+  },
+  "svg_text_count": 24,
+  "svg_path_count": 10,
+  "pdffonts_status": "pdffonts_not_available",
+  "pdffonts_output": "",
+  "source_hashes": {
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\vwf_selp_hotspot_endothelial_cells.tsv": "007e51168b7044fb",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\pdc_collected\\pdc_20260426_1327\\runs\\full_common\\pyxenium\\input_cache\\adata_full_from_sparse_bundle.h5ad": "7a0756a5bd491109"
+  },
+  "source_data_rows": 170490
+}

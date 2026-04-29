@@ -1,0 +1,41 @@
+{
+  "title": "Local contact model",
+  "source_tables": [],
+  "rasterized_layers": false,
+  "biological_message": "Local contact links candidate molecular axes to the actual cell-cell neighbor graph.",
+  "caveat": "Schematic panel; source data records nodes and edges.",
+  "output_formats": [
+    "pdf",
+    "svg",
+    "png"
+  ],
+  "panel_id": "fig1c",
+  "slug": "local_contact_model",
+  "generated_at": "2026-04-29T08:45:00.757905+00:00",
+  "outputs": {
+    "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\pdf\\fig1c_local_contact_model.pdf",
+    "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\svg\\fig1c_local_contact_model.svg",
+    "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\png\\fig1c_local_contact_model.png",
+    "source_data": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\source_data\\fig1c_local_contact_model.tsv",
+    "metadata": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\metadata\\fig1c_local_contact_model.json"
+  },
+  "width_mm": 85.0,
+  "height_mm": 65.0,
+  "font_policy": {
+    "font_family": "Arial",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+    "svg.fonttype": "none",
+    "panel_label_pt": 8,
+    "title_pt": 7,
+    "axis_label_pt": 6,
+    "tick_label_pt": 5,
+    "legend_pt": 5
+  },
+  "svg_text_count": 3,
+  "svg_path_count": 9,
+  "pdffonts_status": "pdffonts_not_available",
+  "pdffonts_output": "",
+  "source_hashes": {},
+  "source_data_rows": 12
+}

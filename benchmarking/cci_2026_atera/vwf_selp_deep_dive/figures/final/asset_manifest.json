@@ -1,0 +1,31 @@
+{
+  "title": "pyXenium identifies a topology-supported endothelial VWF-SELP vascular activation niche",
+  "root": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive",
+  "outputs": {
+    "main_png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\final\\vwf_selp_endothelial_activation_main_figure.png",
+    "main_pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\final\\vwf_selp_endothelial_activation_main_figure.pdf",
+    "main_svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\final\\vwf_selp_endothelial_activation_main_figure.svg",
+    "conference_png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\final\\vwf_selp_endothelial_activation_conference_summary.png",
+    "conference_pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\final\\vwf_selp_endothelial_activation_conference_summary.pdf",
+    "canva_brief": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\final\\canva_design_brief.md",
+    "caption": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\final\\figure_caption.md"
+  },
+  "source_assets": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\component_decomposition.png",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\expression_specificity_heatmap.png",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\vwf_selp_hotspot_spatial_overlay.png",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\figures\\contour_vascular_summary.png",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\rank_sensitivity.tsv",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\hotspot_summary.tsv",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\hotspot_neighbor_context.tsv",
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\cross_method_vwf_selp_hits.tsv"
+  ],
+  "key_numbers": {
+    "LR_pair": "VWF-SELP",
+    "sender_receiver": "Endothelial Cells -> Endothelial Cells",
+    "CCI_score": 0.7912892368005828,
+    "local_contact": 0.2912449657481761,
+    "cross_edge_count": 12779,
+    "hotspot_endothelial_cells": 433
+  }
+}

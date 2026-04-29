@@ -1,0 +1,617 @@
+contour_id	classification_name	assigned_structure	value	feature
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.1796677420063506	rna__whole__pecam1
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__whole__pecam1
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		rna__whole__pecam1
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.1187071924103694	rna__whole__pecam1
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.0769177593567086	rna__whole__pecam1
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	rna__whole__pecam1
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		rna__whole__pecam1
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.1076629263635845	rna__whole__pecam1
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		rna__whole__pecam1
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	rna__whole__pecam1
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.3749694075793126	rna__whole__pecam1
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	rna__whole__pecam1
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	rna__whole__pecam1
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.5025502424725253	rna__whole__pecam1
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.0	rna__whole__pecam1
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.5278241870206619	rna__whole__pecam1
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	rna__whole__pecam1
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.0	rna__whole__pecam1
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		rna__whole__pecam1
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.0	rna__whole__pecam1
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0	rna__whole__pecam1
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		rna__whole__pecam1
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__whole__pecam1
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.4091528053887573	rna__whole__pecam1
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.1227271605234147	rna__whole__pecam1
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	rna__whole__pecam1
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		rna__whole__pecam1
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	rna__whole__pecam1
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.072856142025969	rna__whole__emcn
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__whole__emcn
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		rna__whole__emcn
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.0956435094048905	rna__whole__emcn
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.0341192001070569	rna__whole__emcn
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	rna__whole__emcn
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		rna__whole__emcn
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0443566877942554	rna__whole__emcn
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		rna__whole__emcn
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	rna__whole__emcn
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.0896934690715761	rna__whole__emcn
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	rna__whole__emcn
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	rna__whole__emcn
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.2200430992908991	rna__whole__emcn
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.0	rna__whole__emcn
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.2664575331203851	rna__whole__emcn
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	rna__whole__emcn
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.0	rna__whole__emcn
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		rna__whole__emcn
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.0	rna__whole__emcn
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0	rna__whole__emcn
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		rna__whole__emcn
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__whole__emcn
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.5873915102460823	rna__whole__emcn
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.06744844156323	rna__whole__emcn
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	rna__whole__emcn
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		rna__whole__emcn
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	rna__whole__emcn
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0774115423611214	rna__whole__kdr
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__whole__kdr
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		rna__whole__kdr
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.0780949047901716	rna__whole__kdr
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.1385002056584804	rna__whole__kdr
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	rna__whole__kdr
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		rna__whole__kdr
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0232494001547177	rna__whole__kdr
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		rna__whole__kdr
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	rna__whole__kdr
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.2193713595152535	rna__whole__kdr
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	rna__whole__kdr
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	rna__whole__kdr
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.0	rna__whole__kdr
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.0	rna__whole__kdr
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.3610214246799882	rna__whole__kdr
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	rna__whole__kdr
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.0	rna__whole__kdr
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		rna__whole__kdr
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.0	rna__whole__kdr
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0	rna__whole__kdr
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		rna__whole__kdr
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__whole__kdr
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.6624982390273867	rna__whole__kdr
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.1506500575664022	rna__whole__kdr
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	rna__whole__kdr
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		rna__whole__kdr
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	rna__whole__kdr
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0696516480006165	pathway__whole__vascular_stromal
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		pathway__whole__vascular_stromal
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		pathway__whole__vascular_stromal
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.0542424607543646	pathway__whole__vascular_stromal
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.055341348999192	pathway__whole__vascular_stromal
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	pathway__whole__vascular_stromal
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		pathway__whole__vascular_stromal
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0696097535916172	pathway__whole__vascular_stromal
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		pathway__whole__vascular_stromal
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	pathway__whole__vascular_stromal
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.1114447639607452	pathway__whole__vascular_stromal
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	pathway__whole__vascular_stromal
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0466454241844282	pathway__whole__vascular_stromal
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.1390121222783406	pathway__whole__vascular_stromal
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.2509549498741152	pathway__whole__vascular_stromal
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.1000904515470486	pathway__whole__vascular_stromal
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	pathway__whole__vascular_stromal
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.117460756143878	pathway__whole__vascular_stromal
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		pathway__whole__vascular_stromal
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.0	pathway__whole__vascular_stromal
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0665752898267624	pathway__whole__vascular_stromal
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		pathway__whole__vascular_stromal
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		pathway__whole__vascular_stromal
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.1640485796713655	pathway__whole__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.0707743229984139	pathway__whole__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0176899304879547	pathway__whole__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		pathway__whole__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	pathway__whole__vascular_stromal
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.1081066595437506	rna__core__pecam1
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__core__pecam1
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		rna__core__pecam1
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.0977796034293628	rna__core__pecam1
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.0	rna__core__pecam1
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	rna__core__pecam1
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		rna__core__pecam1
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.1794382106059742	rna__core__pecam1
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		rna__core__pecam1
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	rna__core__pecam1
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.4993899732201639	rna__core__pecam1
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	rna__core__pecam1
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	rna__core__pecam1
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	1.0051004849450509	rna__core__pecam1
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.0	rna__core__pecam1
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.0	rna__core__pecam1
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	rna__core__pecam1
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.0	rna__core__pecam1
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		rna__core__pecam1
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.0	rna__core__pecam1
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0	rna__core__pecam1
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		rna__core__pecam1
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__core__pecam1
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells		rna__core__pecam1
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.1074789947521153	rna__core__pecam1
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	rna__core__pecam1
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		rna__core__pecam1
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	rna__core__pecam1
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.081986111713777	rna__core__emcn
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__core__emcn
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		rna__core__emcn
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.0728578243407787	rna__core__emcn
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.0	rna__core__emcn
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	rna__core__emcn
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		rna__core__emcn
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0739278129904257	rna__core__emcn
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		rna__core__emcn
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	rna__core__emcn
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.0	rna__core__emcn
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	rna__core__emcn
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	rna__core__emcn
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.4400861985817982	rna__core__emcn
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.0	rna__core__emcn
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.0	rna__core__emcn
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	rna__core__emcn
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.0	rna__core__emcn
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		rna__core__emcn
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.0	rna__core__emcn
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0	rna__core__emcn
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		rna__core__emcn
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__core__emcn
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells		rna__core__emcn
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.0709433356321481	rna__core__emcn
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	rna__core__emcn
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		rna__core__emcn
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	rna__core__emcn
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0609674667041961	rna__core__kdr
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__core__kdr
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		rna__core__kdr
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.0591450324805104	rna__core__kdr
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.1896739558093959	rna__core__kdr
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	rna__core__kdr
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		rna__core__kdr
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0387490002578629	rna__core__kdr
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		rna__core__kdr
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	rna__core__kdr
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.2276267642965102	rna__core__kdr
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	rna__core__kdr
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	rna__core__kdr
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.0	rna__core__kdr
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.0	rna__core__kdr
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.0	rna__core__kdr
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	rna__core__kdr
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.0	rna__core__kdr
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		rna__core__kdr
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.0	rna__core__kdr
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0	rna__core__kdr
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		rna__core__kdr
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__core__kdr
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells		rna__core__kdr
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.1486896890224372	rna__core__kdr
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	rna__core__kdr
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		rna__core__kdr
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	rna__core__kdr
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0552819523571244	pathway__core__vascular_stromal
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		pathway__core__vascular_stromal
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		pathway__core__vascular_stromal
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.0514563791435199	pathway__core__vascular_stromal
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.0421215456748306	pathway__core__vascular_stromal
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	pathway__core__vascular_stromal
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		pathway__core__vascular_stromal
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0777144220406205	pathway__core__vascular_stromal
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		pathway__core__vascular_stromal
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	pathway__core__vascular_stromal
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.0965901550491241	pathway__core__vascular_stromal
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	pathway__core__vascular_stromal
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0537475301405883	pathway__core__vascular_stromal
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.1736929544180049	pathway__core__vascular_stromal
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.2509549498741152	pathway__core__vascular_stromal
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.0	pathway__core__vascular_stromal
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	pathway__core__vascular_stromal
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.117460756143878	pathway__core__vascular_stromal
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		pathway__core__vascular_stromal
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.0	pathway__core__vascular_stromal
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0665752898267624	pathway__core__vascular_stromal
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		pathway__core__vascular_stromal
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		pathway__core__vascular_stromal
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells		pathway__core__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.0641194866771945	pathway__core__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	pathway__core__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		pathway__core__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	pathway__core__vascular_stromal
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.230085777377728	rna__inner_rim__pecam1
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__inner_rim__pecam1
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		rna__inner_rim__pecam1
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.1713339235243716	rna__inner_rim__pecam1
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.132202398894343	rna__inner_rim__pecam1
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		rna__inner_rim__pecam1
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		rna__inner_rim__pecam1
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0	rna__inner_rim__pecam1
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		rna__inner_rim__pecam1
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages		rna__inner_rim__pecam1
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.3244235527877167	rna__inner_rim__pecam1
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages		rna__inner_rim__pecam1
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	rna__inner_rim__pecam1
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.0	rna__inner_rim__pecam1
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells		rna__inner_rim__pecam1
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.7163328252423268	rna__inner_rim__pecam1
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		rna__inner_rim__pecam1
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		rna__inner_rim__pecam1
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		rna__inner_rim__pecam1
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells		rna__inner_rim__pecam1
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells		rna__inner_rim__pecam1
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		rna__inner_rim__pecam1
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__inner_rim__pecam1
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.4091528053887573	rna__inner_rim__pecam1
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.140544013718553	rna__inner_rim__pecam1
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	rna__inner_rim__pecam1
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		rna__inner_rim__pecam1
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		rna__inner_rim__pecam1
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0664236633822861	rna__inner_rim__emcn
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__inner_rim__emcn
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		rna__inner_rim__emcn
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.1529428056690538	rna__inner_rim__emcn
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.0586423751840041	rna__inner_rim__emcn
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		rna__inner_rim__emcn
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		rna__inner_rim__emcn
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0	rna__inner_rim__emcn
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		rna__inner_rim__emcn
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages		rna__inner_rim__emcn
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.126131440881904	rna__inner_rim__emcn
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages		rna__inner_rim__emcn
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	rna__inner_rim__emcn
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.0	rna__inner_rim__emcn
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells		rna__inner_rim__emcn
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.361620937806237	rna__inner_rim__emcn
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		rna__inner_rim__emcn
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		rna__inner_rim__emcn
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		rna__inner_rim__emcn
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells		rna__inner_rim__emcn
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells		rna__inner_rim__emcn
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		rna__inner_rim__emcn
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__inner_rim__emcn
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.5873915102460823	rna__inner_rim__emcn
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.0633648018984727	rna__inner_rim__emcn
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	rna__inner_rim__emcn
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		rna__inner_rim__emcn
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		rna__inner_rim__emcn
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0889971411194097	rna__inner_rim__kdr
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__inner_rim__kdr
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		rna__inner_rim__kdr
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.1257482601571136	rna__inner_rim__kdr
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.1017190727375099	rna__inner_rim__kdr
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		rna__inner_rim__kdr
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		rna__inner_rim__kdr
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0	rna__inner_rim__kdr
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		rna__inner_rim__kdr
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages		rna__inner_rim__kdr
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.2160176013228679	rna__inner_rim__kdr
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages		rna__inner_rim__kdr
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	rna__inner_rim__kdr
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.0	rna__inner_rim__kdr
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells		rna__inner_rim__kdr
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.4899576477799841	rna__inner_rim__kdr
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		rna__inner_rim__kdr
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		rna__inner_rim__kdr
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		rna__inner_rim__kdr
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells		rna__inner_rim__kdr
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells		rna__inner_rim__kdr
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		rna__inner_rim__kdr
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__inner_rim__kdr
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.6624982390273867	rna__inner_rim__kdr
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.1529406674063038	rna__inner_rim__kdr
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	rna__inner_rim__kdr
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		rna__inner_rim__kdr
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		rna__inner_rim__kdr
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0797757517494406	pathway__inner_rim__vascular_stromal
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		pathway__inner_rim__vascular_stromal
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		pathway__inner_rim__vascular_stromal
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.0612486365698713	pathway__inner_rim__vascular_stromal
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.0648430826385768	pathway__inner_rim__vascular_stromal
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		pathway__inner_rim__vascular_stromal
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		pathway__inner_rim__vascular_stromal
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0574527509181122	pathway__inner_rim__vascular_stromal
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		pathway__inner_rim__vascular_stromal
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages		pathway__inner_rim__vascular_stromal
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.1174794488310913	pathway__inner_rim__vascular_stromal
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages		pathway__inner_rim__vascular_stromal
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0419106868803214	pathway__inner_rim__vascular_stromal
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.1043312901386763	pathway__inner_rim__vascular_stromal
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells		pathway__inner_rim__vascular_stromal
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.1358370413852803	pathway__inner_rim__vascular_stromal
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		pathway__inner_rim__vascular_stromal
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		pathway__inner_rim__vascular_stromal
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		pathway__inner_rim__vascular_stromal
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells		pathway__inner_rim__vascular_stromal
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells		pathway__inner_rim__vascular_stromal
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		pathway__inner_rim__vascular_stromal
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		pathway__inner_rim__vascular_stromal
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.1640485796713655	pathway__inner_rim__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.0785502249364695	pathway__inner_rim__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0212279165855456	pathway__inner_rim__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		pathway__inner_rim__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		pathway__inner_rim__vascular_stromal
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.3063421846939932	rna__outer_rim__pecam1
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__outer_rim__pecam1
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells	0.0	rna__outer_rim__pecam1
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.3933872310669178	rna__outer_rim__pecam1
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.3904484089660468	rna__outer_rim__pecam1
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		rna__outer_rim__pecam1
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells	0.0	rna__outer_rim__pecam1
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.5265641971492074	rna__outer_rim__pecam1
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages	0.0	rna__outer_rim__pecam1
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	rna__outer_rim__pecam1
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.689337109917815	rna__outer_rim__pecam1
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	rna__outer_rim__pecam1
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.8449618957576507	rna__outer_rim__pecam1
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.0	rna__outer_rim__pecam1
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	1.2989100596986898	rna__outer_rim__pecam1
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	1.172241823330317	rna__outer_rim__pecam1
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		rna__outer_rim__pecam1
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		rna__outer_rim__pecam1
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells	0.0	rna__outer_rim__pecam1
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	1.5854461321978617	rna__outer_rim__pecam1
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.3922609619185822	rna__outer_rim__pecam1
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells	0.1066094431927571	rna__outer_rim__pecam1
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__outer_rim__pecam1
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.0	rna__outer_rim__pecam1
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.5503225422813688	rna__outer_rim__pecam1
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.1557196622786285	rna__outer_rim__pecam1
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells	0.0	rna__outer_rim__pecam1
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		rna__outer_rim__pecam1
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.14446090366206	rna__outer_rim__emcn
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__outer_rim__emcn
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells	0.0	rna__outer_rim__emcn
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.1132410808072172	rna__outer_rim__emcn
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.1659020507854718	rna__outer_rim__emcn
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		rna__outer_rim__emcn
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells	0.0	rna__outer_rim__emcn
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.2353542826539352	rna__outer_rim__emcn
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages	0.0	rna__outer_rim__emcn
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	rna__outer_rim__emcn
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.355195862880829	rna__outer_rim__emcn
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	rna__outer_rim__emcn
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.1984497855493979	rna__outer_rim__emcn
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.2283643672023154	rna__outer_rim__emcn
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.6679912724723958	rna__outer_rim__emcn
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.5743377684390826	rna__outer_rim__emcn
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		rna__outer_rim__emcn
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		rna__outer_rim__emcn
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells	1.279897827821988	rna__outer_rim__emcn
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.2125733294076071	rna__outer_rim__emcn
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.1777395642434243	rna__outer_rim__emcn
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells	0.1289637759551252	rna__outer_rim__emcn
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__outer_rim__emcn
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.0	rna__outer_rim__emcn
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.3614537178064838	rna__outer_rim__emcn
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.1870063913186551	rna__outer_rim__emcn
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells	0.0	rna__outer_rim__emcn
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		rna__outer_rim__emcn
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.2163950367835546	rna__outer_rim__kdr
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		rna__outer_rim__kdr
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells	0.0	rna__outer_rim__kdr
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.1203917260732285	rna__outer_rim__kdr
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.2139253640956269	rna__outer_rim__kdr
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		rna__outer_rim__kdr
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells	0.0	rna__outer_rim__kdr
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.2720449941665531	rna__outer_rim__kdr
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages	0.0	rna__outer_rim__kdr
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	2.1880331736972054	rna__outer_rim__kdr
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.3362230326719619	rna__outer_rim__kdr
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	rna__outer_rim__kdr
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.4475273128209102	rna__outer_rim__kdr
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.7233873071937582	rna__outer_rim__kdr
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.902328828711564	rna__outer_rim__kdr
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.3961003301357655	rna__outer_rim__kdr
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		rna__outer_rim__kdr
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		rna__outer_rim__kdr
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells	0.0	rna__outer_rim__kdr
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	1.082245528511163	rna__outer_rim__kdr
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0	rna__outer_rim__kdr
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells	0.0	rna__outer_rim__kdr
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		rna__outer_rim__kdr
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.1291936208772156	rna__outer_rim__kdr
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.3899297316432598	rna__outer_rim__kdr
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.186163694262481	rna__outer_rim__kdr
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells	0.0	rna__outer_rim__kdr
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		rna__outer_rim__kdr
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.105670129853337	pathway__outer_rim__vascular_stromal
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		pathway__outer_rim__vascular_stromal
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells	0.1730263588452169	pathway__outer_rim__vascular_stromal
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.1078179262771151	pathway__outer_rim__vascular_stromal
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.07841014500954	pathway__outer_rim__vascular_stromal
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		pathway__outer_rim__vascular_stromal
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells	0.4038747094502095	pathway__outer_rim__vascular_stromal
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.1389939967894186	pathway__outer_rim__vascular_stromal
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages	0.1763990615801103	pathway__outer_rim__vascular_stromal
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.1107066822976784	pathway__outer_rim__vascular_stromal
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.1249546652478174	pathway__outer_rim__vascular_stromal
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	pathway__outer_rim__vascular_stromal
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.1543543478159658	pathway__outer_rim__vascular_stromal
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.1177734555409629	pathway__outer_rim__vascular_stromal
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.2125802871318612	pathway__outer_rim__vascular_stromal
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.1706794069685032	pathway__outer_rim__vascular_stromal
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		pathway__outer_rim__vascular_stromal
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		pathway__outer_rim__vascular_stromal
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells	0.064758269619264	pathway__outer_rim__vascular_stromal
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.274115504948364	pathway__outer_rim__vascular_stromal
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0513073274923296	pathway__outer_rim__vascular_stromal
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells	0.05767208650753	pathway__outer_rim__vascular_stromal
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		pathway__outer_rim__vascular_stromal
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.0393648926439368	pathway__outer_rim__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.1423833187085441	pathway__outer_rim__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.1548833693639295	pathway__outer_rim__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells	0.0	pathway__outer_rim__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		pathway__outer_rim__vascular_stromal
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0762564073162652	edge_contrast__rna__pecam1
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		edge_contrast__rna__pecam1
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		edge_contrast__rna__pecam1
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.2220533075425462	edge_contrast__rna__pecam1
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.2582460100717038	edge_contrast__rna__pecam1
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		edge_contrast__rna__pecam1
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		edge_contrast__rna__pecam1
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.5265641971492074	edge_contrast__rna__pecam1
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		edge_contrast__rna__pecam1
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages		edge_contrast__rna__pecam1
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.3649135571300983	edge_contrast__rna__pecam1
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages		edge_contrast__rna__pecam1
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.8449618957576507	edge_contrast__rna__pecam1
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.0	edge_contrast__rna__pecam1
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells		edge_contrast__rna__pecam1
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.4559089980879899	edge_contrast__rna__pecam1
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		edge_contrast__rna__pecam1
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		edge_contrast__rna__pecam1
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		edge_contrast__rna__pecam1
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells		edge_contrast__rna__pecam1
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells		edge_contrast__rna__pecam1
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		edge_contrast__rna__pecam1
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		edge_contrast__rna__pecam1
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	-0.4091528053887573	edge_contrast__rna__pecam1
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.4097785285628157	edge_contrast__rna__pecam1
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.1557196622786285	edge_contrast__rna__pecam1
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		edge_contrast__rna__pecam1
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		edge_contrast__rna__pecam1
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0780372402797738	edge_contrast__rna__emcn
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		edge_contrast__rna__emcn
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		edge_contrast__rna__emcn
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	-0.0397017248618365	edge_contrast__rna__emcn
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.1072596756014676	edge_contrast__rna__emcn
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		edge_contrast__rna__emcn
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		edge_contrast__rna__emcn
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.2353542826539352	edge_contrast__rna__emcn
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		edge_contrast__rna__emcn
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages		edge_contrast__rna__emcn
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.229064421998925	edge_contrast__rna__emcn
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages		edge_contrast__rna__emcn
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.1984497855493979	edge_contrast__rna__emcn
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.2283643672023154	edge_contrast__rna__emcn
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells		edge_contrast__rna__emcn
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.2127168306328455	edge_contrast__rna__emcn
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		edge_contrast__rna__emcn
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		edge_contrast__rna__emcn
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		edge_contrast__rna__emcn
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells		edge_contrast__rna__emcn
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells		edge_contrast__rna__emcn
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		edge_contrast__rna__emcn
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		edge_contrast__rna__emcn
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	-0.5873915102460823	edge_contrast__rna__emcn
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.2980889159080111	edge_contrast__rna__emcn
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.1870063913186551	edge_contrast__rna__emcn
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		edge_contrast__rna__emcn
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		edge_contrast__rna__emcn
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.1273978956641449	edge_contrast__rna__kdr
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		edge_contrast__rna__kdr
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		edge_contrast__rna__kdr
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	-0.005356534083885	edge_contrast__rna__kdr
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.112206291358117	edge_contrast__rna__kdr
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		edge_contrast__rna__kdr
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		edge_contrast__rna__kdr
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.2720449941665531	edge_contrast__rna__kdr
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		edge_contrast__rna__kdr
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages		edge_contrast__rna__kdr
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.1202054313490939	edge_contrast__rna__kdr
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages		edge_contrast__rna__kdr
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.4475273128209102	edge_contrast__rna__kdr
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.7233873071937582	edge_contrast__rna__kdr
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells		edge_contrast__rna__kdr
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	-0.0938573176442186	edge_contrast__rna__kdr
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		edge_contrast__rna__kdr
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		edge_contrast__rna__kdr
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		edge_contrast__rna__kdr
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells		edge_contrast__rna__kdr
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells		edge_contrast__rna__kdr
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		edge_contrast__rna__kdr
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		edge_contrast__rna__kdr
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	-0.533304618150171	edge_contrast__rna__kdr
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.2369890642369559	edge_contrast__rna__kdr
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.186163694262481	edge_contrast__rna__kdr
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		edge_contrast__rna__kdr
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		edge_contrast__rna__kdr
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.0258943781038964	edge_contrast__pathway__vascular_stromal
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells		edge_contrast__pathway__vascular_stromal
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells		edge_contrast__pathway__vascular_stromal
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.0465692897072438	edge_contrast__pathway__vascular_stromal
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.0135670623709632	edge_contrast__pathway__vascular_stromal
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells		edge_contrast__pathway__vascular_stromal
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells		edge_contrast__pathway__vascular_stromal
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.0815412458713064	edge_contrast__pathway__vascular_stromal
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages		edge_contrast__pathway__vascular_stromal
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages		edge_contrast__pathway__vascular_stromal
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.0074752164167261	edge_contrast__pathway__vascular_stromal
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages		edge_contrast__pathway__vascular_stromal
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.1124436609356443	edge_contrast__pathway__vascular_stromal
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.0134421654022865	edge_contrast__pathway__vascular_stromal
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells		edge_contrast__pathway__vascular_stromal
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.0348423655832229	edge_contrast__pathway__vascular_stromal
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells		edge_contrast__pathway__vascular_stromal
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells		edge_contrast__pathway__vascular_stromal
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells		edge_contrast__pathway__vascular_stromal
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells		edge_contrast__pathway__vascular_stromal
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells		edge_contrast__pathway__vascular_stromal
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells		edge_contrast__pathway__vascular_stromal
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells		edge_contrast__pathway__vascular_stromal
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	-0.1246836870274287	edge_contrast__pathway__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.0638330937720745	edge_contrast__pathway__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.1336554527783839	edge_contrast__pathway__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells		edge_contrast__pathway__vascular_stromal
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells		edge_contrast__pathway__vascular_stromal
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	0.2385779751029094	lr__vegfa_kdr__cross_zone
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells	0.0	lr__vegfa_kdr__cross_zone
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells	0.0	lr__vegfa_kdr__cross_zone
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	0.1241815093888909	lr__vegfa_kdr__cross_zone
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.2604028680967408	lr__vegfa_kdr__cross_zone
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	lr__vegfa_kdr__cross_zone
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells	0.0	lr__vegfa_kdr__cross_zone
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.1685370600271817	lr__vegfa_kdr__cross_zone
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages	0.0	lr__vegfa_kdr__cross_zone
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	0.0	lr__vegfa_kdr__cross_zone
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.2083858768917343	lr__vegfa_kdr__cross_zone
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	lr__vegfa_kdr__cross_zone
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.0	lr__vegfa_kdr__cross_zone
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.0	lr__vegfa_kdr__cross_zone
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.0	lr__vegfa_kdr__cross_zone
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	0.0	lr__vegfa_kdr__cross_zone
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	lr__vegfa_kdr__cross_zone
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.0	lr__vegfa_kdr__cross_zone
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells	0.0	lr__vegfa_kdr__cross_zone
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	0.0	lr__vegfa_kdr__cross_zone
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.0	lr__vegfa_kdr__cross_zone
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells	0.0	lr__vegfa_kdr__cross_zone
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells	0.0	lr__vegfa_kdr__cross_zone
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	0.3315217986903787	lr__vegfa_kdr__cross_zone
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	0.2720295612377846	lr__vegfa_kdr__cross_zone
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.0	lr__vegfa_kdr__cross_zone
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells	0.0	lr__vegfa_kdr__cross_zone
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	lr__vegfa_kdr__cross_zone
+S1 11q13 Invasive Tumor Cells #1.1	S1 11q13 Invasive Tumor Cells #1.1	11q13 Invasive Tumor Cells	-0.0691727001092147	lr__vegfa_kdr__outer_minus_inner
+S1 11q13 Invasive Tumor Cells #2.1	S1 11q13 Invasive Tumor Cells #2.1	11q13 Invasive Tumor Cells	0.0	lr__vegfa_kdr__outer_minus_inner
+S1 11q13 Invasive Tumor Cells #3.1	S1 11q13 Invasive Tumor Cells #3.1	11q13 Invasive Tumor Cells	0.0	lr__vegfa_kdr__outer_minus_inner
+S1 11q13 Invasive Tumor Cells #4.1	S1 11q13 Invasive Tumor Cells #4.1	11q13 Invasive Tumor Cells	-0.1119077683586124	lr__vegfa_kdr__outer_minus_inner
+S2 Basal-like Structured DCIS Cells #1.1	S2 Basal-like Structured DCIS Cells #1.1	Basal-like Structured DCIS Cells	0.0283628008469855	lr__vegfa_kdr__outer_minus_inner
+S2 Basal-like Structured DCIS Cells #2.1	S2 Basal-like Structured DCIS Cells #2.1	Basal-like Structured DCIS Cells	0.0	lr__vegfa_kdr__outer_minus_inner
+S2 Basal-like Structured DCIS Cells #3.1	S2 Basal-like Structured DCIS Cells #3.1	Basal-like Structured DCIS Cells	0.0	lr__vegfa_kdr__outer_minus_inner
+S2 Basal-like Structured DCIS Cells #4.1	S2 Basal-like Structured DCIS Cells #4.1	Basal-like Structured DCIS Cells	0.1835391796631965	lr__vegfa_kdr__outer_minus_inner
+S3 Macrophages #1.1	S3 Macrophages #1.1	Macrophages	0.0	lr__vegfa_kdr__outer_minus_inner
+S3 Macrophages #2.1	S3 Macrophages #2.1	Macrophages	2.1880331736972054	lr__vegfa_kdr__outer_minus_inner
+S3 Macrophages #3.1	S3 Macrophages #3.1	Macrophages	0.3447905751097102	lr__vegfa_kdr__outer_minus_inner
+S3 Macrophages #4.1	S3 Macrophages #4.1	Macrophages	0.0	lr__vegfa_kdr__outer_minus_inner
+S4 Plasma Cells #1.1	S4 Plasma Cells #1.1	Plasma Cells	0.5507373288324215	lr__vegfa_kdr__outer_minus_inner
+S4 Plasma Cells #2.1	S4 Plasma Cells #2.1	Plasma Cells	0.9016343065360316	lr__vegfa_kdr__outer_minus_inner
+S4 Plasma Cells #3.1	S4 Plasma Cells #3.1	Plasma Cells	0.902328828711564	lr__vegfa_kdr__outer_minus_inner
+S4 Plasma Cells #4.1	S4 Plasma Cells #4.1	Plasma Cells	-0.0938573176442186	lr__vegfa_kdr__outer_minus_inner
+S5 Endothelial Cells #1.1	S5 Endothelial Cells #1.1	Endothelial Cells	0.0	lr__vegfa_kdr__outer_minus_inner
+S5 Endothelial Cells #2.1	S5 Endothelial Cells #2.1	Endothelial Cells	0.0	lr__vegfa_kdr__outer_minus_inner
+S5 Endothelial Cells #3.1	S5 Endothelial Cells #3.1	Endothelial Cells	0.0	lr__vegfa_kdr__outer_minus_inner
+S5 Endothelial Cells #4.1	S5 Endothelial Cells #4.1	Endothelial Cells	1.082245528511163	lr__vegfa_kdr__outer_minus_inner
+S6 Apocrine Cells #1.1	S6 Apocrine Cells #1.1	Apocrine Cells	0.2500373282706009	lr__vegfa_kdr__outer_minus_inner
+S6 Apocrine Cells #2.1	S6 Apocrine Cells #2.1	Apocrine Cells	0.423765617792729	lr__vegfa_kdr__outer_minus_inner
+S6 Apocrine Cells #3.1	S6 Apocrine Cells #3.1	Apocrine Cells	0.0	lr__vegfa_kdr__outer_minus_inner
+S6 Apocrine Cells #4.1	S6 Apocrine Cells #4.1	Apocrine Cells	-1.7505813891524211	lr__vegfa_kdr__outer_minus_inner
+S7 Luminal-like Amorphous DCIS Cells #1.1	S7 Luminal-like Amorphous DCIS Cells #1.1	Luminal-like Amorphous DCIS Cells	-0.0571588289538346	lr__vegfa_kdr__outer_minus_inner
+S7 Luminal-like Amorphous DCIS Cells #2.1	S7 Luminal-like Amorphous DCIS Cells #2.1	Luminal-like Amorphous DCIS Cells	0.4870589880015346	lr__vegfa_kdr__outer_minus_inner
+S7 Luminal-like Amorphous DCIS Cells #3.1	S7 Luminal-like Amorphous DCIS Cells #3.1	Luminal-like Amorphous DCIS Cells	0.0	lr__vegfa_kdr__outer_minus_inner
+S7 Luminal-like Amorphous DCIS Cells #4.1	S7 Luminal-like Amorphous DCIS Cells #4.1	Luminal-like Amorphous DCIS Cells	0.0	lr__vegfa_kdr__outer_minus_inner

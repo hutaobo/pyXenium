@@ -1,0 +1,45 @@
+{
+  "title": "Contour ecology context",
+  "source_tables": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\contour_hypothesis_ranking.tsv"
+  ],
+  "rasterized_layers": false,
+  "biological_message": "Vascular interaction axes can be interpreted in the broader contour and tissue-ecology context.",
+  "caveat": "",
+  "output_formats": [
+    "pdf",
+    "svg",
+    "png"
+  ],
+  "panel_id": "fig2i",
+  "slug": "contour_ecology_context",
+  "generated_at": "2026-04-29T08:45:15.787088+00:00",
+  "outputs": {
+    "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\pdf\\fig2i_contour_ecology_context.pdf",
+    "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\svg\\fig2i_contour_ecology_context.svg",
+    "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\png\\fig2i_contour_ecology_context.png",
+    "source_data": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\source_data\\fig2i_contour_ecology_context.tsv",
+    "metadata": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\metadata\\fig2i_contour_ecology_context.json"
+  },
+  "width_mm": 85.0,
+  "height_mm": 65.0,
+  "font_policy": {
+    "font_family": "Arial",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+    "svg.fonttype": "none",
+    "panel_label_pt": 8,
+    "title_pt": 7,
+    "axis_label_pt": 6,
+    "tick_label_pt": 5,
+    "legend_pt": 5
+  },
+  "svg_text_count": 23,
+  "svg_path_count": 17,
+  "pdffonts_status": "pdffonts_not_available",
+  "pdffonts_output": "",
+  "source_hashes": {
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\vwf_selp_deep_dive\\tables\\contour_hypothesis_ranking.tsv": "e39cccaddcc1bdd3"
+  },
+  "source_data_rows": 6
+}

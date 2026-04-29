@@ -1,0 +1,121 @@
+method_source	ligand	receptor	sender	receiver	score_raw	score_std	rank_within_method	spatial_support_type
+cellphonedb	VWF	LRP1	Endothelial Cells	CAFs, DCIS Associated	7.089930353712428	0.99999915501717	2.0	nonspatial_expression_baseline
+cellphonedb	VWF	LRP1	Endothelial Cells	CAFs, Invasive Associated	6.680081612469297	0.99999831003434	3.0	nonspatial_expression_baseline
+cellphonedb	CCN2	LRP1	CAFs, Invasive Associated	CAFs, DCIS Associated	6.648912765789715	0.99999746505151	4.0	nonspatial_expression_baseline
+cellphonedb	PLAT	LRP1	11q13 Invasive Tumor Cells	CAFs, DCIS Associated	6.61271584743699	0.9999966200686802	5.0	nonspatial_expression_baseline
+cellphonedb	HSPG2	LRP1	Endothelial Cells	CAFs, DCIS Associated	6.574617771250328	0.9999957750858502	6.0	nonspatial_expression_baseline
+cellphonedb	CCN2	LRP1	CAFs, Invasive Associated	CAFs, Invasive Associated	6.264557998994664	0.9999949301030204	7.0	nonspatial_expression_baseline
+cellphonedb	PLAT	LRP1	11q13 Invasive Tumor Cells	CAFs, Invasive Associated	6.230453521707453	0.9999940851201904	8.0	nonspatial_expression_baseline
+cellphonedb	HSPG2	LRP1	Endothelial Cells	CAFs, Invasive Associated	6.194557787122175	0.9999932401373604	9.0	nonspatial_expression_baseline
+cellphonedb	COL6A1	ITGA6	CAFs, Invasive Associated	Endothelial Cells	5.928328677920953	0.9999915501717004	11.0	nonspatial_expression_baseline
+cellphonedb	VWF	ITGB1	Endothelial Cells	CAFs, Invasive Associated	5.645684159430604	0.9999898602060406	13.0	nonspatial_expression_baseline
+cellphonedb	PLAT	LRP1	11q13 Invasive Tumor Cells (G1/S)	CAFs, DCIS Associated	5.494327607738573	0.9999890152232108	14.0	nonspatial_expression_baseline
+cellphonedb	APP	LRP1	Basal-like Structured DCIS Cells	CAFs, DCIS Associated	5.435875812338939	0.9999873252575509	16.0	nonspatial_expression_baseline
+cellphonedb	HSPG2	ITGB1	Endothelial Cells	CAFs, Invasive Associated	5.235342740147383	0.9999856352918908	18.0	nonspatial_expression_baseline
+cellphonedb	PLAT	LRP1	11q13 Invasive Tumor Cells (G1/S)	CAFs, Invasive Associated	5.1767161303804174	0.999984790309061	19.0	nonspatial_expression_baseline
+cellphonedb	PLAT	LRP1	11q13 Invasive Tumor Cells (Mitotic)	CAFs, DCIS Associated	5.154356410268606	0.9999839453262308	20.0	nonspatial_expression_baseline
+cellphonedb	APP	LRP1	Basal-like Structured DCIS Cells	CAFs, Invasive Associated	5.121643267293623	0.9999822553605712	22.0	nonspatial_expression_baseline
+cellphonedb	PSAP	LRP1	Dendritic Cells	CAFs, DCIS Associated	5.06511938296633	0.9999805653949112	24.0	nonspatial_expression_baseline
+cellphonedb	CXCL12	ITGB1	CAFs, DCIS Associated	CAFs, Invasive Associated	5.029305527611334	0.9999788754292512	26.0	nonspatial_expression_baseline
+cellphonedb	PLAT	LRP1	11q13 Invasive Tumor Cells (Mitotic)	CAFs, Invasive Associated	4.856397702456914	0.9999771854635914	28.0	nonspatial_expression_baseline
+cellphonedb	PSAP	LRP1	Dendritic Cells	CAFs, Invasive Associated	4.7723192143062905	0.9999754954979316	30.0	nonspatial_expression_baseline
+laris	PLAT	LRP1	11q13 Invasive Tumor Cells	CAFs, DCIS Associated	5.290108664680475	1.0	1.0	knn_diffusion_lr
+laris	PLAT	LRP1	11q13 Invasive Tumor Cells (G1/S)	CAFs, DCIS Associated	4.448172817992109	0.9999977010349176	4.0	knn_diffusion_lr
+laris	PLAT	LRP1	11q13 Invasive Tumor Cells (Mitotic)	CAFs, DCIS Associated	4.281147197873925	0.9999946357481408	8.0	knn_diffusion_lr
+laris	PLAT	LRP1	11q13 Invasive Tumor Cells	CAFs, Invasive Associated	4.135846885851443	0.9999923367830582	11.0	knn_diffusion_lr
+laris	APP	LRP1	Basal-like Structured DCIS Cells	CAFs, DCIS Associated	4.038123336494129	0.9999908041396698	13.0	knn_diffusion_lr
+laris	HSPG2	LRP1	Endothelial Cells	CAFs, DCIS Associated	3.963162214554297	0.9999892714962816	15.0	knn_diffusion_lr
+laris	VWF	LRP1	Endothelial Cells	CAFs, DCIS Associated	3.8781962958475273	0.9999869725311988	18.0	knn_diffusion_lr
+laris	CCN2	LRP1	CAFs, Invasive Associated	CAFs, DCIS Associated	3.856935896772125	0.9999854398878104	20.0	knn_diffusion_lr
+laris	CXCL12	ITGB1	CAFs, DCIS Associated	CAFs, Invasive Associated	3.633886771181732	0.999983140922728	23.0	knn_diffusion_lr
+laris	SERPINA1	LRP1	Apocrine Cells	CAFs, DCIS Associated	3.579056800038901	0.9999823746010338	24.0	knn_diffusion_lr
+laris	PLAT	LRP1	11q13 Invasive Tumor Cells (G1/S)	CAFs, Invasive Associated	3.4776150856502084	0.9999800756359511	27.0	knn_diffusion_lr
+laris	PLAT	LRP1	Basal-like Structured DCIS Cells	CAFs, DCIS Associated	3.432850426780189	0.999979309314257	28.0	knn_diffusion_lr
+laris	PLAT	LRP1	11q13 Invasive Tumor Cells	Macrophages	3.382055698900828	0.9999785429925628	29.0	knn_diffusion_lr
+laris	PLAT	LRP1	11q13 Invasive Tumor Cells (Mitotic)	CAFs, Invasive Associated	3.3470331950672634	0.9999777766708686	30.0	knn_diffusion_lr
+laris	PLAT	LRP1	Apocrine Cells	CAFs, DCIS Associated	3.262109115963635	0.9999770103491744	31.0	knn_diffusion_lr
+laris	HSPG2	ITGB1	Endothelial Cells	CAFs, Invasive Associated	3.218986777405098	0.9999762440274804	32.0	knn_diffusion_lr
+laris	PSAP	LRP1	Dendritic Cells	CAFs, DCIS Associated	3.1911329680620875	0.999975477705786	33.0	knn_diffusion_lr
+laris	APP	LRP1	Basal-like Structured DCIS Cells	CAFs, Invasive Associated	3.157035305801612	0.999974711384092	34.0	knn_diffusion_lr
+laris	VWF	ITGB1	Endothelial Cells	CAFs, Invasive Associated	3.1499751765569792	0.9999739450623978	35.0	knn_diffusion_lr
+laris	HSPG2	LRP1	Endothelial Cells	CAFs, Invasive Associated	3.0984301348332552	0.9999731787407036	36.0	knn_diffusion_lr
+liana	CXCL12	CD4	Unassigned	Plasma Cells	1.0	1.0	1.0	spatial_bivariate_neighbor
+liana	VWF	STAB2	Mast Cells	Unassigned	1.0	0.9999959688743352	4.0	spatial_bivariate_neighbor
+liana	APP	LRP1	Unassigned	Plasma Cells	0.9999998807907104	0.9999731258289002	21.0	spatial_bivariate_neighbor
+liana	CCN2	LRP1	Unassigned	Plasma Cells	0.9999998807907104	0.9999717821203452	22.0	spatial_bivariate_neighbor
+liana	CXCL12	ITGB1	Unassigned	Plasma Cells	0.9999998807907104	0.9999690947032353	24.0	spatial_bivariate_neighbor
+liana	HSPG2	ITGB1	Unassigned	Plasma Cells	0.9999998807907104	0.9999637198690152	28.0	spatial_bivariate_neighbor
+liana	HSPG2	LRP1	Unassigned	Plasma Cells	0.9999998807907104	0.9999623761604604	29.0	spatial_bivariate_neighbor
+liana	ICAM1	CAV1	Unassigned	Plasma Cells	0.9999998807907104	0.9999610324519052	30.0	spatial_bivariate_neighbor
+liana	TFPI	LRP1	Unassigned	Mast Cells	0.9999998807907104	0.9999543139091304	35.0	spatial_bivariate_neighbor
+liana	AGRN	LRP1	Unassigned	Plasma Cells	0.9999997615814208	0.9999381894064704	47.0	spatial_bivariate_neighbor
+liana	EFNB2	PECAM1	Unassigned	Plasma Cells	0.9999997615814208	0.9999207211952555	60.0	spatial_bivariate_neighbor
+liana	GNAI2	CAV1	Mast Cells	Unassigned	0.9999997615814208	0.9999166900695908	63.0	spatial_bivariate_neighbor
+liana	MMP2	PECAM1	Unassigned	Plasma Cells	0.9999997615814208	0.9999086278182608	69.0	spatial_bivariate_neighbor
+liana	SERPINE1	LRP1	Unassigned	Plasma Cells	0.9999997615814208	0.9998965344412658	78.0	spatial_bivariate_neighbor
+liana	TFPI	LRP1	Unassigned	Plasma Cells	0.9999997615814208	0.9998938470241558	80.0	spatial_bivariate_neighbor
+liana	APOB	LRP1	Plasma Cells	Unassigned	0.999999225139618	0.999873691395831	95.0	spatial_bivariate_neighbor
+liana	CALR	LRP1	Plasma Cells	Unassigned	0.999999225139618	0.999872347687276	96.0	spatial_bivariate_neighbor
+liana	COL4A2	ITGB3	Plasma Cells	Unassigned	0.9999986290931702	0.9998656291445012	101.0	spatial_bivariate_neighbor
+liana	COL4A1	CD44	Macrophages	Unassigned	0.972186656575384	0.9998521920589512	111.0	spatial_bivariate_neighbor
+liana	CCN2	LRP1	Unassigned	B Cells	0.9215314108185771	0.9998078496766364	144.0	spatial_bivariate_neighbor
+spatialdm	CDH1	IGF1R	11q13 Invasive Tumor Cells	Endothelial Cells	102243.12193767408	0.9999775796315435	11.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	11q13 Invasive Tumor Cells (G1/S)	Endothelial Cells	102243.12193767408	0.9999372229683222	29.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	11q13 Invasive Tumor Cells (Mitotic)	Endothelial Cells	102243.12193767408	0.9998991083419464	46.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Apocrine Cells	Endothelial Cells	102243.12193767408	0.9998722038997988	58.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	B Cells	Endothelial Cells	102243.12193767408	0.9998385733471143	73.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Basal-like Structured DCIS Cells	Endothelial Cells	102243.12193767408	0.9998027007575844	89.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	CAFs, DCIS Associated	Endothelial Cells	102243.12193767408	0.9997645861312084	106.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	CAFs, Invasive Associated	Endothelial Cells	102243.12193767408	0.9997264715048328	123.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	CXCL14+ Fibroblasts	Endothelial Cells	102243.12193767408	0.9997018090995308	134.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Dendritic Cells	Endothelial Cells	102243.12193767408	0.9996726626205376	147.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	11q13 Invasive Tumor Cells	102243.12193767408	0.9996547263257723	155.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	11q13 Invasive Tumor Cells (G1/S)	102243.12193767408	0.9996524842889268	156.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	11q13 Invasive Tumor Cells (Mitotic)	102243.12193767408	0.9996502422520812	157.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	B Cells	102243.12193767408	0.9996480002152356	158.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	Basal-like Structured DCIS Cells	102243.12193767408	0.99964575817839	159.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	CAFs, DCIS Associated	102243.12193767408	0.9996435161415442	160.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	CAFs, Invasive Associated	102243.12193767408	0.9996412741046986	161.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	CXCL14+ Fibroblasts	102243.12193767408	0.999639032067853	162.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	Dendritic Cells	102243.12193767408	0.9996367900310074	163.0	bivariate_moran_neighbor
+spatialdm	CDH1	IGF1R	Endothelial Cells	Endothelial Cells	102243.12193767408	0.9996345479941616	164.0	bivariate_moran_neighbor
+stlearn	ADAM17	MUC1	11q13 Invasive Tumor Cells	Endothelial Cells	9673.000000000002	0.999980209032202	11.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	11q13 Invasive Tumor Cells (G1/S)	Endothelial Cells	9673.000000000002	0.9999465643869452	28.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	11q13 Invasive Tumor Cells (Mitotic)	Endothelial Cells	9673.000000000002	0.9999188570320278	42.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Apocrine Cells	Endothelial Cells	9673.000000000002	0.99989510787067	54.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Basal-like Structured DCIS Cells	Endothelial Cells	9673.000000000002	0.9998476095479544	78.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	CAFs, DCIS Associated	Endothelial Cells	9673.000000000002	0.999810006709138	97.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	CAFs, Invasive Associated	Endothelial Cells	9673.000000000002	0.9997743829671016	115.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	CXCL14+ Fibroblasts	Endothelial Cells	9673.000000000002	0.999748654708964	128.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Dendritic Cells	Endothelial Cells	9673.000000000002	0.9997189682572668	143.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	11q13 Invasive Tumor Cells	9673.000000000002	0.9997031354830282	151.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	11q13 Invasive Tumor Cells (G1/S)	9673.000000000002	0.9997011563862483	152.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	11q13 Invasive Tumor Cells (Mitotic)	9673.000000000002	0.9996991772894688	153.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	Apocrine Cells	9673.000000000002	0.9996971981926888	154.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	B Cells	9673.000000000002	0.999695219095909	155.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	Basal-like Structured DCIS Cells	9673.000000000002	0.9996932399991292	156.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	CAFs, DCIS Associated	9673.000000000002	0.9996912609023494	157.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	CAFs, Invasive Associated	9673.000000000002	0.9996892818055696	158.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	CXCL14+ Fibroblasts	9673.000000000002	0.9996873027087898	159.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	Dendritic Cells	9673.000000000002	0.99968532361201	160.0	significant_lr_hotspot_neighbor
+stlearn	ADAM17	MUC1	Endothelial Cells	Endothelial Cells	9673.000000000002	0.99968334451523	161.0	significant_lr_hotspot_neighbor
+pyxenium	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7912892368005828	1.0	1.0	topology_local_contact
+pyxenium	VWF	LRP1	Endothelial Cells	CAFs, DCIS Associated	0.7479758913021439	0.9999992421946045	2.0	topology_local_contact
+pyxenium	EFNB2	PECAM1	Endothelial Cells	Endothelial Cells	0.7469197326713805	0.9999984843892088	3.0	topology_local_contact
+pyxenium	MMRN2	CLEC14A	Endothelial Cells	Endothelial Cells	0.7322091602540813	0.9999962109730222	6.0	topology_local_contact
+pyxenium	HSPG2	LRP1	Endothelial Cells	CAFs, DCIS Associated	0.7279607350660221	0.9999954531676264	7.0	topology_local_contact
+pyxenium	COL4A2	CD93	Endothelial Cells	Endothelial Cells	0.7118996799523881	0.9999939375568354	9.0	topology_local_contact
+pyxenium	MMRN2	CD93	Endothelial Cells	Endothelial Cells	0.7107166026857937	0.99999317975144	10.0	topology_local_contact
+pyxenium	VWF	ITGA9	Endothelial Cells	Endothelial Cells	0.7083995070560564	0.9999924219460442	11.0	topology_local_contact
+pyxenium	MMP2	PECAM1	CAFs, DCIS Associated	Endothelial Cells	0.6971282135184347	0.9999909063352532	13.0	topology_local_contact
+pyxenium	COL4A1	CD93	Endothelial Cells	Endothelial Cells	0.6965751554743362	0.9999901485298576	14.0	topology_local_contact
+pyxenium	CXCL12	ITGA5	CAFs, DCIS Associated	Endothelial Cells	0.6886191799307758	0.999989390724462	15.0	topology_local_contact
+pyxenium	CD34	SELP	Endothelial Cells	Endothelial Cells	0.6842280929589697	0.9999878751136708	17.0	topology_local_contact
+pyxenium	VEGFC	FLT1	Endothelial Cells	Endothelial Cells	0.6835286288881741	0.9999871173082752	18.0	topology_local_contact
+pyxenium	CXCL12	AVPR1A	CAFs, DCIS Associated	Pericytes	0.677852474314717	0.9999863595028796	19.0	topology_local_contact
+pyxenium	CCN1	CAV1	CAFs, DCIS Associated	Endothelial Cells	0.6766771533392466	0.999985601697484	20.0	topology_local_contact
+pyxenium	EDN1	ADGRL4	Endothelial Cells	Endothelial Cells	0.6734470755024204	0.9999848438920884	21.0	topology_local_contact
+pyxenium	DLL4	NOTCH3	Endothelial Cells	Pericytes	0.6695148471220083	0.9999825704759018	24.0	topology_local_contact
+pyxenium	C3	LRP1	CAFs, DCIS Associated	CAFs, DCIS Associated	0.6685524242873452	0.9999818126705062	25.0	topology_local_contact
+pyxenium	A2M	LRP1	Endothelial Cells	CAFs, DCIS Associated	0.6652291956976334	0.9999810548651108	26.0	topology_local_contact
+pyxenium	CXCL12	ITGA4	CAFs, DCIS Associated	T Lymphocytes	0.6620786139506267	0.999980297059715	27.0	topology_local_contact

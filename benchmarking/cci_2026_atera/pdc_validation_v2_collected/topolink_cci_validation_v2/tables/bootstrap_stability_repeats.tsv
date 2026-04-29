@@ -1,0 +1,36 @@
+axis_id	bootstrap_id	bootstrap_validation_score	bootstrap_rank
+VWF-SELP|Endothelial Cells->Endothelial Cells	1	2.5294846037115666	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	1	2.4775096018215743	3
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	1	2.492760816959846	2
+DLL4-NOTCH3|Endothelial Cells->Pericytes	1	1.6468683289549024	6
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	1	1.9733111259538318	4
+CD48-CD2|T Lymphocytes->T Lymphocytes	1	1.9415515823178238	5
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	1	1.0242960341055216	7
+VWF-SELP|Endothelial Cells->Endothelial Cells	2	2.5171162335011186	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	2	2.473767032097854	3
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	2	2.4772141734693474	2
+DLL4-NOTCH3|Endothelial Cells->Pericytes	2	1.6386355219882283	6
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	2	1.9703233264062612	4
+CD48-CD2|T Lymphocytes->T Lymphocytes	2	1.9142494261725485	5
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	2	1.0252292828485567	7
+VWF-SELP|Endothelial Cells->Endothelial Cells	3	2.5103975259149602	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	3	2.471284260537661	3
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	3	2.4798530594772266	2
+DLL4-NOTCH3|Endothelial Cells->Pericytes	3	1.6483774045144926	6
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	3	1.972576240962361	4
+CD48-CD2|T Lymphocytes->T Lymphocytes	3	1.941759991358487	5
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	3	1.0218695412958279	7
+VWF-SELP|Endothelial Cells->Endothelial Cells	4	2.5250901302802897	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	4	2.476756834260751	3
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	4	2.4928706890779577	2
+DLL4-NOTCH3|Endothelial Cells->Pericytes	4	1.6169876523117452	6
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	4	1.978781084743746	4
+CD48-CD2|T Lymphocytes->T Lymphocytes	4	1.9076236376944962	5
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	4	1.02607284368184	7
+VWF-SELP|Endothelial Cells->Endothelial Cells	5	2.541566594354046	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	5	2.4811317184193578	2
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	5	2.473281442649322	3
+DLL4-NOTCH3|Endothelial Cells->Pericytes	5	1.6233431845634525	6
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	5	1.9747722688717537	4
+CD48-CD2|T Lymphocytes->T Lymphocytes	5	1.921048420646914	5
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	5	1.025995534799094	7

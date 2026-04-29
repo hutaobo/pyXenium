@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from collections.abc import Mapping, Sequence
 from typing import Any
 
@@ -10,11 +11,18 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_rand_score, silhouette_score
 from sklearn.preprocessing import StandardScaler
 
-from pyXenium.contour import build_contour_feature_table
-from pyXenium.contour._feature_table import DEFAULT_CONTOUR_CCI_PAIRS, DEFAULT_CONTOUR_PATHWAYS
+from pyXenium.contour._feature_table import (
+    DEFAULT_CONTOUR_CCI_PAIRS,
+    DEFAULT_CONTOUR_PATHWAYS,
+    build_contour_feature_table,
+)
 from pyXenium.io.sdata_model import XeniumSData
 
-__all__ = ["DEFAULT_BOUNDARY_PROGRAM_LIBRARY", "score_contour_boundary_programs"]
+__all__ = [
+    "DEFAULT_BOUNDARY_PROGRAM_LIBRARY",
+    "DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY",
+    "score_contour_boundary_programs",
+]
 
 _IDENTIFIER_COLUMNS = {"sample_id", "contour_key", "contour_id"}
 
@@ -131,6 +139,30 @@ DEFAULT_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = {
         },
     },
 }
+
+DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY: dict[str, dict[str, dict[str, float]]] = copy.deepcopy(
+    DEFAULT_BOUNDARY_PROGRAM_LIBRARY
+)
+DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY["emt_invasive_front"]["image"].update(
+    {
+        "bmnet__outer_rim__invasive_prob": 0.8,
+        "bmnet__outer_minus_inner__invasive_prob": 0.7,
+        "bmnet__whole__tumor_prob": 0.4,
+    }
+)
+DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY["stromal_encapsulation"]["image"].update(
+    {
+        "bmnet__inner_rim__in_situ_prob": 0.5,
+        "bmnet__whole__in_situ_prob": 0.4,
+        "bmnet__outer_minus_inner__invasive_prob": -0.3,
+    }
+)
+DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY["necrotic_hypoxic_rim"]["image"].update(
+    {
+        "bmnet__whole__prediction_entropy": 0.3,
+        "bmnet__whole__tumor_prob": 0.2,
+    }
+)
 
 
 def score_contour_boundary_programs(
@@ -293,7 +325,19 @@ def associate_contour_image_omics(
 
     image_columns = _select_columns(
         merged,
-        prefixes=("pathomics__", "geometry__", "edge_contrast__pathomics__"),
+        prefixes=(
+            "pathomics__",
+            "geometry__",
+            "bmnet__",
+            "descriptor__",
+            "cellsam__",
+            "pathology__",
+            "edge_contrast__pathomics__",
+            "edge_contrast__bmnet__",
+            "edge_contrast__descriptor__",
+            "edge_contrast__cellsam__",
+            "edge_contrast__pathology__",
+        ),
     )
     omics_columns = _select_columns(
         merged,
@@ -344,9 +388,11 @@ def _resolve_program_library(
     program_library: str | Mapping[str, Mapping[str, Mapping[str, float]]],
 ) -> dict[str, dict[str, dict[str, float]]]:
     if isinstance(program_library, str):
-        if program_library != "tumor_boundary_v1":
-            raise ValueError("`program_library` currently supports only 'tumor_boundary_v1'.")
-        return DEFAULT_BOUNDARY_PROGRAM_LIBRARY
+        if program_library == "tumor_boundary_v1":
+            return DEFAULT_BOUNDARY_PROGRAM_LIBRARY
+        if program_library == "breast_boundary_bmnet_v1":
+            return DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY
+        raise ValueError("`program_library` currently supports 'tumor_boundary_v1' and 'breast_boundary_bmnet_v1'.")
     resolved: dict[str, dict[str, dict[str, float]]] = {}
     for program_name, components in program_library.items():
         resolved[str(program_name)] = {
@@ -416,6 +462,10 @@ def _select_model_features(frame: pd.DataFrame) -> pd.DataFrame:
             "geometry__",
             "context__",
             "pathomics__",
+            "bmnet__",
+            "descriptor__",
+            "cellsam__",
+            "pathology__",
             "omics__",
             "pathway__",
             "protein__whole__",
@@ -549,6 +599,31 @@ def _program_feature_delta_table(
     cci = feature_table["cci_summary"].set_index("contour_id", drop=False)
 
     tables = [
+        (
+            "image",
+            contour_index.loc[
+                :,
+                [
+                    column
+                    for column in contour_index.columns
+                    if column in _IDENTIFIER_COLUMNS
+                    or str(column).startswith(
+                        (
+                            "pathomics__",
+                            "bmnet__",
+                            "descriptor__",
+                            "cellsam__",
+                            "pathology__",
+                            "edge_contrast__pathomics__",
+                            "edge_contrast__bmnet__",
+                            "edge_contrast__descriptor__",
+                            "edge_contrast__cellsam__",
+                            "edge_contrast__pathology__",
+                        )
+                    )
+                ],
+            ],
+        ),
         ("gene", rna),
         ("pathway", pathways),
         ("marker_pair", cci),

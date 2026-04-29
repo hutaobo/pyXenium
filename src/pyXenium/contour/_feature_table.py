@@ -66,6 +66,7 @@ def build_contour_feature_table(
     outer_rim_um: float = 30.0,
     include_pathomics: bool = True,
     embedding_backend: Any = None,
+    pathology_backends: Any = None,
     precomputed_edge_gradients: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
     """
@@ -129,6 +130,7 @@ def build_contour_feature_table(
     pathway_rows: list[dict[str, Any]] = []
     cci_rows: list[dict[str, Any]] = []
     embedding_rows: list[dict[str, Any]] = []
+    pathology_backend_specs = _normalize_pathology_backends(pathology_backends)
 
     context_features = _compute_contour_context_features(
         contour_table=contour_table,
@@ -230,6 +232,7 @@ def build_contour_feature_table(
                 inner_rim_um=float(inner_rim_um),
                 outer_rim_um=float(outer_rim_um),
                 embedding_backend=embedding_backend,
+                pathology_backend_specs=pathology_backend_specs,
                 contour_key=contour_key,
                 contour_id=contour_id,
             )
@@ -331,11 +334,19 @@ def build_contour_feature_table(
             "gradient": [column for column in contour_features.columns if column.startswith("gradient__")],
             "cci": [column for column in contour_features.columns if column.startswith("cci__")],
             "embedding": [column for column in contour_features.columns if column.startswith("embedding__")],
+            "bmnet": [column for column in contour_features.columns if column.startswith("bmnet__")],
+            "pathology_named": [
+                column
+                for column in contour_features.columns
+                if column.startswith(("bmnet__", "descriptor__", "cellsam__", "pathology__"))
+            ],
         },
         "context": {
             "multimodal_context": context["context_summary"],
             "used_pathomics": bool(include_pathomics),
             "used_embeddings": bool(include_pathomics and embedding_backend is not None),
+            "used_pathology_backends": bool(include_pathomics and pathology_backend_specs),
+            "pathology_backends": [name for name, _ in pathology_backend_specs],
             "used_precomputed_edge_gradients": bool(precomputed_edge_gradients is not None),
         },
     }
@@ -843,6 +854,10 @@ def _edge_contrast_features(feature_row: Mapping[str, Any]) -> dict[str, float]:
     outputs: dict[str, float] = {}
     prefixes = (
         "pathomics",
+        "bmnet",
+        "descriptor",
+        "cellsam",
+        "pathology",
         "omics",
         "pathway",
         "protein",
@@ -872,6 +887,7 @@ def _extract_image_view_features(
     inner_rim_um: float,
     outer_rim_um: float,
     embedding_backend: Any,
+    pathology_backend_specs: Sequence[tuple[str, Any]],
     contour_key: str,
     contour_id: str,
 ) -> tuple[dict[str, float], dict[str, float]]:
@@ -921,6 +937,19 @@ def _extract_image_view_features(
             )
             for index, value in enumerate(vector):
                 embeddings[f"embedding__{zone_name}__dim_{index:03d}"] = float(value)
+        for backend_name, backend in pathology_backend_specs:
+            pathomics.update(
+                _call_named_pathology_backend(
+                    backend_name,
+                    backend,
+                    crop,
+                    mask=mask,
+                    axes=whole_image.axes,
+                    contour_key=contour_key,
+                    contour_id=contour_id,
+                    zone=zone_name,
+                )
+            )
 
     patch_array = np.asarray(contour_patch.levels[0])
     patch_metrics = _pathomics_from_mask(
@@ -931,7 +960,118 @@ def _extract_image_view_features(
     for name, value in patch_metrics.items():
         pathomics[f"pathomics__patch__{name}"] = value
 
+    pathomics.update(_named_pathology_zone_deltas(pathomics))
     return pathomics, embeddings
+
+
+def _normalize_pathology_backends(backends: Any) -> list[tuple[str, Any]]:
+    if backends is None:
+        return []
+    if isinstance(backends, Mapping):
+        items = list(backends.items())
+    elif isinstance(backends, Sequence) and not isinstance(backends, (str, bytes, bytearray)):
+        items = [(_pathology_backend_name(backend), backend) for backend in backends]
+    else:
+        items = [(_pathology_backend_name(backends), backends)]
+    normalized: list[tuple[str, Any]] = []
+    for name, backend in items:
+        normalized.append((_slug(str(name) or _pathology_backend_name(backend)), backend))
+    return normalized
+
+
+def _pathology_backend_name(backend: Any) -> str:
+    for attr in ("feature_prefix", "name", "__name__"):
+        value = getattr(backend, attr, None)
+        if value:
+            return str(value)
+    return backend.__class__.__name__
+
+
+def _call_named_pathology_backend(
+    backend_name: str,
+    backend: Any,
+    image: Any,
+    *,
+    mask: np.ndarray,
+    axes: str,
+    contour_key: str,
+    contour_id: str,
+    zone: str,
+) -> dict[str, float]:
+    yxc = _to_yxc(np.asarray(image), axes=axes).copy()
+    masked = yxc.copy()
+    masked[~mask] = 0
+    payload = _tight_crop(masked, mask)
+
+    candidate: Callable[..., Any] | None = None
+    if callable(backend):
+        candidate = backend
+    else:
+        for name in ("extract_features", "predict_patch", "predict_proba", "predict", "transform"):
+            if hasattr(backend, name):
+                candidate = getattr(backend, name)
+                break
+    if candidate is None:
+        raise TypeError(
+            "`pathology_backends` entries must be callable or expose one of "
+            "`extract_features`, `predict_patch`, `predict_proba`, `predict`, or `transform`."
+        )
+
+    try:
+        result = candidate(
+            payload,
+            contour_key=contour_key,
+            contour_id=contour_id,
+            zone=zone,
+            mask=mask,
+        )
+    except TypeError:
+        try:
+            result = candidate(
+                payload,
+                contour_key=contour_key,
+                contour_id=contour_id,
+                zone=zone,
+            )
+        except TypeError:
+            result = candidate(payload)
+
+    if isinstance(result, pd.Series):
+        mapping = result.to_dict()
+    elif isinstance(result, Mapping):
+        mapping = dict(result)
+    else:
+        vector = np.asarray(result, dtype=float).reshape(-1)
+        mapping = {f"dim_{index:03d}": value for index, value in enumerate(vector)}
+
+    features: dict[str, float] = {}
+    for key, value in mapping.items():
+        if value is None:
+            continue
+        numeric = float(value)
+        text = str(key)
+        if text.startswith(("bmnet__", "descriptor__", "cellsam__", "pathology__")):
+            feature_name = text
+        else:
+            feature_name = f"{backend_name}__{zone}__{_slug(text)}"
+        features[feature_name] = numeric
+    return features
+
+
+def _named_pathology_zone_deltas(features: Mapping[str, float]) -> dict[str, float]:
+    outputs: dict[str, float] = {}
+    for key, value in features.items():
+        text = str(key)
+        parts = text.split("__")
+        if len(parts) < 3 or parts[1] != "inner_rim":
+            continue
+        prefix = parts[0]
+        suffix = "__".join(parts[2:])
+        outer_key = f"{prefix}__outer_rim__{suffix}"
+        if outer_key not in features:
+            continue
+        outputs[f"{prefix}__outer_minus_inner__{suffix}"] = float(features[outer_key]) - float(value)
+    return outputs
 
 
 def _pathomics_from_mask(

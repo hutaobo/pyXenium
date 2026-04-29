@@ -1,4 +1,4 @@
-from . import analysis, contour_boundary_ecology, immune_resistance, loading, workflows
+from . import analysis, contour_boundary_ecology, immune_resistance, loading, morphology_increment, pathology, workflows
 from .analysis import (
     ProteinMicroEnv,
     ProteinModelResult,
@@ -11,6 +11,7 @@ from .analysis import (
     write_model_scores,
 )
 from .contour_boundary_ecology import (
+    DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY,
     DEFAULT_BOUNDARY_PROGRAM_LIBRARY,
     score_contour_boundary_programs,
 )
@@ -29,6 +30,16 @@ from .immune_resistance import (
     score_immune_resistance_program,
 )
 from .loading import load_rna_protein_anndata
+from .morphology_increment import compare_he_vs_xenium_morphology_sources
+from .bmnet_pdc import (
+    BMNetMorphologyPilotConfig,
+    DeterministicBreastBMNetLikeBackend,
+    HuggingFacePathologyBackboneBackend,
+    TimmBMNetLikeBackend,
+    build_bmnet_pilot_backend,
+    run_bmnet_morphology_increment_pilot,
+)
+from .pathology import BMNetBackend, NamedPathologyFeatureBackend
 from .workflows import (
     DEFAULT_DATASET_PATH,
     EXPECTED_CELLS,
@@ -54,6 +65,7 @@ from .workflows import (
 
 __all__ = [
     "DEFAULT_BOUNDARY_PROGRAM_LIBRARY",
+    "DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY",
     "DEFAULT_BRANCH_MODELS",
     "DEFAULT_DATASET_PATH",
     "DEFAULT_MARKER_PAIRS",
@@ -65,6 +77,12 @@ __all__ = [
     "EXPECTED_PROTEIN_MARKERS",
     "EXPECTED_RNA_FEATURES",
     "MarkerPair",
+    "BMNetBackend",
+    "BMNetMorphologyPilotConfig",
+    "DeterministicBreastBMNetLikeBackend",
+    "HuggingFacePathologyBackboneBackend",
+    "TimmBMNetLikeBackend",
+    "NamedPathologyFeatureBackend",
     "ProteinMicroEnv",
     "ProteinModelResult",
     "analysis",
@@ -72,15 +90,19 @@ __all__ = [
     "aggregate_multi_sample_study",
     "annotate_joint_cell_states",
     "build_cohort_handoff_spec",
+    "build_bmnet_pilot_backend",
     "build_panel_gap_table",
     "build_serializable_pilot_summary",
     "build_spatial_niches",
     "build_summary",
     "build_top_hypotheses_table",
     "compute_rna_protein_discordance",
+    "compare_he_vs_xenium_morphology_sources",
     "extract_ranked_patches",
     "immune_resistance",
     "loading",
+    "morphology_increment",
+    "pathology",
     "load_rna_protein_anndata",
     "plot_auc_heatmap",
     "plot_DE_volcano",
@@ -92,6 +114,7 @@ __all__ = [
     "render_renal_immune_resistance_report",
     "rna_protein_cluster_analysis",
     "run_contour_boundary_ecology_pilot",
+    "run_bmnet_morphology_increment_pilot",
     "run_renal_immune_resistance_pilot",
     "run_validated_renal_ffpe_smoke",
     "score_contour_boundary_programs",

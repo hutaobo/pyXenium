@@ -1,0 +1,6 @@
+{
+  "root": "/data/taobo.hu/topolink_cci_benchmark_2026-04",
+  "output_dir": "/data/taobo.hu/topolink_cci_validation_20260428/outputs",
+  "n_matched_controls": 250,
+  "seed": 20260428
+}

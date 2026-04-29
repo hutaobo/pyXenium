@@ -32,19 +32,30 @@ def run_contour_boundary_ecology_pilot(
     contour_key: str,
     output_dir: str | Path | None = None,
     embedding_backend: Any = None,
+    pathology_backends: Any = None,
     neighbor_k: int = 6,
+    include_pathomics: bool = True,
+    program_library: str | dict[str, Any] = "tumor_boundary_v1",
+    precomputed_edge_gradients: pd.DataFrame | None = None,
+    precomputed_feature_table: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     sdata = _resolve_sdata(sdata_or_path)
-    feature_table = build_contour_feature_table(
-        sdata,
-        contour_key=contour_key,
-        include_pathomics=True,
-        embedding_backend=embedding_backend,
-    )
+    if precomputed_feature_table is None:
+        feature_table = build_contour_feature_table(
+            sdata,
+            contour_key=contour_key,
+            include_pathomics=include_pathomics,
+            embedding_backend=embedding_backend,
+            pathology_backends=pathology_backends,
+            precomputed_edge_gradients=precomputed_edge_gradients,
+        )
+    else:
+        feature_table = precomputed_feature_table
     program_result = score_contour_boundary_programs(
         sdata,
         contour_key=contour_key,
         feature_table=feature_table,
+        program_library=program_library,
     )
     ecotype_assignments, ecotype_summary = cluster_contour_ecotypes(
         feature_table["contour_features"],
@@ -64,7 +75,12 @@ def run_contour_boundary_ecology_pilot(
         ecotype_summary=ecotype_summary,
         matched_exemplars=association_summary["matched_exemplars"],
         embedding_backend=embedding_backend,
+        pathology_backends=pathology_backends,
         neighbor_k=neighbor_k,
+        include_pathomics=include_pathomics,
+        program_library=program_library,
+        precomputed_edge_gradients=precomputed_edge_gradients,
+        precomputed_feature_table=precomputed_feature_table,
     )
     result = {
         "contour_features": feature_table["contour_features"],
@@ -204,7 +220,12 @@ def _build_sample_summary(
     ecotype_summary: dict[str, Any],
     matched_exemplars: pd.DataFrame,
     embedding_backend: Any,
+    pathology_backends: Any,
     neighbor_k: int,
+    include_pathomics: bool,
+    program_library: str | dict[str, Any],
+    precomputed_edge_gradients: pd.DataFrame | None,
+    precomputed_feature_table: dict[str, Any] | None,
 ) -> dict[str, Any]:
     return {
         "sample_id": feature_table["sample_id"],
@@ -216,6 +237,11 @@ def _build_sample_summary(
         "silhouette": float(ecotype_summary["silhouette"]) if np.isfinite(ecotype_summary["silhouette"]) else float("nan"),
         "feature_count": int(ecotype_summary["feature_count"]),
         "embedding_backend": bool(embedding_backend is not None),
+        "pathology_backends": _summarize_backend_names(pathology_backends),
+        "pathomics_enabled": bool(include_pathomics),
+        "program_library": str(program_library) if isinstance(program_library, str) else "custom",
+        "precomputed_edge_gradients": bool(precomputed_edge_gradients is not None),
+        "precomputed_feature_table": bool(precomputed_feature_table is not None),
         "neighbor_k": int(neighbor_k),
         "matched_exemplar_pairs": int(len(matched_exemplars)),
         "top_program_counts": _program_prevalence(program_scores),
@@ -225,6 +251,24 @@ def _build_sample_summary(
 def _program_prevalence(program_scores: pd.DataFrame) -> dict[str, int]:
     counts = program_scores["top_program"].value_counts()
     return {str(key): int(value) for key, value in counts.items()}
+
+
+def _summarize_backend_names(backends: Any) -> list[str]:
+    if backends is None:
+        return []
+    if isinstance(backends, dict):
+        return [str(key) for key in backends]
+    if isinstance(backends, (list, tuple)):
+        return [_backend_name(backend) for backend in backends]
+    return [_backend_name(backends)]
+
+
+def _backend_name(backend: Any) -> str:
+    for attr in ("feature_prefix", "name", "__name__"):
+        value = getattr(backend, attr, None)
+        if value:
+            return str(value)
+    return backend.__class__.__name__
 
 
 def _render_exemplar_montage(

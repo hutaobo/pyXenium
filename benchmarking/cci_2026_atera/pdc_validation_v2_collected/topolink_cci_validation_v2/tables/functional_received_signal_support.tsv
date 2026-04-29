@@ -1,0 +1,8 @@
+axis_id	functional_signal_status	received_signal_n_cells	received_signal_target_spearman	received_signal_target_p	received_signal_top_vs_bottom_target_delta	received_signal_target_fdr
+VWF-SELP|Endothelial Cells->Endothelial Cells	success	8624	0.6283646829850982	0.0	0.48874330520629883	0.0
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	success	24442	0.6575063035069829	0.0	0.5568488836288452	0.0
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	success	8624	0.4506380910061747	0.0	0.37315094470977783	0.0
+DLL4-NOTCH3|Endothelial Cells->Pericytes	success	8087	0.721750076253441	0.0	0.3684804439544678	0.0
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	success	8018	0.4955612441859473	0.0	0.19490374624729156	0.0
+CD48-CD2|T Lymphocytes->T Lymphocytes	success	8018	0.4228849179250702	0.0	0.2631298005580902	0.0
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	success	64036	0.5874875426315861	0.0	0.44811439514160156	0.0

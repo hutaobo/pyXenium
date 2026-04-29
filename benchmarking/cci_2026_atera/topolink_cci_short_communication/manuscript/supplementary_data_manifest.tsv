@@ -1,0 +1,10 @@
+supplementary_item	source_path	description
+Supplementary Data 1	benchmarking/cci_2026_atera/pdc_collected/pdc_20260426_1327/runs/full_common/pyxenium/pyxenium_scores.tsv	Full TopoLink-CCI full-common score table with 1,319,600 candidate axes.
+Supplementary Data 2	benchmarking/cci_2026_atera/pdc_validation_v2_collected/topolink_cci_validation_v2/tables/topolink_cci_validation_v2_evidence.tsv	Validation evidence table for seven representative TopoLink-CCI axes.
+Supplementary Data 3	benchmarking/cci_2026_atera/pdc_validation_v2_collected/topolink_cci_validation_v2/tables/topolink_cci_validation_v2_false_positive_controls.tsv	False-positive control summary table.
+Supplementary Data 4	benchmarking/cci_2026_atera/vwf_selp_deep_dive/tables/vascular_top_hits_compact.tsv	Top vascular and endothelial interaction axes used for biological interpretation.
+Supplementary Data 5	benchmarking/cci_2026_atera/vwf_selp_deep_dive/tables/component_decomposition.tsv	VWF-SELP component decomposition.
+Supplementary Data 6	benchmarking/cci_2026_atera/vwf_selp_deep_dive/tables/cross_method_vascular_consensus_compact.tsv	Cross-method support table for vascular axes.
+Supplementary Software 1	benchmarking/cci_2026_atera/scripts/topolink_cci_validation_v2.py	Validation framework script.
+Supplementary Software 2	benchmarking/cci_2026_atera/topolink_cci_short_communication/scripts/make_topolink_cci_nature_brief_figures.py	Figure-generation script for the Brief Communication draft.
+

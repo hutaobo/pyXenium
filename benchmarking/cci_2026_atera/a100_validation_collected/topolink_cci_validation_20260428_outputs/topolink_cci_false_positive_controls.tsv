@@ -1,0 +1,36 @@
+axis_id	control_type	observed	expected_or_control_mean	z_or_rank	p_or_percentile	note
+VWF-SELP|Endothelial Cells->Endothelial Cells	spatial_abundance_null	12779.0	3498.750466020217	157.09499064265975	0.0	cell-type-label abundance null for graph edge count
+VWF-SELP|Endothelial Cells->Endothelial Cells	lr_label_permutation_same_sender_receiver	1.0	3299.0	1.0	1.0	rank percentile against all LR pairs in the same sender-receiver cell-type pair
+VWF-SELP|Endothelial Cells->Endothelial Cells	lr_label_permutation_same_lr_pair	1.0	400.0	1.0	1.0	rank percentile for the same LR pair across cell-type pairs
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	spatial_abundance_null	13942.0	9916.101448337911	40.577088952341676	0.0	cell-type-label abundance null for graph edge count
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	lr_label_permutation_same_sender_receiver	1.0	3299.0	1.0	1.0	rank percentile against all LR pairs in the same sender-receiver cell-type pair
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	lr_label_permutation_same_lr_pair	1.0	400.0	1.0	1.0	rank percentile for the same LR pair across cell-type pairs
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	spatial_abundance_null	12779.0	3498.750466020217	157.09499064265975	0.0	cell-type-label abundance null for graph edge count
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	lr_label_permutation_same_sender_receiver	4.0	3299.0	4.0	0.9990906335253107	rank percentile against all LR pairs in the same sender-receiver cell-type pair
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	lr_label_permutation_same_lr_pair	1.0	400.0	1.0	1.0	rank percentile for the same LR pair across cell-type pairs
+DLL4-NOTCH3|Endothelial Cells->Pericytes	spatial_abundance_null	11379.0	3280.889960425034	141.55074144031974	0.0	cell-type-label abundance null for graph edge count
+DLL4-NOTCH3|Endothelial Cells->Pericytes	lr_label_permutation_same_sender_receiver	1.0	3299.0	1.0	1.0	rank percentile against all LR pairs in the same sender-receiver cell-type pair
+DLL4-NOTCH3|Endothelial Cells->Pericytes	lr_label_permutation_same_lr_pair	1.0	400.0	1.0	1.0	rank percentile for the same LR pair across cell-type pairs
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	spatial_abundance_null	11604.0	9219.306750089676	24.92068208259856	2.220471678964988e-137	cell-type-label abundance null for graph edge count
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	lr_label_permutation_same_sender_receiver	1.0	3299.0	1.0	1.0	rank percentile against all LR pairs in the same sender-receiver cell-type pair
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	lr_label_permutation_same_lr_pair	1.0	400.0	1.0	1.0	rank percentile for the same LR pair across cell-type pairs
+CD48-CD2|T Lymphocytes->T Lymphocytes	spatial_abundance_null	21212.0	3024.318857794739	331.09056328473696	0.0	cell-type-label abundance null for graph edge count
+CD48-CD2|T Lymphocytes->T Lymphocytes	lr_label_permutation_same_sender_receiver	1.0	3299.0	1.0	1.0	rank percentile against all LR pairs in the same sender-receiver cell-type pair
+CD48-CD2|T Lymphocytes->T Lymphocytes	lr_label_permutation_same_lr_pair	1.0	400.0	1.0	1.0	rank percentile for the same LR pair across cell-type pairs
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	spatial_abundance_null	423716.0	192905.1692550145	567.2684147856648	0.0	cell-type-label abundance null for graph edge count
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	lr_label_permutation_same_sender_receiver	8.0	3299.0	8.0	0.9978781448923917	rank percentile against all LR pairs in the same sender-receiver cell-type pair
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	lr_label_permutation_same_lr_pair	1.0	400.0	1.0	1.0	rank percentile for the same LR pair across cell-type pairs
+VWF-SELP|Endothelial Cells->Endothelial Cells	matched_gene_expression_control	0.690919789894645	0.1174789121765555	6.674917611699146	1.0	matched by global mean expression and detection fraction
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	matched_gene_expression_control	0.8904867455342288	0.1132557384471686	11.234674798948532	1.0	matched by global mean expression and detection fraction
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	matched_gene_expression_control	0.7291144166273554	0.13022764647610297	6.198278570208171	1.0	matched by global mean expression and detection fraction
+DLL4-NOTCH3|Endothelial Cells->Pericytes	matched_gene_expression_control	0.6103430039507179	0.10700066735274656	8.301941713984622	1.0	matched by global mean expression and detection fraction
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	matched_gene_expression_control	0.7850757124806441	0.1029738649850631	11.218977606863426	1.0	matched by global mean expression and detection fraction
+CD48-CD2|T Lymphocytes->T Lymphocytes	matched_gene_expression_control	0.5987173848132842	0.10702942070910819	9.860708047779738	1.0	matched by global mean expression and detection fraction
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	matched_gene_expression_control	0.6593758884575077	0.6351644259334726	0.3126368933035661	0.576	matched by global mean expression and detection fraction
+CD48-CD2|T Lymphocytes->T Lymphocytes	component_ablation_max_rank	20.0	7.0	20.0		worst and best rank after removing one score component
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	component_ablation_max_rank	615.0	8.0	615.0		worst and best rank after removing one score component
+DLL4-NOTCH3|Endothelial Cells->Pericytes	component_ablation_max_rank	76.0	20.0	76.0		worst and best rank after removing one score component
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	component_ablation_max_rank	329.0	30.0	329.0		worst and best rank after removing one score component
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	component_ablation_max_rank	13.0	6.0	13.0		worst and best rank after removing one score component
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	component_ablation_max_rank	614.0	2.0	614.0		worst and best rank after removing one score component
+VWF-SELP|Endothelial Cells->Endothelial Cells	component_ablation_max_rank	16.0	1.0	16.0		worst and best rank after removing one score component

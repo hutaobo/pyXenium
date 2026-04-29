@@ -4,7 +4,8 @@ All notable changes to pyXenium are documented here.
 
 ## Unreleased
 
-- Document AI-Driven Spatial Pathologist via the external `spatho` package as pyXenium's eighth feature area, without adding new pyXenium runtime code or dependencies.
+- Add `pyXenium.perturb` as the lightweight SpatialPerturb Bridge for optional Perturb-seq reference projection handoffs without adding a core runtime dependency.
+- Document AI-Driven Spatial Pathologist via the external `spatho` package as an optional workflow bridge, without adding new pyXenium runtime code or dependencies.
 
 ## 0.4.1 - 2026-04-26
 

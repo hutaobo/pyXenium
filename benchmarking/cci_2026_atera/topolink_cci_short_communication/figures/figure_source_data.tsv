@@ -1,0 +1,8 @@
+pair	sender	receiver	biology_label	CCI_score	pyxenium_rank	support_count	evidence_class	cell_label_perm_fdr	spatial_null_fdr	matched_gene_z	downstream_target_fdr	cross_method_same_lr_count	bootstrap_rank_median
+VWF-SELP	Endothelial Cells	Endothelial Cells	WPB / endothelial activation	0.7912892368005828	1	8	strong	0.0019960079840319	0.0046511627906976	6.674917611699146	0.0271844660194174	5	1.0
+VWF-LRP1	Endothelial Cells	CAFs, DCIS Associated	vascular-stromal matrix/scavenger axis	0.7479758913021439	2	8	strong	0.0019960079840319	0.0046511627906976	11.234674798948532	0.0291319857312722	5	3.0
+MMRN2-CD93	Endothelial Cells	Endothelial Cells	CD93-MMRN2 angiogenesis	0.7107166026857937	10	8	strong	0.0019960079840319	0.0046511627906976	6.198278570208171	0.0083234244946492	5	2.0
+CD48-CD2	T Lymphocytes	T Lymphocytes	T-cell adhesion/co-stimulation	0.6849877065459009	16	8	strong	0.0019960079840319	0.0116279069767441	9.860708047779738	0.0083234244946492	5	5.0
+DLL4-NOTCH3	Endothelial Cells	Pericytes	endothelial-pericyte Notch	0.6695148471220083	24	8	strong	0.0019960079840319	0.0046511627906976	8.301941713984622	0.0254942767950052	5	6.0
+CXCL12-CXCR4	CAFs, DCIS Associated	T Lymphocytes	CAF-immune chemokine recruitment	0.6616803690861207	28	7	strong	0.0019960079840319	0.5813953488372093	11.218977606863426	0.0254942767950052	5	4.0
+JAG1-NOTCH2	11q13 Invasive Tumor Cells	11q13 Invasive Tumor Cells	tumor-intrinsic Notch signaling	0.6339181063246662	45	6	strong	0.0019960079840319	0.0046511627906976	0.3126368933035661	0.6076099881093936	5	7.0

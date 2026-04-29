@@ -1,0 +1,64 @@
+x	y	value	category	label
+expression	VWF-SELP	1	pass	VWF-SELP:expression
+label perm.	VWF-SELP	1	pass	VWF-SELP:label perm.
+spatial null	VWF-SELP	1	pass	VWF-SELP:spatial null
+matched genes	VWF-SELP	1	pass	VWF-SELP:matched genes
+downstream	VWF-SELP	1	pass	VWF-SELP:downstream
+received signal	VWF-SELP	1	pass	VWF-SELP:received signal
+cross method	VWF-SELP	1	pass	VWF-SELP:cross method
+ablation	VWF-SELP	0	weak	VWF-SELP:ablation
+bootstrap	VWF-SELP	1	pass	VWF-SELP:bootstrap
+expression	VWF-LRP1	1	pass	VWF-LRP1:expression
+label perm.	VWF-LRP1	1	pass	VWF-LRP1:label perm.
+spatial null	VWF-LRP1	1	pass	VWF-LRP1:spatial null
+matched genes	VWF-LRP1	1	pass	VWF-LRP1:matched genes
+downstream	VWF-LRP1	1	pass	VWF-LRP1:downstream
+received signal	VWF-LRP1	1	pass	VWF-LRP1:received signal
+cross method	VWF-LRP1	1	pass	VWF-LRP1:cross method
+ablation	VWF-LRP1	0	weak	VWF-LRP1:ablation
+bootstrap	VWF-LRP1	1	pass	VWF-LRP1:bootstrap
+expression	MMRN2-CD93	1	pass	MMRN2-CD93:expression
+label perm.	MMRN2-CD93	1	pass	MMRN2-CD93:label perm.
+spatial null	MMRN2-CD93	1	pass	MMRN2-CD93:spatial null
+matched genes	MMRN2-CD93	1	pass	MMRN2-CD93:matched genes
+downstream	MMRN2-CD93	1	pass	MMRN2-CD93:downstream
+received signal	MMRN2-CD93	1	pass	MMRN2-CD93:received signal
+cross method	MMRN2-CD93	1	pass	MMRN2-CD93:cross method
+ablation	MMRN2-CD93	0	weak	MMRN2-CD93:ablation
+bootstrap	MMRN2-CD93	1	pass	MMRN2-CD93:bootstrap
+expression	CD48-CD2	1	pass	CD48-CD2:expression
+label perm.	CD48-CD2	1	pass	CD48-CD2:label perm.
+spatial null	CD48-CD2	1	pass	CD48-CD2:spatial null
+matched genes	CD48-CD2	1	pass	CD48-CD2:matched genes
+downstream	CD48-CD2	1	pass	CD48-CD2:downstream
+received signal	CD48-CD2	1	pass	CD48-CD2:received signal
+cross method	CD48-CD2	1	pass	CD48-CD2:cross method
+ablation	CD48-CD2	0	weak	CD48-CD2:ablation
+bootstrap	CD48-CD2	1	pass	CD48-CD2:bootstrap
+expression	DLL4-NOTCH3	1	pass	DLL4-NOTCH3:expression
+label perm.	DLL4-NOTCH3	1	pass	DLL4-NOTCH3:label perm.
+spatial null	DLL4-NOTCH3	1	pass	DLL4-NOTCH3:spatial null
+matched genes	DLL4-NOTCH3	1	pass	DLL4-NOTCH3:matched genes
+downstream	DLL4-NOTCH3	1	pass	DLL4-NOTCH3:downstream
+received signal	DLL4-NOTCH3	1	pass	DLL4-NOTCH3:received signal
+cross method	DLL4-NOTCH3	1	pass	DLL4-NOTCH3:cross method
+ablation	DLL4-NOTCH3	0	weak	DLL4-NOTCH3:ablation
+bootstrap	DLL4-NOTCH3	1	pass	DLL4-NOTCH3:bootstrap
+expression	CXCL12-CXCR4	1	pass	CXCL12-CXCR4:expression
+label perm.	CXCL12-CXCR4	1	pass	CXCL12-CXCR4:label perm.
+spatial null	CXCL12-CXCR4	0	weak	CXCL12-CXCR4:spatial null
+matched genes	CXCL12-CXCR4	1	pass	CXCL12-CXCR4:matched genes
+downstream	CXCL12-CXCR4	1	pass	CXCL12-CXCR4:downstream
+received signal	CXCL12-CXCR4	1	pass	CXCL12-CXCR4:received signal
+cross method	CXCL12-CXCR4	1	pass	CXCL12-CXCR4:cross method
+ablation	CXCL12-CXCR4	0	weak	CXCL12-CXCR4:ablation
+bootstrap	CXCL12-CXCR4	1	pass	CXCL12-CXCR4:bootstrap
+expression	JAG1-NOTCH2	1	pass	JAG1-NOTCH2:expression
+label perm.	JAG1-NOTCH2	1	pass	JAG1-NOTCH2:label perm.
+spatial null	JAG1-NOTCH2	1	pass	JAG1-NOTCH2:spatial null
+matched genes	JAG1-NOTCH2	0	weak	JAG1-NOTCH2:matched genes
+downstream	JAG1-NOTCH2	0	weak	JAG1-NOTCH2:downstream
+received signal	JAG1-NOTCH2	1	pass	JAG1-NOTCH2:received signal
+cross method	JAG1-NOTCH2	1	pass	JAG1-NOTCH2:cross method
+ablation	JAG1-NOTCH2	0	weak	JAG1-NOTCH2:ablation
+bootstrap	JAG1-NOTCH2	1	pass	JAG1-NOTCH2:bootstrap

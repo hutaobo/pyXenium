@@ -1,0 +1,7 @@
+label	x	geomean_penalty	target_lr	target_sender	target_receiver	prior_confidence	reported_lr_score	recomputed_lr_score	y	value	category
+sender_anchor	0.955713094717548	0.0452975106374889	VWF-SELP	Endothelial Cells	Endothelial Cells	1.0	0.7912892368005828	0.7912892368005827	sender_anchor	0.955713094717548	component
+receiver_anchor	0.8819126042133903	0.125662304739348	VWF-SELP	Endothelial Cells	Endothelial Cells	1.0	0.7912892368005828	0.7912892368005827	receiver_anchor	0.8819126042133903	component
+structure_bridge	1.0	-9.999999889225293e-09	VWF-SELP	Endothelial Cells	Endothelial Cells	1.0	0.7912892368005828	0.7912892368005827	structure_bridge	1.0	component
+sender_expr	1.0	-9.999999889225293e-09	VWF-SELP	Endothelial Cells	Endothelial Cells	1.0	0.7912892368005828	0.7912892368005827	sender_expr	1.0	component
+receiver_expr	1.0	-9.999999889225293e-09	VWF-SELP	Endothelial Cells	Endothelial Cells	1.0	0.7912892368005828	0.7912892368005827	receiver_expr	1.0	component
+local_contact	0.2912449657481761	1.23359052490106	VWF-SELP	Endothelial Cells	Endothelial Cells	1.0	0.7912892368005828	0.7912892368005827	local_contact	0.2912449657481761	component

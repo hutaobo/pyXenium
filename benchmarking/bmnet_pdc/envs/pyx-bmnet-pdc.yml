@@ -1,0 +1,34 @@
+name: pyx-bmnet
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - git
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - seaborn
+  - anndata
+  - scanpy
+  - pyarrow
+  - h5py
+  - click
+  - matplotlib
+  - shapely
+  - statsmodels
+  - tifffile
+  - imagecodecs
+  - zarr
+  - fsspec
+  - requests
+  - pyyaml
+  - aiohttp
+  - pillow
+  - pip:
+      - -e ../../..
+      - torch
+      - timm>=1.0
+      - transformers>=4.40
+      - huggingface_hub>=0.24

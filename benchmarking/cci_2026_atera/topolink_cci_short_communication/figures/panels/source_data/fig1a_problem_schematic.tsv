@@ -1,0 +1,5 @@
+element	x	y	label	category	value
+box	0.17	0.67	expression-only candidate	false_positive_source	1
+box	0.48	0.67	database membership	false_positive_source	1
+box	0.79	0.67	spatial proximity	false_positive_source	1
+box	0.5	0.23	TopoLink-CCI combined evidence	solution	1

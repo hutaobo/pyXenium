@@ -1,0 +1,8 @@
+pair	sender	receiver	x	value	biology_label	theme	y	category	label
+JAG1-NOTCH2	11q13 Invasive Tumor Cells	11q13 Invasive Tumor Cells	0.6339181063246662	45	tumor-intrinsic Notch signaling	tumor	JAG1-NOTCH2	tumor	JAG1-NOTCH2
+CXCL12-CXCR4	CAFs, DCIS Associated	T Lymphocytes	0.6616803690861207	28	CAF-immune chemokine recruitment	stromal	CXCL12-CXCR4	stromal	CXCL12-CXCR4
+DLL4-NOTCH3	Endothelial Cells	Pericytes	0.6695148471220083	24	endothelial-pericyte Notch	notch	DLL4-NOTCH3	notch	DLL4-NOTCH3
+CD48-CD2	T Lymphocytes	T Lymphocytes	0.6849877065459009	16	T-cell adhesion/co-stimulation	immune	CD48-CD2	immune	CD48-CD2
+MMRN2-CD93	Endothelial Cells	Endothelial Cells	0.7107166026857937	10	CD93-MMRN2 angiogenesis	vascular	MMRN2-CD93	vascular	MMRN2-CD93
+VWF-LRP1	Endothelial Cells	CAFs, DCIS Associated	0.7479758913021439	2	vascular-stromal matrix/scavenger axis	vascular	VWF-LRP1	vascular	VWF-LRP1
+VWF-SELP	Endothelial Cells	Endothelial Cells	0.7912892368005828	1	WPB / endothelial activation	vascular	VWF-SELP	vascular	VWF-SELP

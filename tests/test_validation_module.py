@@ -2,6 +2,9 @@ import pandas as pd
 
 from pyXenium.validation.renal_ffpe_protein import render_markdown_report
 from pyXenium.validation.atera_wta_breast_topology import render_atera_wta_breast_topology_report
+from pyXenium.validation.atera_wta_cervical_end_to_end import (
+    render_atera_wta_cervical_end_to_end_report,
+)
 from pyXenium.validation.renal_immune_resistance import (
     build_cohort_handoff_spec,
     build_panel_gap_table,
@@ -133,3 +136,35 @@ def test_atera_breast_topology_report_mentions_cci_and_pathway_sections():
     assert "# Atera WTA Breast Topology Reproducibility Bundle" in report
     assert "## CCI Smoke Panel" in report
     assert "## Pathway Primary Results" in report
+
+
+def test_atera_cervical_end_to_end_report_mentions_contour_and_multimodal_sections():
+    payload = {
+        "sample_id": "atera_cervical_test",
+        "dataset_root": "/tmp/atera_cervical",
+        "output_root": "/tmp/atera_cervical/pyxenium_cervical_end_to_end",
+        "tbc_results": "/tmp/atera_cervical/sfplot_tbc_formal_wta/results",
+        "n_cells": 1234,
+        "n_rna_features": 5678,
+        "cluster_count": 26,
+        "contour_structure_count": 6,
+        "contour_polygon_count": 12,
+        "expanded_contour_polygon_count": 12,
+        "metrics_summary": {"median_transcripts_per_cell": 2116},
+        "runtime_seconds": 3.21,
+        "ring_density_summary": {"row_count": 24, "features": ["SPP1", "CA9"]},
+        "smooth_density_summary": {"row_count": 36, "features": ["SPP1", "CA9"]},
+        "multimodal_sample_summary": {"contour_key": "atera_cervical_bio6", "n_contours": 12, "n_ecotypes": 4},
+        "contour_structures": [
+            {"structure_name": "Tumor", "structure_id": 1, "cluster_ids": ["Hypoxic Tumor Cells"]},
+            {"structure_name": "T-cell", "structure_id": 2, "cluster_ids": ["Cytotoxic T Cells"]},
+        ],
+        "files": {"summary_json": "/tmp/atera_cervical/summary.json"},
+    }
+
+    report = render_atera_wta_cervical_end_to_end_report(payload)
+
+    assert "# Atera WTA Cervical End-to-End Reproducibility Bundle" in report
+    assert "## Contour Bio6 Structures" in report
+    assert "## Density Profiling" in report
+    assert "## Multimodal Contour Ecology" in report

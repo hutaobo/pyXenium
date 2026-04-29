@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyXenium"
 dynamic = ["version"]
-description = "Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, and mechanostress analysis."
+description = "Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and optional external workflow bridges."
 readme = "README.md"
 requires-python = ">=3.8"
 license = "LicenseRef-Proprietary-NonCommercial"
@@ -60,6 +60,10 @@ Releases = "https://github.com/hutaobo/pyXenium/releases"
 pyxenium = "pyXenium.__main__:main"
 
 [project.optional-dependencies]
+perturb = [
+  "SpatialPerturb>=0.3; python_version >= '3.9'",
+]
+
 docs = [
   "sphinx>=8",
   "pydata-sphinx-theme>=0.16",

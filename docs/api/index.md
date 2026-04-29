@@ -11,6 +11,7 @@ pathway
 contour
 gmi
 mechanostress
+perturb
 ```
 
 The API reference is organized around pyXenium’s canonical namespaces rather than the legacy
@@ -59,5 +60,11 @@ Contour-level GMI modeling for sparse main effects, interactions, controls, and 
 :link: mechanostress
 :link-type: doc
 Mechanical stress state analysis from Xenium morphology and tumor-stroma geometry.
+:::
+
+:::{grid-item-card} pyXenium.perturb
+:link: perturb
+:link-type: doc
+SpatialPerturb Bridge handoff specs for optional Perturb-seq reference projection.
 :::
 ::::

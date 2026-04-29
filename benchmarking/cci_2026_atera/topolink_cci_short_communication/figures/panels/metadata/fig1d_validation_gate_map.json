@@ -1,0 +1,41 @@
+{
+  "title": "Validation gate map",
+  "source_tables": [],
+  "rasterized_layers": false,
+  "biological_message": "TopoLink-CCI reports candidates with controls inspired by established CCC methods.",
+  "caveat": "Schematic mapping, not a claim of identical software reimplementation.",
+  "output_formats": [
+    "pdf",
+    "svg",
+    "png"
+  ],
+  "panel_id": "fig1d",
+  "slug": "validation_gate_map",
+  "generated_at": "2026-04-29T08:45:01.310711+00:00",
+  "outputs": {
+    "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\pdf\\fig1d_validation_gate_map.pdf",
+    "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\svg\\fig1d_validation_gate_map.svg",
+    "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\png\\fig1d_validation_gate_map.png",
+    "source_data": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\source_data\\fig1d_validation_gate_map.tsv",
+    "metadata": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\metadata\\fig1d_validation_gate_map.json"
+  },
+  "width_mm": 180.0,
+  "height_mm": 65.0,
+  "font_policy": {
+    "font_family": "Arial",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+    "svg.fonttype": "none",
+    "panel_label_pt": 8,
+    "title_pt": 7,
+    "axis_label_pt": 6,
+    "tick_label_pt": 5,
+    "legend_pt": 5
+  },
+  "svg_text_count": 22,
+  "svg_path_count": 25,
+  "pdffonts_status": "pdffonts_not_available",
+  "pdffonts_output": "",
+  "source_hashes": {},
+  "source_data_rows": 6
+}

@@ -1,0 +1,45 @@
+{
+  "title": "Top interpretable axes",
+  "source_tables": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\pdc_validation_v2_collected\\topolink_cci_validation_v2\\tables\\topolink_cci_validation_v2_evidence.tsv"
+  ],
+  "rasterized_layers": false,
+  "biological_message": "High-scoring axes span vascular, immune, stromal, Notch and tumor-intrinsic biology.",
+  "caveat": "",
+  "output_formats": [
+    "pdf",
+    "svg",
+    "png"
+  ],
+  "panel_id": "fig2b",
+  "slug": "top_interpretable_axes",
+  "generated_at": "2026-04-29T08:45:06.084497+00:00",
+  "outputs": {
+    "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\pdf\\fig2b_top_interpretable_axes.pdf",
+    "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\svg\\fig2b_top_interpretable_axes.svg",
+    "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\png\\fig2b_top_interpretable_axes.png",
+    "source_data": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\source_data\\fig2b_top_interpretable_axes.tsv",
+    "metadata": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\figures\\panels\\metadata\\fig2b_top_interpretable_axes.json"
+  },
+  "width_mm": 85.0,
+  "height_mm": 65.0,
+  "font_policy": {
+    "font_family": "Arial",
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+    "svg.fonttype": "none",
+    "panel_label_pt": 8,
+    "title_pt": 7,
+    "axis_label_pt": 6,
+    "tick_label_pt": 5,
+    "legend_pt": 5
+  },
+  "svg_text_count": 26,
+  "svg_path_count": 22,
+  "pdffonts_status": "pdffonts_not_available",
+  "pdffonts_output": "",
+  "source_hashes": {
+    "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\pdc_validation_v2_collected\\topolink_cci_validation_v2\\tables\\topolink_cci_validation_v2_evidence.tsv": "d87a16edfce1c50e"
+  },
+  "source_data_rows": 7
+}

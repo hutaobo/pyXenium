@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="510.23622pt" height="184.251969pt" viewBox="0 0 510.23622 184.251969" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-04-29T10:45:00.182740</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.7, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 184.251969 
+L 510.23622 184.251969 
+L 510.23622 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 35.775563 122.27505 
+L 156.792141 122.27505 
+Q 169.398034 122.27505 169.398034 118.846174 
+L 169.398034 98.272914 
+Q 169.398034 94.844037 156.792141 94.844037 
+L 35.775563 94.844037 
+Q 23.16967 94.844037 23.16967 98.272914 
+L 23.16967 118.846174 
+Q 23.16967 122.27505 35.775563 122.27505 
+z
+" clip-path="url(#p9ab9f6d0f4)" style="fill: #ffffff; stroke: #0f766e; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 192.088643 122.27505 
+L 313.10522 122.27505 
+Q 325.711114 122.27505 325.711114 118.846174 
+L 325.711114 98.272914 
+Q 325.711114 94.844037 313.10522 94.844037 
+L 192.088643 94.844037 
+Q 179.482749 94.844037 179.482749 98.272914 
+L 179.482749 118.846174 
+Q 179.482749 122.27505 192.088643 122.27505 
+z
+" clip-path="url(#p9ab9f6d0f4)" style="fill: #ffffff; stroke: #5b5f97; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 348.401722 122.27505 
+L 469.4183 122.27505 
+Q 482.024193 122.27505 482.024193 118.846174 
+L 482.024193 98.272914 
+Q 482.024193 94.844037 469.4183 94.844037 
+L 348.401722 94.844037 
+Q 335.795829 94.844037 335.795829 98.272914 
+L 335.795829 118.846174 
+Q 335.795829 122.27505 348.401722 122.27505 
+z
+" clip-path="url(#p9ab9f6d0f4)" style="fill: #ffffff; stroke: #2563eb; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 35.775563 159.306918 
+L 156.792141 159.306918 
+Q 169.398034 159.306918 169.398034 155.878041 
+L 169.398034 135.304782 
+Q 169.398034 131.875905 156.792141 131.875905 
+L 35.775563 131.875905 
+Q 23.16967 131.875905 23.16967 135.304782 
+L 23.16967 155.878041 
+Q 23.16967 159.306918 35.775563 159.306918 
+z
+" clip-path="url(#p9ab9f6d0f4)" style="fill: #ffffff; stroke: #2f855a; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 192.088643 159.306918 
+L 313.10522 159.306918 
+Q 325.711114 159.306918 325.711114 155.878041 
+L 325.711114 135.304782 
+Q 325.711114 131.875905 313.10522 131.875905 
+L 192.088643 131.875905 
+Q 179.482749 131.875905 179.482749 135.304782 
+L 179.482749 155.878041 
+Q 179.482749 159.306918 192.088643 159.306918 
+z
+" clip-path="url(#p9ab9f6d0f4)" style="fill: #ffffff; stroke: #2f855a; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 348.401722 159.306918 
+L 469.4183 159.306918 
+Q 482.024193 159.306918 482.024193 155.878041 
+L 482.024193 135.304782 
+Q 482.024193 131.875905 469.4183 131.875905 
+L 348.401722 131.875905 
+Q 335.795829 131.875905 335.795829 135.304782 
+L 335.795829 155.878041 
+Q 335.795829 159.306918 348.401722 159.306918 
+z
+" clip-path="url(#p9ab9f6d0f4)" style="fill: #ffffff; stroke: #c2410c; stroke-width: 0.7; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 8px; font-family: 'Arial'; text-anchor: start; fill: #1f2933" x="3.00024" y="8.700144" transform="rotate(-0 3.00024 8.700144)">Fig. 1b</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 7px; font-family: 'Arial'; text-anchor: start" x="13.084955" y="55.069068" transform="rotate(-0 13.084955 55.069068)">TopoLink-CCI discovery score</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 7px; font-family: 'Arial'; text-anchor: middle; fill: #1f2933" x="255.11811" y="82.500082" transform="rotate(-0 255.11811 82.500082)">TopoLink-CCI(l,r,s,t) = prior(l,r) x geometric mean( six evidence components )</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(79.024102 107.028644)">sender anchor</text>
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(64.915758 112.819131)">ligand fits sender topology</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(233.989713 107.028644)">receiver anchor</text>
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(217.183057 112.819131)">receptor fits receiver topology</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(390.152605 107.068131)">structure bridge</text>
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(372.746042 112.842925)">sender-receiver tissue relation</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(74.222743 144.099999)">sender expression</text>
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(64.015477 149.811512)">ligand expressed in sender</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(229.188353 144.13164)">receiver expression</text>
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(216.282775 149.843152)">receptor expressed in receiver</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(393.902652 144.099999)">local contact</text>
+    <text style="font-size: 5.4px; font-family: 'Arial'; fill: #1f2933" transform="translate(367.335074 149.811512)">neighbor edges support interaction</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p9ab9f6d0f4">
+   <rect x="3.00024" y="44.096663" width="504.23574" height="137.155065"/>
+  </clipPath>
+ </defs>
+</svg>

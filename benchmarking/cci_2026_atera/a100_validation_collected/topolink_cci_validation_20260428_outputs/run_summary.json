@@ -1,0 +1,49 @@
+{
+  "status": "success",
+  "runtime_seconds": 52.501,
+  "n_scores": 1319600,
+  "n_target_axes": 7,
+  "target_axes": [
+    {
+      "axis_id": "VWF-SELP|Endothelial Cells->Endothelial Cells",
+      "evidence_class": "strong",
+      "support_count": 6
+    },
+    {
+      "axis_id": "VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated",
+      "evidence_class": "strong",
+      "support_count": 5
+    },
+    {
+      "axis_id": "MMRN2-CD93|Endothelial Cells->Endothelial Cells",
+      "evidence_class": "strong",
+      "support_count": 6
+    },
+    {
+      "axis_id": "CD48-CD2|T Lymphocytes->T Lymphocytes",
+      "evidence_class": "strong",
+      "support_count": 6
+    },
+    {
+      "axis_id": "DLL4-NOTCH3|Endothelial Cells->Pericytes",
+      "evidence_class": "strong",
+      "support_count": 5
+    },
+    {
+      "axis_id": "CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes",
+      "evidence_class": "strong",
+      "support_count": 5
+    },
+    {
+      "axis_id": "JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells",
+      "evidence_class": "moderate",
+      "support_count": 4
+    }
+  ],
+  "outputs": {
+    "evidence": "/data/taobo.hu/topolink_cci_validation_20260428/outputs/tables/topolink_cci_validation_evidence.tsv",
+    "controls": "/data/taobo.hu/topolink_cci_validation_20260428/outputs/tables/topolink_cci_false_positive_controls.tsv",
+    "scoreboard": "/data/taobo.hu/topolink_cci_validation_20260428/outputs/topolink_cci_validation_scoreboard.md",
+    "figure": "/data/taobo.hu/topolink_cci_validation_20260428/outputs/figures/topolink_cci_validation_figure.png"
+  }
+}

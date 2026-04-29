@@ -1,0 +1,13 @@
+group	neighbor_cell_type	neighbor_fraction	n_query_cells	x	y	value	category	label
+hotspot_endothelial	11q13 Invasive Tumor Cells	0.0164549653579676	433	0.0164549653579676	11q13 Invasive Tumor Cells	0.0164549653579676	hotspot_endothelial	11q13 Invasive Tumor Cells
+hotspot_endothelial	CAFs, Invasive Associated	0.0262702078521939	433	0.0262702078521939	CAFs, Invasive Associated	0.0262702078521939	hotspot_endothelial	CAFs, Invasive Associated
+all_endothelial	Macrophages	0.0374681122448979	8624	0.0374681122448979	Macrophages	0.0374681122448979	all_endothelial	Macrophages
+hotspot_endothelial	Macrophages	0.0433025404157043	433	0.0433025404157043	Macrophages	0.0433025404157043	hotspot_endothelial	Macrophages
+all_endothelial	CAFs, Invasive Associated	0.0435557745825603	8624	0.0435557745825603	CAFs, Invasive Associated	0.0435557745825603	all_endothelial	CAFs, Invasive Associated
+all_endothelial	T Lymphocytes	0.0666019248608534	8624	0.0666019248608534	T Lymphocytes	0.0666019248608534	all_endothelial	T Lymphocytes
+all_endothelial	11q13 Invasive Tumor Cells	0.0870100881261595	8624	0.0870100881261595	11q13 Invasive Tumor Cells	0.0870100881261595	all_endothelial	11q13 Invasive Tumor Cells
+hotspot_endothelial	CAFs, DCIS Associated	0.1579099307159353	433	0.1579099307159353	CAFs, DCIS Associated	0.1579099307159353	hotspot_endothelial	CAFs, DCIS Associated
+hotspot_endothelial	T Lymphocytes	0.1593533487297921	433	0.1593533487297921	T Lymphocytes	0.1593533487297921	hotspot_endothelial	T Lymphocytes
+all_endothelial	Pericytes	0.1649321660482375	8624	0.1649321660482375	Pericytes	0.1649321660482375	all_endothelial	Pericytes
+hotspot_endothelial	Pericytes	0.1714780600461893	433	0.1714780600461893	Pericytes	0.1714780600461893	hotspot_endothelial	Pericytes
+all_endothelial	CAFs, DCIS Associated	0.202081400742115	8624	0.202081400742115	CAFs, DCIS Associated	0.202081400742115	all_endothelial	CAFs, DCIS Associated

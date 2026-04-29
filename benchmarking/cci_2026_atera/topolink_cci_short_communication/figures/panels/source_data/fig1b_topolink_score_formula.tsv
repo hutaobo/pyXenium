@@ -1,0 +1,7 @@
+element	x	y	label	category	description	value
+component	0.185	0.53	sender anchor	score_component	ligand fits sender topology	1
+component	0.495	0.53	receiver anchor	score_component	receptor fits receiver topology	2
+component	0.805	0.53	structure bridge	score_component	sender-receiver tissue relation	3
+component	0.185	0.26	sender expression	score_component	ligand expressed in sender	4
+component	0.495	0.26	receiver expression	score_component	receptor expressed in receiver	5
+component	0.805	0.26	local contact	score_component	neighbor edges support interaction	6

@@ -13,13 +13,14 @@ changelog
 ```
 
 <div class="pyxenium-hero">
-  <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and AI-driven spatial pathology handoff.</p>
+  <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and optional external workflow bridges.</p>
   <p class="pyxenium-lead">
-    pyXenium is a Python toolkit for 10x Genomics Xenium with eight feature areas:
+    pyXenium is a Python toolkit for 10x Genomics Xenium with nine feature areas:
     canonical Xenium I/O, multimodal RNA + protein analysis, topology-native cell-cell interaction
     and pathway methods, contour-aware geometry workflows, contour-level GMI modeling,
-    morphology-derived mechanostress analysis, and an optional handoff to the external
-    AI-Driven Spatial Pathologist workflow through <code>spatho</code>.
+    morphology-derived mechanostress analysis, and optional external workflow bridges for
+    AI-driven spatial pathology through <code>spatho</code> and Perturb-seq reference projection
+    through <code>SpatialPerturb</code>.
     This site is organized to mirror
     the crisp, research-oriented experience of the SpatialData docs while staying specific to
     pyXenium’s package architecture.
@@ -74,7 +75,7 @@ Load Xenium exports, recover partial bundles, round-trip `XeniumSData`, and expo
 :::{grid-item-card} Tutorials
 :link: tutorials/index
 :link-type: doc
-Follow notebook-style walkthroughs for pyXenium modules and the optional `spatho` pathology handoff.
+Follow notebook-style walkthroughs for pyXenium modules and optional external workflow bridges.
 :::
 
 :::{grid-item-card} Multimodal Analysis
@@ -107,10 +108,16 @@ Compute fibroblast axis strength, tumor-stroma growth patterning, and cell polar
 Call the external `spatho` workflow on Xenium cases structured by pyXenium `XeniumSData`.
 :::
 
+:::{grid-item-card} SpatialPerturb Bridge
+:link: tutorials/spatialperturb_bridge
+:link-type: doc
+Generate handoff specs for Perturb-seq reference projection with the external `SpatialPerturb` CLI.
+:::
+
 :::{grid-item-card} API
 :link: api/index
 :link-type: doc
-Browse curated autosummary pages for `io`, `multimodal`, `cci`, `pathway`, `contour`, `gmi`, and `mechanostress`.
+Browse curated autosummary pages for `io`, `multimodal`, `cci`, `pathway`, `contour`, `gmi`, `mechanostress`, and `perturb`.
 :::
 
 :::{grid-item-card} Changelog
@@ -130,6 +137,7 @@ Track documentation, branding, and package-level changes.
 - `pyXenium.gmi`: contour-level GMI modeling for sparse main-effect and interaction discovery in spatial transcriptomics.
 - `pyXenium.mechanostress`: morphology-derived mechanical stress states from cell/nucleus boundaries and tumor-stroma context.
 - AI-Driven Spatial Pathologist via `spatho`: optional external AI pathology review workflow built on pyXenium's `XeniumSData` case structure, not a pyXenium runtime dependency.
+- `pyXenium.perturb`: SpatialPerturb Bridge for optional Perturb-seq reference projection onto Xenium tissue through the external `SpatialPerturb` package.
 
 :::{admonition} GitHub branding asset
 :class: pyxenium-brand-note

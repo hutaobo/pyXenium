@@ -1,0 +1,50 @@
+axis_id	removed_component	score_without_component	rank_without_component
+VWF-SELP|Endothelial Cells->Endothelial Cells	sender_anchor	0.7936685312319989	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	sender_anchor	0.7223245865106046	8
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	sender_anchor	0.7085348212720359	13
+DLL4-NOTCH3|Endothelial Cells->Pericytes	sender_anchor	0.6745564828093611	25
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	sender_anchor	0.6525538738821847	36
+CD48-CD2|T Lymphocytes->T Lymphocytes	sender_anchor	0.6964889406614021	16
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	sender_anchor	0.650110468858211	40
+VWF-SELP|Endothelial Cells->Endothelial Cells	receiver_anchor	0.805686300976693	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	receiver_anchor	0.7689017668792069	2
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	receiver_anchor	0.7246305722691555	9
+DLL4-NOTCH3|Endothelial Cells->Pericytes	receiver_anchor	0.6804202200885041	21
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	receiver_anchor	0.6417024502434168	49
+CD48-CD2|T Lymphocytes->T Lymphocytes	receiver_anchor	0.6967533196814983	16
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	receiver_anchor	0.6692416628881765	30
+VWF-SELP|Endothelial Cells->Endothelial Cells	structure_bridge	0.7854081482043567	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	structure_bridge	0.7708926279250373	2
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	structure_bridge	0.7055697377300002	12
+DLL4-NOTCH3|Endothelial Cells->Pericytes	structure_bridge	0.6698572931376457	27
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	structure_bridge	0.7130771089942796	8
+CD48-CD2|T Lymphocytes->T Lymphocytes	structure_bridge	0.6870622598572897	19
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	structure_bridge	0.6167922060783549	65
+VWF-SELP|Endothelial Cells->Endothelial Cells	sender_expr	0.7854081482043567	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	sender_expr	0.7148067405584678	8
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	sender_expr	0.7055697377300002	9
+DLL4-NOTCH3|Endothelial Cells->Pericytes	sender_expr	0.6628108709697559	33
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	sender_expr	0.6338817361079696	51
+CD48-CD2|T Lymphocytes->T Lymphocytes	sender_expr	0.6870622598572897	20
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	sender_expr	0.6167922060783549	75
+VWF-SELP|Endothelial Cells->Endothelial Cells	receiver_expr	0.7854081482043567	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	receiver_expr	0.7148067405584678	6
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	receiver_expr	0.7055697377300002	8
+DLL4-NOTCH3|Endothelial Cells->Pericytes	receiver_expr	0.6787277660885117	24
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	receiver_expr	0.6338817361079696	52
+CD48-CD2|T Lymphocytes->T Lymphocytes	receiver_expr	0.6870622598572897	19
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	receiver_expr	0.6167922060783549	79
+VWF-SELP|Endothelial Cells->Endothelial Cells	local_contact	0.9646853087387212	16
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	local_contact	0.8530387672375239	614
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	local_contact	0.9696210584915509	11
+DLL4-NOTCH3|Endothelial Cells->Pericytes	local_contact	0.9248792871416435	76
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	local_contact	0.8529786310985624	615
+CD48-CD2|T Lymphocytes->T Lymphocytes	local_contact	0.9727447950557435	7
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	local_contact	0.8743949187647442	329
+VWF-SELP|Endothelial Cells->Endothelial Cells	prior_confidence	0.7854081482043567	1
+VWF-LRP1|Endothelial Cells->CAFs, DCIS Associated	prior_confidence	0.7148067405584678	5
+MMRN2-CD93|Endothelial Cells->Endothelial Cells	prior_confidence	0.7055697377300002	6
+DLL4-NOTCH3|Endothelial Cells->Pericytes	prior_confidence	0.6628108709697559	20
+CXCL12-CXCR4|CAFs, DCIS Associated->T Lymphocytes	prior_confidence	0.6338817361079696	29
+CD48-CD2|T Lymphocytes->T Lymphocytes	prior_confidence	0.6870622598572897	13
+JAG1-NOTCH2|11q13 Invasive Tumor Cells->11q13 Invasive Tumor Cells	prior_confidence	0.6167922060783549	41

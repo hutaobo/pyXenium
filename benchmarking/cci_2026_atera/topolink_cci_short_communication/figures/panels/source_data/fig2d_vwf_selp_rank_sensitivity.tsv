@@ -1,0 +1,11 @@
+scenario	target_score	target_rank	top_ligand	top_receptor	top_sender	top_receiver	top_score	x	y	value	category	label
+original	0.7912892368005827	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7912892368005827	1	original	0.7912892368005827	rank_sensitivity	original
+remove_sender_anchor	0.7619681211528222	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7619681211528222	1	remove_sender_anchor	0.7619681211528222	rank_sensitivity	remove_sender_anchor
+set_sender_anchor_to_1	0.7972857506756545	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7972857506756545	1	set_sender_anchor_to_1	0.7972857506756545	rank_sensitivity	set_sender_anchor_to_1
+remove_receiver_anchor	0.7743141562550239	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7743141562550239	1	remove_receiver_anchor	0.7743141562550239	rank_sensitivity	remove_receiver_anchor
+set_receiver_anchor_to_1	0.8080365395595056	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.8080365395595056	1	set_receiver_anchor_to_1	0.8080365395595056	rank_sensitivity	set_receiver_anchor_to_1
+remove_structure_bridge	0.7550962427202288	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7550962427202288	1	remove_structure_bridge	0.7550962427202288	rank_sensitivity	remove_structure_bridge
+set_structure_bridge_to_1	0.7912892368005827	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7912892368005827	1	set_structure_bridge_to_1	0.7912892368005827	rank_sensitivity	set_structure_bridge_to_1
+remove_sender_expr	0.7550962427202288	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7550962427202288	1	remove_sender_expr	0.7550962427202288	rank_sensitivity	remove_sender_expr
+set_sender_expr_to_1	0.7912892368005827	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7912892368005827	1	set_sender_expr_to_1	0.7912892368005827	rank_sensitivity	set_sender_expr_to_1
+remove_receiver_expr	0.7550962427202288	1	VWF	SELP	Endothelial Cells	Endothelial Cells	0.7550962427202288	1	remove_receiver_expr	0.7550962427202288	rank_sensitivity	remove_receiver_expr
