@@ -11,12 +11,14 @@ multimodal
 contour_index
 gmi
 mechanostress_atera_pdc
+ai_driven_spatial_pathologist
 ```
 
 The tutorials hub brings the canonical pyXenium tutorial series into one
 place. The notebooks below use real pyXenium study outputs to explain what
 each module does, how to rerun it on local Xenium data, and why the result
-matters biologically.
+matters biologically. The final entry documents the optional handoff from
+pyXenium's `XeniumSData` structure to the external `spatho` pathology workflow.
 
 ::::{grid} 1 1 2 2
 :gutter: 2
@@ -71,11 +73,19 @@ Run the Atera WTA breast S1/S5 mechanostress workflow on PDC and inspect
 fibroblast axis strength, tumor-stroma growth states, polarity, and coupling
 artifacts.
 :::
+
+:::{grid-item-card} AI-Driven Spatial Pathologist via spatho
+:link: ai_driven_spatial_pathologist
+:link-type: doc
+Install and call the external `spatho` workflow, and see how pyXenium's
+`XeniumSData` structure supports AI-driven spatial pathology without adding
+spatho code to pyXenium.
+:::
 ::::
 
 ## Tutorial Pattern
 
-Each tutorial follows the same research-facing structure:
+The research-facing notebook tutorials generally follow this structure:
 
 - `Overview`
 - `Biological question`

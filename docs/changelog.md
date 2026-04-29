@@ -4,7 +4,7 @@ All notable changes to pyXenium are documented here.
 
 ## Unreleased
 
-- No unreleased changes yet.
+- Document AI-Driven Spatial Pathologist via the external `spatho` package as pyXenium's eighth feature area, without adding new pyXenium runtime code or dependencies.
 
 ## 0.4.1 - 2026-04-26
 

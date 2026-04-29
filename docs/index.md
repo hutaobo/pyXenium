@@ -13,12 +13,13 @@ changelog
 ```
 
 <div class="pyxenium-hero">
-  <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, and mechanostress analysis.</p>
+  <p class="pyxenium-tagline">Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and AI-driven spatial pathology handoff.</p>
   <p class="pyxenium-lead">
-    pyXenium is a Python toolkit for 10x Genomics Xenium with a layered public surface:
+    pyXenium is a Python toolkit for 10x Genomics Xenium with eight feature areas:
     canonical Xenium I/O, multimodal RNA + protein analysis, topology-native ligand-receptor
     and pathway methods, contour-aware geometry workflows, contour-level GMI modeling,
-    and morphology-derived mechanostress analysis.
+    morphology-derived mechanostress analysis, and an optional handoff to the external
+    AI-Driven Spatial Pathologist workflow through <code>spatho</code>.
     This site is organized to mirror
     the crisp, research-oriented experience of the SpatialData docs while staying specific to
     pyXenium’s package architecture.
@@ -73,7 +74,7 @@ Load Xenium exports, recover partial bundles, round-trip `XeniumSData`, and expo
 :::{grid-item-card} Tutorials
 :link: tutorials/index
 :link-type: doc
-Follow notebook-style walkthroughs for `io`, `ligand_receptor`, `pathway`, `multimodal`, and `contour`.
+Follow notebook-style walkthroughs for pyXenium modules and the optional `spatho` pathology handoff.
 :::
 
 :::{grid-item-card} Multimodal Analysis
@@ -100,6 +101,12 @@ Build contour pseudo-bulk matrices and run GMI main-effect, interaction, and val
 Compute fibroblast axis strength, tumor-stroma growth patterning, and cell polarity from Xenium morphology.
 :::
 
+:::{grid-item-card} AI-Driven Spatial Pathologist
+:link: tutorials/ai_driven_spatial_pathologist
+:link-type: doc
+Call the external `spatho` workflow on Xenium cases structured by pyXenium `XeniumSData`.
+:::
+
 :::{grid-item-card} API
 :link: api/index
 :link-type: doc
@@ -113,7 +120,7 @@ Track documentation, branding, and package-level changes.
 :::
 ::::
 
-## Canonical public surfaces
+## Feature areas
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
 - `pyXenium.multimodal`: canonical RNA + protein loading, immune-resistance scoring, joint analyses, and packaged multimodal workflows.
@@ -122,6 +129,7 @@ Track documentation, branding, and package-level changes.
 - `pyXenium.contour`: GeoJSON contour import and contour-aware density profiling around polygon annotations.
 - `pyXenium.gmi`: contour-level GMI modeling for sparse main-effect and interaction discovery in spatial transcriptomics.
 - `pyXenium.mechanostress`: morphology-derived mechanical stress states from cell/nucleus boundaries and tumor-stroma context.
+- AI-Driven Spatial Pathologist via `spatho`: optional external AI pathology review workflow built on pyXenium's `XeniumSData` case structure, not a pyXenium runtime dependency.
 
 :::{admonition} GitHub branding asset
 :class: pyxenium-brand-note

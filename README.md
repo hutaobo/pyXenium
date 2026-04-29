@@ -5,7 +5,7 @@
 <h1 align="center">pyXenium</h1>
 
 <p align="center">
-  Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, and mechanostress analysis.
+  Xenium I/O, multimodal analysis, topology workflows, contour-native spatial profiling, GMI inference, mechanostress analysis, and AI-driven spatial pathology handoff.
 </p>
 
 <p align="center">
@@ -28,7 +28,7 @@
   <a href="https://github.com/hutaobo/pyXenium/releases">Releases</a>
 </p>
 
-pyXenium is a Python toolkit for **10x Genomics Xenium** with seven canonical public surfaces:
+pyXenium is a Python toolkit for **10x Genomics Xenium** with eight feature areas:
 
 - `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
 - `pyXenium.multimodal`: canonical RNA + protein loading, joint analysis, immune-resistance scoring, and packaged workflows.
@@ -37,10 +37,12 @@ pyXenium is a Python toolkit for **10x Genomics Xenium** with seven canonical pu
 - `pyXenium.contour`: contour import, contour expansion, and contour-aware density profiling around polygon annotations.
 - `pyXenium.gmi`: contour-level GMI modeling for sparse main-effect and interaction discovery in spatial transcriptomics.
 - `pyXenium.mechanostress`: morphology-derived mechanical stress states, including fibroblast axis strength, tumor-stroma growth patterning, and cell polarity.
+- AI-Driven Spatial Pathologist via `spatho`: an optional external workflow layer for AI-driven spatial pathology, built on the Xenium data foundation provided by pyXenium's `XeniumSData` structure.
 
 Legacy compatibility entry points under `pyXenium.analysis`, `pyXenium.validation`, and
 `pyXenium.io.load_xenium_gene_protein(...)` remain importable, but new code should target the
-canonical namespaces above.
+canonical pyXenium namespaces above. The `spatho` workflow is installed and run separately; pyXenium
+does not vendor it or add it as a runtime dependency.
 
 ## Release & Build
 
@@ -151,14 +153,33 @@ cohort = run_mechanostress_cohort(
 `pyXenium.mechanostress` is a canonical beta surface for extracting mechanical stress
 signals from Xenium morphology and spatial cell context.
 
+### AI-Driven Spatial Pathologist via spatho
+
+[`AI-Driven Spatial Pathologist`](https://ai-driven-spatial-pathologist.readthedocs.io/en/latest/?badge=latest)
+is an external workflow layer for AI-assisted pathology review around Xenium-scale spatial
+transcriptomics. Its public Python package and CLI are named `spatho`.
+
+```bash
+pip install -U spatho
+spatho init-workflow --organ breast --case-name breast_case_01 --dataset-root /path/to/Xenium_outs --output workflow.json
+spatho doctor --config workflow.json
+spatho run --config workflow.json
+```
+
+In pyXenium, this is documented as the eighth feature area rather than a new package namespace.
+The handoff is possible because `XeniumSData` keeps the cell table, transcript points,
+cell/nucleus boundaries, H&E image metadata, and SpatialData-compatible organization together
+for downstream tools.
+
 ## Documentation structure
 
-The docs mirror the package surfaces and high-level workflows:
+The docs mirror the package surfaces, high-level workflows, and external handoffs:
 
 - Installation / Quickstart
 - User Guide
 - Workflows
 - API Reference
+- AI-Driven Spatial Pathologist via `spatho`
 - Changelog
 
 Start here: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
