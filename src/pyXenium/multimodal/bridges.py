@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import anndata as ad
 import numpy as np
@@ -40,6 +40,7 @@ _NON_EMBEDDING_COLUMNS = {
     "stgpt_uncertainty",
     "confidence",
 }
+_TABLE_FORMATS = ("csv", "parquet")
 
 
 def export_for_stgpt(
@@ -51,25 +52,51 @@ def export_for_stgpt(
     sample_id: str | None = None,
     neighbor_k: int = 6,
     include_expression_matrix: bool = True,
+    table_format: Literal["csv", "parquet"] = "csv",
 ) -> dict[str, Any]:
     """Write a lightweight pyXenium-to-stGPT handoff bundle.
 
     pyXenium owns Xenium loading and feature preparation; stGPT owns foundation
     model training/inference. This function writes only contract files that an
     external stGPT workflow can consume.
+
+    Parameters
+    ----------
+    data:
+        An :class:`~anndata.AnnData` or :class:`~pyXenium.io.XeniumSData` containing
+        the Xenium cell table and optional contour shapes.
+    output_dir:
+        Directory where all handoff artifacts are written.
+    contour_key:
+        Key in ``sdata.shapes`` identifying the contour DataFrame to export.
+    feature_table:
+        Optional mapping of named DataFrames (e.g. ``"contour_features"``,
+        ``"rna_pseudobulk"``) to include alongside the expression matrix.
+    sample_id:
+        Override the sample identifier; inferred from ``data`` when *None*.
+    neighbor_k:
+        Number of nearest spatial neighbours for the spatial edge graph.
+    include_expression_matrix:
+        When *True* (default), writes the sparse RNA count matrix as a
+        ``scipy_sparse_csr_npz`` file.
+    table_format:
+        Output format for tabular data: ``"csv"`` (default) or ``"parquet"``.
+        Use ``"parquet"`` for large datasets to reduce I/O overhead.
     """
 
     adata, sdata = _coerce_data(data)
+    if table_format not in _TABLE_FORMATS:
+        raise ValueError(f"`table_format` must be one of {_TABLE_FORMATS}, got {table_format!r}.")
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     resolved_sample_id = str(sample_id or _resolve_sample_id(adata, sdata=sdata))
 
     files: dict[str, str] = {}
     cell_table = _build_cell_table(adata, sample_id=resolved_sample_id)
-    files["cell_table"] = _write_table(cell_table, out / "cells.csv")
+    files["cell_table"] = _write_table(cell_table, out / f"cells.{table_format}", fmt=table_format)
 
     feature_table_frame = _build_feature_table(adata)
-    files["features"] = _write_table(feature_table_frame, out / "features.csv")
+    files["features"] = _write_table(feature_table_frame, out / f"features.{table_format}", fmt=table_format)
 
     coords = _spatial_coordinates(adata)
     if coords is not None:
@@ -80,40 +107,45 @@ def export_for_stgpt(
                 "y": coords[:, 1],
             }
         )
-        files["coordinates"] = _write_table(coordinates, out / "coordinates.csv")
+        files["coordinates"] = _write_table(coordinates, out / f"coordinates.{table_format}", fmt=table_format)
         edges = _build_spatial_edges(adata.obs_names.astype(str), coords, neighbor_k=neighbor_k)
         if not edges.empty:
-            files["spatial_edges"] = _write_table(edges, out / "spatial_edges.csv")
+            files["spatial_edges"] = _write_table(edges, out / f"spatial_edges.{table_format}", fmt=table_format)
 
     if include_expression_matrix:
         matrix_path = out / "rna_matrix.npz"
         matrix = _rna_matrix(adata)
         save_npz(matrix_path, matrix)
         files["rna_matrix"] = matrix_path.name
+        cell_axis_file = files["cell_table"]
         matrix_meta = {
             "format": "scipy_sparse_csr_npz",
             "shape": [int(matrix.shape[0]), int(matrix.shape[1])],
-            "cell_axis": "cells.csv:cell_id",
-            "feature_axis": "features.csv:feature_id",
+            "cell_axis": f"{cell_axis_file}:cell_id",
+            "feature_axis": f"{files['features']}:feature_id",
+            "table_format": table_format,
         }
         files["rna_matrix_metadata"] = _write_json(out / "rna_matrix_metadata.json", matrix_meta)
 
     if sdata is not None and contour_key is not None:
         if contour_key not in sdata.shapes:
             raise KeyError(f"`sdata.shapes[{contour_key!r}]` was not found.")
-        files["contours"] = _write_table(sdata.shapes[contour_key], out / "contours.csv")
+        files["contours"] = _write_table(sdata.shapes[contour_key], out / f"contours.{table_format}", fmt=table_format)
         patch_manifest = _build_contour_patch_manifest(sdata, contour_key=contour_key)
         if not patch_manifest.empty:
-            files["contour_patch_manifest"] = _write_table(patch_manifest, out / "contour_patch_manifest.csv")
+            files["contour_patch_manifest"] = _write_table(
+                patch_manifest, out / f"contour_patch_manifest.{table_format}", fmt=table_format
+            )
 
     if feature_table:
-        feature_files = _write_feature_table_bundle(feature_table, out)
+        feature_files = _write_feature_table_bundle(feature_table, out, fmt=table_format)
         files.update(feature_files)
 
     manifest = {
         "schema_version": _SCHEMA_VERSION,
         "kind": "pyxenium_to_stgpt_handoff",
         "sample_id": resolved_sample_id,
+        "table_format": table_format,
         "package_boundaries": {
             "pyXenium": "Xenium data loading, alignment, contour/cell feature tables, and interpretable analytics.",
             "stGPT": "RNA/H&E representation learning, masked prediction, spatial graph modeling, and uncertainty.",
@@ -400,7 +432,7 @@ def _build_contour_patch_manifest(sdata: XeniumSData, *, contour_key: str) -> pd
     return pd.DataFrame(rows)
 
 
-def _write_feature_table_bundle(feature_table: Mapping[str, Any], out: Path) -> dict[str, str]:
+def _write_feature_table_bundle(feature_table: Mapping[str, Any], out: Path, *, fmt: str = "csv") -> dict[str, str]:
     files: dict[str, str] = {}
     for key in (
         "contour_features",
@@ -413,7 +445,7 @@ def _write_feature_table_bundle(feature_table: Mapping[str, Any], out: Path) -> 
     ):
         value = feature_table.get(key)
         if isinstance(value, pd.DataFrame):
-            files[f"feature_table_{key}"] = _write_table(value, out / f"{key}.csv")
+            files[f"feature_table_{key}"] = _write_table(value, out / f"{key}.{fmt}", fmt=fmt)
     return files
 
 
@@ -432,9 +464,12 @@ def _read_table(value: str | Path | pd.DataFrame) -> pd.DataFrame:
     return frame
 
 
-def _write_table(frame: pd.DataFrame, path: Path) -> str:
+def _write_table(frame: pd.DataFrame, path: Path, *, fmt: str = "csv") -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
-    frame.to_csv(path, index=False)
+    if fmt == "parquet":
+        frame.to_parquet(path, index=False)
+    else:
+        frame.to_csv(path, index=False)
     return path.name
 
 
