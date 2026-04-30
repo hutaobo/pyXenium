@@ -21,11 +21,6 @@ from pyXenium.io.xenium_artifacts import read_experiment_metadata
 
 __all__ = ["add_contours_from_geojson", "import_histoseg_segmentation_qc"]
 
-_HISTOSEG_QC_EXPECTED_KEYS = (
-    "n_structures",
-    "segmentation_source",
-    "model_name",
-)
 _HISTOSEG_QC_METADATA_KEY = "histoseg_qc"
 
 _EXPANDED_METADATA_COLUMNS = (

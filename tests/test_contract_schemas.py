@@ -131,7 +131,7 @@ class TestGeoJSONImportContract:
 
         contour_meta = sdata.metadata["contours"]["histoseg"]
         assert isinstance(contour_meta, dict)
-        assert "n_contours" in contour_meta or "source_path" in contour_meta or contour_meta  # non-empty
+        assert contour_meta, "contour_meta should be a non-empty dict"
 
     def test_missing_geojson_raises(self, tmp_path):
         sdata = _toy_sdata()
