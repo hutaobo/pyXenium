@@ -62,3 +62,9 @@ the `Unassigned` compartment.
 - Use `CellPhoneDB` as the reproducible non-spatial expression baseline.
 - Use `LARIS`, `SpatialDM`, `stLearn`, and `LIANA+` as complementary views whose
   discoveries should be interpreted through their method-specific assumptions.
+- Extend the clean benchmark to the registered Atera cervical Xenium WTA dataset
+  (`atera_cervical_wta`) and one public non-Xenium spatial dataset before using
+  these results as manuscript-level cross-dataset evidence.
+- For reviewer-facing TopoLink-CCI results, report `CCI_score` as the discovery
+  score and use `cci_pvalue`, `cci_fdr`, spatial nulls, matched-gene controls,
+  downstream support, and bootstrap stability as orthogonal validation evidence.

@@ -1,0 +1,41 @@
+datasets:
+  - id: atera_breast_wta
+    display_name: Atera Xenium WTA FFPE breast cancer
+    platform: Xenium WTA
+    tissue: breast cancer
+    role: primary_discovery
+    local_xenium_root: Y:\long\10X_datasets\Xenium\Atera\WTA_Preview_FFPE_Breast_Cancer_outs
+    local_tbc_results: Y:\long\10X_datasets\Xenium\Atera\WTA_Preview_FFPE_Breast_Cancer_outs\sfplot_tbc_formal_wta\results
+    cell_groups_relpath: WTA_Preview_FFPE_Breast_Cancer_cell_groups.csv
+    benchmark_subdir: datasets/atera_breast_wta
+    expected_cells: 170057
+    notes:
+      - PDC clean full-common source-of-truth dataset.
+      - Used for current TopoLink-CCI discovery, validation v2, and manuscript figures.
+
+  - id: atera_cervical_wta
+    display_name: Atera Xenium WTA FFPE cervical cancer
+    platform: Xenium WTA
+    tissue: cervical cancer
+    role: cross_tissue_xenium_generalization
+    local_xenium_root: Y:\long\10X_datasets\Xenium\Atera\WTA_Preview_FFPE_Cervical_Cancer_outs
+    local_tbc_results: Y:\long\10X_datasets\Xenium\Atera\WTA_Preview_FFPE_Cervical_Cancer_outs\sfplot_tbc_formal_wta\results
+    cell_groups_relpath: WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv
+    benchmark_subdir: datasets/atera_cervical_wta
+    expected_cells: 717576
+    notes:
+      - Added as the second real dataset for reviewer-facing cross-dataset generalization.
+      - Use the same common CCI resource and validation controls as breast unless a tissue-specific canonical panel is supplied.
+
+  - id: public_non_xenium_spatial
+    display_name: Public non-Xenium spatial dataset placeholder
+    platform: CosMx/MERSCOPE/MERFISH/Visium HD
+    tissue: tumor_or_brain
+    role: cross_platform_generalization
+    local_xenium_root: null
+    local_tbc_results: null
+    benchmark_subdir: datasets/public_non_xenium_spatial
+    expected_cells: null
+    notes:
+      - Select one public non-Xenium dataset before final manuscript submission.
+      - Required to show TopoLink-CCI is not Xenium-specific.

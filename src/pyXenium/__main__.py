@@ -30,6 +30,7 @@ from .benchmarking import (
     prepare_a100_bundle,
     prepare_atera_cci_benchmark,
     render_atera_cci_benchmark_report,
+    resolve_dataset_entry,
     resolve_layout,
     run_a100_plan,
     run_registered_method,
@@ -41,6 +42,7 @@ from .benchmarking import (
 )
 from .io.io import copy_bundled_dataset, load_toy
 from .io.spatialdata_export import DEFAULT_SPATIALDATA_STORE_NAME, export_xenium_to_spatialdata_zarr
+from .io.xenium_slide_builder import build_atera_slides, build_xenium_slide
 from .gmi import (
     DEFAULT_GMI_A100_READONLY_XENIUM_ROOT,
     DEFAULT_GMI_A100_REMOTE_ROOT,
@@ -86,7 +88,7 @@ from .multimodal import (
     run_renal_immune_resistance_pilot,
     run_validated_renal_ffpe_smoke,
 )
-from .validation import DEFAULT_ATERA_WTA_BREAST_DATASET_PATH, run_atera_wta_breast_topology
+from .validation import DEFAULT_ATERA_WTA_BREAST_CELL_GROUPS, DEFAULT_ATERA_WTA_BREAST_DATASET_PATH, run_atera_wta_breast_topology
 from .validation.atera_wta_breast_topology import DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR
 
 
@@ -118,6 +120,77 @@ def gmi_group():
 @app.group("mechanostress")
 def mechanostress_group():
     """Mechanical stress state analysis from Xenium morphology and spatial context."""
+
+
+@app.group("slide")
+def slide_group():
+    """Build canonical XeniumSlide learning objects."""
+
+
+@slide_group.command("build")
+@click.option("--xenium-root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output-dir", required=True, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--case-name", required=True)
+@click.option("--organ", default=None)
+@click.option("--contour-geojson", default=None, type=click.Path(exists=True, dir_okay=False, path_type=Path))
+@click.option("--extract-contour-images/--skip-contour-images", default=False, show_default=True)
+@click.option("--max-crop-side-px", default=1024, show_default=True, type=int)
+@click.option("--patient-id", default=None)
+@click.option("--batch-id", default=None)
+@click.option("--stain", default="H&E", show_default=True)
+@click.option("--scanner", default=None)
+@click.option("--prefer", default="auto", show_default=True)
+@click.option("--overwrite/--no-overwrite", default=True, show_default=True)
+def slide_build(
+    xenium_root,
+    output_dir,
+    case_name,
+    organ,
+    contour_geojson,
+    extract_contour_images,
+    max_crop_side_px,
+    patient_id,
+    batch_id,
+    stain,
+    scanner,
+    prefer,
+    overwrite,
+):
+    """Build one XeniumSlide store, assignments, QC, and optional contour H&E crops."""
+    result = build_xenium_slide(
+        xenium_root=xenium_root,
+        output_dir=output_dir,
+        case_name=case_name,
+        organ=organ,
+        contour_geojson=contour_geojson,
+        extract_contour_images=extract_contour_images,
+        max_crop_side_px=max_crop_side_px,
+        patient_id=patient_id,
+        batch_id=batch_id,
+        stain=stain,
+        scanner=scanner,
+        prefer=prefer,
+        overwrite=overwrite,
+    )
+    click.echo(json.dumps(result.to_dict(), indent=2))
+
+
+@slide_group.command("build-atera")
+@click.option("--atera-root", default=r"Y:\long\10X_datasets\Xenium\Atera", show_default=True, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--output-root", default=r"D:\GitHub\stGPT\outputs\xenium_slides\atera", show_default=True, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--extract-contour-images/--skip-contour-images", default=True, show_default=True)
+@click.option("--max-crop-side-px", default=1024, show_default=True, type=int)
+@click.option("--overwrite/--no-overwrite", default=True, show_default=True)
+def slide_build_atera(atera_root, output_root, extract_contour_images, max_crop_side_px, overwrite):
+    """Build canonical XeniumSlide artifacts for the two Atera WTA cases."""
+    payload = build_atera_slides(
+        atera_root=atera_root,
+        output_root=output_root,
+        extract_contour_images=extract_contour_images,
+        max_crop_side_px=max_crop_side_px,
+        overwrite=overwrite,
+    )
+    click.echo(json.dumps(payload, indent=2))
 
 
 def _gmi_config_from_options(**kwargs) -> ContourGmiConfig:
@@ -850,17 +923,19 @@ def atera_wta_breast_topology(
 @click.option("--dataset-root", "--xenium-root", "dataset_root", default=DEFAULT_ATERA_WTA_BREAST_DATASET_PATH, show_default=True)
 @click.option("--benchmark-root", default=None, help="Optional benchmark root. Defaults to benchmarking/cci_2026_atera under the repo root.")
 @click.option("--tbc-results", default=None, help="Optional path to the topology bundle directory.")
+@click.option("--clusters-relpath", default=DEFAULT_ATERA_WTA_BREAST_CELL_GROUPS, show_default=True, help="Cell-group annotation CSV relative to the Xenium root.")
 @click.option("--smoke-n-cells", type=int, default=20000, show_default=True)
 @click.option("--seed", type=int, default=0, show_default=True)
 @click.option("--prefer", type=click.Choice(["auto", "zarr", "h5", "mex"]), default="h5", show_default=True)
 @click.option("--export-full-bundle/--skip-full-bundle", default=True, show_default=True)
 @click.option("--write-full-h5ad/--skip-full-h5ad", default=True, show_default=True)
-def benchmark_atera_cci_prepare(dataset_root, benchmark_root, tbc_results, smoke_n_cells, seed, prefer, export_full_bundle, write_full_h5ad):
+def benchmark_atera_cci_prepare(dataset_root, benchmark_root, tbc_results, clusters_relpath, smoke_n_cells, seed, prefer, export_full_bundle, write_full_h5ad):
     """Freeze the Atera Xenium benchmark inputs and export the cross-language bundle."""
     payload = prepare_atera_cci_benchmark(
         dataset_root=dataset_root,
         benchmark_root=benchmark_root,
         tbc_results=tbc_results,
+        clusters_relpath=clusters_relpath,
         smoke_n_cells=smoke_n_cells,
         seed=seed,
         prefer=prefer,
@@ -868,6 +943,60 @@ def benchmark_atera_cci_prepare(dataset_root, benchmark_root, tbc_results, smoke
         write_full_h5ad=write_full_h5ad,
     )
     click.echo(json.dumps(payload, indent=2))
+
+
+@benchmark_atera_cci_group.command("prepare-dataset")
+@click.option("--dataset-id", default="atera_cervical_wta", show_default=True, help="Dataset id from configs/datasets.yaml.")
+@click.option("--datasets-config", default=None, help="Optional datasets.yaml override.")
+@click.option("--benchmark-root", default=None, help="Optional dataset-specific benchmark root.")
+@click.option("--smoke-n-cells", type=int, default=20000, show_default=True)
+@click.option("--seed", type=int, default=0, show_default=True)
+@click.option("--prefer", type=click.Choice(["auto", "zarr", "h5", "mex"]), default="h5", show_default=True)
+@click.option("--export-full-bundle/--skip-full-bundle", default=True, show_default=True)
+@click.option("--write-full-h5ad/--skip-full-h5ad", default=True, show_default=True)
+@click.option("--dry-run", is_flag=True, default=False, help="Resolve the dataset entry without preparing data.")
+def benchmark_atera_cci_prepare_dataset(
+    dataset_id,
+    datasets_config,
+    benchmark_root,
+    smoke_n_cells,
+    seed,
+    prefer,
+    export_full_bundle,
+    write_full_h5ad,
+    dry_run,
+):
+    """Prepare a registered cross-dataset TopoLink-CCI benchmark bundle."""
+    dataset = resolve_dataset_entry(dataset_id, datasets_config)
+    layout = resolve_layout()
+    resolved_root = benchmark_root or layout.root / str(dataset["benchmark_subdir"])
+    payload = {
+        "dataset_id": dataset_id,
+        "dataset_root": dataset.get("local_xenium_root"),
+        "tbc_results": dataset.get("local_tbc_results"),
+        "cell_groups_relpath": dataset.get("cell_groups_relpath"),
+        "benchmark_root": str(resolved_root),
+        "role": dataset.get("role"),
+        "platform": dataset.get("platform"),
+        "tissue": dataset.get("tissue"),
+    }
+    if not dry_run:
+        payload = prepare_atera_cci_benchmark(
+            dataset_root=payload["dataset_root"],
+            benchmark_root=payload["benchmark_root"],
+            dataset_id=dataset_id,
+            tbc_results=payload["tbc_results"],
+            clusters_relpath=payload["cell_groups_relpath"] or DEFAULT_ATERA_WTA_BREAST_CELL_GROUPS,
+            smoke_n_cells=smoke_n_cells,
+            seed=seed,
+            prefer=prefer,
+            export_full_bundle=export_full_bundle,
+            write_full_h5ad=write_full_h5ad,
+        )
+        payload = {"dataset_id": dataset_id, "status": "prepared", **payload}
+    else:
+        payload = {"status": "planned", **payload}
+    click.echo(json.dumps(payload, indent=2, default=str))
 
 
 @benchmark_atera_cci_group.command("smoke-pyxenium")

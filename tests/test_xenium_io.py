@@ -16,12 +16,17 @@ from scipy.io import mmwrite
 import pyXenium.io.api as xenium_api_module
 from pyXenium.io import (
     XeniumSData,
+    XeniumSlide,
+    build_xenium_slide,
     export_xenium_to_spatialdata_zarr,
     load_anndata_from_partial,
     load_xenium_gene_protein,
     read_sdata,
+    read_slide,
     read_xenium,
+    read_xenium_slide,
     write_xenium,
+    write_xenium_slide,
 )
 from pyXenium.multimodal import load_rna_protein_anndata
 
@@ -405,6 +410,38 @@ def make_xenium_dataset(
     return base_path
 
 
+def _write_contour_geojson(path: Path) -> Path:
+    payload = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "structure_id": 1,
+                    "assigned_structure": "tumor_region",
+                    "component_index": 0,
+                    "polygon_index": 0,
+                    "name": "tumor_region_1",
+                },
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [15.0, 35.0],
+                            [85.0, 35.0],
+                            [85.0, 105.0],
+                            [15.0, 105.0],
+                            [15.0, 35.0],
+                        ]
+                    ],
+                },
+            }
+        ],
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
 @pytest.mark.parametrize("prefer", ["mex", "zarr", "h5"])
 def test_read_xenium_anndata_backends(tmp_path, prefer):
     if prefer == "h5" and h5py is None:
@@ -575,6 +612,67 @@ def test_read_xenium_sdata_contains_expected_components(tmp_path):
     assert sdata.metadata["cluster_key"] == "gene_expression_graphclust"
     assert "cluster__gene_expression_kmeans_2_clusters" in sdata.table.obs.columns
     np.testing.assert_allclose(sdata.table.obsm["X_umap"], UMAP_VALUES)
+
+
+def test_xenium_slide_is_canonical_and_sdata_alias_stays_compatible(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
+
+    slide = read_xenium(str(dataset), as_="slide", prefer="zarr", include_images=True)
+
+    assert isinstance(slide, XeniumSlide)
+    assert isinstance(slide, XeniumSData)
+    assert XeniumSData is XeniumSlide
+    assert slide.table.uns["xenium_slide"]["schema_version"] == 1
+    assert "he" in slide.images
+
+    output = tmp_path / "xenium_slide.zarr"
+    payload = write_xenium_slide(slide, output)
+    reloaded = read_xenium_slide(output)
+    legacy_reloaded = read_slide(output)
+
+    assert payload["format"] == "pyxenium.sdata"
+    assert reloaded.table.shape == slide.table.shape
+    assert isinstance(legacy_reloaded, XeniumSlide)
+
+
+def test_build_xenium_slide_writes_contour_assignments_and_patches(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
+    contour_geojson = _write_contour_geojson(tmp_path / "contours.geojson")
+    output_dir = tmp_path / "slide_out"
+
+    result = build_xenium_slide(
+        xenium_root=dataset,
+        output_dir=output_dir,
+        case_name="synthetic_slide",
+        organ="test_organ",
+        contour_geojson=contour_geojson,
+        extract_contour_images=True,
+        max_crop_side_px=64,
+    )
+
+    assert result.slide_store.exists()
+    assert result.contour_patch_manifest is not None
+    assert result.contour_patch_count == 1
+    assert (output_dir / "cell_to_contour.parquet").exists()
+    assert (output_dir / "structure_assignments.csv").exists()
+    assert (output_dir / "contour_patches" / "00001_tumor_region_1.png").exists()
+
+    manifest = json.loads(result.slide_manifest.read_text(encoding="utf-8"))
+    qc = json.loads(result.qc_report.read_text(encoding="utf-8"))
+    cell_to_contour = pd.read_parquet(output_dir / "cell_to_contour.parquet")
+    patch_manifest = json.loads((output_dir / "contour_patches_manifest.json").read_text(encoding="utf-8"))
+    slide = read_xenium_slide(result.slide_store)
+
+    assert manifest["schema"]["name"] == "XeniumSlide"
+    assert manifest["counts"]["cells"] == 3
+    assert manifest["counts"]["contours"] == 1
+    assert manifest["counts"]["assigned_cells"] == 3
+    assert qc["status"] == "pass"
+    assert set(cell_to_contour["assignment_status"]) == {"assigned"}
+    assert set(cell_to_contour["contour_coordinate_space"]) == {"xenium_pixel"}
+    assert patch_manifest[0]["structure_label"] == "tumor_region"
+    assert "contours" in slide.shapes
+    assert "contour_id" in slide.table.obs.columns
 
 
 def test_read_xenium_sdata_can_stream_transcripts_for_export(tmp_path):

@@ -25,6 +25,22 @@ This directory contains:
 - `scripts/` for preparation, environment creation, aggregation, report rendering, and A100 staging
 - `runners/` for method-side adapters
 
+## Dataset Panel
+
+The benchmark now has an explicit manuscript dataset panel in
+`benchmarking/cci_2026_atera/configs/datasets.yaml`.
+
+- `atera_breast_wta`: primary Atera Xenium WTA breast discovery and validation dataset.
+- `atera_cervical_wta`: Atera Xenium WTA cervical cancer cross-tissue generalization dataset at `Y:\long\10X_datasets\Xenium\Atera\WTA_Preview_FFPE_Cervical_Cancer_outs`.
+- `public_non_xenium_spatial`: placeholder for the required public CosMx/MERSCOPE/MERFISH/Visium HD cross-platform dataset.
+
+Prepare or dry-run a dataset-specific bundle with:
+
+```bash
+pyxenium benchmark atera-cci prepare-dataset --dataset-id atera_cervical_wta --dry-run
+pyxenium benchmark atera-cci prepare-dataset --dataset-id atera_cervical_wta --skip-full-h5ad
+```
+
 ## CLI Entry Points
 
 Prepare the shared input bundle:
@@ -101,3 +117,14 @@ The first-wave real adapter contract covers `pyXenium`, `Squidpy ligrec`, `LIANA
 Use the declared per-method environments rather than a base Python environment. In particular, the Squidpy environment pins `zarr<3` because current `spatialdata`/`ome-zarr` stacks can fail to import against incompatible zarr releases.
 
 A100 orchestration writes a portable stage/job manifest and never stores passwords. The A100 source/destination split is explicit: `/mnt/taobo.hu/long/10X_datasets/Xenium/Atera/WTA_Preview_FFPE_Breast_Cancer_outs` is read-only input, while `/data/taobo.hu/pyxenium_cci_benchmark_2026-04` is the only writable benchmark root. The report step automatically includes run status, engineering reproducibility, canonical pair rank matrix, and A100 resource summary when the corresponding run summaries or A100 plan exist.
+
+## Nature Methods Readiness Gates
+
+The reviewer-facing benchmark is tracked in
+`benchmarking/cci_2026_atera/configs/publication_readiness.yaml`. Before final
+submission, TopoLink-CCI should have at least three real datasets, ten comparison
+methods, one topology-preserving synthetic truth panel, five false-positive
+control layers, and five stratified bootstrap repeats. The public method should
+report `CCI_score` as a discovery score and reserve `cci_pvalue`, `cci_fdr`,
+`null_z`, downstream support, cross-method consensus, and robustness for
+orthogonal validation.

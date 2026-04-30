@@ -11,7 +11,7 @@ from typing import Any
 
 DEFAULT_PDC_HOST = "pdc"
 DEFAULT_PDC_ROOT = "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04"
-REMOTE_DIRS = ("runs", "results", "logs", "reports", "data/source_cache/breast/source_manifest.json")
+REMOTE_DIRS = ("runs", "results", "logs", "reports", "data/source_manifest.json", "data/input_manifest.json")
 
 
 def q(value: str | Path) -> str:

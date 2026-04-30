@@ -25,6 +25,7 @@ from pyXenium.validation.atera_wta_breast_topology import (
 )
 
 ATERA_BENCHMARK_RELATIVE_ROOT = Path("benchmarking") / "cci_2026_atera"
+DEFAULT_DATASET_PANEL_CONFIG = ATERA_BENCHMARK_RELATIVE_ROOT / "configs" / "datasets.yaml"
 STANDARDIZED_RESULT_COLUMNS = [
     "method",
     "database_mode",
@@ -120,6 +121,32 @@ def load_method_registry(methods_path: str | Path) -> list[dict[str, Any]]:
     if not isinstance(methods, list):
         raise ValueError("methods.yaml must contain a top-level 'methods' list.")
     return methods
+
+
+def load_dataset_panel(datasets_path: str | Path | None = None) -> list[dict[str, Any]]:
+    """Load the cross-dataset CCI benchmark panel.
+
+    The panel is intentionally lightweight: it records local/remote roots and
+    topology-bundle locations, while heavy data preparation still happens only
+    when a caller explicitly runs a prepare command.
+    """
+
+    repo_root = _find_repo_root()
+    path = Path(datasets_path) if datasets_path is not None else repo_root / DEFAULT_DATASET_PANEL_CONFIG
+    payload = _load_yaml(path)
+    datasets = payload.get("datasets", [])
+    if not isinstance(datasets, list):
+        raise ValueError("datasets.yaml must contain a top-level 'datasets' list.")
+    return datasets
+
+
+def resolve_dataset_entry(dataset_id: str, datasets_path: str | Path | None = None) -> dict[str, Any]:
+    datasets = load_dataset_panel(datasets_path)
+    for dataset in datasets:
+        if str(dataset.get("id")) == str(dataset_id):
+            return dict(dataset)
+    available = ", ".join(str(dataset.get("id")) for dataset in datasets)
+    raise ValueError(f"Unknown benchmark dataset {dataset_id!r}. Available datasets: {available}")
 
 
 def _as_sparse_matrix(matrix: Any) -> sparse.spmatrix:
@@ -299,7 +326,9 @@ def prepare_atera_cci_benchmark(
     *,
     dataset_root: str | Path | None = DEFAULT_ATERA_WTA_BREAST_DATASET_PATH,
     benchmark_root: str | Path | None = None,
+    dataset_id: str | None = None,
     tbc_results: str | Path | None = None,
+    clusters_relpath: str | Path | None = DEFAULT_ATERA_WTA_BREAST_CELL_GROUPS,
     smoke_n_cells: int = 20_000,
     seed: int = 0,
     prefer: str = "h5",
@@ -312,6 +341,7 @@ def prepare_atera_cci_benchmark(
     layout = ensure_layout(resolve_layout(repo_root=repo_root, relative_root=benchmark_root or ATERA_BENCHMARK_RELATIVE_ROOT))
     dataset_root = Path(dataset_root or DEFAULT_ATERA_WTA_BREAST_DATASET_PATH)
     tbc_path = _portable_path(tbc_results) if tbc_results else _portable_join(dataset_root, DEFAULT_ATERA_WTA_BREAST_TBC_SUBDIR)
+    resolved_clusters_relpath = DEFAULT_ATERA_WTA_BREAST_CELL_GROUPS if clusters_relpath is None else str(clusters_relpath)
 
     raw = read_xenium(
         str(dataset_root),
@@ -320,7 +350,7 @@ def prepare_atera_cci_benchmark(
         include_transcripts=False,
         include_boundaries=False,
         include_images=False,
-        clusters_relpath=DEFAULT_ATERA_WTA_BREAST_CELL_GROUPS,
+        clusters_relpath=resolved_clusters_relpath,
         cluster_column_name="cluster",
         cells_parquet="cells.parquet",
     )
@@ -355,11 +385,13 @@ def prepare_atera_cci_benchmark(
     celltype_pairs.to_csv(celltype_pairs_path, sep="\t", index=False)
 
     payload = {
+        "dataset_id": dataset_id,
         "xenium_root": str(dataset_root),
         "dataset_root": str(dataset_root),
         "readonly_xenium_root": str(dataset_root),
         "writable_benchmark_root": str(layout.root),
         "tbc_results": str(tbc_path),
+        "cell_groups_relpath": resolved_clusters_relpath,
         "benchmark_root": str(layout.root),
         "full_h5ad": str(full_h5ad) if export_full_bundle and write_full_h5ad else None,
         "smoke_h5ad": str(smoke_h5ad),

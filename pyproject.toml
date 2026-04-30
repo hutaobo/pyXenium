@@ -40,6 +40,7 @@ dependencies = [
   "shapely>=2.0",
   "tifffile>=2024.8.10",
   "imagecodecs>=2024.6.1",
+  "Pillow>=10.0",
   "zarr>=3.1",
   "fsspec>=2024.6.0",
   "requests>=2.31",

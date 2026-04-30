@@ -132,6 +132,71 @@ def test_cci_hybrid_marks_fallback_sources_and_zeroes_sparse_contact():
     assert not result["scores"]["local_contact"].isna().any()
 
 
+def test_cci_calibration_modes_downstream_and_hotspots_are_optional(tmp_path):
+    reference = _toy_reference()
+    expression = _toy_expression(reference)
+    t_and_c = _toy_t_and_c()
+    structure_map = _toy_structure_map()
+    interaction_pairs = pd.DataFrame(
+        [
+            {
+                "ligand": "L1",
+                "receptor": "R1",
+                "evidence_weight": 1.0,
+                "interaction_mode": "secreted/paracrine",
+            },
+            {
+                "ligand": "L2",
+                "receptor": "R2",
+                "evidence_weight": 0.5,
+                "interaction_mode": "juxtacrine/contact",
+            },
+        ]
+    )
+
+    result = cci_topology_analysis(
+        reference_df=reference,
+        expression_df=expression,
+        interaction_pairs=interaction_pairs,
+        t_and_c_df=t_and_c,
+        structure_map_df=structure_map,
+        null_model="component_shuffle",
+        n_permutations=8,
+        random_state=42,
+        distance_kernel="mechanism_aware",
+        downstream_targets={"L1^R1": ["G2", "missing_gene"]},
+        output_dir=tmp_path,
+        export_figures=False,
+    )
+
+    scores = result["scores"]
+    assert {"interaction_mode", "distance_kernel_component", "cci_pvalue", "cci_fdr", "null_z"}.issubset(scores.columns)
+    assert scores["cci_pvalue"].between(0.0, 1.0).all()
+    assert scores["cci_fdr"].between(0.0, 1.0).all()
+    assert scores.loc[(scores["ligand"] == "L1") & (scores["receptor"] == "R1"), "downstream_target_count"].max() == 1
+    assert not result["null_calibration_summary"].empty
+    assert not result["hotspot_table"].empty
+    assert (tmp_path / "cci_null_calibration_summary.csv").exists()
+
+
+def test_cci_return_hotspots_false_suppresses_hotspot_table():
+    reference = _toy_reference()
+    expression = _toy_expression(reference)
+    interaction_pairs = pd.DataFrame([{"ligand": "L1", "receptor": "R1", "evidence_weight": 1.0}])
+
+    result = cci_topology_analysis(
+        reference_df=reference,
+        expression_df=expression,
+        interaction_pairs=interaction_pairs,
+        t_and_c_df=_toy_t_and_c(),
+        structure_map_df=_toy_structure_map(),
+        return_hotspots=False,
+        export_figures=False,
+    )
+
+    assert result["hotspot_table"].empty
+
+
 def test_pathway_topology_writes_dual_outputs_and_diagnostics(tmp_path):
     reference = _toy_reference()
     expression = _toy_expression(reference)

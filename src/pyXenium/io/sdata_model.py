@@ -259,7 +259,7 @@ class XeniumImage:
 
 
 @dataclass
-class XeniumSData:
+class XeniumSlide:
     table: ad.AnnData
     points: dict[str, pd.DataFrame] = field(default_factory=dict)
     shapes: dict[str, pd.DataFrame] = field(default_factory=dict)
@@ -270,7 +270,7 @@ class XeniumSData:
 
     def __post_init__(self) -> None:
         if not isinstance(self.table, ad.AnnData):
-            raise TypeError("XeniumSData.table must be an anndata.AnnData instance.")
+            raise TypeError("XeniumSlide.table must be an anndata.AnnData instance.")
         self.points = _normalize_frame_map(self.points)
         self.shapes = _normalize_frame_map(self.shapes)
         self.images = _normalize_image_map(self.images)
@@ -283,7 +283,7 @@ class XeniumSData:
         overlap = set(self.points).intersection(self.point_sources)
         if overlap:
             raise ValueError(
-                "XeniumSData.points and XeniumSData.point_sources cannot share keys: "
+                "XeniumSlide.points and XeniumSlide.point_sources cannot share keys: "
                 f"{sorted(overlap)}"
             )
         if "transcripts" in self.points:
@@ -291,7 +291,7 @@ class XeniumSData:
             missing = required.difference(self.points["transcripts"].columns)
             if missing:
                 raise ValueError(
-                    "XeniumSData.points['transcripts'] is missing required columns: "
+                    "XeniumSlide.points['transcripts'] is missing required columns: "
                     f"{sorted(missing)}"
                 )
         if "transcripts" in self.point_sources:
@@ -299,7 +299,7 @@ class XeniumSData:
             missing = required.difference(self.point_sources["transcripts"].columns)
             if missing:
                 raise ValueError(
-                    "XeniumSData.point_sources['transcripts'] is missing required columns: "
+                    "XeniumSlide.point_sources['transcripts'] is missing required columns: "
                     f"{sorted(missing)}"
                 )
 
@@ -310,7 +310,7 @@ class XeniumSData:
             missing = required.difference(self.shapes[key].columns)
             if missing:
                 raise ValueError(
-                    f"XeniumSData.shapes[{key!r}] is missing required columns: {sorted(missing)}"
+                    f"XeniumSlide.shapes[{key!r}] is missing required columns: {sorted(missing)}"
                 )
 
     def to_anndata(self) -> ad.AnnData:
@@ -322,7 +322,7 @@ class XeniumSData:
             from spatialdata.models import Image2DModel
         except Exception as exc:  # pragma: no cover
             raise ImportError(
-                "Optional dependency 'spatialdata' is required for XeniumSData.to_spatialdata()."
+                "Optional dependency 'spatialdata' is required for XeniumSlide.to_spatialdata()."
             ) from exc
 
         kwargs: dict[str, Any] = {}
@@ -356,3 +356,7 @@ class XeniumSData:
             "contour_images": sorted(self.contour_images.keys()),
             "labels": sorted(self.metadata.get("labels", {}).keys()),
         }
+
+
+# Deprecated compatibility alias. New code should import/use XeniumSlide.
+XeniumSData = XeniumSlide

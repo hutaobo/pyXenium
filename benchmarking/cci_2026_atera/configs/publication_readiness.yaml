@@ -1,0 +1,57 @@
+publication_readiness:
+  target_positioning: spatial CCI hypothesis prioritization and validation framework
+  minimum_acceptance:
+    real_datasets: 3
+    comparison_methods: 10
+    synthetic_truth_panels: 1
+    false_positive_control_layers: 5
+    bootstrap_repeats: 5
+  required_method_improvements:
+    - statistical_calibration
+    - interaction_mode_annotation
+    - mechanism_aware_distance_profiles
+    - receiver_downstream_response_support
+    - uncertainty_and_artifact_controls
+    - multi_sample_differential_cci
+  benchmark_outputs:
+    - method_comparison.tsv
+    - false_positive_controls.tsv
+    - synthetic_truth_metrics.tsv
+    - cross_dataset_generalization.tsv
+    - biology_recovery_scoreboard.md
+    - reviewer_facing_figure_panels
+  method_panel:
+    already_completed:
+      - topolink_cci
+      - cellphonedb
+      - laris
+      - liana
+      - spatialdm
+      - stlearn
+    must_attempt:
+      - cellchat
+      - commot
+      - squidpy
+      - giotto
+      - spatalk
+      - niches
+      - copulacci
+      - scild
+      - fastccc
+      - nichenet
+      - cellnest
+      - cellagentchat
+  false_positive_controls:
+    - cell_label_permutation
+    - spatial_coordinate_permutation
+    - cci_resource_label_shuffle
+    - matched_expression_random_gene_pairs
+    - cell_abundance_confounding
+    - segmentation_or_label_noise
+  canonical_biology_axes:
+    - vascular_wpb_activation
+    - endothelial_pericyte_notch
+    - caf_immune_cxcl12_cxcr4
+    - tcell_cd48_cd2
+    - tumor_notch
+    - ecm_caf_remodeling

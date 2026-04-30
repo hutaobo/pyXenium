@@ -69,6 +69,77 @@ def test_export_spatialdata_command(monkeypatch, tmp_path):
     assert captured["aligned_images"] is False
 
 
+def test_slide_build_command(monkeypatch, tmp_path):
+    captured = {}
+
+    class FakeResult:
+        def to_dict(self):
+            return {"case_name": "case_a", "xenium_slide": str(tmp_path / "xenium_slide.zarr")}
+
+    def fake_build_xenium_slide(**kwargs):
+        captured.update(kwargs)
+        return FakeResult()
+
+    monkeypatch.setattr("pyXenium.__main__.build_xenium_slide", fake_build_xenium_slide)
+    xenium_root = tmp_path / "xenium"
+    contour_geojson = tmp_path / "contours.geojson"
+    xenium_root.mkdir()
+    contour_geojson.write_text('{"type":"FeatureCollection","features":[]}', encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "slide",
+            "build",
+            "--xenium-root",
+            str(xenium_root),
+            "--output-dir",
+            str(tmp_path / "out"),
+            "--case-name",
+            "case_a",
+            "--organ",
+            "breast",
+            "--contour-geojson",
+            str(contour_geojson),
+            "--extract-contour-images",
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.output)
+    assert payload["case_name"] == "case_a"
+    assert captured["organ"] == "breast"
+    assert captured["extract_contour_images"] is True
+
+
+def test_slide_build_atera_command(monkeypatch, tmp_path):
+    captured = {}
+
+    def fake_build_atera_slides(**kwargs):
+        captured.update(kwargs)
+        return {"breast": {"case_name": "atera_wta_breast"}, "cervical": {"case_name": "atera_wta_cervical"}}
+
+    monkeypatch.setattr("pyXenium.__main__.build_atera_slides", fake_build_atera_slides)
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "slide",
+            "build-atera",
+            "--atera-root",
+            str(tmp_path / "atera"),
+            "--output-root",
+            str(tmp_path / "out"),
+            "--skip-contour-images",
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.output)
+    assert set(payload) == {"breast", "cervical"}
+    assert captured["extract_contour_images"] is False
+
+
 def test_validate_renal_ffpe_protein_command(monkeypatch, tmp_path):
     captured = {}
 

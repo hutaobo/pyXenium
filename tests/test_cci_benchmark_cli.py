@@ -134,6 +134,45 @@ def test_benchmark_prepare_command_accepts_xenium_root_alias(monkeypatch, tmp_pa
     assert captured["write_full_h5ad"] is True
 
 
+def test_benchmark_prepare_dataset_dry_run(monkeypatch, tmp_path):
+    dataset = {
+        "id": "atera_cervical_wta",
+        "local_xenium_root": str(tmp_path / "cervical"),
+        "local_tbc_results": str(tmp_path / "cervical" / "sfplot_tbc_formal_wta" / "results"),
+        "cell_groups_relpath": "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv",
+        "benchmark_subdir": "datasets/atera_cervical_wta",
+        "role": "cross_tissue_xenium_generalization",
+        "platform": "Xenium WTA",
+        "tissue": "cervical cancer",
+    }
+
+    monkeypatch.setattr("pyXenium.__main__.resolve_dataset_entry", lambda dataset_id, datasets_config=None: dataset)
+    monkeypatch.setattr(
+        "pyXenium.__main__.resolve_layout",
+        lambda: type("Layout", (), {"root": tmp_path / "benchmark"})(),
+    )
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "benchmark",
+            "atera-cci",
+            "prepare-dataset",
+            "--dataset-id",
+            "atera_cervical_wta",
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.output)
+    assert payload["status"] == "planned"
+    assert payload["dataset_id"] == "atera_cervical_wta"
+    assert payload["tissue"] == "cervical cancer"
+    assert payload["cell_groups_relpath"] == "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv"
+    assert payload["benchmark_root"].endswith("datasets\\atera_cervical_wta") or payload["benchmark_root"].endswith("datasets/atera_cervical_wta")
+
+
 def test_benchmark_smoke_pyxenium_command(monkeypatch, tmp_path):
     captured = {}
 

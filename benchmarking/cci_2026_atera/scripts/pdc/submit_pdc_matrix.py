@@ -81,7 +81,7 @@ class MethodConfig:
 
 
 METHODS: dict[str, MethodConfig] = {
-    "pyxenium": MethodConfig("python", "shared", 16, "96G", "06:00:00", imports=("pyXenium",)),
+    "pyxenium": MethodConfig("python", "memory", 32, "300G", "24:00:00", imports=("pyXenium",)),
     "squidpy": MethodConfig("python", "shared", 16, "160G", "12:00:00", pip=("setuptools<81", "squidpy", "omnipath", "zarr<3"), imports=("squidpy",)),
     "liana": MethodConfig("python", "memory", 16, "300G", "18:00:00", pip=("liana", "omnipath", "mudata", "decoupler"), imports=("liana",)),
     "spatialdm": MethodConfig("python", "memory", 16, "300G", "18:00:00", pip=("git+https://github.com/StatBiomed/SpatialDM.git", "SparseAEH"), imports=("spatialdm",)),
@@ -635,7 +635,8 @@ PY
 
 
 def prepare_command(root: str) -> str:
-    return f"bash {q(root)}/repo/benchmarking/cci_2026_atera/scripts/pdc/prepare_pdc_bundle.sh"
+    script = f"{root}/repo/benchmarking/cci_2026_atera/scripts/pdc/prepare_pdc_bundle.sh"
+    return f"sed -i 's/\\r$//' {q(script)} && bash {q(script)}"
 
 
 def job_script(
@@ -933,12 +934,16 @@ def main() -> None:
     if unknown:
         raise SystemExit(f"Unknown methods: {unknown}")
     stages = {item.strip().lower() for item in args.stages.split(",") if item.strip()}
+    if "audit" in stages:
+        stages.discard("audit")
+        stages.add("env")
+    include_full = bool(args.include_full or "full" in stages)
     jobs = build_jobs(
         methods,
         args.remote_root.rstrip("/"),
         args.account,
         stages,
-        args.include_full,
+        include_full,
         commot_chunks=args.commot_chunks,
         cellagentchat_chunks=args.cellagentchat_chunks,
     )
@@ -950,7 +955,7 @@ def main() -> None:
         "account": args.account,
         "methods": methods,
         "stages": sorted(stages),
-        "include_full": args.include_full,
+        "include_full": include_full,
         "rebuild_env_tag": REBUILD_ENV_TAG,
         "rebuild_full_methods": list(PDC_REBUILD_FULL_METHODS),
         "source_checkouts": SOURCE_CHECKOUTS,

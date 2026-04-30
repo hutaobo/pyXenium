@@ -22,6 +22,7 @@ from pyXenium.benchmarking.cci_atera import (
     harmonize_adata_for_benchmark,
     prepare_atera_cci_benchmark,
     render_atera_cci_benchmark_report,
+    resolve_dataset_entry,
     score_biological_performance,
     standardize_result_table,
 )
@@ -132,12 +133,20 @@ def test_harmonize_adata_for_benchmark_promotes_gene_symbols_and_spatial_coords(
 
 
 def test_prepare_atera_cci_benchmark_writes_sparse_bundle_and_manifest(monkeypatch, tmp_path):
-    monkeypatch.setattr("pyXenium.io.read_xenium", lambda *args, **kwargs: _toy_adata())
+    captured = {}
+
+    def fake_read_xenium(*args, **kwargs):
+        captured.update(kwargs)
+        return _toy_adata()
+
+    monkeypatch.setattr("pyXenium.io.read_xenium", fake_read_xenium)
 
     payload = prepare_atera_cci_benchmark(
         dataset_root=tmp_path / "dataset",
         benchmark_root=tmp_path / "benchmark",
+        dataset_id="toy_dataset",
         tbc_results=tmp_path / "dataset" / "results",
+        clusters_relpath="toy_cell_groups.csv",
         smoke_n_cells=3,
         seed=123,
         prefer="h5",
@@ -153,9 +162,12 @@ def test_prepare_atera_cci_benchmark_writes_sparse_bundle_and_manifest(monkeypat
     assert smoke_h5ad.exists()
     assert common_db.exists()
     assert payload["full_n_cells"] == 4
+    assert payload["dataset_id"] == "toy_dataset"
+    assert payload["cell_groups_relpath"] == "toy_cell_groups.csv"
     assert payload["smoke_n_cells"] == 3
     assert payload["xenium_root"] == str(tmp_path / "dataset")
     assert payload["writable_benchmark_root"] == str(tmp_path / "benchmark")
+    assert captured["clusters_relpath"] == "toy_cell_groups.csv"
 
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert manifest["matrix_note"].startswith("Dense counts_symbol.tsv is intentionally omitted")
@@ -181,6 +193,27 @@ def test_prepare_atera_cci_benchmark_can_skip_full_h5ad_but_keep_sparse_full_bun
     assert payload["full_h5ad"] is None
     assert Path(payload["full_bundle"]["counts_symbol_mtx"]).exists()
     assert payload["write_full_h5ad"] is False
+
+
+def test_resolve_dataset_entry_supports_cervical_panel(tmp_path):
+    datasets_yaml = tmp_path / "datasets.yaml"
+    datasets_yaml.write_text(
+        "datasets:\n"
+        "  - id: atera_cervical_wta\n"
+        "    display_name: Cervical\n"
+        "    local_xenium_root: Y:/long/10X_datasets/Xenium/Atera/WTA_Preview_FFPE_Cervical_Cancer_outs\n"
+        "    local_tbc_results: Y:/long/10X_datasets/Xenium/Atera/WTA_Preview_FFPE_Cervical_Cancer_outs/sfplot_tbc_formal_wta/results\n"
+        "    cell_groups_relpath: WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv\n"
+        "    benchmark_subdir: datasets/atera_cervical_wta\n",
+        encoding="utf-8",
+    )
+
+    entry = resolve_dataset_entry("atera_cervical_wta", datasets_yaml)
+
+    assert entry["id"] == "atera_cervical_wta"
+    assert entry["benchmark_subdir"] == "datasets/atera_cervical_wta"
+    assert entry["cell_groups_relpath"] == "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv"
+    assert "Cervical_Cancer_outs" in entry["local_xenium_root"]
 
 
 def test_read_sparse_bundle_as_adata_round_trips_bundle(tmp_path):

@@ -11,7 +11,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Prepare the Atera Xenium CCI benchmark input bundle.")
     parser.add_argument("--dataset-root", "--xenium-root", dest="dataset_root", default=None)
     parser.add_argument("--benchmark-root", default=None)
+    parser.add_argument("--dataset-id", default=None)
     parser.add_argument("--tbc-results", default=None)
+    parser.add_argument("--clusters-relpath", default=None)
     parser.add_argument("--smoke-n-cells", type=int, default=20_000)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--prefer", default="h5")
@@ -23,7 +25,9 @@ def main() -> None:
     payload = prepare_atera_cci_benchmark(
         dataset_root=args.dataset_root,
         benchmark_root=args.benchmark_root,
+        dataset_id=args.dataset_id,
         tbc_results=args.tbc_results,
+        clusters_relpath=args.clusters_relpath,
         smoke_n_cells=args.smoke_n_cells,
         seed=args.seed,
         prefer=args.prefer,

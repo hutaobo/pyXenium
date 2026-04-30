@@ -7,8 +7,8 @@ from typing import Any
 import anndata as ad
 import pandas as pd
 
-from .sdata_model import XeniumFrameChunkSource, XeniumSData
-from .sdata_store import read_xenium_sdata, write_xenium_sdata
+from .sdata_model import XeniumFrameChunkSource, XeniumSData, XeniumSlide
+from .sdata_store import read_xenium_sdata, read_xenium_slide, write_xenium_slide
 from .xenium_artifacts import (
     build_feature_summary,
     discover_image_artifacts,
@@ -199,6 +199,16 @@ def _assemble_anndata(
         image_artifacts=image_artifacts,
         experiment=experiment,
     )
+    adata.uns["xenium_slide"] = {
+        "schema_version": 1,
+        "source_path": str(base_path),
+        "backend": backend,
+        "units": "micron",
+        "panel": metadata["feature_summary"],
+        "experiment": experiment,
+        "image_artifacts": image_artifacts,
+        "cluster_key": analysis.default_cluster_key,
+    }
     return adata, boundaries, metadata
 
 
@@ -219,9 +229,9 @@ def read_xenium(
     mex_matrix_name: str = "matrix.mtx.gz",
     mex_features_name: str = "features.tsv.gz",
     mex_barcodes_name: str = "barcodes.tsv.gz",
-) -> ad.AnnData | XeniumSData:
-    if as_ not in {"anndata", "sdata"}:
-        raise ValueError("as_ must be either 'anndata' or 'sdata'.")
+) -> ad.AnnData | XeniumSlide:
+    if as_ not in {"anndata", "sdata", "slide"}:
+        raise ValueError("as_ must be one of: 'anndata', 'sdata', or 'slide'.")
 
     adata, boundaries, metadata = _assemble_anndata(
         base_path=base_path,
@@ -256,7 +266,7 @@ def read_xenium(
         if he_image is not None:
             images["he"] = he_image
 
-    return XeniumSData(
+    return XeniumSlide(
         table=adata,
         points=points,
         shapes=boundaries,
@@ -267,7 +277,7 @@ def read_xenium(
 
 
 def write_xenium(
-    obj: ad.AnnData | XeniumSData,
+    obj: ad.AnnData | XeniumSlide,
     path: str | Path,
     *,
     format: str = "h5ad",
@@ -298,11 +308,25 @@ def write_xenium(
             "labels": [],
         }
 
-    if format == "sdata":
-        sdata = obj if isinstance(obj, XeniumSData) else XeniumSData(table=obj)
-        return write_xenium_sdata(sdata, target, overwrite=overwrite)
+    if format in {"sdata", "slide"}:
+        slide = obj if isinstance(obj, XeniumSlide) else XeniumSlide(table=obj)
+        return write_xenium_slide(slide, target, overwrite=overwrite)
 
-    raise ValueError("format must be either 'h5ad' or 'sdata'.")
+    raise ValueError("format must be one of: 'h5ad', 'sdata', or 'slide'.")
+
+
+def read_slide(path: str | Path) -> XeniumSlide:
+    return read_xenium_slide(path)
+
+
+def write_slide(
+    slide: ad.AnnData | XeniumSlide,
+    path: str | Path,
+    *,
+    overwrite: bool = False,
+) -> dict[str, Any]:
+    obj = slide if isinstance(slide, XeniumSlide) else XeniumSlide(table=slide)
+    return write_xenium_slide(obj, path, overwrite=overwrite)
 
 
 def read_sdata(path: str | Path) -> XeniumSData:

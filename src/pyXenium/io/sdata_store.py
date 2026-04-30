@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import zarr
 
-from .sdata_model import XeniumFrameChunkSource, XeniumImage, XeniumSData
+from .sdata_model import XeniumFrameChunkSource, XeniumImage, XeniumSData, XeniumSlide
 
 SDATA_FORMAT = "pyxenium.sdata"
 SDATA_VERSION = 1
@@ -413,8 +413,8 @@ def _read_contour_images_group(parent: Any) -> dict[str, dict[str, XeniumImage]]
     return contour_images
 
 
-def write_xenium_sdata(
-    sdata: XeniumSData,
+def write_xenium_slide(
+    slide: XeniumSlide,
     path: str | Path,
     *,
     overwrite: bool = False,
@@ -426,7 +426,7 @@ def write_xenium_sdata(
     temp_root = Path(tempfile.mkdtemp(prefix="pyxenium_table_"))
     try:
         temp_table_path = temp_root / "cells.zarr"
-        sdata.table.write_zarr(str(temp_table_path))
+        slide.table.write_zarr(str(temp_table_path))
         shutil.copytree(temp_table_path, table_path)
     finally:
         shutil.rmtree(temp_root, ignore_errors=True)
@@ -440,32 +440,32 @@ def write_xenium_sdata(
     tables_root.attrs["primary_table"] = "cells"
 
     points_root = root.require_group("points")
-    for key, frame in sdata.points.items():
+    for key, frame in slide.points.items():
         _write_frame_group(
             points_root,
             key,
             frame,
-            attrs={"units": sdata.metadata.get("units", "micron")},
+            attrs={"units": slide.metadata.get("units", "micron")},
         )
-    for key, source in sdata.point_sources.items():
+    for key, source in slide.point_sources.items():
         _write_chunked_frame_group(
             points_root,
             key,
             source,
-            attrs={"units": sdata.metadata.get("units", "micron")},
+            attrs={"units": slide.metadata.get("units", "micron")},
         )
 
     shapes_root = root.require_group("shapes")
-    for key, frame in sdata.shapes.items():
-        _write_frame_group(shapes_root, key, frame, attrs={"units": sdata.metadata.get("units", "micron")})
+    for key, frame in slide.shapes.items():
+        _write_frame_group(shapes_root, key, frame, attrs={"units": slide.metadata.get("units", "micron")})
 
     images_root = root.require_group("images")
-    _write_images_group(images_root, sdata.images)
+    _write_images_group(images_root, slide.images)
     contour_images_root = root.require_group("contour_images")
-    _write_contour_images_group(contour_images_root, sdata.contour_images)
+    _write_contour_images_group(contour_images_root, slide.contour_images)
 
     metadata_root = root.require_group("metadata")
-    payload = dict(sdata.metadata)
+    payload = dict(slide.metadata)
     payload.setdefault("store_version", SDATA_VERSION)
     payload.setdefault("format", SDATA_FORMAT)
     metadata_root.create_array(
@@ -478,11 +478,20 @@ def write_xenium_sdata(
         "format": SDATA_FORMAT,
         "version": SDATA_VERSION,
         "output_path": str(target),
-        **sdata.component_summary(),
+        **slide.component_summary(),
     }
 
 
-def read_xenium_sdata(path: str | Path) -> XeniumSData:
+def write_xenium_sdata(
+    sdata: XeniumSData,
+    path: str | Path,
+    *,
+    overwrite: bool = False,
+) -> dict[str, Any]:
+    return write_xenium_slide(sdata, path, overwrite=overwrite)
+
+
+def read_xenium_slide(path: str | Path) -> XeniumSlide:
     target = Path(path).expanduser()
     root = zarr.open_group(str(target), mode="r")
     if root.attrs.get("format") != SDATA_FORMAT:
@@ -516,7 +525,7 @@ def read_xenium_sdata(path: str | Path) -> XeniumSData:
         if len(values):
             metadata = json.loads(values[0])
 
-    return XeniumSData(
+    return XeniumSlide(
         table=table,
         points=points,
         shapes=shapes,
@@ -524,3 +533,7 @@ def read_xenium_sdata(path: str | Path) -> XeniumSData:
         contour_images=contour_images,
         metadata=metadata,
     )
+
+
+def read_xenium_sdata(path: str | Path) -> XeniumSData:
+    return read_xenium_slide(path)

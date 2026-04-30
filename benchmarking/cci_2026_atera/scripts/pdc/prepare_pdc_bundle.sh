@@ -2,9 +2,17 @@
 set -euo pipefail
 
 ROOT="${PDC_CCI_ROOT:-/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04}"
-SOURCE_ROOT="${PDC_CCI_SOURCE_ROOT:-$ROOT/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs}"
+if [ -f "$ROOT/data/pdc_dataset_env.sh" ]; then
+  # shellcheck disable=SC1090
+  . "$ROOT/data/pdc_dataset_env.sh"
+fi
+DATASET_ID="${PDC_CCI_DATASET_ID:-atera_breast_wta}"
+SOURCE_ROOT="${PDC_CCI_SOURCE_ROOT:-$ROOT/data/source_cache/$DATASET_ID/WTA_Preview_FFPE_Breast_Cancer_outs}"
+CELL_GROUPS_RELPATH="${PDC_CCI_CELL_GROUPS_RELPATH:-WTA_Preview_FFPE_Breast_Cancer_cell_groups.csv}"
+TBC_RESULTS="${PDC_CCI_TBC_RESULTS:-$ROOT/data/tbc_results}"
+EXPECTED_CELLS="${PDC_CCI_EXPECTED_CELLS:-}"
 PY_ENV="${PDC_CCI_PREP_ENV:-$ROOT/envs/python/prep}"
-PYTHON_MODULE="${PDC_LR_PYTHON_MODULE:-python/3.12.3}"
+PYTHON_MODULE="${PDC_CCI_PYTHON_MODULE:-${PDC_LR_PYTHON_MODULE:-python/3.12.3}}"
 
 mkdir -p "$ROOT"/{data/full,data/smoke,logs,reports,results,runs,tmp,envs/python}
 mkdir -p "$ROOT/configs"
@@ -30,6 +38,9 @@ python -m pip install pyarrow
 python "$ROOT/repo/benchmarking/cci_2026_atera/scripts/prepare_data.py" \
   --dataset-root "$SOURCE_ROOT" \
   --benchmark-root "$ROOT" \
+  --dataset-id "$DATASET_ID" \
+  --tbc-results "$TBC_RESULTS" \
+  --clusters-relpath "$CELL_GROUPS_RELPATH" \
   --prefer h5 \
   --skip-full-h5ad \
   --output-json "$ROOT/logs/pdc_prepare_payload.json"
@@ -73,13 +84,18 @@ required = ["counts_symbol_mtx", "barcodes_tsv", "genes_tsv", "meta_tsv", "coord
 missing = [key for key in required if not full_bundle.get(key) or not Path(full_bundle[key]).exists()]
 if missing:
     raise SystemExit(f"PDC bundle validation failed; missing full_bundle keys/files: {missing}")
-if int(payload.get("full_n_cells", 0)) != 170057:
-    raise SystemExit(f"Unexpected full_n_cells: {payload.get('full_n_cells')}")
+expected_cells = os.environ.get("PDC_CCI_EXPECTED_CELLS", "").strip()
+if expected_cells:
+    observed_cells = int(payload.get("full_n_cells", 0))
+    if observed_cells != int(expected_cells):
+        raise SystemExit(f"Unexpected full_n_cells: {observed_cells}; expected {expected_cells}")
 validation = {
     "status": "ok",
+    "dataset_id": payload.get("dataset_id"),
     "manifest": str(manifest),
     "full_n_cells": payload.get("full_n_cells"),
     "full_n_genes": payload.get("full_n_genes"),
+    "cell_groups_relpath": payload.get("cell_groups_relpath"),
     "full_bundle": full_bundle,
     "source_root": payload.get("xenium_root"),
     "benchmark_root": payload.get("benchmark_root"),

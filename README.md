@@ -5,7 +5,7 @@
 <h1 align="center">pyXenium</h1>
 
 <p align="center">
-  Nine canonical sections for Xenium I/O, multimodal analysis, CCI, pathway topology, contour geometry, GMI inference, mechanostress analysis, and external workflow bridges.
+  nine feature areas for Xenium I/O, multimodal analysis, CCI, pathway topology, contour geometry, GMI inference, mechanostress analysis, and external workflow bridges.
 </p>
 
 <p align="center">
@@ -89,8 +89,18 @@ pip install -e ".[perturb]"
 ```python
 from pyXenium.io import read_xenium
 
-sdata = read_xenium("/path/to/xenium_export", as_="sdata", prefer="zarr")
+slide = read_xenium("/path/to/xenium_export", as_="slide", prefer="zarr")
 ```
+
+`XeniumSlide` is the canonical in-memory object. The old `XeniumSData` name remains as a compatibility alias, and `as_="sdata"` still works for legacy code.
+
+To build Atera-style learning stores with contour-segmented H&E crops:
+
+```bash
+pyxenium slide build-atera --atera-root Y:\long\10X_datasets\Xenium\Atera --output-root D:\GitHub\stGPT\outputs\xenium_slides\atera
+```
+
+This writes one `xenium_slide.zarr` per case plus `slide_manifest.json`, `qc_report.json`, `cell_to_contour.parquet`, `structure_assignments.csv`, and `contour_patches_manifest.json`. Raw Xenium outs directories are read only; per-cell H&E patches are not generated.
 
 ### Canonical multimodal loading
 

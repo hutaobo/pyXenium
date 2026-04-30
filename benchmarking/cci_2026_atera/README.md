@@ -22,6 +22,18 @@ python benchmarking/cci_2026_atera/scripts/prepare_data.py `
   --dataset-root "Y:\long\10X_datasets\Xenium\Atera\WTA_Preview_FFPE_Breast_Cancer_outs"
 ```
 
+Resolve the cross-dataset panel and prepare the newly added Atera cervical WTA dataset when ready:
+
+```powershell
+pyxenium benchmark atera-cci prepare-dataset `
+  --dataset-id atera_cervical_wta `
+  --dry-run
+
+pyxenium benchmark atera-cci prepare-dataset `
+  --dataset-id atera_cervical_wta `
+  --skip-full-h5ad
+```
+
 For local full-pilot runs, export the full sparse bundle while keeping the full `.h5ad` optional:
 
 ```powershell
@@ -66,6 +78,16 @@ Aggregate standardized result tables and build a report:
 ```powershell
 python benchmarking/cci_2026_atera/scripts/aggregate_results.py
 python benchmarking/cci_2026_atera/scripts/render_report.py
+```
+
+Build the reviewer-facing publication benchmark task matrix and a small synthetic truth panel:
+
+```powershell
+python benchmarking/cci_2026_atera/scripts/build_publication_benchmark_plan.py `
+  --output-tsv benchmarking/cci_2026_atera/results/publication_benchmark_plan.tsv
+
+python benchmarking/cci_2026_atera/scripts/generate_synthetic_cci_truth.py `
+  --output-dir benchmarking/cci_2026_atera/data/synthetic_topology_truth
 ```
 
 Generate A100 staging commands:
@@ -146,6 +168,8 @@ pyxenium benchmark atera-cci monitor-a100-jobs `
 
 - Full Xenium matrices are exported in sparse Matrix Market format. A dense `counts_symbol.tsv` is intentionally not emitted because it would be impractically large for the full `170,057 x 18,028` matrix.
 - The benchmark prep harmonizes gene identifiers by promoting `adata.var['name']` to benchmark-facing `var_names`, while preserving the original Ensembl IDs in `adata.var['ensembl_id']`.
+- `configs/datasets.yaml` now defines the manuscript dataset panel: Atera breast WTA as the primary discovery dataset, Atera cervical WTA as the cross-tissue Xenium generalization dataset, and one required public non-Xenium spatial dataset placeholder for cross-platform validation.
+- `configs/publication_readiness.yaml` tracks the Nature Methods readiness gates: at least three real datasets, ten comparison methods, one synthetic truth panel, five false-positive-control layers, and five bootstrap repeats.
 - The first-wave real adapters now cover `pyXenium`, `Squidpy ligrec`, `LIANA+ spatial bivariate`, `COMMOT`, and `CellChat v3 / SpatialCellChat`.
 - The second-wave scaffold now includes real/bounded adapters or reproducible method-card runners for `SpatialDM`, `stLearn`, `Giotto`, `LARIS`, `CellPhoneDB`, `SpaTalk`, `NICHES`, `CellNEST`, `CellAgentChat`, and `SCILD`.
 - Each adapter writes method-native raw artifacts, `params.json`, `run_summary.json`, and a standardized TSV that can be consumed by the existing aggregate/report steps.
