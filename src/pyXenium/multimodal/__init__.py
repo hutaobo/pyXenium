@@ -1,4 +1,4 @@
-from . import analysis, contour_boundary_ecology, immune_resistance, loading, morphology_increment, pathology, workflows
+from . import analysis, bridges, contour_boundary_ecology, immune_resistance, loading, morphology_increment, pathology, workflows
 from .analysis import (
     ProteinMicroEnv,
     ProteinModelResult,
@@ -14,6 +14,12 @@ from .contour_boundary_ecology import (
     DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY,
     DEFAULT_BOUNDARY_PROGRAM_LIBRARY,
     score_contour_boundary_programs,
+)
+from .bridges import (
+    build_spatho_manifest,
+    compare_programs_with_embeddings,
+    export_for_stgpt,
+    import_stgpt_embeddings,
 )
 from .immune_resistance import (
     DEFAULT_BRANCH_MODELS,
@@ -86,6 +92,7 @@ __all__ = [
     "ProteinMicroEnv",
     "ProteinModelResult",
     "analysis",
+    "bridges",
     "contour_boundary_ecology",
     "aggregate_multi_sample_study",
     "annotate_joint_cell_states",
@@ -95,11 +102,15 @@ __all__ = [
     "build_serializable_pilot_summary",
     "build_spatial_niches",
     "build_summary",
+    "build_spatho_manifest",
     "build_top_hypotheses_table",
     "compute_rna_protein_discordance",
     "compare_he_vs_xenium_morphology_sources",
+    "compare_programs_with_embeddings",
     "extract_ranked_patches",
+    "export_for_stgpt",
     "immune_resistance",
+    "import_stgpt_embeddings",
     "loading",
     "morphology_increment",
     "pathology",

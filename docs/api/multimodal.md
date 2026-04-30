@@ -16,6 +16,10 @@
    build_spatial_niches
    score_immune_resistance_program
    score_contour_boundary_programs
+   export_for_stgpt
+   import_stgpt_embeddings
+   compare_programs_with_embeddings
+   build_spatho_manifest
    aggregate_multi_sample_study
    run_validated_renal_ffpe_smoke
    run_renal_immune_resistance_pilot
