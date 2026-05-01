@@ -94,6 +94,7 @@ version = {attr = "pyXenium._version.__version__"}
 [tool.setuptools.package-data]
 pyXenium = [
   "config/*.yaml",
+  "io/*.json",
   "datasets/toy_slide/*.zip",
   "notebooks/*.ipynb",
   "_vendor/Gmi/*",

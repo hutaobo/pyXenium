@@ -57,7 +57,7 @@ and run separately; pyXenium does not vendor them or add them as core runtime de
 
 ## Release & Build
 
-- Current repository version: `0.4.1`
+- Current repository version: `0.4.2`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
@@ -67,7 +67,7 @@ and run separately; pyXenium does not vendor them or add them as core runtime de
 ## Install
 
 ```bash
-pip install pyXenium==0.4.1
+pip install pyXenium==0.4.2
 ```
 
 For local development:

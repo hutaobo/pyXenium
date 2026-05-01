@@ -4,6 +4,7 @@ import csv
 import html
 import json
 import re
+import urllib.parse
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -21,8 +22,24 @@ from .xenium_slide_builder import DEFAULT_MAX_CROP_SIDE_PX, build_xenium_slide
 
 TENX_DATASETS_URL = "https://www.10xgenomics.com/datasets"
 TENX_DATASET_URL_PREFIX = f"{TENX_DATASETS_URL}/"
+TENX_ALGOLIA_APP_ID = "GI4MFTCJTA"
+TENX_ALGOLIA_API_KEY = "6b586a16b94c7292281131979e7be8b9"
+TENX_ALGOLIA_INDEX = "master:datasets"
+TENX_ALGOLIA_QUERIES_URL = f"https://{TENX_ALGOLIA_APP_ID}-dsn.algolia.net/1/indexes/*/queries"
 DEFAULT_OUTPUT_ROOT = Path(r"D:\GitHub\stGPT\outputs\xenium_slides\10x_public")
 DEFAULT_XENIUM_ROOT = Path(r"Y:\long\10X_datasets\Xenium")
+DEFAULT_METADATA_CACHE_PATH = Path(__file__).with_name("tenx_public_metadata_cache.json")
+NON_DATASET_DIR_NAMES = {
+    "__macosx",
+    "analysis",
+    "analysis_only",
+    "analysis-only",
+    "extracted",
+    "tmp",
+    "temp",
+    "unzipped",
+    "unzip",
+}
 
 
 @dataclass(frozen=True)
@@ -49,6 +66,7 @@ class TenXDatasetRecord:
     selected_for_build: bool = True
     duplicate_of: str | None = None
     reused_output_dir: str | None = None
+    is_excluded_non_dataset: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -105,6 +123,11 @@ def build_10x_public_slides(
         row = dict(record)
         if progress:
             print(f"[{index}/{len(records)}] {row.get('relative_path')}...", flush=True)
+        if row.get("is_excluded_non_dataset"):
+            row["build_status"] = "excluded_non_dataset"
+            registry_rows.append(row)
+            _checkpoint_registry(output, registry_rows, failed_rows, metadata_rows)
+            continue
         if not row.get("selected_for_build"):
             row["build_status"] = "duplicate_skipped"
             registry_rows.append(row)
@@ -119,7 +142,7 @@ def build_10x_public_slides(
         metadata_rows.append(_metadata_report_row(row, metadata))
         if row.get("reused_output_dir"):
             row["build_status"] = "reused_existing"
-            contour_source = _contour_source_from_record(row)
+            contour_source = _contour_source_for_existing_case(Path(str(row["reused_output_dir"])), row)
             row["contour_status"] = contour_source.get("status")
             _ensure_case_artifact_contract(
                 Path(str(row["reused_output_dir"])),
@@ -127,6 +150,7 @@ def build_10x_public_slides(
                 contour_source=contour_source,
             )
             _attach_reused_artifact_status(row)
+            row.update(_contour_readiness_fields(row, contour_source, Path(str(row["reused_output_dir"]))))
             registry_rows.append(row)
             _checkpoint_registry(output, registry_rows, failed_rows, metadata_rows)
             continue
@@ -144,7 +168,7 @@ def build_10x_public_slides(
             row["output_dir"] = str(case_output)
             row["metadata_10x"] = str(case_output / "metadata_10x.json")
             row["contour_source_manifest"] = str(case_output / "contour_source_manifest.json")
-            contour_source = _contour_source_from_record(row)
+            contour_source = _contour_source_for_existing_case(case_output, row)
             row["contour_status"] = contour_source.get("status")
             _ensure_case_artifact_contract(
                 case_output,
@@ -152,6 +176,7 @@ def build_10x_public_slides(
                 contour_source=contour_source,
             )
             row.update(_summarize_existing_case(case_output))
+            row.update(_contour_readiness_fields(row, contour_source, case_output))
             registry_rows.append(row)
             _checkpoint_registry(output, registry_rows, failed_rows, metadata_rows)
             continue
@@ -195,6 +220,7 @@ def build_10x_public_slides(
             row["qc_report"] = str(result.qc_report)
             row["contour_patch_count"] = int(result.contour_patch_count)
             row.update(_summarize_existing_case(case_output))
+            row.update(_contour_readiness_fields(row, contour_source, case_output))
             _ensure_case_artifact_contract(case_output)
         except Exception as exc:
             row["build_status"] = "failed"
@@ -248,6 +274,9 @@ def resolve_10x_dataset_metadata(
                     "retrieved_at": _utc_now(),
                 }
                 return parsed
+        searched = _resolve_10x_metadata_from_search(record, session=session, timeout=timeout)
+        if searched is not None:
+            return searched
 
     return {
         "metadata_status": "unresolved",
@@ -374,12 +403,13 @@ def generate_missing_contours_with_histoseg(
 
 def _inventory_xenium_root(root: Path, *, root_base: Path) -> TenXDatasetRecord:
     rel = _safe_relative(root, root_base)
+    non_dataset_reason = _non_dataset_exclusion_reason(root, root_base=root_base)
     experiment = _safe_read_experiment(root)
     matrix_backend = _matrix_backend(root)
     has_cells = _has_cells_table(root)
     image_artifacts = _safe_discover_image_artifacts(root)
     contour = select_primary_contour_geojson(root)
-    buildable = bool(matrix_backend and has_cells)
+    buildable = bool(matrix_backend and has_cells) and non_dataset_reason is None
     collection_slug = _slug(rel.parts[0] if rel.parts else "root")
     case_slug = _case_slug(root)
     return TenXDatasetRecord(
@@ -389,7 +419,7 @@ def _inventory_xenium_root(root: Path, *, root_base: Path) -> TenXDatasetRecord:
         case_slug=case_slug,
         case_name=case_slug,
         buildable=buildable,
-        exclusion_reason=None if buildable else _exclusion_reason(matrix_backend, has_cells),
+        exclusion_reason=non_dataset_reason if non_dataset_reason is not None else None if buildable else _exclusion_reason(matrix_backend, has_cells),
         experiment_uuid=_string_or_none(experiment.get("experiment_uuid")),
         analysis_uuid=_string_or_none(experiment.get("analysis_uuid")),
         run_name=_string_or_none(experiment.get("run_name")),
@@ -402,7 +432,35 @@ def _inventory_xenium_root(root: Path, *, root_base: Path) -> TenXDatasetRecord:
         selected_geojson=contour.get("selected_geojson"),
         geojson_status=str(contour.get("status")),
         geojson_candidate_count=len(contour.get("candidates", [])),
+        selected_for_build=non_dataset_reason is None,
+        is_excluded_non_dataset=non_dataset_reason is not None,
     )
+
+
+def _non_dataset_exclusion_reason(root: Path, *, root_base: Path) -> str | None:
+    lowered_parts = {part.lower() for part in root.parts}
+    if root.name.lower() in NON_DATASET_DIR_NAMES or lowered_parts.intersection({"__macosx"}):
+        return "Excluded non-dataset intermediate directory."
+    if any(part.lower().endswith((".zarr", ".zarr.zip")) for part in root.parts):
+        return "Excluded generated Zarr artifact directory."
+    if "analysis" in lowered_parts and _matrix_backend(root) is None:
+        return "Excluded analysis-only directory."
+
+    current = root.parent
+    root_base_resolved = root_base.resolve()
+    while current != current.parent:
+        try:
+            current.resolve().relative_to(root_base_resolved)
+        except Exception:
+            break
+        if current == root:
+            break
+        if (current / "experiment.xenium").exists() and _matrix_backend(current) and _has_cells_table(current):
+            return "Excluded child directory under complete Xenium outs parent."
+        if current.resolve() == root_base_resolved:
+            break
+        current = current.parent
+    return None
 
 
 def _mark_duplicate_records(records: list[TenXDatasetRecord]) -> list[TenXDatasetRecord]:
@@ -505,6 +563,47 @@ def _contour_source_from_record(record: Mapping[str, Any]) -> dict[str, Any]:
         "reason": "No contour GeoJSON was available for this case.",
         "geojson_status": record.get("geojson_status"),
         "geojson_candidate_count": record.get("geojson_candidate_count"),
+    }
+
+
+def _contour_source_for_existing_case(output: Path, record: Mapping[str, Any]) -> dict[str, Any]:
+    existing = _read_json(output / "contour_source_manifest.json")
+    if existing:
+        existing.setdefault("geojson_status", record.get("geojson_status"))
+        existing.setdefault("geojson_candidate_count", record.get("geojson_candidate_count"))
+        return existing
+    return _contour_source_from_record(record)
+
+
+def _contour_readiness_fields(
+    row: Mapping[str, Any],
+    contour_source: Mapping[str, Any],
+    output: Path | None = None,
+) -> dict[str, Any]:
+    assigned_cells = _safe_int(row.get("assigned_cells"))
+    contour_patches = _safe_int(row.get("contour_patches") or row.get("contour_patch_count"))
+    has_source = bool(contour_source.get("selected_geojson"))
+    contour_assigned = bool(has_source and assigned_cells > 0)
+    contour_images_available = bool(contour_assigned and contour_patches > 0)
+    contour_missing = not has_source
+    patch_manifest = output / "contour_patches_manifest.json" if output is not None else None
+    patch_manifest_exists = bool(patch_manifest and patch_manifest.exists())
+    if contour_images_available:
+        readiness = "contour_images_available"
+    elif contour_assigned and row.get("has_he") and row.get("has_alignment"):
+        readiness = "needs_contour_patch_extraction"
+    elif contour_assigned:
+        readiness = "contour_assigned_no_image_context"
+    elif contour_missing:
+        readiness = "contour_missing"
+    else:
+        readiness = "contour_source_without_assignments"
+    return {
+        "contour_assigned": contour_assigned,
+        "contour_images_available": contour_images_available,
+        "contour_missing": contour_missing,
+        "contour_readiness": readiness,
+        "contour_patch_manifest_exists": patch_manifest_exists,
     }
 
 
@@ -647,12 +746,29 @@ def _candidate_10x_urls(record: Mapping[str, Any]) -> list[str]:
     curated = {
         "atera wta ffpe human breast cancer": "atera-wta-ffpe-human-breast-cancer",
         "atera wta ffpe human cervical cancer": "atera-wta-ffpe-human-cervical-cancer",
+        "human breast cancer 280g biomarkers": "xenium-ffpe-human-breast-biomarkers",
+        "human breast ffpe large sections": "ffpe-human-breast-using-the-entire-sample-area-1-standard",
+        "human breast ffpe predesigned and addon": "ffpe-human-breast-with-pre-designed-panel-1-standard",
+        "human brain ffpe": "xenium-human-brain-preview-data-1-standard",
+        "human kidney cancer ff": "human-kidney-preview-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+        "human liver cancer ff": "human-liver-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+        "human lung ffpe": "xenium-human-lung-preview-data-1-standard",
+        "human lung cancer xenium v1": "human-lung-cancer-preview-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+        "human pancreas ffpe": "human-pancreas-preview-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+        "human kidney cancer ffpe": "human-kidney-preview-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+        "human non diseased kidney ffpe": "human-kidney-preview-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+        "human acute lymphoid leukemia ffpe": "human-bone-and-bone-marrow-data-with-custom-add-on-panel-1-standard",
+        "human non diseased bone marrow ffpe": "human-bone-and-bone-marrow-data-with-custom-add-on-panel-1-standard",
+        "human non diseased bone ffpe": "human-bone-and-bone-marrow-data-with-custom-add-on-panel-1-standard",
+        "xenium alzheimers mouse brain": "xenium-in-situ-analysis-of-alzheimers-disease-mouse-model-brain-coronal-sections-from-one-hemisphere-over-a-time-course-1-standard",
         "xenium prime human breast cancer ffpe": "xenium-prime-ffpe-human-breast-cancer",
         "xenium prime human cervical cancer ffpe": "xenium-prime-ffpe-human-cervical-cancer",
+        "xenium prime human lymph node reactive ffpe": "preview-data-xenium-prime-gene-expression",
+        "xenium prime human ovary ff": "xenium-prime-fresh-frozen-human-ovary",
         "xenium prime human ovarian cancer ffpe": "xenium-prime-ffpe-human-ovarian-cancer",
         "xenium prime human pancreas ffpe": "xenium-prime-ffpe-human-pancreas",
         "xenium prime human lung cancer ffpe": "xenium-prime-ffpe-human-lung-cancer",
-        "xenium prime human lymph node reactive ffpe": "xenium-prime-ffpe-human-lymph-node-reactive",
+        "xenium prime mouse pup ffpe": "xenium-prime-ffpe-neonatal-mouse",
     }
     for phrase, slug in curated.items():
         if phrase in normalized:
@@ -675,6 +791,251 @@ def _candidate_10x_urls(record: Mapping[str, Any]) -> list[str]:
                 slugs.append(f"xenium-prime-ffpe-{middle}")
             slugs.append(f"preview-data-{base}")
     return [f"{TENX_DATASET_URL_PREFIX}{slug}" for slug in _unique(slugs)]
+
+
+def _resolve_10x_metadata_from_search(
+    record: Mapping[str, Any],
+    *,
+    session: requests.Session,
+    timeout: int,
+) -> dict[str, Any] | None:
+    best_hit: dict[str, Any] | None = None
+    best_score = 0.0
+    query_history: list[str] = []
+    for query in _metadata_search_queries(record):
+        query_history.append(query)
+        for hit in _search_10x_dataset_hits(query, session=session, timeout=timeout):
+            score = _score_10x_dataset_hit(record, hit)
+            if score > best_score:
+                best_score = score
+                best_hit = hit
+    if best_hit is None or best_score < 0.42:
+        return None
+    payload = _metadata_from_algolia_hit(best_hit)
+    payload["metadata_status"] = "resolved"
+    payload["resolver"] = {
+        "method": "official_10x_dataset_search",
+        "index": TENX_ALGOLIA_INDEX,
+        "queries": query_history,
+        "matched_slug": best_hit.get("slug"),
+        "match_score": round(float(best_score), 4),
+        "retrieved_at": _utc_now(),
+    }
+    return payload
+
+
+def _metadata_search_queries(record: Mapping[str, Any]) -> list[str]:
+    values = [
+        str(record.get("run_name") or ""),
+        str(record.get("case_name") or ""),
+        str(record.get("case_slug") or ""),
+        str(record.get("panel_name") or ""),
+        Path(str(record.get("xenium_root") or "")).name,
+    ]
+    expanded = [_expand_xenium_shorthand(value) for value in values if value]
+    combined = " ".join(expanded)
+    queries = [*expanded, combined]
+    if "xenium" not in combined.lower():
+        queries.append(f"Xenium {combined}")
+    return [query for query in _unique(query.strip() for query in queries) if query]
+
+
+def _search_10x_dataset_hits(
+    query: str,
+    *,
+    session: requests.Session,
+    timeout: int,
+) -> list[dict[str, Any]]:
+    params = urllib.parse.urlencode({"query": query, "hitsPerPage": 12})
+    payload = {"requests": [{"indexName": TENX_ALGOLIA_INDEX, "params": params}]}
+    headers = {
+        "X-Algolia-Application-Id": TENX_ALGOLIA_APP_ID,
+        "X-Algolia-API-Key": TENX_ALGOLIA_API_KEY,
+        "Content-Type": "application/json",
+    }
+    try:
+        response = session.post(TENX_ALGOLIA_QUERIES_URL, headers=headers, json=payload, timeout=timeout)
+        response.raise_for_status()
+        result = response.json()["results"][0]
+    except Exception:
+        return []
+    hits = result.get("hits", [])
+    return [hit for hit in hits if isinstance(hit, dict)]
+
+
+def _score_10x_dataset_hit(record: Mapping[str, Any], hit: Mapping[str, Any]) -> float:
+    local_tokens = _metadata_match_tokens(record)
+    hit_text = _algolia_hit_text(hit)
+    hit_tokens = _word_tokens(hit_text)
+    if "xenium" not in hit_tokens and "situ" not in hit_tokens:
+        return 0.0
+    species = _species_hint(record)
+    if species and species not in {str(value).lower() for value in hit.get("species", []) or []}:
+        return 0.0
+    local_organs = _organ_hints(record)
+    hit_organs = {str(value).lower() for value in hit.get("anatomicalEntities", []) or []}
+    if local_organs and hit_organs and not local_organs.intersection(hit_organs):
+        return 0.0
+    overlap = local_tokens.intersection(hit_tokens)
+    denominator = max(4, min(len(local_tokens), 18))
+    score = len(overlap) / denominator
+    if species:
+        score += 0.12
+    if local_organs and hit_organs.intersection(local_organs):
+        score += 0.18
+    local_slug = _url_slug(str(record.get("case_slug") or ""))
+    hit_slug = str(hit.get("slug") or "")
+    if local_slug and local_slug in hit_slug:
+        score += 0.20
+    if "5k" in local_tokens and ("5k" in hit_tokens or "prime" in hit_tokens):
+        score += 0.10
+    return min(score, 1.0)
+
+
+def _metadata_from_algolia_hit(hit: Mapping[str, Any]) -> dict[str, Any]:
+    slug = str(hit.get("slug") or "")
+    fields: dict[str, str] = {}
+    field_map = {
+        "species": "Species",
+        "anatomicalEntities": "Anatomical Entity",
+        "preservationMethods": "Preservation Method",
+        "diseaseStates": "Disease State",
+        "cellsOrNuclei": "Cells or Nuclei",
+    }
+    for source_key, display_key in field_map.items():
+        values = hit.get(source_key)
+        if isinstance(values, list) and values:
+            fields[display_key] = ", ".join(str(value) for value in values)
+        elif isinstance(values, str) and values:
+            fields[display_key] = values
+    product = hit.get("product")
+    if isinstance(product, Mapping) and product.get("name"):
+        fields["Product"] = str(product["name"])
+    return {
+        "metadata_status": "resolved",
+        "source": "10x Genomics datasets",
+        "source_url": f"{TENX_DATASET_URL_PREFIX}{slug}" if slug else None,
+        "source_index_url": TENX_DATASETS_URL,
+        "title": str(hit.get("title") or ""),
+        "fields": fields,
+        "metrics": {},
+        "license": "CC BY 4.0" if "cc by" in _algolia_hit_text(hit).lower() else None,
+    }
+
+
+def _algolia_hit_text(hit: Mapping[str, Any]) -> str:
+    parts: list[str] = []
+    for key in ("title", "slug", "description", "summary"):
+        value = hit.get(key)
+        if value:
+            parts.append(str(value))
+    for key in ("species", "anatomicalEntities", "diseaseStates", "preservationMethods", "chemistries"):
+        value = hit.get(key)
+        if isinstance(value, list):
+            parts.extend(str(item) for item in value)
+    product = hit.get("product")
+    if isinstance(product, Mapping):
+        parts.append(str(product.get("name") or ""))
+    return " ".join(parts)
+
+
+def _metadata_match_tokens(record: Mapping[str, Any]) -> set[str]:
+    text = " ".join(
+        _expand_xenium_shorthand(str(value))
+        for value in (
+            record.get("run_name"),
+            record.get("case_name"),
+            record.get("case_slug"),
+            record.get("panel_name"),
+            Path(str(record.get("xenium_root") or "")).name,
+        )
+        if value
+    )
+    return _word_tokens(text)
+
+
+def _word_tokens(value: str) -> set[str]:
+    stop = {
+        "add",
+        "addon",
+        "and",
+        "case",
+        "data",
+        "gene",
+        "genes",
+        "human",
+        "image",
+        "in",
+        "of",
+        "outs",
+        "panel",
+        "preview",
+        "standard",
+        "the",
+        "with",
+    }
+    return {token for token in re.findall(r"[a-z0-9]+", value.lower()) if len(token) > 1 and token not in stop}
+
+
+def _species_hint(record: Mapping[str, Any]) -> str | None:
+    text = _expand_xenium_shorthand(
+        " ".join(str(record.get(key) or "") for key in ("run_name", "case_name", "case_slug", "panel_name"))
+    ).lower()
+    if "mouse" in text:
+        return "mouse"
+    if "human" in text:
+        return "human"
+    return None
+
+
+def _organ_hints(record: Mapping[str, Any]) -> set[str]:
+    text = _expand_xenium_shorthand(
+        " ".join(str(record.get(key) or "") for key in ("run_name", "case_name", "case_slug", "panel_name"))
+    ).lower()
+    organs = {
+        "bone marrow": {"bone marrow"},
+        "lymph node": {"lymph node"},
+        "brain": {"brain"},
+        "breast": {"breast"},
+        "cervical": {"cervix", "cervical"},
+        "cervix": {"cervix", "cervical"},
+        "colorectal": {"colon", "colorectal", "large intestine"},
+        "kidney": {"kidney"},
+        "liver": {"liver"},
+        "lung": {"lung"},
+        "ovarian": {"ovary", "ovarian"},
+        "ovary": {"ovary", "ovarian"},
+        "pancreas": {"pancreas"},
+        "pancreatic": {"pancreas"},
+        "prostate": {"prostate"},
+        "skin": {"skin"},
+        "tonsil": {"tonsil"},
+    }
+    hints: set[str] = set()
+    for token, values in organs.items():
+        if token in text:
+            hints.update(values)
+    return hints
+
+
+def _expand_xenium_shorthand(value: str) -> str:
+    text = _humanize_name(value)
+    replacements = {
+        "hbrain": "human brain",
+        "hbone": "human bone",
+        "hbonemarrow": "human bone marrow",
+        "hkidney": "human kidney",
+        "hliver": "human liver",
+        "hlung": "human lung",
+        "hlymphnode": "human lymph node",
+        "hpancreas": "human pancreas",
+        "hskin": "human skin",
+        "htonsil": "human tonsil",
+        "tgcrnd8": "TgCRND8",
+    }
+    for old, new in replacements.items():
+        text = re.sub(rf"\b{old}\b", new, text, flags=re.I)
+    return text
 
 
 def _parse_10x_dataset_page(text: str, url: str) -> dict[str, Any]:
@@ -731,17 +1092,33 @@ def _metadata_field(metadata: Mapping[str, Any], key: str) -> str | None:
 
 
 def _metadata_cache_payload(metadata_cache: Mapping[str, Any] | str | Path | None) -> Mapping[str, Any]:
+    default_payload = _read_json(DEFAULT_METADATA_CACHE_PATH)
     if metadata_cache is None:
-        return {}
+        return default_payload
     if isinstance(metadata_cache, (str, Path)):
-        return _read_json(Path(metadata_cache).expanduser())
-    return metadata_cache
+        return _merge_metadata_caches(default_payload, _read_json(Path(metadata_cache).expanduser()))
+    return _merge_metadata_caches(default_payload, metadata_cache)
+
+
+def _merge_metadata_caches(*payloads: Mapping[str, Any]) -> dict[str, Any]:
+    merged: dict[str, Any] = {"records": {}, "aliases": {}}
+    for payload in payloads:
+        if not isinstance(payload, Mapping):
+            continue
+        records = payload.get("records", payload)
+        if isinstance(records, Mapping):
+            merged["records"].update({str(key): value for key, value in records.items()})
+        aliases = payload.get("aliases", {})
+        if isinstance(aliases, Mapping):
+            merged["aliases"].update({str(key): str(value) for key, value in aliases.items()})
+    return merged
 
 
 def _lookup_metadata_cache(record: Mapping[str, Any], cache_payload: Mapping[str, Any]) -> dict[str, Any] | None:
     records = cache_payload.get("records", cache_payload) if isinstance(cache_payload, Mapping) else {}
     if not isinstance(records, Mapping):
         return None
+    aliases = cache_payload.get("aliases", {}) if isinstance(cache_payload, Mapping) else {}
     keys = [
         record.get("experiment_uuid"),
         record.get("analysis_uuid"),
@@ -749,10 +1126,17 @@ def _lookup_metadata_cache(record: Mapping[str, Any], cache_payload: Mapping[str
         record.get("case_name"),
         record.get("case_slug"),
         Path(str(record.get("xenium_root") or "")).name,
+        *_candidate_10x_urls(record),
     ]
     for key in keys:
-        if key is not None and str(key) in records and isinstance(records[str(key)], Mapping):
-            return dict(records[str(key)])
+        if key is None:
+            continue
+        text_key = str(key)
+        if text_key in records and isinstance(records[text_key], Mapping):
+            return dict(records[text_key])
+        alias = aliases.get(text_key) if isinstance(aliases, Mapping) else None
+        if alias is not None and str(alias) in records and isinstance(records[str(alias)], Mapping):
+            return dict(records[str(alias)])
     return None
 
 
@@ -760,7 +1144,7 @@ def _record_mapping(record_or_root: Mapping[str, Any] | str | Path) -> dict[str,
     if isinstance(record_or_root, Mapping):
         return dict(record_or_root)
     root = Path(record_or_root).expanduser()
-    return _inventory_xenium_root(root, root=root.parent).to_dict()
+    return _inventory_xenium_root(root, root_base=root.parent).to_dict()
 
 
 def _local_experiment_summary(record: Mapping[str, Any]) -> dict[str, Any]:
@@ -875,6 +1259,7 @@ def _build_summary(registry_rows: list[dict[str, Any]], failed_rows: list[dict[s
         "failed": int(len(failed_rows)),
         "duplicates_skipped": int((statuses == "duplicate_skipped").sum()),
         "not_buildable": int((statuses == "not_buildable").sum()),
+        "excluded_non_dataset": int((statuses == "excluded_non_dataset").sum()),
     }
 
 
@@ -1097,6 +1482,15 @@ def _string_or_none(value: Any) -> str | None:
         return None
     text = str(value).strip()
     return text or None
+
+
+def _safe_int(value: Any) -> int:
+    try:
+        if value is None or value == "":
+            return 0
+        return int(float(value))
+    except Exception:
+        return 0
 
 
 def _unique(values: Iterable[str]) -> list[str]:

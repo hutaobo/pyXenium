@@ -64,6 +64,7 @@ IMAGE_AXIS_ALIASES = {
     "y": "y",
     "c": "c",
     "s": "c",
+    "i": "c",
 }
 
 
@@ -1704,7 +1705,14 @@ def discover_he_artifacts(base_path: str) -> dict[str, Any] | None:
     if image_path is None:
         return None
 
-    alignment_path = _first_local_match(base_path, ("*_he_alignment.csv",))
+    alignment_path = _first_local_match(
+        base_path,
+        (
+            "*_he_alignment.csv",
+            "*_he_imagealignment.csv",
+            "*_he_image_alignment.csv",
+        ),
+    )
     keypoints_path = _first_local_match(base_path, ("*_keypoints.csv",))
     experiment = {}
     pixel_size_um = None
@@ -1769,8 +1777,21 @@ def read_he_image(base_path: str) -> XeniumImage | None:
                     )
                 )
         else:
-            base_level = series.asarray(maxworkers=1)
-            levels = _build_image_pyramid(base_level, axes)
+            if max(int(value) for value in series.shape) <= 8192:
+                base_level = series.asarray(maxworkers=1)
+                levels = _build_image_pyramid(base_level, axes)
+            else:
+                levels = [
+                    TiffImageLevel(
+                        source_path=image_path,
+                        series_index=0,
+                        level_index=0,
+                        shape=tuple(int(value) for value in series.shape),
+                        dtype=np.dtype(series.dtype).name,
+                        axes=axes,
+                        chunks=_infer_tiff_chunks(series, series.axes),
+                    )
+                ]
 
     metadata = {
         "transform_direction": artifact["transform_direction"],

@@ -1,0 +1,312 @@
+{
+  "records": {
+    "atera-wta-ffpe-human-breast-cancer": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-breast-cancer",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Preview Data: Atera In Situ Gene Expression, FFPE Human Breast Cancer | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Breast",
+        "Preservation Method": "FFPE",
+        "Disease State": "Breast cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "atera-wta-ffpe-human-cervical-cancer": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-cervical-cancer",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Preview Data: Atera In Situ Gene Expression, FFPE Human Cervical Cancer | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Cervix",
+        "Preservation Method": "FFPE",
+        "Disease State": "Squamous cell carcinoma"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "xenium-ffpe-human-breast-biomarkers": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/xenium-ffpe-human-breast-biomarkers",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Xenium v1 Human Breast FFPE with Biomarkers & Housekeeping Genes Custom Panel | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Breast",
+        "Preservation Method": "FFPE",
+        "Disease State": "Breast cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "ffpe-human-breast-with-pre-designed-panel-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/ffpe-human-breast-with-pre-designed-panel-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "FFPE Human Breast with Pre-designed Panel | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Breast",
+        "Preservation Method": "FFPE",
+        "Disease State": "Breast cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "ffpe-human-breast-using-the-entire-sample-area-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/ffpe-human-breast-using-the-entire-sample-area-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "FFPE Human Breast using the Entire Sample Area | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Breast",
+        "Preservation Method": "FFPE",
+        "Disease State": "Breast cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "human-bone-and-bone-marrow-data-with-custom-add-on-panel-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/human-bone-and-bone-marrow-data-with-custom-add-on-panel-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Human Bone and Bone Marrow Data with Custom Add-on Panel | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Bone, Bone Marrow",
+        "Preservation Method": "FFPE",
+        "Disease State": "acute lymphoid leukemia"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "xenium-human-brain-preview-data-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/xenium-human-brain-preview-data-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Xenium Human Brain Preview Data | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Brain",
+        "Preservation Method": "FFPE",
+        "Disease State": "healthy, glioblastoma multiforme, Alzheimer's"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "xenium-human-lung-preview-data-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/xenium-human-lung-preview-data-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Xenium Human Lung Preview Data | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Lung",
+        "Preservation Method": "FFPE",
+        "Disease State": "healthy, lung cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "human-kidney-preview-data-xenium-human-multi-tissue-and-cancer-panel-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/human-kidney-preview-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Human Kidney Preview Data (Xenium Human Multi-Tissue and Cancer Panel) | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Kidney",
+        "Preservation Method": "FFPE",
+        "Disease State": "healthy, cancer (papillary renal cell carcinoma)"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "human-liver-data-xenium-human-multi-tissue-and-cancer-panel-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/human-liver-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Human Liver Data with Xenium Human Multi-Tissue and Cancer Panel | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Liver",
+        "Preservation Method": "FFPE",
+        "Disease State": "healthy, liver cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "preview-data-xenium-prime-gene-expression": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/preview-data-xenium-prime-gene-expression",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Preview Data: FFPE Human Lymph Node with 5K Pan Tissue and Pathways Panel | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Lymph Node",
+        "Preservation Method": "FFPE",
+        "Disease State": "reactive"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "xenium-prime-fresh-frozen-human-ovary": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/xenium-prime-fresh-frozen-human-ovary",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Fresh Frozen Human Ovarian Adenocarcinoma with 5K Human Pan Tissue and Pathways Panel | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Ovary",
+        "Preservation Method": "Fresh Frozen",
+        "Disease State": "adenocarcinoma"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "xenium-prime-ffpe-neonatal-mouse": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/xenium-prime-ffpe-neonatal-mouse",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Whole Mouse Pup (FFPE) with 5K Mouse Pan Tissue and Pathways Panel and Snap25a/Snap25b Add-on | 10x Genomics",
+      "fields": {
+        "Species": "Mouse",
+        "Anatomical Entity": "Whole Organism",
+        "Preservation Method": "FFPE"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "xenium-prime-ffpe-human-ovarian-cancer": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-ovarian-cancer",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "FFPE Human Ovarian Cancer with 5K Human Pan Tissue and Pathways Panel plus 100 Custom Genes | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Ovary",
+        "Preservation Method": "FFPE",
+        "Disease State": "Ovarian cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "ffpe-human-colorectal-cancer-data-with-human-immuno-oncology-profiling-panel-and-custom-add-on-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/ffpe-human-colorectal-cancer-data-with-human-immuno-oncology-profiling-panel-and-custom-add-on-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "FFPE Human Colorectal Cancer Data with Human Immuno-Oncology Profiling Panel and Custom Add-on | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Colon",
+        "Preservation Method": "FFPE",
+        "Disease State": "Colorectal cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "ffpe-human-lung-cancer-data-with-human-immuno-oncology-profiling-panel-and-custom-add-on-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/ffpe-human-lung-cancer-data-with-human-immuno-oncology-profiling-panel-and-custom-add-on-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "FFPE Human Lung Cancer Data with Human Immuno-Oncology Profiling Panel and Custom Add-on | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Lung",
+        "Preservation Method": "FFPE",
+        "Disease State": "Lung cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    },
+    "xenium-preview-human-non-diseased-lung-with-add-on-ffpe": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/xenium-human-lung-preview-data-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "Xenium Human Lung Preview Data | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Lung",
+        "Preservation Method": "FFPE",
+        "Disease State": "healthy"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0",
+      "download": {
+        "url": "https://cf.10xgenomics.com/samples/xenium/1.3.0/Xenium_Preview_Human_Non_diseased_Lung_With_Add_on_FFPE/Xenium_Preview_Human_Non_diseased_Lung_With_Add_on_FFPE_outs.zip",
+        "source_note": "Official 10x Genomics Xenium 1.3.0 output bundle for the Non-diseased section described on the dataset page."
+      }
+    },
+    "ffpe-human-ovarian-cancer-data-with-human-immuno-oncology-profiling-panel-and-custom-add-on-1-standard": {
+      "metadata_status": "resolved",
+      "source": "10x Genomics datasets",
+      "source_url": "https://www.10xgenomics.com/datasets/ffpe-human-ovarian-cancer-data-with-human-immuno-oncology-profiling-panel-and-custom-add-on-1-standard",
+      "source_index_url": "https://www.10xgenomics.com/datasets",
+      "title": "FFPE Human Ovarian Cancer Data with Human Immuno-Oncology Profiling Panel and Custom Add-on | 10x Genomics",
+      "fields": {
+        "Species": "Human",
+        "Anatomical Entity": "Ovary",
+        "Preservation Method": "FFPE",
+        "Disease State": "Ovarian cancer"
+      },
+      "metrics": {},
+      "license": "CC BY 4.0"
+    }
+  },
+  "aliases": {
+    "wta_preview_ffpe_breast_cancer": "atera-wta-ffpe-human-breast-cancer",
+    "wta_preview_ffpe_cervical_cancer": "atera-wta-ffpe-human-cervical-cancer",
+    "human_breast_biomarkers_s1_bot": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s1_mid": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s1_top": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s2_bot": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s2_mid": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s2_top": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s3_bot": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s3_mid": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s3_top": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s4_bot": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s4_mid": "xenium-ffpe-human-breast-biomarkers",
+    "human_breast_biomarkers_s4_top": "xenium-ffpe-human-breast-biomarkers",
+    "xenium_v1_ffpe_human_breast_idc_big_1": "ffpe-human-breast-using-the-entire-sample-area-1-standard",
+    "xenium_v1_ffpe_human_breast_idc_big_2": "ffpe-human-breast-using-the-entire-sample-area-1-standard",
+    "xenium_v1_ffpe_human_breast_idc": "ffpe-human-breast-with-pre-designed-panel-1-standard",
+    "xenium_v1_ffpe_human_breast_ilc": "ffpe-human-breast-with-pre-designed-panel-1-standard",
+    "xenium_v1_hbonemarrow_acute_lymphoid_leukemia_section": "human-bone-and-bone-marrow-data-with-custom-add-on-panel-1-standard",
+    "xenium_v1_hbonemarrow_nondiseased_section": "human-bone-and-bone-marrow-data-with-custom-add-on-panel-1-standard",
+    "xenium_v1_hbone_nondiseased_section": "human-bone-and-bone-marrow-data-with-custom-add-on-panel-1-standard",
+    "hbrain_ffpe": "xenium-human-brain-preview-data-1-standard",
+    "hlung_ffpe": "xenium-human-lung-preview-data-1-standard",
+    "hkidney_cancer_ff": "human-kidney-preview-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+    "hliver_cancer_ff": "human-liver-data-xenium-human-multi-tissue-and-cancer-panel-1-standard",
+    "xenium_prime_human_lymph_node_reactive_ffpe": "preview-data-xenium-prime-gene-expression",
+    "xenium_prime_human_ovary_ff": "xenium-prime-fresh-frozen-human-ovary",
+    "xenium_prime_mouse_pup_ffpe": "xenium-prime-ffpe-neonatal-mouse",
+    "xenium_prime_ovarian_cancer_ffpe_xrrun": "xenium-prime-ffpe-human-ovarian-cancer",
+    "xenium_v1_human_colorectal_cancer_addon_ffpe": "ffpe-human-colorectal-cancer-data-with-human-immuno-oncology-profiling-panel-and-custom-add-on-1-standard",
+    "xenium_v1_human_lung_cancer_addon_ffpe": "ffpe-human-lung-cancer-data-with-human-immuno-oncology-profiling-panel-and-custom-add-on-1-standard",
+    "xenium_preview_human_non_diseased_lung_with_add_on_ffpe": "xenium-preview-human-non-diseased-lung-with-add-on-ffpe",
+    "xenium_v1_human_ovarian_cancer_addon_ffpe": "ffpe-human-ovarian-cancer-data-with-human-immuno-oncology-profiling-panel-and-custom-add-on-1-standard"
+  }
+}
