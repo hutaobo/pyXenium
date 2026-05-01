@@ -51,7 +51,7 @@ pyXenium's nine-feature overview connects Xenium data loading, multimodal spatia
   <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-non--commercial-d97706.svg" alt="License"></a>
 </p>
 
-- Current repository version: `0.4.1`
+- Current repository version: `0.4.2`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [Read the Docs latest](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
@@ -172,8 +172,3 @@ Track documentation, branding, and package-level changes.
 - `pyXenium.mechanostress`: morphology-derived mechanical stress states from cell/nucleus boundaries and tumor-stroma context.
 - AI-Driven Spatial Pathologist via `spatho`: optional external AI pathology review workflow built on pyXenium's `XeniumSData` case structure, not a pyXenium runtime dependency.
 - `pyXenium.perturb`: SpatialPerturb Bridge for optional Perturb-seq reference projection onto Xenium tissue through the external `SpatialPerturb` package.
-
-:::{admonition} GitHub branding asset
-:class: pyxenium-brand-note
-Use `docs/_static/branding/pyxenium-horizontal-dark.png` as the repository social preview image in GitHub repository settings. That upload is still a manual GitHub step even though the asset is versioned in the repo.
-:::

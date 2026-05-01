@@ -42,6 +42,7 @@ from .benchmarking import (
 )
 from .io.io import copy_bundled_dataset, load_toy
 from .io.spatialdata_export import DEFAULT_SPATIALDATA_STORE_NAME, export_xenium_to_spatialdata_zarr
+from .io.backfill import backfill_contour_patches, inspect_backfill_needs, inspect_l3_upgrade, run_l3_upgrade
 from .io.tenx_public_slides import build_10x_public_slides, discover_10x_xenium_datasets
 from .io.xenium_slide_builder import build_atera_slides, build_xenium_slide
 from .gmi import (
@@ -250,6 +251,141 @@ def slide_build_10x_public(
         overwrite=overwrite,
         refresh_metadata=refresh_metadata,
         progress=True,
+    )
+    click.echo(json.dumps(payload, indent=2))
+
+
+@slide_group.command("inspect-backfill")
+@click.option("--slide-root", default=r"D:\GitHub\stGPT\outputs\xenium_slides", show_default=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output-dir", default=None, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--max-crop-side-px", default=1024, show_default=True, type=int)
+@click.option("--average-patch-bytes", default=None, type=int)
+@click.option("--update-registry/--no-update-registry", default=True, show_default=True)
+def slide_inspect_backfill(slide_root, output_dir, max_crop_side_px, average_patch_bytes, update_registry):
+    """Inspect XeniumSlide readiness and write contour-patch backfill plans."""
+    result = inspect_backfill_needs(
+        slide_root=slide_root,
+        output_dir=output_dir,
+        max_crop_side_px=max_crop_side_px,
+        average_patch_bytes=average_patch_bytes,
+        update_registry=update_registry,
+    )
+    click.echo(json.dumps(result.to_dict(), indent=2))
+
+
+@slide_group.command("backfill-contour-patches")
+@click.option("--slide-root", default=r"D:\GitHub\stGPT\outputs\xenium_slides", show_default=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output-dir", default=None, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--case", "cases", multiple=True)
+@click.option("--audit-only/--extract-patches", default=True, show_default=True)
+@click.option("--workers", default=1, show_default=True, type=int)
+@click.option("--overwrite/--no-overwrite", default=False, show_default=True)
+@click.option("--max-crop-side-px", default=1024, show_default=True, type=int)
+@click.option("--max-snapshot-side-px", default=1600, show_default=True, type=int)
+@click.option("--update-registry/--no-update-registry", default=True, show_default=True)
+def slide_backfill_contour_patches(
+    slide_root,
+    output_dir,
+    cases,
+    audit_only,
+    workers,
+    overwrite,
+    max_crop_side_px,
+    max_snapshot_side_px,
+    update_registry,
+):
+    """Generate alignment snapshots and optionally contour H&E patch manifests."""
+    payload = backfill_contour_patches(
+        slide_root=slide_root,
+        output_dir=output_dir,
+        cases=cases,
+        audit_only=audit_only,
+        workers=workers,
+        overwrite=overwrite,
+        max_crop_side_px=max_crop_side_px,
+        max_snapshot_side_px=max_snapshot_side_px,
+        update_registry=update_registry,
+    )
+    click.echo(json.dumps(payload, indent=2))
+
+
+@slide_group.command("inspect-l3-upgrade")
+@click.option("--slide-root", default=r"D:\GitHub\stGPT\outputs\xenium_slides", show_default=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output-dir", default=None, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--source-cache-root", default=r"D:\GitHub\stGPT\outputs\xenium_source_cache\10x_public", show_default=True, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--allow-network/--offline", default=True, show_default=True)
+@click.option("--download-source-assets/--plan-source-assets", default=False, show_default=True)
+@click.option("--max-crop-side-px", default=1024, show_default=True, type=int)
+@click.option("--average-patch-bytes", default=None, type=int)
+@click.option("--update-registry/--no-update-registry", default=True, show_default=True)
+def slide_inspect_l3_upgrade(
+    slide_root,
+    output_dir,
+    source_cache_root,
+    allow_network,
+    download_source_assets,
+    max_crop_side_px,
+    average_patch_bytes,
+    update_registry,
+):
+    """Inspect strict L3 morphology readiness and write upgrade manifests."""
+    result = inspect_l3_upgrade(
+        slide_root=slide_root,
+        output_dir=output_dir,
+        source_cache_root=source_cache_root,
+        allow_network=allow_network,
+        download_source_assets=download_source_assets,
+        max_crop_side_px=max_crop_side_px,
+        average_patch_bytes=average_patch_bytes,
+        update_registry=update_registry,
+    )
+    click.echo(json.dumps(result.to_dict(), indent=2))
+
+
+@slide_group.command("l3-upgrade")
+@click.option("--slide-root", default=r"D:\GitHub\stGPT\outputs\xenium_slides", show_default=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output-dir", default=None, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--source-cache-root", default=r"D:\GitHub\stGPT\outputs\xenium_source_cache\10x_public", show_default=True, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--case", "cases", multiple=True)
+@click.option("--audit-only/--extract-patches", default=True, show_default=True)
+@click.option("--workers", default=1, show_default=True, type=int)
+@click.option("--overwrite/--no-overwrite", default=False, show_default=True)
+@click.option("--max-crop-side-px", default=1024, show_default=True, type=int)
+@click.option("--max-snapshot-side-px", default=1600, show_default=True, type=int)
+@click.option("--require-verdict-pass/--ignore-verdicts", default=True, show_default=True)
+@click.option("--allow-network/--offline", default=True, show_default=True)
+@click.option("--download-source-assets/--plan-source-assets", default=False, show_default=True)
+@click.option("--update-registry/--no-update-registry", default=True, show_default=True)
+def slide_l3_upgrade(
+    slide_root,
+    output_dir,
+    source_cache_root,
+    cases,
+    audit_only,
+    workers,
+    overwrite,
+    max_crop_side_px,
+    max_snapshot_side_px,
+    require_verdict_pass,
+    allow_network,
+    download_source_assets,
+    update_registry,
+):
+    """Run strict L3 snapshot generation or verdict-gated patch extraction."""
+    payload = run_l3_upgrade(
+        slide_root=slide_root,
+        output_dir=output_dir,
+        source_cache_root=source_cache_root,
+        cases=cases,
+        audit_only=audit_only,
+        workers=workers,
+        overwrite=overwrite,
+        max_crop_side_px=max_crop_side_px,
+        max_snapshot_side_px=max_snapshot_side_px,
+        require_verdict_pass=require_verdict_pass,
+        allow_network=allow_network,
+        download_source_assets=download_source_assets,
+        update_registry=update_registry,
     )
     click.echo(json.dumps(payload, indent=2))
 

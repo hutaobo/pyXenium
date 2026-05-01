@@ -26,6 +26,7 @@ __all__ = [
     "build_atera_slides",
     "build_10x_public_slides",
     "build_xenium_slide",
+    "backfill_contour_patches",
     "discover_10x_xenium_datasets",
     "export_xenium_to_spatialdata_zarr",
     "generate_missing_contours_with_histoseg",
@@ -40,17 +41,26 @@ __all__ = [
     "write_xenium_slide",
     "resolve_10x_dataset_metadata",
     "select_primary_contour_geojson",
+    "inspect_backfill_needs",
+    "inspect_l3_upgrade",
+    "write_alignment_snapshot",
+    "run_l3_upgrade",
 ]
 
 _LAZY_EXPORTS = {
+    "backfill_contour_patches": ".backfill",
     "build_atera_slides": ".xenium_slide_builder",
     "build_10x_public_slides": ".tenx_public_slides",
     "build_xenium_slide": ".xenium_slide_builder",
     "discover_10x_xenium_datasets": ".tenx_public_slides",
     "generate_missing_contours_with_histoseg": ".tenx_public_slides",
+    "inspect_backfill_needs": ".backfill",
+    "inspect_l3_upgrade": ".backfill",
     "load_xenium_gene_protein": ".xenium_gene_protein_loader",
     "resolve_10x_dataset_metadata": ".tenx_public_slides",
+    "run_l3_upgrade": ".backfill",
     "select_primary_contour_geojson": ".tenx_public_slides",
+    "write_alignment_snapshot": ".backfill",
 }
 
 
