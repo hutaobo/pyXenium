@@ -51,3 +51,8 @@ GMI interaction partners expand the module. The output bundle includes
 `module_enrichment.tsv`, `module_interactions.tsv`,
 `module_spatial_autocorr.tsv`, a Markdown report, and optional contour score
 maps.
+
+The WTA breast PDC module validation generated an S5/DCIS `NIBAN1`/`SORL1`
+module in the primary QC20, RNA-only, and no-coordinate runs, plus spatial-only
+composition modules and QC sensitivity maps documented in the GMI spatial
+module tutorial.

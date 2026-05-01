@@ -109,13 +109,22 @@ GMI validation remains intact:
 /cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_modules_2026-04-30
 ```
 
+That module validation completed all 8 stages under Slurm jobs `20207833`
+through `20207840`. The primary QC20 module is S5/DCIS-high and anchored by
+`NIBAN1` and `SORL1`; RNA-only and no-coordinate controls retain the module,
+while the spatial-only module is driven by luminal-like amorphous DCIS
+composition. The top1000 sensitivity adds `EFHD1`; the all-nonempty sensitivity
+switches to S1 11q13 invasive tumor composition and should be read as a QC
+stress test rather than the primary result.
+
 ## Biological readout
 
 Interpret selected effects only after comparing the full run with RNA-only,
 spatial-only, no-coordinate, permutation, coordinate-shuffle, and spatial-block
 shuffle controls.
 
-The PDC validation completed all 8 stages under job chain `20008045-20008052`.
+The original contour-GMI PDC validation completed all 8 stages under job chain
+`20008045-20008052`.
 The final summary artifacts are:
 
 ```text

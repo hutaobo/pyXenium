@@ -141,7 +141,8 @@ tumor/CAF versus S5 apocrine-luminal DCIS is best summarized as an S5/DCIS RNA
 program led by `NIBAN1` and `SORL1`. CAF/ECM remodeling, angiogenesis/pericyte,
 myeloid-vascular context, Notch, IGF/MAPK, Wnt, and TGF-beta programs were not
 selected as primary sparse drivers in this validation, though they remain
-candidate axes for larger datasets and follow-up biology. The module layer is
-the recommended next check: in the validated Atera run, it should test whether
-`NIBAN1` and `SORL1` collapse into one S5/DCIS module and whether that module is
-separable from luminal/apocrine DCIS composition features.
+candidate axes for larger datasets and follow-up biology. The fresh PDC module
+validation completed the next check: `NIBAN1` and `SORL1` collapse into one
+S5/DCIS module with strong spatial autocorrelation, RNA-only and no-coordinate
+controls retain the same module, and the spatial-only module is driven by
+luminal-like amorphous DCIS composition rather than direct coordinate features.
