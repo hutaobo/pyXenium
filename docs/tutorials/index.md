@@ -9,8 +9,7 @@ pyXenium.cci <cci_index>
 pyXenium.pathway <pathway>
 pyXenium.multimodal <multimodal>
 pyXenium.contour <contour_index>
-pyXenium.gmi <gmi>
-pyXenium.gmi spatial modules <gmi_spatial_modules>
+pyXenium.gmi <gmi_index>
 pyXenium.mechanostress <mechanostress_atera_pdc>
 pyXenium.spatho <ai_driven_spatial_pathologist>
 pyXenium.perturb <spatialperturb_bridge>
@@ -63,17 +62,10 @@ composition analyses, and profile barrier-aware boundary density curves.
 :::
 
 :::{grid-item-card} pyXenium.gmi
-:link: gmi
+:link: gmi_index
 :link-type: doc
-Use S1/S5 contours as samples for GMI main-effect, interaction, control, and
-heterogeneity analyses.
-:::
-
-:::{grid-item-card} pyXenium.gmi spatial modules
-:link: gmi_spatial_modules
-:link-type: doc
-Turn completed contour-GMI runs into supervised spatial gene modules with
-module scores, curated pathway overlaps, and contour score maps.
+Use S1/S5 contours as samples for GMI sparse effect modeling, then turn
+completed runs into supervised spatial gene modules.
 :::
 
 :::{grid-item-card} pyXenium.mechanostress
