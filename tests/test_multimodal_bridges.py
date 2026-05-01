@@ -89,6 +89,7 @@ def test_export_for_stgpt_writes_contract_bundle(tmp_path):
 
     assert manifest["kind"] == "pyxenium_to_stgpt_handoff"
     assert manifest["sample_id"] == "toy_slide"
+    assert manifest["table_format"] == "csv"
     for key in (
         "cell_table",
         "features",
@@ -104,10 +105,46 @@ def test_export_for_stgpt_writes_contract_bundle(tmp_path):
 
     saved = json.loads((tmp_path / "stgpt_handoff_manifest.json").read_text(encoding="utf-8"))
     assert saved["package_boundaries"]["stGPT"].startswith("RNA/H&E")
+    assert saved["table_format"] == "csv"
     cells = pd.read_csv(tmp_path / manifest["files"]["cell_table"])
     assert list(cells["cell_id"]) == ["c1", "c2", "c3", "c4"]
     assert set(cells["sample_id"]) == {"toy_slide"}
     features = pd.read_csv(tmp_path / manifest["files"]["features"])
+    assert list(features["feature_id"]) == ["EPCAM", "CD3D", "VIM"]
+
+
+def test_export_for_stgpt_parquet_format(tmp_path):
+    sdata = _toy_sdata()
+    feature_table = {
+        "rna_pseudobulk": pd.DataFrame(
+            {
+                "contour_id": ["roi_1", "roi_2"],
+                "EPCAM": [1.5, 0.0],
+            }
+        ),
+    }
+
+    manifest = export_for_stgpt(
+        sdata,
+        tmp_path,
+        contour_key="roi",
+        feature_table=feature_table,
+        neighbor_k=2,
+        table_format="parquet",
+    )
+
+    assert manifest["table_format"] == "parquet"
+    for key in ("cell_table", "features", "coordinates", "contours"):
+        assert key in manifest["files"]
+        fname = manifest["files"][key]
+        assert fname.endswith(".parquet"), f"{key} should be a parquet file, got {fname}"
+        assert (tmp_path / fname).exists()
+
+    saved = json.loads((tmp_path / "stgpt_handoff_manifest.json").read_text(encoding="utf-8"))
+    assert saved["table_format"] == "parquet"
+    cells = pd.read_parquet(tmp_path / manifest["files"]["cell_table"])
+    assert list(cells["cell_id"]) == ["c1", "c2", "c3", "c4"]
+    features = pd.read_parquet(tmp_path / manifest["files"]["features"])
     assert list(features["feature_id"]) == ["EPCAM", "CD3D", "VIM"]
 
 
