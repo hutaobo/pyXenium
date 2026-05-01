@@ -239,25 +239,9 @@ The docs now separate the nine feature sections from the main reading paths:
 
 Start here: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 
-## Branding assets
-
-The repository keeps its Read the Docs, GitHub, and PyPI branding assets under:
-
-```text
-docs/_static/branding/
-```
-
-Use the derived horizontal PNG for README, PyPI, and GitHub social preview surfaces:
-
-```text
-docs/_static/branding/pyxenium-horizontal-dark.png
-```
-
-The canonical source artwork remains `docs/_static/branding/pyxenium-horizontal-dark.svg`.
-
 ## License
 
-Copyright (c) 2025 Taobo Hu. All rights reserved.
+Copyright (c) 2025-2026 Taobo Hu. All rights reserved.
 
 This project is source-available, not open source. You may use, modify, and
 redistribute it only for non-commercial purposes under the terms of the
