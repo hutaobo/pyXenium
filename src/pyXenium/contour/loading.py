@@ -19,7 +19,9 @@ from pyXenium.io._xenium_defaults import (
 from pyXenium.io.sdata_model import XeniumImage, XeniumSData
 from pyXenium.io.xenium_artifacts import read_experiment_metadata
 
-__all__ = ["add_contours_from_geojson"]
+__all__ = ["add_contours_from_geojson", "import_histoseg_segmentation_qc"]
+
+_HISTOSEG_QC_METADATA_KEY = "histoseg_qc"
 
 _EXPANDED_METADATA_COLUMNS = (
     "assigned_structure",
@@ -137,6 +139,69 @@ def add_contours_from_geojson(
     if copy:
         return target
     return None
+
+
+def import_histoseg_segmentation_qc(
+    sdata: XeniumSData,
+    qc_json_path: str | Path,
+    *,
+    shape_key: str,
+) -> dict[str, Any]:
+    """Import a HistoSeg segmentation QC JSON report into ``XeniumSData`` metadata.
+
+    HistoSeg produces a JSON QC report alongside each segmentation run.  This
+    function reads that report and attaches it to the contour registry entry
+    ``sdata.metadata["contours"][shape_key]["histoseg_qc"]``.
+
+    The contour shape identified by *shape_key* must already have been imported
+    via :func:`add_contours_from_geojson` before calling this function.
+
+    Parameters
+    ----------
+    sdata:
+        A :class:`~pyXenium.io.XeniumSData` instance that already contains the
+        contour shape under ``sdata.shapes[shape_key]``.
+    qc_json_path:
+        Path to the HistoSeg segmentation QC JSON file.  Expected to be a flat
+        JSON object; unknown extra keys are preserved.
+    shape_key:
+        The contour key under which the associated GeoJSON was imported.
+
+    Returns
+    -------
+    dict
+        The parsed QC payload as returned from the JSON file.
+    """
+    if not isinstance(sdata, XeniumSData):
+        raise TypeError("`sdata` must be a XeniumSData instance.")
+    if shape_key not in sdata.shapes:
+        raise KeyError(
+            f"`sdata.shapes[{shape_key!r}]` not found. "
+            "Import GeoJSON contours with `add_contours_from_geojson` first."
+        )
+
+    resolved_path = Path(qc_json_path).expanduser().resolve()
+    if not resolved_path.exists():
+        raise FileNotFoundError(f"HistoSeg QC JSON not found: {resolved_path}")
+
+    raw = resolved_path.read_text(encoding="utf-8")
+    try:
+        payload: dict[str, Any] = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Could not parse HistoSeg QC JSON at {resolved_path}: {exc}") from exc
+
+    if not isinstance(payload, dict):
+        raise ValueError(
+            f"HistoSeg QC JSON must be a JSON object (dict), got {type(payload).__name__!r}."
+        )
+
+    contour_registry = dict(sdata.metadata.get("contours", {}))
+    contour_entry = dict(contour_registry.get(shape_key, {}))
+    contour_entry[_HISTOSEG_QC_METADATA_KEY] = payload
+    contour_registry[shape_key] = contour_entry
+    sdata.metadata["contours"] = contour_registry
+
+    return payload
 
 
 def _resolve_pixel_size_um(
