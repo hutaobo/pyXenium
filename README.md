@@ -47,7 +47,7 @@ pyXenium is a Python toolkit for **10x Genomics Xenium** organized around nine m
 | Contour Geometry | `pyXenium.contour` | [Contour tutorial hub](https://pyxenium.readthedocs.io/en/latest/tutorials/contour_index.html) |
 | GMI Inference | `pyXenium.gmi` | [Contour GMI guide](https://pyxenium.readthedocs.io/en/latest/guides/gmi-contour.html) |
 | Mechanostress | `pyXenium.mechanostress` | [Mechanostress tutorial](https://pyxenium.readthedocs.io/en/latest/tutorials/mechanostress_atera_pdc.html) |
-| AI-Driven Spatial Pathologist | external `spatho` bridge | [RTD bridge guide](https://pyxenium.readthedocs.io/en/latest/tutorials/ai_driven_spatial_pathologist.html) |
+| AI-Driven Spatial Pathologist | `pyXenium.spatho` | [RTD bridge guide](https://pyxenium.readthedocs.io/en/latest/tutorials/ai_driven_spatial_pathologist.html) |
 | SpatialPerturb Bridge | `pyXenium.perturb` | [SpatialPerturb bridge guide](https://pyxenium.readthedocs.io/en/latest/tutorials/spatialperturb_bridge.html) |
 
 Legacy compatibility entry points under `pyXenium.analysis`, `pyXenium.validation`, and
