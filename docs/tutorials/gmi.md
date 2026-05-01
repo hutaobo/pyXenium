@@ -72,6 +72,19 @@ Each run writes:
 - `report.md`
 - `figures/` contour overlays, QC maps, prediction maps, and gene logCPM maps
 
+To derive supervised spatial gene modules from a completed run:
+
+```bash
+pyxenium gmi modules \
+  --gmi-output-dir pyxenium_gmi_outputs/atera_s1_s5
+```
+
+This creates a `modules/` subdirectory with `spatial_modules.tsv`,
+`module_features.tsv`, `module_scores.tsv.gz`, enrichment and spatial
+autocorrelation tables, and optional module score maps. The first version is
+GMI-native: selected or stable effects seed modules, while correlation,
+spatial-lag correlation, and GMI interaction edges expand them.
+
 ## Controls
 
 Use RNA-only, spatial-only, no-coordinate, label-permutation,

@@ -98,6 +98,45 @@ class ContourGmiResult:
     files: dict[str, str]
 
 
+@dataclass(frozen=True)
+class GmiModuleConfig:
+    """Configuration for GMI-anchored spatial gene module discovery."""
+
+    min_abs_anchor_coefficient: float = 0.0
+    min_stability_frequency: float = 0.25
+    anchor_merge_correlation: float = 0.5
+    expansion_correlation: float = 0.55
+    expansion_spatial_lag_correlation: float = 0.45
+    max_features_per_module: int = 30
+    spatial_neighbor_k: int = 4
+    include_spatial_features: bool = True
+    write_figures: bool = True
+    module_prefix: str = "gmi_module"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    def copy_with(self, **updates: Any) -> "GmiModuleConfig":
+        return replace(self, **updates)
+
+
+@dataclass
+class GmiModuleResult:
+    """Artifacts from supervised GMI spatial module discovery."""
+
+    output_dir: Path
+    spatial_modules: pd.DataFrame
+    module_features: pd.DataFrame
+    module_scores: pd.DataFrame
+    module_enrichment: pd.DataFrame
+    module_interactions: pd.DataFrame
+    module_spatial_autocorr: pd.DataFrame
+    effect_graph_nodes: pd.DataFrame
+    effect_graph_edges: pd.DataFrame
+    summary: dict[str, Any]
+    files: dict[str, str]
+
+
 # Backwards-compatible names from the original spatial GMI prototype. These
 # aliases no longer imply tile construction; they point at the contour workflow.
 SpatialGmiConfig = ContourGmiConfig

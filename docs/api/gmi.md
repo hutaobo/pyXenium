@@ -21,9 +21,15 @@ before making biological claims on new datasets.
    ContourGmiConfig
    ContourGmiDataset
    ContourGmiResult
+   GmiModuleConfig
+   GmiModuleResult
    build_contour_gmi_dataset
    run_contour_gmi
    run_atera_breast_contour_gmi
+   build_gmi_effect_graph
+   discover_gmi_modules
+   score_gmi_modules
+   render_gmi_module_report
    render_contour_gmi_report
 ```
 
@@ -34,3 +40,14 @@ before making biological claims on new datasets.
 - Required R packages are `cPCG`, `MASS`, `Rcpp`, and `RcppEigen`.
 - Backwards-compatible `SpatialGmi*` aliases remain importable, but they point
   to the contour implementation and do not construct spatial tiles.
+
+## Spatial gene modules
+
+`discover_gmi_modules(...)` adds a supervised module layer on top of an existing
+GMI output directory. Selected or bootstrap-stable GMI effects seed each module,
+then correlated features, contour-neighborhood spatial-lag correlations, and
+GMI interaction partners expand the module. The output bundle includes
+`spatial_modules.tsv`, `module_features.tsv`, `module_scores.tsv.gz`,
+`module_enrichment.tsv`, `module_interactions.tsv`,
+`module_spatial_autocorr.tsv`, a Markdown report, and optional contour score
+maps.

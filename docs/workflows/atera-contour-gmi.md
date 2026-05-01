@@ -90,6 +90,25 @@ Each successful stage writes:
 - `report.md`
 - contour figures under `figures/`
 
+After any stage, derive supervised spatial gene modules with:
+
+```bash
+pyxenium gmi modules \
+  --gmi-output-dir pyxenium_gmi_outputs/full_contour_top500_spatial100
+```
+
+For the Atera validation, the key module-level question is whether `NIBAN1` and
+`SORL1` form one S5/DCIS RNA module and whether its contour scores remain
+separable from luminal/apocrine DCIS composition, CAF/ECM, vascular/pericyte,
+immune, and coordinate-derived spatial features.
+
+The fresh module validation and tutorial use a separate PDC root so the v0.4.1
+GMI validation remains intact:
+
+```text
+/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_modules_2026-04-30
+```
+
 ## Biological readout
 
 Interpret selected effects only after comparing the full run with RNA-only,

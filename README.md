@@ -28,6 +28,14 @@
   <a href="https://github.com/hutaobo/pyXenium/releases">Releases</a>
 </p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/hutaobo/pyXenium/main/docs/_static/figures/pyxenium-nine-feature-overview.png" alt="pyXenium nine-feature overview figure" width="960">
+</p>
+
+<p align="center">
+  <em>Figure 1. pyXenium summarizes Xenium I/O, multimodal analysis, spatial topology, contour-aware inference, mechanostress analysis, and external workflow bridges in one submission-ready overview.</em>
+</p>
+
 pyXenium is a Python toolkit for **10x Genomics Xenium** organized around nine major sections.
 
 | Section | Canonical entry | Start here |

@@ -3,6 +3,7 @@
 ```{toctree}
 :maxdepth: 1
 
+nine-feature-overview
 multimodal-overview
 ../guides/xenium-data-loading
 ../usage/load_partial

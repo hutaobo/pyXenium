@@ -67,4 +67,9 @@ conda run --prefix "${CONDA_PREFIX}" pyxenium gmi run \
   --output-dir "${PDC_ROOT}/runs/${STAGE_ID}" \
   "${EXTRA_ARGS[@]}"
 
+echo "[gmi-pdc] stage=${STAGE_ID} running GMI spatial modules $(date -Is)"
+conda run --prefix "${CONDA_PREFIX}" pyxenium gmi modules \
+  --gmi-output-dir "${PDC_ROOT}/runs/${STAGE_ID}" \
+  --output-dir "${PDC_ROOT}/runs/${STAGE_ID}/modules"
+
 echo "[gmi-pdc] stage=${STAGE_ID} completed $(date -Is)"

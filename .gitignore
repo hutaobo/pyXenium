@@ -19,3 +19,4 @@ benchmarking/cci_2026_atera/reports/*
 benchmarking/cci_2026_atera/runs/*
 !benchmarking/cci_2026_atera/runs/.gitkeep
 benchmarking/cci_2026_atera/pdc_collected/
+pyxenium_gmi_modules_stage*.tar.gz

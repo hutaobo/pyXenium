@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PDC_ROOT="${PDC_ROOT:-/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04}"
-PDC_XENIUM_ROOT="${PDC_XENIUM_ROOT:-/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs}"
+PDC_XENIUM_ROOT="${PDC_XENIUM_ROOT:-}"
 REPO_DIR="${REPO_DIR:-${PDC_ROOT}/repo}"
 CONDA_PREFIX="${CONDA_PREFIX:-${PDC_ROOT}/conda/envs/pyx-gmi}"
 HISTOSEG_ROOT="${HISTOSEG_ROOT:-${PDC_ROOT}/external/HistoSeg}"
@@ -11,10 +11,11 @@ PLAN_JSON="${PDC_ROOT}/logs/pdc_gmi_plan.json"
 DRY_RUN=0
 SKIP_PREPARE=0
 
+DATASET_ROOT_EXPLICIT=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --pdc-root) PDC_ROOT="$2"; shift 2 ;;
-    --dataset-root|--pdc-xenium-root) PDC_XENIUM_ROOT="$2"; shift 2 ;;
+    --dataset-root|--pdc-xenium-root) PDC_XENIUM_ROOT="$2"; DATASET_ROOT_EXPLICIT=1; shift 2 ;;
     --repo-dir) REPO_DIR="$2"; shift 2 ;;
     --conda-prefix) CONDA_PREFIX="$2"; shift 2 ;;
     --histoseg-root) HISTOSEG_ROOT="$2"; shift 2 ;;
@@ -25,13 +26,58 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+REQUIRED_DATASET_FILES=(
+  "cell_feature_matrix.h5"
+  "cells.parquet"
+  "WTA_Preview_FFPE_Breast_Cancer_cell_groups.csv"
+  "analysis/analysis/clustering/gene_expression_graphclust/clusters.csv"
+)
+CANDIDATE_DATASET_ROOTS=(
+  "/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs"
+  "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs"
+  "/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs"
+)
+
+dataset_is_complete() {
+  local root="$1"
+  [[ -d "${root}" ]] || return 1
+  local rel
+  for rel in "${REQUIRED_DATASET_FILES[@]}"; do
+    [[ -s "${root}/${rel}" ]] || return 1
+  done
+}
+
+if [[ -z "${PDC_XENIUM_ROOT}" ]]; then
+  for candidate in "${CANDIDATE_DATASET_ROOTS[@]}"; do
+    if dataset_is_complete "${candidate}"; then
+      PDC_XENIUM_ROOT="${candidate}"
+      echo "[gmi-pdc] resolved dataset root: ${PDC_XENIUM_ROOT}"
+      break
+    fi
+  done
+fi
+if [[ -z "${PDC_XENIUM_ROOT}" ]]; then
+  echo "[gmi-pdc] no complete WTA breast source cache found. Checked:" >&2
+  printf '  - %s\n' "${CANDIDATE_DATASET_ROOTS[@]}" >&2
+  exit 3
+fi
+if [[ "${DATASET_ROOT_EXPLICIT}" -eq 1 ]] && ! dataset_is_complete "${PDC_XENIUM_ROOT}"; then
+  echo "[gmi-pdc] explicit dataset root is incomplete: ${PDC_XENIUM_ROOT}" >&2
+  printf '[gmi-pdc] required: %s\n' "${REQUIRED_DATASET_FILES[*]}" >&2
+  exit 3
+fi
+
 mkdir -p "${PDC_ROOT}/logs" "${PDC_ROOT}/runs" "${PDC_ROOT}/results" "${PDC_ROOT}/reports" "${PDC_ROOT}/tmp"
 
 module load PDC/24.11
 module load miniconda3/25.3.1-1-cpeGNU-24.11
 
 if [[ -z "${ACCOUNT}" ]]; then
-  mapfile -t ACCOUNTS < <(projinfo 2>/dev/null | awk '/^[a-zA-Z0-9_-]+[[:space:]]/ {print $1}' | sort -u)
+  mapfile -t ACCOUNTS < <(
+    projinfo 2>/dev/null \
+      | awk -F'|' '/Compute project/ {gsub(/^[[:space:]]+|[[:space:]]+$/, "", $3); print $3}' \
+      | sort -u
+  )
   if [[ ${#ACCOUNTS[@]} -eq 1 ]]; then
     ACCOUNT="${ACCOUNTS[0]}"
   else

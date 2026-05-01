@@ -1,0 +1,134 @@
+{
+  "dataset_id": "atera_cervical_wta",
+  "xenium_root": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "dataset_root": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "readonly_xenium_root": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "writable_benchmark_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta",
+  "tbc_results": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/tbc_results",
+  "cell_groups_relpath": "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv",
+  "benchmark_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta",
+  "full_h5ad": null,
+  "smoke_h5ad": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/adata_smoke.h5ad",
+  "cci_resource_common_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/cci_resource_common.tsv",
+  "atera_smoke_panel_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/atera_smoke_panel.tsv",
+  "celltype_pairs_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/celltype_pairs.tsv",
+  "full_bundle": {
+    "counts_symbol_mtx": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/counts_symbol.mtx",
+    "barcodes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/barcodes.tsv",
+    "genes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/genes.tsv",
+    "meta_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/meta.tsv",
+    "coords_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/coords.tsv"
+  },
+  "smoke_bundle": {
+    "counts_symbol_mtx": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/counts_symbol.mtx",
+    "barcodes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/barcodes.tsv",
+    "genes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/genes.tsv",
+    "meta_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/meta.tsv",
+    "coords_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/coords.tsv"
+  },
+  "full_bundle_fingerprints": {
+    "counts_symbol_mtx": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/counts_symbol.mtx",
+      "exists": true,
+      "size_bytes": 8687111392,
+      "mtime": 1777585736.0,
+      "sha256_head": "500b335f56165fb0eb6f182ca7827dba72e8f17e2794246e0d9f95fccee2b319",
+      "sha256_head_bytes": 8388608
+    },
+    "barcodes_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/barcodes.tsv",
+      "exists": true,
+      "size_bytes": 7893336,
+      "mtime": 1777585736.0,
+      "sha256_head": "b419474d89ebf95a944026423fd38f1b5da5a95014c0fb35aadef6b5e9562ecc",
+      "sha256_head_bytes": 7893336
+    },
+    "genes_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/genes.tsv",
+      "exists": true,
+      "size_bytes": 692283,
+      "mtime": 1777585736.0,
+      "sha256_head": "f8f4bd6a88fb49bb7416fd25331a35aca7f26c694d2b2d03014591acc38d3d22",
+      "sha256_head_bytes": 692283
+    },
+    "meta_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/meta.tsv",
+      "exists": true,
+      "size_bytes": 47052267,
+      "mtime": 1777585739.0,
+      "sha256_head": "8ea241e08ebb945b6c82407e1cb6a91856f8797d5465937fbfdb6253acab8db8",
+      "sha256_head_bytes": 8388608
+    },
+    "coords_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/coords.tsv",
+      "exists": true,
+      "size_bytes": 31685942,
+      "mtime": 1777585741.0,
+      "sha256_head": "a2e288328d3b5e0e10b3a3e1965e485bf97969f51c8a594b2ca5cbfd4bb0eba8",
+      "sha256_head_bytes": 8388608
+    }
+  },
+  "smoke_bundle_fingerprints": {
+    "counts_symbol_mtx": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/counts_symbol.mtx",
+      "exists": true,
+      "size_bytes": 216485750,
+      "mtime": 1777585742.0,
+      "sha256_head": "26ce8ebd7505e7da79fb99ee9ab5f205690673181d830bf10cc9124da611e7f4",
+      "sha256_head_bytes": 8388608
+    },
+    "barcodes_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/barcodes.tsv",
+      "exists": true,
+      "size_bytes": 220000,
+      "mtime": 1777585742.0,
+      "sha256_head": "d25ef4de601d3f117a8c06cdf64a6adf444b9094b6373c7f52a76a8f3f35c8df",
+      "sha256_head_bytes": 220000
+    },
+    "genes_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/genes.tsv",
+      "exists": true,
+      "size_bytes": 692283,
+      "mtime": 1777585742.0,
+      "sha256_head": "f8f4bd6a88fb49bb7416fd25331a35aca7f26c694d2b2d03014591acc38d3d22",
+      "sha256_head_bytes": 692283
+    },
+    "meta_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/meta.tsv",
+      "exists": true,
+      "size_bytes": 1311570,
+      "mtime": 1777585742.0,
+      "sha256_head": "fcf2ced912c3bd9e5b91a38bb9797c147f1056534d8b567443c9146353f986f8",
+      "sha256_head_bytes": 1311570
+    },
+    "coords_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/coords.tsv",
+      "exists": true,
+      "size_bytes": 883270,
+      "mtime": 1777585742.0,
+      "sha256_head": "6e120589bc406fa18307b849c1abb68d31a8f4fd74e0fcddf616c9f1a782be31",
+      "sha256_head_bytes": 883270
+    }
+  },
+  "full_h5ad_fingerprint": null,
+  "smoke_h5ad_fingerprint": {
+    "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/adata_smoke.h5ad",
+    "exists": true,
+    "size_bytes": 279988404,
+    "mtime": 1777585715.0,
+    "sha256_head": "8e48edea61671e4548ef24b9555918bc846ee0a10523cb7c49f57c7b93319a8a",
+    "sha256_head_bytes": 8388608
+  },
+  "full_n_cells": 717576,
+  "full_n_genes": 18028,
+  "smoke_n_cells": 20000,
+  "smoke_n_genes": 18028,
+  "n_celltypes": 27,
+  "common_db": {
+    "source": "staged_local_cci_db_common",
+    "n_pairs": 3299
+  },
+  "export_full_bundle": true,
+  "write_full_h5ad": false,
+  "matrix_note": "Dense counts_symbol.tsv is intentionally omitted for the full Xenium matrix; sparse counts_symbol.mtx is exported instead."
+}

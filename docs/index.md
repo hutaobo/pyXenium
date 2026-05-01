@@ -33,9 +33,12 @@ changelog
   </div>
 </div>
 
-```{image} _static/branding/pyxenium-horizontal-dark.png
-:alt: pyXenium horizontal logo
-:class: pyxenium-banner
+```{figure} _static/figures/pyxenium-nine-feature-overview.png
+:alt: pyXenium nine-feature overview figure
+:class: pyxenium-overview-image
+:figclass: pyxenium-overview-figure
+
+pyXenium's nine-feature overview connects Xenium data loading, multimodal spatial analysis, topology-aware biology, contour-native inference, mechanostress analysis, and optional external workflow bridges.
 ```
 
 ## Version & Build

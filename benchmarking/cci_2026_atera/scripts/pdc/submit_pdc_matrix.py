@@ -639,6 +639,20 @@ def prepare_command(root: str) -> str:
     return f"sed -i 's/\\r$//' {q(script)} && bash {q(script)}"
 
 
+def stage_resources(cfg: MethodConfig, stage: str) -> tuple[str, int, str, str]:
+    """Return Slurm resources for a method stage.
+
+    Smoke runs use the 20k-cell smoke bundle and a tiny CCI resource cap, so
+    sending them to the high-memory queue can unnecessarily delay downstream
+    pilot/full jobs. Pilot and full keep each method's conservative profile.
+    """
+    if stage == "smoke":
+        if cfg.language == "r":
+            return "shared", 16, "128G", "06:00:00"
+        return "shared", 8, "80G", "04:00:00"
+    return cfg.partition, cfg.cpus, cfg.memory, cfg.time
+
+
 def job_script(
     *,
     job_id: str,
@@ -704,7 +718,7 @@ def build_jobs(
                     partition="shared",
                     cpus=16,
                     memory="96G",
-                    time_limit="02:00:00",
+                    time_limit="08:00:00",
                     body=prepare_command(root),
                 ),
             }
@@ -774,19 +788,19 @@ def build_jobs(
                         "method": method,
                         "chunk_id": chunk_id,
                         "num_chunks": num_chunks,
-                        "partition": cfg.partition,
-                        "cpus": cfg.cpus,
-                        "memory": cfg.memory,
-                        "time": cfg.time,
+                        "partition": stage_resources(cfg, stage)[0],
+                        "cpus": stage_resources(cfg, stage)[1],
+                        "memory": stage_resources(cfg, stage)[2],
+                        "time": stage_resources(cfg, stage)[3],
                         "dependencies": deps,
                         "script": job_script(
                             job_id=run_id,
                             root=root,
                             account=account,
-                            partition=cfg.partition,
-                            cpus=cfg.cpus,
-                            memory=cfg.memory,
-                            time_limit=cfg.time,
+                            partition=stage_resources(cfg, stage)[0],
+                            cpus=stage_resources(cfg, stage)[1],
+                            memory=stage_resources(cfg, stage)[2],
+                            time_limit=stage_resources(cfg, stage)[3],
                             body=method_run_command(method, cfg, root, stage, chunk_id=chunk_id, num_chunks=num_chunks),
                         ),
                     }

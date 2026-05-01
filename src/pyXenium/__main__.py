@@ -42,6 +42,7 @@ from .benchmarking import (
 )
 from .io.io import copy_bundled_dataset, load_toy
 from .io.spatialdata_export import DEFAULT_SPATIALDATA_STORE_NAME, export_xenium_to_spatialdata_zarr
+from .io.tenx_public_slides import build_10x_public_slides, discover_10x_xenium_datasets
 from .io.xenium_slide_builder import build_atera_slides, build_xenium_slide
 from .gmi import (
     DEFAULT_GMI_A100_READONLY_XENIUM_ROOT,
@@ -50,10 +51,13 @@ from .gmi import (
     DEFAULT_GMI_PDC_ROOT,
     DEFAULT_GMI_PDC_XENIUM_ROOT,
     ContourGmiConfig,
+    GmiModuleConfig,
     build_contour_gmi_dataset,
     build_gmi_a100_plan,
     build_gmi_pdc_plan,
+    discover_gmi_modules,
     load_atera_breast_for_gmi,
+    render_gmi_module_report,
     run_atera_breast_contour_gmi,
     summarize_gmi_pdc_runs,
     write_gmi_a100_plan,
@@ -189,6 +193,63 @@ def slide_build_atera(atera_root, output_root, extract_contour_images, max_crop_
         extract_contour_images=extract_contour_images,
         max_crop_side_px=max_crop_side_px,
         overwrite=overwrite,
+    )
+    click.echo(json.dumps(payload, indent=2))
+
+
+@slide_group.command("discover-10x")
+@click.option("--xenium-root", default=r"Y:\long\10X_datasets\Xenium", show_default=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output", required=True, type=click.Path(dir_okay=False, path_type=Path))
+@click.option("--reuse-atera", default=None, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--include-duplicates/--selected-only", default=True, show_default=True)
+def slide_discover_10x(xenium_root, output, reuse_atera, include_duplicates):
+    """Discover buildable public 10x Xenium outs and write an inventory JSON."""
+    records = discover_10x_xenium_datasets(
+        xenium_root=xenium_root,
+        reuse_atera=reuse_atera,
+        include_duplicates=include_duplicates,
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(records, indent=2, ensure_ascii=True, default=str) + "\n", encoding="utf-8")
+    click.echo(json.dumps({"output": str(output), "records": len(records)}, indent=2))
+
+
+@slide_group.command("build-10x-public")
+@click.option("--xenium-root", default=r"Y:\long\10X_datasets\Xenium", show_default=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output-root", default=r"D:\GitHub\stGPT\outputs\xenium_slides\10x_public", show_default=True, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--reuse-atera", default=r"D:\GitHub\stGPT\outputs\xenium_slides\atera", show_default=True, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--histoseg-root", default=r"D:\GitHub\HistoSeg", show_default=True, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--metadata-cache", default=None, type=click.Path(dir_okay=False, path_type=Path))
+@click.option("--extract-contour-images/--skip-contour-images", default=True, show_default=True)
+@click.option("--generate-missing-contours/--skip-histoseg", default=True, show_default=True)
+@click.option("--max-crop-side-px", default=1024, show_default=True, type=int)
+@click.option("--overwrite/--no-overwrite", default=False, show_default=True)
+@click.option("--refresh-metadata/--use-metadata-cache", default=False, show_default=True)
+def slide_build_10x_public(
+    xenium_root,
+    output_root,
+    reuse_atera,
+    histoseg_root,
+    metadata_cache,
+    extract_contour_images,
+    generate_missing_contours,
+    max_crop_side_px,
+    overwrite,
+    refresh_metadata,
+):
+    """Build canonical XeniumSlide artifacts for local public 10x Xenium downloads."""
+    payload = build_10x_public_slides(
+        xenium_root=xenium_root,
+        output_root=output_root,
+        reuse_atera=reuse_atera,
+        histoseg_root=histoseg_root,
+        metadata_cache=metadata_cache,
+        extract_contour_images=extract_contour_images,
+        generate_missing_contours=generate_missing_contours,
+        max_crop_side_px=max_crop_side_px,
+        overwrite=overwrite,
+        refresh_metadata=refresh_metadata,
+        progress=True,
     )
     click.echo(json.dumps(payload, indent=2))
 
@@ -573,6 +634,49 @@ def gmi_report(summary_json):
         from .gmi import render_contour_gmi_report
 
         click.echo(render_contour_gmi_report(payload))
+
+
+@gmi_group.command("modules")
+@click.option("--gmi-output-dir", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--output-dir", default=None, type=click.Path(file_okay=False, path_type=Path))
+@click.option("--min-stability-frequency", type=float, default=0.25, show_default=True)
+@click.option("--anchor-merge-correlation", type=float, default=0.5, show_default=True)
+@click.option("--expansion-correlation", type=float, default=0.55, show_default=True)
+@click.option("--spatial-lag-correlation", type=float, default=0.45, show_default=True)
+@click.option("--max-features-per-module", type=int, default=30, show_default=True)
+@click.option("--spatial-neighbor-k", type=int, default=4, show_default=True)
+@click.option("--include-spatial-features/--rna-only-modules", default=True, show_default=True)
+@click.option("--figures/--skip-figures", "write_figures", default=True, show_default=True)
+@click.option("--report/--json", "print_report", default=False, show_default=True)
+def gmi_modules(
+    gmi_output_dir,
+    output_dir,
+    min_stability_frequency,
+    anchor_merge_correlation,
+    expansion_correlation,
+    spatial_lag_correlation,
+    max_features_per_module,
+    spatial_neighbor_k,
+    include_spatial_features,
+    write_figures,
+    print_report,
+):
+    """Discover supervised spatial gene modules from a completed GMI run."""
+    config = GmiModuleConfig(
+        min_stability_frequency=min_stability_frequency,
+        anchor_merge_correlation=anchor_merge_correlation,
+        expansion_correlation=expansion_correlation,
+        expansion_spatial_lag_correlation=spatial_lag_correlation,
+        max_features_per_module=max_features_per_module,
+        spatial_neighbor_k=spatial_neighbor_k,
+        include_spatial_features=include_spatial_features,
+        write_figures=write_figures,
+    )
+    result = discover_gmi_modules(gmi_output_dir=gmi_output_dir, output_dir=output_dir, config=config)
+    if print_report:
+        click.echo(render_gmi_module_report(result.summary))
+    else:
+        click.echo(json.dumps(result.summary, indent=2, default=str))
 
 
 @gmi_group.command("a100-plan")

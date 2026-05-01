@@ -69,6 +69,8 @@ def build_xenium_slide(
     scanner: str | None = None,
     prefer: str = "auto",
     overwrite: bool = True,
+    source_metadata: dict[str, Any] | None = None,
+    contour_source: dict[str, Any] | None = None,
 ) -> XeniumSlideBuildResult:
     """Build a canonical XeniumSlide store plus auditable contour artifacts."""
 
@@ -114,6 +116,10 @@ def build_xenium_slide(
         "source_path": str(transcript_path) if transcript_path is not None else None,
         "materialized_in_slide_store": False,
     }
+    if source_metadata:
+        slide.metadata["tenx_source"] = dict(source_metadata)
+    if contour_source:
+        slide.metadata["contour_source"] = dict(contour_source)
     slide.table.uns.setdefault("xenium_slide", {}).update(
         {
             "schema_version": 1,
@@ -126,6 +132,10 @@ def build_xenium_slide(
             "batch": slide.metadata["batch"],
         }
     )
+    if source_metadata:
+        slide.table.uns.setdefault("xenium_slide", {})["tenx_source"] = dict(source_metadata)
+    if contour_source:
+        slide.table.uns.setdefault("xenium_slide", {})["contour_source"] = dict(contour_source)
 
     contour_frame = pd.DataFrame()
     cell_to_contour = pd.DataFrame()
@@ -172,8 +182,25 @@ def build_xenium_slide(
                 if isinstance(existing_payload, list):
                     patch_manifest = existing_payload
     else:
-        cell_to_contour_path = None
-        structure_assignments_path = None
+        cell_to_contour = assign_cells_to_contours(
+            slide.table,
+            [],
+            pixel_size_um=_pixel_size_um_for_slide(slide, image_artifacts),
+        )
+        _attach_assignments_to_obs(slide.table, cell_to_contour)
+        structure_assignments = _structure_assignments_from_contours(contour_frame)
+        cell_to_contour_path = out / "cell_to_contour.parquet"
+        structure_assignments_path = out / "structure_assignments.csv"
+        cell_to_contour.to_parquet(cell_to_contour_path, index=False)
+        structure_assignments.to_csv(structure_assignments_path, index=False)
+        slide.metadata["contours"] = {
+            "source_geojson": None,
+            "n_contours": 0,
+            "n_assigned_cells": 0,
+            "cell_to_contour": str(cell_to_contour_path),
+            "structure_assignments": str(structure_assignments_path),
+        }
+        slide.table.uns.setdefault("xenium_slide", {})["contours"] = slide.metadata["contours"]
 
     patch_manifest_path = out / "contour_patches_manifest.json"
     _write_json(patch_manifest_path, patch_manifest)
@@ -439,15 +466,17 @@ def build_slide_manifest(
         "spatial_bounds": _spatial_bounds(spatial),
         "panel": slide.table.uns.get("xenium_slide", {}).get("panel") or slide.metadata.get("feature_summary", {}),
         "metadata": slide.metadata.get("batch", {}),
+        "tenx_source": slide.metadata.get("tenx_source", {}),
         "image_artifacts": slide.metadata.get("image_artifacts", {}),
+        "contour_source": slide.metadata.get("contour_source", {}),
         "contours": {
             "source_geojson": str(contour_geojson) if contour_geojson is not None else None,
             "cell_assignment_coverage": float(assigned_count / max(int(adata.n_obs), 1)),
             "max_crop_side_px": int(max_crop_side_px),
         },
         "artifacts": {
-            "cell_to_contour": str(output_dir / "cell_to_contour.parquet") if contour_geojson is not None else None,
-            "structure_assignments": str(output_dir / "structure_assignments.csv") if contour_geojson is not None else None,
+            "cell_to_contour": str(output_dir / "cell_to_contour.parquet"),
+            "structure_assignments": str(output_dir / "structure_assignments.csv"),
             "contour_patches_manifest": str(output_dir / "contour_patches_manifest.json"),
         },
     }

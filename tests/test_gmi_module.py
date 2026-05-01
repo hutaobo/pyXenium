@@ -15,16 +15,21 @@ from pyXenium.__main__ import app
 from pyXenium.contour._geometry import geometry_table_to_contour_frame
 from pyXenium.gmi import (
     ContourGmiConfig,
+    ContourGmiDataset,
+    GmiModuleConfig,
     SpatialGmiConfig,
     assert_vendored_gmi_complete,
     build_contour_gmi_dataset,
+    build_gmi_effect_graph,
     build_gmi_a100_plan,
     build_gmi_install_command,
     compute_contour_heterogeneity,
+    discover_gmi_modules,
     get_vendored_gmi_metadata,
     get_vendored_gmi_path,
     run_contour_gmi,
     validate_a100_gmi_path_policy,
+    write_contour_gmi_dataset,
 )
 from pyXenium.io.sdata_model import XeniumSData
 
@@ -80,16 +85,103 @@ def _toy_sdata(*, contours_per_label: int = 2, cells_per_contour: int = 24) -> X
     return XeniumSData(table=adata, shapes={"s1_s5_contours": contour_frame}, metadata={"sample_id": "toy_breast"})
 
 
+def _toy_module_dataset() -> ContourGmiDataset:
+    sample_ids = [f"contour_S1_{i}" for i in range(6)] + [f"contour_S5_{i}" for i in range(6)]
+    y = pd.Series([1] * 6 + [0] * 6, index=sample_ids, name="y")
+    rng = np.random.default_rng(11)
+    nib = np.r_[np.linspace(-1.8, -1.1, 6), np.linspace(1.1, 1.9, 6)]
+    sorl = nib * 0.95 + rng.normal(0, 0.04, 12)
+    ccnd1 = np.r_[np.linspace(1.0, 1.5, 6), np.linspace(-0.6, -0.2, 6)]
+    ecm = np.r_[np.linspace(0.8, 1.2, 6), np.linspace(-0.5, -0.1, 6)]
+    lum_comp = nib * 0.8 + rng.normal(0, 0.05, 12)
+    rim = np.r_[np.linspace(0.6, 1.0, 6), np.linspace(-0.2, 0.2, 6)]
+    X = pd.DataFrame(
+        {
+            "NIBAN1": nib,
+            "SORL1": sorl,
+            "CCND1": ccnd1,
+            "COL1A1": ecm,
+            "omics__Luminal_like_Amorphous_DCIS_fraction": lum_comp,
+            "edge_contrast__outer_inner_luminal": rim,
+        },
+        index=sample_ids,
+    )
+    sample_metadata = pd.DataFrame(
+        {
+            "sample_id": sample_ids,
+            "contour_id": [item.replace("contour_", "") for item in sample_ids],
+            "label": ["S1"] * 6 + ["S5"] * 6,
+            "y": y.to_numpy(),
+            "n_cells": [40] * 12,
+            "library_size": [1000.0] * 12,
+            "x_centroid": np.r_[np.arange(6) * 20.0, np.arange(6) * 20.0],
+            "y_centroid": np.r_[np.zeros(6), np.ones(6) * 200.0],
+            "retained": [True] * 12,
+            "drop_reason": ["retained"] * 12,
+        }
+    )
+    feature_metadata = pd.DataFrame(
+        {
+            "feature": X.columns,
+            "feature_block": ["rna", "rna", "rna", "rna", "spatial", "spatial"],
+            "feature_group": ["rna", "rna", "rna", "rna", "composition", "edge_contrast"],
+        }
+    )
+    return ContourGmiDataset(
+        X=X,
+        y=y,
+        sample_metadata=sample_metadata,
+        feature_metadata=feature_metadata,
+        config={},
+        provenance={"sample_id": "toy_modules"},
+    )
+
+
+def _write_toy_module_gmi_run(output_dir: Path) -> ContourGmiDataset:
+    dataset = _toy_module_dataset()
+    write_contour_gmi_dataset(dataset, output_dir)
+    pd.DataFrame(
+        {
+            "feature_index": [1, 2],
+            "feature": ["NIBAN1", "SORL1"],
+            "coefficient": [-1.4, -1.1],
+        }
+    ).to_csv(output_dir / "main_effects.tsv", sep="\t", index=False)
+    pd.DataFrame(
+        {
+            "interaction": ["X1X2"],
+            "feature_index_a": [1],
+            "feature_index_b": [2],
+            "feature_a": ["NIBAN1"],
+            "feature_b": ["SORL1"],
+            "coefficient": [0.4],
+        }
+    ).to_csv(output_dir / "interaction_effects.tsv", sep="\t", index=False)
+    pd.DataFrame(
+        {
+            "effect_type": ["main", "main"],
+            "member": ["NIBAN1", "SORL1"],
+            "selection_count": [7, 5],
+            "selection_frequency": [0.7, 0.5],
+        }
+    ).to_csv(output_dir / "stability.tsv", sep="\t", index=False)
+    return dataset
+
+
 def test_gmi_is_top_level_canonical_surface():
     from pyXenium import ContourGmiConfig as TopLevelContourGmiConfig
+    from pyXenium import GmiModuleConfig as TopLevelGmiModuleConfig
     from pyXenium import build_contour_gmi_dataset as top_level_builder
+    from pyXenium import discover_gmi_modules as top_level_module_discovery
     from pyXenium import render_contour_gmi_report as top_level_reporter
     from pyXenium import run_atera_breast_contour_gmi as top_level_atera_runner
     from pyXenium import run_contour_gmi as top_level_runner
 
     assert px.gmi.ContourGmiConfig is ContourGmiConfig
     assert TopLevelContourGmiConfig is ContourGmiConfig
+    assert TopLevelGmiModuleConfig is GmiModuleConfig
     assert top_level_builder is build_contour_gmi_dataset
+    assert top_level_module_discovery is discover_gmi_modules
     assert top_level_runner is run_contour_gmi
     assert top_level_atera_runner is px.gmi.run_atera_breast_contour_gmi
     assert top_level_reporter is px.gmi.render_contour_gmi_report
@@ -170,6 +262,88 @@ def test_compute_contour_heterogeneity_marks_high_and_low_contours():
     for label in ("S1", "S5"):
         classes = set(heterogeneity.loc[heterogeneity["label"] == label, "heterogeneity_class"])
         assert {"low", "mid", "high"}.issubset(classes)
+
+
+def test_discover_gmi_modules_writes_supervised_spatial_module_artifacts(tmp_path):
+    gmi_dir = tmp_path / "gmi_run"
+    gmi_dir.mkdir()
+    _write_toy_module_gmi_run(gmi_dir)
+
+    result = discover_gmi_modules(
+        gmi_output_dir=gmi_dir,
+        config=GmiModuleConfig(write_figures=False, expansion_correlation=0.5, expansion_spatial_lag_correlation=0.4),
+    )
+
+    assert result.summary["n_modules"] == 1
+    assert result.module_scores.shape == (12, 1)
+    assert {"spatial_modules.tsv", "module_features.tsv", "module_scores.tsv.gz"}.issubset(
+        {Path(path).name for path in result.files.values()}
+    )
+    module = result.spatial_modules.iloc[0]
+    assert module["direction_label"] == "S5"
+    assert {"NIBAN1", "SORL1"}.issubset(set(result.module_features["feature"]))
+    enriched = result.module_enrichment.loc[result.module_enrichment["gene_set"] == "DCIS_apocrine_luminal"]
+    assert int(enriched["overlap_count"].max()) >= 2
+    assert (result.output_dir / "report.md").exists()
+
+
+def test_build_gmi_effect_graph_marks_anchors_and_interaction_edges(tmp_path):
+    gmi_dir = tmp_path / "gmi_run"
+    gmi_dir.mkdir()
+    dataset = _write_toy_module_gmi_run(gmi_dir)
+    main_effects = pd.read_csv(gmi_dir / "main_effects.tsv", sep="\t")
+    interactions = pd.read_csv(gmi_dir / "interaction_effects.tsv", sep="\t")
+    stability = pd.read_csv(gmi_dir / "stability.tsv", sep="\t")
+
+    graph = build_gmi_effect_graph(
+        dataset,
+        main_effects=main_effects,
+        interaction_effects=interactions,
+        stability=stability,
+        config=GmiModuleConfig(expansion_correlation=0.5),
+    )
+
+    anchors = graph["nodes"].loc[graph["nodes"]["is_anchor"], "feature"].astype(str).tolist()
+    assert anchors == ["NIBAN1", "SORL1"]
+    assert "gmi_interaction" in set(graph["edges"]["edge_type"])
+
+
+def test_gmi_module_spatial_autocorr_drops_after_coordinate_value_shuffle(tmp_path):
+    dataset = _toy_module_dataset()
+    main_effects = pd.DataFrame({"feature": ["NIBAN1", "SORL1"], "coefficient": [-1.4, -1.1]})
+    config = GmiModuleConfig(write_figures=False, expansion_correlation=0.5)
+    real = discover_gmi_modules(
+        dataset=dataset,
+        output_dir=tmp_path / "real",
+        main_effects=main_effects,
+        interaction_effects=pd.DataFrame(),
+        stability=pd.DataFrame(),
+        config=config,
+    )
+    shuffled = ContourGmiDataset(
+        X=pd.DataFrame(
+            dataset.X.sample(frac=1.0, random_state=4).to_numpy(),
+            index=dataset.X.index,
+            columns=dataset.X.columns,
+        ),
+        y=dataset.y.copy(),
+        sample_metadata=dataset.sample_metadata.copy(),
+        feature_metadata=dataset.feature_metadata.copy(),
+        config=dataset.config,
+        provenance=dataset.provenance,
+    )
+    shuffled_result = discover_gmi_modules(
+        dataset=shuffled,
+        output_dir=tmp_path / "shuffled",
+        main_effects=main_effects,
+        interaction_effects=pd.DataFrame(),
+        stability=pd.DataFrame(),
+        config=config,
+    )
+
+    real_moran = float(real.module_spatial_autocorr["moran_i"].dropna().iloc[0])
+    shuffled_moran = float(shuffled_result.module_spatial_autocorr["moran_i"].dropna().iloc[0])
+    assert real_moran > shuffled_moran
 
 
 def test_run_contour_gmi_parses_mocked_r_outputs_and_writes_heterogeneity(monkeypatch, tmp_path):

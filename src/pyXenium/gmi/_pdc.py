@@ -7,10 +7,15 @@ from typing import Any
 
 
 DEFAULT_GMI_PDC_ROOT = "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04"
-DEFAULT_GMI_PDC_XENIUM_ROOT = (
+DEFAULT_GMI_PDC_XENIUM_ROOT_CANDIDATES = (
+    "/cfs/klemming/scratch/h/hutaobo/pyxenium_lr_benchmark_2026-04/"
+    "data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs",
     "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/"
-    "data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs"
+    "data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs",
+    "/cfs/klemming/scratch/h/hutaobo/topolink_cci_benchmark_2026-04/"
+    "data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs",
 )
+DEFAULT_GMI_PDC_XENIUM_ROOT = DEFAULT_GMI_PDC_XENIUM_ROOT_CANDIDATES[0]
 DEFAULT_GMI_PDC_CONTOUR_GEOJSON = "xenium_explorer_annotations.s1_s5.generated.geojson"
 DEFAULT_GMI_PDC_HISTOSEG_ROOT = "/cfs/klemming/scratch/h/hutaobo/pyxenium_gmi_contour_2026-04/external/HistoSeg"
 DEFAULT_GMI_PDC_MODULES = ("PDC/24.11", "miniconda3/25.3.1-1-cpeGNU-24.11")
@@ -173,6 +178,7 @@ def build_gmi_pdc_plan(
                 "stage_id": stage_id,
                 "kind": spec["kind"],
                 "output_dir": output_dir,
+                "module_output_dir": _join(output_dir, "modules"),
                 "log_file": log_file,
                 "resources": spec["resources"],
                 "depends_on": previous_stage,
@@ -256,6 +262,13 @@ def summarize_gmi_pdc_runs(pdc_root: str | Path = DEFAULT_GMI_PDC_ROOT) -> dict[
                 "interaction_effects_head": _read_tsv_head(run_dir / "interaction_effects.tsv"),
                 "cv_metrics_head": _read_tsv_head(run_dir / "cv_metrics.tsv"),
                 "stability_head": _read_tsv_head(run_dir / "stability.tsv"),
+                "module_summary_json": str(run_dir / "modules" / "summary.json")
+                if (run_dir / "modules" / "summary.json").exists()
+                else None,
+                "spatial_modules_head": _read_tsv_head(run_dir / "modules" / "spatial_modules.tsv"),
+                "module_features_head": _read_tsv_head(run_dir / "modules" / "module_features.tsv"),
+                "module_enrichment_head": _read_tsv_head(run_dir / "modules" / "module_enrichment.tsv"),
+                "module_spatial_autocorr_head": _read_tsv_head(run_dir / "modules" / "module_spatial_autocorr.tsv"),
             }
             if summary:
                 stage.update(
@@ -272,6 +285,19 @@ def summarize_gmi_pdc_runs(pdc_root: str | Path = DEFAULT_GMI_PDC_ROOT) -> dict[
                         "bootstrap_repeats_requested": summary.get("bootstrap_repeats_requested"),
                     }
                 )
+            module_summary_path = run_dir / "modules" / "summary.json"
+            if module_summary_path.exists():
+                module_summary = json.loads(module_summary_path.read_text(encoding="utf-8"))
+                stage.update(
+                    {
+                        "module_status": "completed",
+                        "n_modules": module_summary.get("n_modules"),
+                        "n_module_features": module_summary.get("n_module_features"),
+                        "top_modules": module_summary.get("top_modules", [])[:10],
+                    }
+                )
+            else:
+                stage["module_status"] = "missing"
             stages.append(stage)
     return {
         "pdc_root": str(root),

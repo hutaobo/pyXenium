@@ -24,8 +24,11 @@ __all__ = [
     "XeniumSData",
     "XeniumSlide",
     "build_atera_slides",
+    "build_10x_public_slides",
     "build_xenium_slide",
+    "discover_10x_xenium_datasets",
     "export_xenium_to_spatialdata_zarr",
+    "generate_missing_contours_with_histoseg",
     "load_anndata_from_partial",
     "load_xenium_gene_protein",
     "read_sdata",
@@ -35,12 +38,19 @@ __all__ = [
     "write_slide",
     "write_xenium",
     "write_xenium_slide",
+    "resolve_10x_dataset_metadata",
+    "select_primary_contour_geojson",
 ]
 
 _LAZY_EXPORTS = {
     "build_atera_slides": ".xenium_slide_builder",
+    "build_10x_public_slides": ".tenx_public_slides",
     "build_xenium_slide": ".xenium_slide_builder",
+    "discover_10x_xenium_datasets": ".tenx_public_slides",
+    "generate_missing_contours_with_histoseg": ".tenx_public_slides",
     "load_xenium_gene_protein": ".xenium_gene_protein_loader",
+    "resolve_10x_dataset_metadata": ".tenx_public_slides",
+    "select_primary_contour_geojson": ".tenx_public_slides",
 }
 
 

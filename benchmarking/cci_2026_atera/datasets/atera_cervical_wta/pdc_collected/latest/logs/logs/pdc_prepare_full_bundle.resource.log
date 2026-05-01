@@ -1,0 +1,68 @@
+/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/benchmarking/cci_2026_atera/scripts/pdc/prepare_pdc_bundle.sh: line 2: set: pipefail: invalid option name
+Command exited with non-zero status 2
+	Command being timed: "bash -lc bash /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/benchmarking/cci_2026_atera/scripts/pdc/prepare_pdc_bundle.sh"
+	User time (seconds): 0.10
+	System time (seconds): 0.04
+	Percent of CPU this job got: 87%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:00.16
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 13216
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 6984
+	Voluntary context switches: 90
+	Involuntary context switches: 2
+	Swaps: 0
+	File system inputs: 24
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 2
+Traceback (most recent call last):
+  File "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/benchmarking/cci_2026_atera/scripts/prepare_data.py", line 44, in <module>
+    main()
+  File "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/benchmarking/cci_2026_atera/scripts/prepare_data.py", line 25, in main
+    payload = prepare_atera_cci_benchmark(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/src/pyXenium/benchmarking/cci_atera.py", line 346, in prepare_atera_cci_benchmark
+    raw = read_xenium(
+          ^^^^^^^^^^^^
+  File "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/src/pyXenium/io/api.py", line 226, in read_xenium
+    adata, boundaries, metadata = _assemble_anndata(
+                                  ^^^^^^^^^^^^^^^^^^
+  File "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/src/pyXenium/io/api.py", line 132, in _assemble_anndata
+    matrix, features, barcodes, backend = read_cell_feature_matrix(
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/src/pyXenium/io/xenium_artifacts.py", line 701, in read_cell_feature_matrix
+    raise FileNotFoundError(
+FileNotFoundError: No usable Xenium cell_feature_matrix found under '/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs' with prefer='h5'.
+Command exited with non-zero status 1
+	Command being timed: "bash -lc sed -i 's/\r$//' /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/benchmarking/cci_2026_atera/scripts/pdc/prepare_pdc_bundle.sh && bash /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/benchmarking/cci_2026_atera/scripts/pdc/prepare_pdc_bundle.sh"
+	User time (seconds): 23.89
+	System time (seconds): 8.48
+	Percent of CPU this job got: 40%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:20.38
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 222756
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 5761
+	Minor (reclaiming a frame) page faults: 160745
+	Voluntary context switches: 123072
+	Involuntary context switches: 1024
+	Swaps: 0
+	File system inputs: 925788
+	File system outputs: 842184
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1
+	Command being timed: "

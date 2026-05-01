@@ -76,13 +76,23 @@ def _summarize_stage(run_dir: Path) -> dict[str, object]:
     cv = _read_tsv(run_dir / "cv_metrics.tsv")
     stability = _read_tsv(run_dir / "stability.tsv")
     heterogeneity = _read_tsv(run_dir / "heterogeneity.tsv")
+    module_dir = run_dir / "modules"
+    module_summary_path = module_dir / "summary.json"
+    module_summary = json.loads(module_summary_path.read_text(encoding="utf-8")) if module_summary_path.exists() else {}
+    spatial_modules = _read_tsv(module_dir / "spatial_modules.tsv")
+    module_features = _read_tsv(module_dir / "module_features.tsv")
+    module_enrichment = _read_tsv(module_dir / "module_enrichment.tsv")
+    module_spatial_autocorr = _read_tsv(module_dir / "module_spatial_autocorr.tsv")
     figures_dir = run_dir / "figures"
     figures = sorted(str(path.name) for path in figures_dir.glob("*")) if figures_dir.exists() else []
+    module_figures_dir = module_dir / "figures"
+    module_figures = sorted(str(path.name) for path in module_figures_dir.glob("*")) if module_figures_dir.exists() else []
 
     return {
         "stage_id": run_dir.name,
-        "status": "completed" if summary else "missing_summary",
+        "status": "completed" if summary and module_summary else "missing_summary_or_modules",
         "output_dir": str(run_dir),
+        "module_output_dir": str(module_dir),
         "n_contours": summary.get("n_contours"),
         "n_retained_contours": summary.get("n_retained_contours"),
         "n_dropped_contours": summary.get("n_dropped_contours"),
@@ -104,6 +114,15 @@ def _summarize_stage(run_dir: Path) -> dict[str, object]:
         "stability_top": stability[:10],
         "heterogeneity_rows": len(heterogeneity),
         "figures": figures,
+        "module_summary": module_summary,
+        "n_modules": module_summary.get("n_modules"),
+        "n_module_features": module_summary.get("n_module_features"),
+        "spatial_modules": spatial_modules,
+        "module_features": module_features,
+        "module_features_head": module_features[:20],
+        "module_enrichment_head": module_enrichment[:20],
+        "module_spatial_autocorr": module_spatial_autocorr,
+        "module_figures": module_figures,
     }
 
 
@@ -117,6 +136,7 @@ def _build_biological_summary(stage_map: dict[str, dict[str, object]]) -> dict[s
     all_nonempty = stage_map.get("sensitivity_all_nonempty_top500_spatial100", {})
 
     target = ("NIBAN1", "SORL1")
+    module_target = {"NIBAN1", "SORL1"}
     spatial_features = list(spatial_only.get("main_features", []))
     spatial_classes = {feature: _feature_class(feature) for feature in spatial_features}
 
@@ -124,19 +144,46 @@ def _build_biological_summary(stage_map: dict[str, dict[str, object]]) -> dict[s
     top1000_features = set(top1000.get("main_features", []))
     all_nonempty_features = set(all_nonempty.get("main_features", []))
 
+    def modules_with_features(stage: dict[str, object], required: set[str]) -> list[dict[str, str]]:
+        modules = stage.get("spatial_modules", []) or []
+        module_features = stage.get("module_features", []) or []
+        by_module: dict[str, set[str]] = {}
+        for row in module_features:
+            module_id = str(row.get("module_id", ""))
+            feature = str(row.get("feature", ""))
+            if module_id and feature:
+                by_module.setdefault(module_id, set()).add(feature)
+        out = []
+        for row in modules:
+            module_id = str(row.get("module_id", ""))
+            if required.issubset(by_module.get(module_id, set())):
+                out.append(row)
+        return out
+
+    full_niban_modules = modules_with_features(full, module_target)
+    rna_niban_modules = modules_with_features(rna_only, module_target)
+    no_coord_niban_modules = modules_with_features(no_coordinate, module_target)
+
     return {
         "primary_qc20_main_features": list(full.get("main_features", [])),
         "primary_qc20_selected_niban1_sorl1": _has_features(full.get("main_effects", []), target),
+        "primary_qc20_modules_with_niban1_sorl1": full_niban_modules,
+        "primary_qc20_has_niban1_sorl1_module": bool(full_niban_modules),
         "stability_top_features": stability.get("stability_top", []),
         "rna_only_retains_niban1_sorl1": _has_features(rna_only.get("main_effects", []), target),
+        "rna_only_has_niban1_sorl1_module": bool(rna_niban_modules),
         "no_coordinate_retains_niban1_sorl1": _has_features(no_coordinate.get("main_effects", []), target),
+        "no_coordinate_has_niban1_sorl1_module": bool(no_coord_niban_modules),
         "spatial_only_features": spatial_features,
         "spatial_only_feature_classes": spatial_classes,
+        "spatial_only_modules": spatial_only.get("spatial_modules", []),
         "spatial_only_coordinate_driven": any(value == "coordinate" for value in spatial_classes.values()),
         "spatial_only_composition_driven": any(value == "composition" for value in spatial_classes.values()),
         "top1000_features": list(top1000_features),
+        "top1000_modules": top1000.get("spatial_modules", []),
         "top1000_new_features_vs_qc20": sorted(top1000_features - full_features),
         "all_nonempty_features": list(all_nonempty_features),
+        "all_nonempty_modules": all_nonempty.get("spatial_modules", []),
         "all_nonempty_changes_primary_features": sorted(all_nonempty_features.symmetric_difference(full_features)),
         "interpretation": (
             "The QC20 S1/S5 contrast is primarily driven by an S5/DCIS RNA expression program "
@@ -181,12 +228,43 @@ def _render_markdown(payload: dict[str, object]) -> str:
     lines.extend(
         [
             "",
+            "## Module results",
+            "",
+            "| Stage | Modules | Module features | Top module labels |",
+            "| --- | ---: | ---: | --- |",
+        ]
+    )
+    for stage in stages:
+        module_labels = []
+        for module in stage.get("spatial_modules", [])[:5]:
+            module_labels.append(
+                "`{}`: {} ({})".format(
+                    module.get("module_id", "-"),
+                    module.get("direction_label", "-"),
+                    module.get("anchor_features", "-"),
+                )
+            )
+        lines.append(
+            "| `{}` | {} | {} | {} |".format(
+                stage["stage_id"],
+                stage.get("n_modules") if stage.get("n_modules") is not None else "-",
+                stage.get("n_module_features") if stage.get("n_module_features") is not None else "-",
+                "<br>".join(module_labels) or "-",
+            )
+        )
+
+    lines.extend(
+        [
+            "",
             "## Biological readout",
             "",
             "- Primary QC20 model selected: "
             + (", ".join(biological.get("primary_qc20_main_features", [])) or "-"),
+            f"- Primary QC20 has NIBAN1/SORL1 module: {biological.get('primary_qc20_has_niban1_sorl1_module')}",
             f"- RNA-only retained NIBAN1/SORL1: {biological.get('rna_only_retains_niban1_sorl1')}",
+            f"- RNA-only has NIBAN1/SORL1 module: {biological.get('rna_only_has_niban1_sorl1_module')}",
             f"- No-coordinate retained NIBAN1/SORL1: {biological.get('no_coordinate_retains_niban1_sorl1')}",
+            f"- No-coordinate has NIBAN1/SORL1 module: {biological.get('no_coordinate_has_niban1_sorl1_module')}",
             "- Spatial-only selected: "
             + (", ".join(biological.get("spatial_only_features", [])) or "-"),
             f"- Spatial-only coordinate-driven: {biological.get('spatial_only_coordinate_driven')}",

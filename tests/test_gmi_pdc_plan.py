@@ -78,6 +78,7 @@ def test_build_gmi_pdc_plan_uses_slurm_chain_and_expected_stages():
     assert "--dependency=afterok:${full_contour_top500_spatial100_JOB_ID}" in " ".join(stability["sbatch"])
     assert all("--account=naiss-test" in stage["sbatch"] for stage in payload["stages"])
     assert all("--contour-geojson" in stage["command"] for stage in payload["stages"])
+    assert all(stage["module_output_dir"].endswith(f"/runs/{stage['stage_id']}/modules") for stage in payload["stages"])
     assert all("/pyxenium_cci_benchmark_2026-04/" not in stage["output_dir"] for stage in payload["stages"])
     assert all("nohup" not in stage["sbatch_command"] for stage in payload["stages"])
     assert all("sbatch" == stage["sbatch"][0] for stage in payload["stages"])
@@ -126,6 +127,23 @@ def test_gmi_pdc_monitor_summarizes_local_stage_outputs(tmp_path):
         encoding="utf-8",
     )
     (run / "main_effects.tsv").write_text("feature_index\tfeature\tcoefficient\n1\tNIBAN1\t-1\n", encoding="utf-8")
+    module_dir = run / "modules"
+    module_dir.mkdir()
+    (module_dir / "summary.json").write_text(
+        json.dumps(
+            {
+                "n_modules": 1,
+                "n_module_features": 2,
+                "top_modules": [{"module_id": "gmi_module_001", "direction_label": "S5"}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    (module_dir / "spatial_modules.tsv").write_text(
+        "module_id\tdirection_label\tanchor_features\n"
+        "gmi_module_001\tS5\tNIBAN1,SORL1\n",
+        encoding="utf-8",
+    )
 
     payload = summarize_gmi_pdc_runs(tmp_path)
 
@@ -135,6 +153,9 @@ def test_gmi_pdc_monitor_summarizes_local_stage_outputs(tmp_path):
     assert stage["stage_id"] == "validation_rna_only_qc20"
     assert stage["top_main_effects"][0]["feature"] == "NIBAN1"
     assert stage["main_effects_head"][0]["feature"] == "NIBAN1"
+    assert stage["module_status"] == "completed"
+    assert stage["n_modules"] == 1
+    assert stage["spatial_modules_head"][0]["module_id"] == "gmi_module_001"
 
 
 def test_gmi_pdc_scaffold_files_exist():
@@ -152,3 +173,10 @@ def test_gmi_pdc_scaffold_files_exist():
     ]
     for relpath in expected:
         assert (root / relpath).exists(), relpath
+
+    run_stage = (root / "scripts" / "run_pdc_stage.sh").read_text(encoding="utf-8")
+    submit_chain = (root / "scripts" / "submit_pdc_chain.sh").read_text(encoding="utf-8")
+    assert "pyxenium gmi modules" in run_stage
+    assert "pyxenium_lr_benchmark_2026-04" in submit_chain
+    assert "pyxenium_cci_benchmark_2026-04" in submit_chain
+    assert "topolink_cci_benchmark_2026-04" in submit_chain

@@ -1,0 +1,98 @@
+{
+  "created_at": "2026-04-30T21:45:48.154611+00:00",
+  "dataset_id": "atera_cervical_wta",
+  "display_name": "Atera Xenium WTA FFPE cervical cancer",
+  "expected_cells": 717576,
+  "cell_groups_relpath": "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv",
+  "source_local_root": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "remote_source_cache": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "local_tbc_results": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs\\sfplot_tbc_formal_wta\\results",
+  "remote_tbc_results": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/tbc_results",
+  "items": [
+    {
+      "name": "cell_feature_matrix.h5",
+      "local": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs\\cell_feature_matrix.h5",
+      "remote": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs/cell_feature_matrix.h5",
+      "exists": true,
+      "is_dir": false,
+      "bytes": 850902489,
+      "required": true,
+      "action": "skipped_existing"
+    },
+    {
+      "name": "cells.parquet",
+      "local": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs\\cells.parquet",
+      "remote": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs/cells.parquet",
+      "exists": true,
+      "is_dir": false,
+      "bytes": 13896571,
+      "required": true,
+      "action": "skipped_existing"
+    },
+    {
+      "name": "experiment.xenium",
+      "local": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs\\experiment.xenium",
+      "remote": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs/experiment.xenium",
+      "exists": true,
+      "is_dir": false,
+      "bytes": 2674,
+      "required": true,
+      "action": "skipped_existing"
+    },
+    {
+      "name": "metrics_summary.csv",
+      "local": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs\\metrics_summary.csv",
+      "remote": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs/metrics_summary.csv",
+      "exists": true,
+      "is_dir": false,
+      "bytes": 2181,
+      "required": true,
+      "action": "skipped_existing"
+    },
+    {
+      "name": "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv",
+      "local": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs\\WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv",
+      "remote": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs/WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv",
+      "exists": true,
+      "is_dir": false,
+      "bytes": 29710824,
+      "required": true,
+      "action": "skipped_existing"
+    }
+  ],
+  "tbc_items": [
+    {
+      "name": "StructureMap_of_WTA_Preview_FFPE_Cervical_Cancer_formal.pdf",
+      "local": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs\\sfplot_tbc_formal_wta\\results\\StructureMap_of_WTA_Preview_FFPE_Cervical_Cancer_formal.pdf",
+      "remote": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/tbc_results/StructureMap_of_WTA_Preview_FFPE_Cervical_Cancer_formal.pdf",
+      "exists": true,
+      "bytes": 42648,
+      "required": true,
+      "action": "skipped_existing"
+    },
+    {
+      "name": "StructureMap_table_WTA_Preview_FFPE_Cervical_Cancer_formal.csv",
+      "local": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs\\sfplot_tbc_formal_wta\\results\\StructureMap_table_WTA_Preview_FFPE_Cervical_Cancer_formal.csv",
+      "remote": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/tbc_results/StructureMap_table_WTA_Preview_FFPE_Cervical_Cancer_formal.csv",
+      "exists": true,
+      "bytes": 11828,
+      "required": true,
+      "action": "skipped_existing"
+    },
+    {
+      "name": "t_and_c_result_WTA_Preview_FFPE_Cervical_Cancer_formal.csv",
+      "local": "Y:\\long\\10X_datasets\\Xenium\\Atera\\WTA_Preview_FFPE_Cervical_Cancer_outs\\sfplot_tbc_formal_wta\\results\\t_and_c_result_WTA_Preview_FFPE_Cervical_Cancer_formal.csv",
+      "remote": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/tbc_results/t_and_c_result_WTA_Preview_FFPE_Cervical_Cancer_formal.csv",
+      "exists": true,
+      "bytes": 8742049,
+      "required": true,
+      "action": "skipped_existing"
+    }
+  ],
+  "stage_plan": {
+    "host": "pdc",
+    "remote_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta",
+    "include_smoke": true,
+    "include_spatialdata_zarr": false
+  }
+}

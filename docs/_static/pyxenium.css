@@ -106,6 +106,29 @@ section#pyxenium > h1:first-child {
   box-shadow: 0 18px 42px rgba(15, 30, 45, 0.08);
 }
 
+.pyxenium-overview-figure {
+  margin: 1.5rem auto 2rem;
+  text-align: center;
+}
+
+img.pyxenium-overview-image {
+  display: block;
+  width: min(100%, 980px);
+  margin: 0 auto;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--pst-color-border) 88%, white);
+  box-shadow: 0 18px 42px rgba(15, 30, 45, 0.08);
+}
+
+.pyxenium-overview-figure figcaption,
+.pyxenium-overview-figure .caption {
+  max-width: 900px;
+  margin: 0.75rem auto 0;
+  color: var(--pyxenium-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
 .sd-card {
   border-radius: 20px;
   border: 1px solid var(--pst-color-border);

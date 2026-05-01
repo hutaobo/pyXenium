@@ -412,12 +412,15 @@ def execute_stage_plan(plan: dict[str, Any], *, plan_only: bool = False) -> dict
             "",
         ]
     )
-    with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".sh", delete=False) as handle:
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", newline="\n", suffix=".sh", delete=False) as handle:
         handle.write(env_text)
         tmp_name = handle.name
     try:
         ssh(host, f"mkdir -p {q(posixpath.dirname(remote_env))}")
         run_command(["scp", tmp_name, f"{host}:{remote_env}"])
+        # PDC shell scripts must be LF-only. Windows CRLF here silently appends
+        # "\r" to sourced variables and turns valid dataset paths into misses.
+        ssh(host, f"sed -i 's/\\r$//' {q(remote_env)}")
     finally:
         Path(tmp_name).unlink(missing_ok=True)
     response["remote_dataset_env"] = remote_env

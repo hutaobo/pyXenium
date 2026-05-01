@@ -1,0 +1,240 @@
+Requirement already satisfied: pip in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (26.1)
+Requirement already satisfied: setuptools in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (82.0.1)
+Requirement already satisfied: wheel in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (0.47.0)
+Requirement already satisfied: packaging>=24.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from wheel) (26.2)
+Obtaining file:///cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: anndata>=0.10 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (0.12.11)
+Requirement already satisfied: numpy>=1.23 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (2.4.4)
+Requirement already satisfied: pandas>=2.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (2.3.3)
+Requirement already satisfied: scipy>=1.10 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (1.17.1)
+Requirement already satisfied: scikit-learn>=1.3 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (1.8.0)
+Requirement already satisfied: matplotlib>=3.8 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (3.10.9)
+Requirement already satisfied: seaborn>=0.13 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (0.13.2)
+Requirement already satisfied: statsmodels>=0.14 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (0.14.6)
+Requirement already satisfied: scanpy>=1.10 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (1.12.1)
+Requirement already satisfied: shapely>=2.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (2.1.2)
+Requirement already satisfied: tifffile>=2024.8.10 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (2026.4.11)
+Requirement already satisfied: imagecodecs>=2024.6.1 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (2026.3.6)
+Requirement already satisfied: Pillow>=10.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (12.2.0)
+Requirement already satisfied: zarr>=3.1 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (3.1.6)
+Requirement already satisfied: fsspec>=2024.6.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (2026.4.0)
+Requirement already satisfied: requests>=2.31 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (2.33.1)
+Requirement already satisfied: PyYAML>=6.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (6.0.3)
+Requirement already satisfied: pyarrow>=14.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (24.0.0)
+Requirement already satisfied: aiohttp in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (3.13.5)
+Requirement already satisfied: click>=8.1 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pyXenium==0.4.1) (8.3.3)
+Requirement already satisfied: array-api-compat>=1.7.1 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from anndata>=0.10->pyXenium==0.4.1) (1.14.0)
+Requirement already satisfied: h5py>=3.8 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from anndata>=0.10->pyXenium==0.4.1) (3.16.0)
+Requirement already satisfied: legacy-api-wrap in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from anndata>=0.10->pyXenium==0.4.1) (1.5)
+Requirement already satisfied: natsort in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from anndata>=0.10->pyXenium==0.4.1) (8.4.0)
+Requirement already satisfied: packaging>=24.2 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from anndata>=0.10->pyXenium==0.4.1) (26.2)
+Requirement already satisfied: scverse-misc>=0.0.3 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from anndata>=0.10->pyXenium==0.4.1) (0.0.5)
+Requirement already satisfied: python-dateutil>=2.8.2 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pandas>=2.0->pyXenium==0.4.1) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pandas>=2.0->pyXenium==0.4.1) (2026.1.post1)
+Requirement already satisfied: tzdata>=2022.7 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from pandas>=2.0->pyXenium==0.4.1) (2026.2)
+Requirement already satisfied: contourpy>=1.0.1 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from matplotlib>=3.8->pyXenium==0.4.1) (1.3.3)
+Requirement already satisfied: cycler>=0.10 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from matplotlib>=3.8->pyXenium==0.4.1) (0.12.1)
+Requirement already satisfied: fonttools>=4.22.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from matplotlib>=3.8->pyXenium==0.4.1) (4.62.1)
+Requirement already satisfied: kiwisolver>=1.3.1 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from matplotlib>=3.8->pyXenium==0.4.1) (1.5.0)
+Requirement already satisfied: pyparsing>=3 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from matplotlib>=3.8->pyXenium==0.4.1) (3.3.2)
+Requirement already satisfied: six>=1.5 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas>=2.0->pyXenium==0.4.1) (1.17.0)
+Requirement already satisfied: charset_normalizer<4,>=2 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from requests>=2.31->pyXenium==0.4.1) (3.4.7)
+Requirement already satisfied: idna<4,>=2.5 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from requests>=2.31->pyXenium==0.4.1) (3.13)
+Requirement already satisfied: urllib3<3,>=1.26 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from requests>=2.31->pyXenium==0.4.1) (2.6.3)
+Requirement already satisfied: certifi>=2023.5.7 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from requests>=2.31->pyXenium==0.4.1) (2026.4.22)
+Requirement already satisfied: fast-array-utils>=1.4 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from fast-array-utils[accel,sparse]>=1.4->scanpy>=1.10->pyXenium==0.4.1) (1.4.1)
+Requirement already satisfied: joblib in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scanpy>=1.10->pyXenium==0.4.1) (1.5.3)
+Requirement already satisfied: networkx>=2.8.8 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scanpy>=1.10->pyXenium==0.4.1) (3.6.1)
+Requirement already satisfied: numba>=0.60 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scanpy>=1.10->pyXenium==0.4.1) (0.65.1)
+Requirement already satisfied: patsy in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scanpy>=1.10->pyXenium==0.4.1) (1.0.2)
+Requirement already satisfied: pynndescent>=0.5.13 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scanpy>=1.10->pyXenium==0.4.1) (0.6.0)
+Requirement already satisfied: session-info2 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scanpy>=1.10->pyXenium==0.4.1) (0.4.1)
+Requirement already satisfied: tqdm in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scanpy>=1.10->pyXenium==0.4.1) (4.67.3)
+Requirement already satisfied: typing-extensions in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scanpy>=1.10->pyXenium==0.4.1) (4.15.0)
+Requirement already satisfied: umap-learn>=0.5.12 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scanpy>=1.10->pyXenium==0.4.1) (0.5.12)
+Requirement already satisfied: llvmlite<0.48,>=0.47.0dev0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from numba>=0.60->scanpy>=1.10->pyXenium==0.4.1) (0.47.0)
+Requirement already satisfied: threadpoolctl>=3.2.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from scikit-learn>=1.3->pyXenium==0.4.1) (3.6.0)
+Requirement already satisfied: donfig>=0.8 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from zarr>=3.1->pyXenium==0.4.1) (0.8.1.post1)
+Requirement already satisfied: google-crc32c>=1.5 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from zarr>=3.1->pyXenium==0.4.1) (1.8.0)
+Requirement already satisfied: numcodecs>=0.14 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from zarr>=3.1->pyXenium==0.4.1) (0.16.5)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from aiohttp->pyXenium==0.4.1) (2.6.1)
+Requirement already satisfied: aiosignal>=1.4.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from aiohttp->pyXenium==0.4.1) (1.4.0)
+Requirement already satisfied: attrs>=17.3.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from aiohttp->pyXenium==0.4.1) (26.1.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from aiohttp->pyXenium==0.4.1) (1.8.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from aiohttp->pyXenium==0.4.1) (6.7.1)
+Requirement already satisfied: propcache>=0.2.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from aiohttp->pyXenium==0.4.1) (0.4.1)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (from aiohttp->pyXenium==0.4.1) (1.23.0)
+Building wheels for collected packages: pyXenium
+  Building editable for pyXenium (pyproject.toml): started
+  Building editable for pyXenium (pyproject.toml): finished with status 'done'
+  Created wheel for pyXenium: filename=pyxenium-0.4.1-0.editable-py3-none-any.whl size=7252 sha256=40257a16b1f17bedec0ec7c185853d73d7bb6b29660223867abe6cef9f80d20c
+  Stored in directory: /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/tmp/pip-ephem-wheel-cache-xrq4aqo6/wheels/ff/e5/44/c6c80bd7ead57f1af706f7910975b15f45c416a63ba74e50f7
+Successfully built pyXenium
+Installing collected packages: pyXenium
+  Attempting uninstall: pyXenium
+    Found existing installation: pyXenium 0.4.1
+    Not uninstalling pyxenium at /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/repo/src, outside environment /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep
+    Can't uninstall 'pyXenium'. No files were found to uninstall.
+Successfully installed pyXenium-0.4.1
+Requirement already satisfied: pyarrow in /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/prep/lib/python3.12/site-packages (24.0.0)
+{
+  "dataset_id": "atera_cervical_wta",
+  "xenium_root": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "dataset_root": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "readonly_xenium_root": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "writable_benchmark_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta",
+  "tbc_results": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/tbc_results",
+  "cell_groups_relpath": "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv",
+  "benchmark_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta",
+  "full_h5ad": null,
+  "smoke_h5ad": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/adata_smoke.h5ad",
+  "cci_resource_common_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/cci_resource_common.tsv",
+  "atera_smoke_panel_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/atera_smoke_panel.tsv",
+  "celltype_pairs_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/celltype_pairs.tsv",
+  "full_bundle": {
+    "counts_symbol_mtx": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/counts_symbol.mtx",
+    "barcodes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/barcodes.tsv",
+    "genes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/genes.tsv",
+    "meta_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/meta.tsv",
+    "coords_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/coords.tsv"
+  },
+  "smoke_bundle": {
+    "counts_symbol_mtx": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/counts_symbol.mtx",
+    "barcodes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/barcodes.tsv",
+    "genes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/genes.tsv",
+    "meta_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/meta.tsv",
+    "coords_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/coords.tsv"
+  },
+  "full_bundle_fingerprints": {
+    "counts_symbol_mtx": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/counts_symbol.mtx",
+      "exists": true,
+      "size_bytes": 8687111392,
+      "mtime": 1777585736.0,
+      "sha256_head": "500b335f56165fb0eb6f182ca7827dba72e8f17e2794246e0d9f95fccee2b319",
+      "sha256_head_bytes": 8388608
+    },
+    "barcodes_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/barcodes.tsv",
+      "exists": true,
+      "size_bytes": 7893336,
+      "mtime": 1777585736.0,
+      "sha256_head": "b419474d89ebf95a944026423fd38f1b5da5a95014c0fb35aadef6b5e9562ecc",
+      "sha256_head_bytes": 7893336
+    },
+    "genes_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/genes.tsv",
+      "exists": true,
+      "size_bytes": 692283,
+      "mtime": 1777585736.0,
+      "sha256_head": "f8f4bd6a88fb49bb7416fd25331a35aca7f26c694d2b2d03014591acc38d3d22",
+      "sha256_head_bytes": 692283
+    },
+    "meta_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/meta.tsv",
+      "exists": true,
+      "size_bytes": 47052267,
+      "mtime": 1777585739.0,
+      "sha256_head": "8ea241e08ebb945b6c82407e1cb6a91856f8797d5465937fbfdb6253acab8db8",
+      "sha256_head_bytes": 8388608
+    },
+    "coords_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/coords.tsv",
+      "exists": true,
+      "size_bytes": 31685942,
+      "mtime": 1777585741.0,
+      "sha256_head": "a2e288328d3b5e0e10b3a3e1965e485bf97969f51c8a594b2ca5cbfd4bb0eba8",
+      "sha256_head_bytes": 8388608
+    }
+  },
+  "smoke_bundle_fingerprints": {
+    "counts_symbol_mtx": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/counts_symbol.mtx",
+      "exists": true,
+      "size_bytes": 216485750,
+      "mtime": 1777585742.0,
+      "sha256_head": "26ce8ebd7505e7da79fb99ee9ab5f205690673181d830bf10cc9124da611e7f4",
+      "sha256_head_bytes": 8388608
+    },
+    "barcodes_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/barcodes.tsv",
+      "exists": true,
+      "size_bytes": 220000,
+      "mtime": 1777585742.0,
+      "sha256_head": "d25ef4de601d3f117a8c06cdf64a6adf444b9094b6373c7f52a76a8f3f35c8df",
+      "sha256_head_bytes": 220000
+    },
+    "genes_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/genes.tsv",
+      "exists": true,
+      "size_bytes": 692283,
+      "mtime": 1777585742.0,
+      "sha256_head": "f8f4bd6a88fb49bb7416fd25331a35aca7f26c694d2b2d03014591acc38d3d22",
+      "sha256_head_bytes": 692283
+    },
+    "meta_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/meta.tsv",
+      "exists": true,
+      "size_bytes": 1311570,
+      "mtime": 1777585742.0,
+      "sha256_head": "fcf2ced912c3bd9e5b91a38bb9797c147f1056534d8b567443c9146353f986f8",
+      "sha256_head_bytes": 1311570
+    },
+    "coords_tsv": {
+      "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/coords.tsv",
+      "exists": true,
+      "size_bytes": 883270,
+      "mtime": 1777585742.0,
+      "sha256_head": "6e120589bc406fa18307b849c1abb68d31a8f4fd74e0fcddf616c9f1a782be31",
+      "sha256_head_bytes": 883270
+    }
+  },
+  "full_h5ad_fingerprint": null,
+  "smoke_h5ad_fingerprint": {
+    "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/smoke/adata_smoke.h5ad",
+    "exists": true,
+    "size_bytes": 279988404,
+    "mtime": 1777585715.0,
+    "sha256_head": "8e48edea61671e4548ef24b9555918bc846ee0a10523cb7c49f57c7b93319a8a",
+    "sha256_head_bytes": 8388608
+  },
+  "full_n_cells": 717576,
+  "full_n_genes": 18028,
+  "smoke_n_cells": 20000,
+  "smoke_n_genes": 18028,
+  "n_celltypes": 27,
+  "common_db": {
+    "source": "atera_smoke_panel_fallback",
+    "n_pairs": 5
+  },
+  "export_full_bundle": true,
+  "write_full_h5ad": false,
+  "matrix_note": "Dense counts_symbol.tsv is intentionally omitted for the full Xenium matrix; sparse counts_symbol.mtx is exported instead.",
+  "input_manifest_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/input_manifest.json"
+}
+Patched PDC manifest to use staged common CCI resource: {'source': 'staged_local_cci_db_common', 'n_pairs': 3299}
+{
+  "status": "ok",
+  "dataset_id": "atera_cervical_wta",
+  "manifest": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/input_manifest.json",
+  "full_n_cells": 717576,
+  "full_n_genes": 18028,
+  "cell_groups_relpath": "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv",
+  "full_bundle": {
+    "counts_symbol_mtx": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/counts_symbol.mtx",
+    "barcodes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/barcodes.tsv",
+    "genes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/genes.tsv",
+    "meta_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/meta.tsv",
+    "coords_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/coords.tsv"
+  },
+  "source_root": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "benchmark_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta"
+}

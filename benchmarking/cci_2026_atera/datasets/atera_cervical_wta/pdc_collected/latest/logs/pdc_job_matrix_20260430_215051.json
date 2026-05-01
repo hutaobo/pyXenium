@@ -1,0 +1,164 @@
+{
+  "kind": "pdc_job_matrix",
+  "created_at": "2026-04-30T21:50:13.829469+00:00",
+  "host": "pdc",
+  "remote_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta",
+  "account": "naiss2026-4-680",
+  "methods": [
+    "pyxenium"
+  ],
+  "stages": [
+    "full",
+    "pilot",
+    "smoke"
+  ],
+  "include_full": true,
+  "rebuild_env_tag": "rebuild_20260428",
+  "rebuild_full_methods": [
+    "cellchat",
+    "cellnest",
+    "cellagentchat",
+    "scild"
+  ],
+  "source_checkouts": {
+    "cellchat": [
+      "https://github.com/jinworks/CellChat.git",
+      "75253cd0c9e68410e6e721a6d3a0419a1d7e358f"
+    ],
+    "cellnest": [
+      "https://github.com/schwartzlab-methods/CellNEST.git",
+      "2737fa8f54952b4b35a540f6070655a69f2c4999"
+    ],
+    "cellagentchat": [
+      "https://github.com/mcgilldinglab/CellAgentChat.git",
+      "37e51980cb9ba87684993d8bdae26feac8806bae"
+    ],
+    "scild": [
+      "https://github.com/jiatingyu-amss/SCILD.git",
+      "683515043df1878f3069c4dd5f887abb5c8976bd"
+    ]
+  },
+  "a100_authoritative_full_methods": [
+    "pyxenium",
+    "squidpy",
+    "liana",
+    "spatialdm",
+    "stlearn",
+    "cellphonedb",
+    "laris"
+  ],
+  "pdc_full_backfill_methods": [
+    "cellchat",
+    "commot",
+    "giotto",
+    "spatalk",
+    "niches",
+    "cellnest",
+    "cellagentchat",
+    "scild"
+  ],
+  "commot_chunks": 16,
+  "cellagentchat_chunks": 16,
+  "jobs": [
+    {
+      "job_id": "pdc_smoke_common_pyxenium",
+      "job_type": "smoke_common",
+      "method": "pyxenium",
+      "chunk_id": null,
+      "num_chunks": null,
+      "partition": "memory",
+      "cpus": 32,
+      "memory": "300G",
+      "time": "24:00:00",
+      "dependencies": [],
+      "script_path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/slurm/pdc_smoke_common_pyxenium.sbatch",
+      "status": "submitted",
+      "slurm_job_id": "20207342"
+    },
+    {
+      "job_id": "pdc_pilot_common_pyxenium",
+      "job_type": "pilot_common",
+      "method": "pyxenium",
+      "chunk_id": null,
+      "num_chunks": null,
+      "partition": "memory",
+      "cpus": 32,
+      "memory": "300G",
+      "time": "24:00:00",
+      "dependencies": [
+        "pdc_smoke_common_pyxenium"
+      ],
+      "script_path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/slurm/pdc_pilot_common_pyxenium.sbatch",
+      "status": "submitted",
+      "slurm_job_id": "20207343"
+    },
+    {
+      "job_id": "pdc_full_common_pyxenium",
+      "job_type": "full_common",
+      "method": "pyxenium",
+      "chunk_id": null,
+      "num_chunks": null,
+      "partition": "memory",
+      "cpus": 32,
+      "memory": "300G",
+      "time": "24:00:00",
+      "dependencies": [
+        "pdc_pilot_common_pyxenium"
+      ],
+      "script_path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/slurm/pdc_full_common_pyxenium.sbatch",
+      "status": "submitted",
+      "slurm_job_id": "20207344"
+    }
+  ],
+  "submitted_jobs": [
+    {
+      "job_id": "pdc_smoke_common_pyxenium",
+      "job_type": "smoke_common",
+      "method": "pyxenium",
+      "chunk_id": null,
+      "num_chunks": null,
+      "partition": "memory",
+      "cpus": 32,
+      "memory": "300G",
+      "time": "24:00:00",
+      "dependencies": [],
+      "script_path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/slurm/pdc_smoke_common_pyxenium.sbatch",
+      "status": "submitted",
+      "slurm_job_id": "20207342"
+    },
+    {
+      "job_id": "pdc_pilot_common_pyxenium",
+      "job_type": "pilot_common",
+      "method": "pyxenium",
+      "chunk_id": null,
+      "num_chunks": null,
+      "partition": "memory",
+      "cpus": 32,
+      "memory": "300G",
+      "time": "24:00:00",
+      "dependencies": [
+        "pdc_smoke_common_pyxenium"
+      ],
+      "script_path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/slurm/pdc_pilot_common_pyxenium.sbatch",
+      "status": "submitted",
+      "slurm_job_id": "20207343"
+    },
+    {
+      "job_id": "pdc_full_common_pyxenium",
+      "job_type": "full_common",
+      "method": "pyxenium",
+      "chunk_id": null,
+      "num_chunks": null,
+      "partition": "memory",
+      "cpus": 32,
+      "memory": "300G",
+      "time": "24:00:00",
+      "dependencies": [
+        "pdc_pilot_common_pyxenium"
+      ],
+      "script_path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/slurm/pdc_full_common_pyxenium.sbatch",
+      "status": "submitted",
+      "slurm_job_id": "20207344"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+	Command being timed: "bash -lc 
+METHOD=pyxenium
+OUT="$ROOT/runs/env_audit/pyxenium"
+mkdir -p "$OUT"
+rm -f "$OUT/method_card.md" "$OUT/run_summary.json" "$OUT/pip_freeze.txt" "$OUT/torch_wheel_tag.env"
+trap 'rc=$?; mkdir -p "$OUT"; printf "# %s PDC method card\n\n- Status: failed\n- Stage: env_setup\n- Exit code: %s\n- Note: \n" "$METHOD" "$rc" > "$OUT/method_card.md"; exit "$rc"' ERR
+
+module load python/3.12.3 >/dev/null 2>&1 || true
+PYTHON_BIN="$(command -v python3 || command -v python)"
+if [ false = true ]; then
+  rm -rf /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/pyxenium
+fi
+if [ ! -x /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/pyxenium/bin/python ]; then
+  "$PYTHON_BIN" -m venv /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/pyxenium
+fi
+. /cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/envs/python/pyxenium/bin/activate
+
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e "$ROOT/repo"
+if [ -n '' ]; then
+  python -m pip install 
+fi
+if [ -n '' ]; then
+  python -m pip install 
+fi
+if [ "$METHOD" = "cellagentchat" ]; then
+  python - <<'PY' > "$OUT/torch_wheel_tag.env"
+import torch
+base = torch.__version__.split("+", 1)[0]
+cuda = torch.version.cuda
+tag = "cpu" if not cuda else "cu" + cuda.replace(".", "")
+print(f"TORCH_VERSION={base}")
+print(f"TORCH_WHEEL_TAG={tag}")
+PY
+  . "$OUT/torch_wheel_tag.env"
+  python -m pip install torch-scatter torch-sparse -f "https://data.pyg.org/whl/torch-${TORCH_VERSION}+${TORCH_WHEEL_TAG}.html" || python -m pip install torch-scatter torch-sparse
+fi
+
+
+python - <<'PY'
+for name in ['pyXenium']:
+    try:
+        __import__(name)
+        print(f'import_ok {name}')
+    except Exception as exc:
+        print(f'import_failed {name}: {exc}')
+        raise
+PY
+python -m pip freeze > "$OUT/pip_freeze.txt"
+printf '{"method":"pyxenium","status":"success","stage":"env_setup","language":"python"}\n' > "$OUT/run_summary.json"
+"
+	User time (seconds): 41.39
+	System time (seconds): 15.27
+	Percent of CPU this job got: 53%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:46.58
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 153320
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 48
+	Minor (reclaiming a frame) page faults: 166402
+	Voluntary context switches: 230240
+	Involuntary context switches: 2004
+	Swaps: 0
+	File system inputs: 1790336
+	File system outputs: 2743520
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

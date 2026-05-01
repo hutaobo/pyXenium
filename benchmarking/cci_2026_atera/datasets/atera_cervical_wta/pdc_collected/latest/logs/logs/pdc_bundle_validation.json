@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "dataset_id": "atera_cervical_wta",
+  "manifest": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/input_manifest.json",
+  "full_n_cells": 717576,
+  "full_n_genes": 18028,
+  "cell_groups_relpath": "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv",
+  "full_bundle": {
+    "counts_symbol_mtx": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/counts_symbol.mtx",
+    "barcodes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/barcodes.tsv",
+    "genes_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/genes.tsv",
+    "meta_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/meta.tsv",
+    "coords_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/coords.tsv"
+  },
+  "source_root": "/cfs/klemming/projects/supr/naiss2025-22-606/data/atera_cervical_wta/WTA_Preview_FFPE_Cervical_Cancer_outs",
+  "benchmark_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta"
+}

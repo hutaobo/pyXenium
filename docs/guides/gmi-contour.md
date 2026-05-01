@@ -62,6 +62,37 @@ The R fit uses the local vendored Gmi source snapshot and writes
 CV metrics, stability tables, heterogeneity tables, figures, `summary.json`,
 and `report.md`.
 
+## Spatial gene modules
+
+After a GMI run finishes, use the module layer to turn selected effects into
+supervised spatial gene modules:
+
+```bash
+pyxenium gmi modules \
+  --gmi-output-dir pyxenium_gmi_outputs/atera_s1_s5 \
+  --output-dir pyxenium_gmi_outputs/atera_s1_s5/modules
+```
+
+The module step does not rerun R. It reads the existing design matrix, metadata,
+selected effects, interactions, and stability tables. Each module is anchored by
+selected or bootstrap-stable GMI features, then expanded using feature
+correlation, contour-neighborhood spatial-lag correlation, and GMI interaction
+edges. This borrows the useful parts of spatial variable gene, Hotspot/cNMF,
+graph/niche, and spatial communication workflows while keeping GMI's supervised
+S1-vs-S5 interpretation.
+
+Module artifacts include:
+
+- `spatial_modules.tsv`: one row per supervised GMI module.
+- `module_features.tsv`: anchors, interaction partners, expanded features, and
+  signed module weights.
+- `module_scores.tsv.gz`: contour-level module scores.
+- `module_enrichment.tsv`: curated breast/TME pathway overlaps, including
+  CAF/ECM, angiogenesis/pericyte, myeloid/vascular, Notch, IGF/MAPK, Wnt,
+  TGF-beta, CXCL12/CXCR4, CSF1/CSF1R, 11q13, and DCIS/apocrine-luminal sets.
+- `module_spatial_autocorr.tsv`: Moran's I and Geary's C for each module score.
+- `figures/`: optional contour score maps.
+
 ## Controls and sensitivity runs
 
 Use the controls before interpreting a selected effect:
@@ -110,4 +141,7 @@ tumor/CAF versus S5 apocrine-luminal DCIS is best summarized as an S5/DCIS RNA
 program led by `NIBAN1` and `SORL1`. CAF/ECM remodeling, angiogenesis/pericyte,
 myeloid-vascular context, Notch, IGF/MAPK, Wnt, and TGF-beta programs were not
 selected as primary sparse drivers in this validation, though they remain
-candidate axes for larger datasets and follow-up biology.
+candidate axes for larger datasets and follow-up biology. The module layer is
+the recommended next check: in the validated Atera run, it should test whether
+`NIBAN1` and `SORL1` collapse into one S5/DCIS module and whether that module is
+separable from luminal/apocrine DCIS composition features.

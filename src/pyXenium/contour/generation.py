@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-from ._histoseg import load_histoseg_module
+from ._histoseg import load_histoseg_submodule
 from pyXenium.io._xenium_defaults import DEFAULT_XENIUM_PIXEL_SIZE_UM
 
 _HISTOSEG_CONTOUR_GENERATION_API = (
@@ -91,7 +91,8 @@ def _resolve_dataset_path(dataset_root: Path, candidate: str | Path) -> Path:
 
 
 def _load_histoseg_module(*, histoseg_root: str | Path | None) -> Any:
-    return load_histoseg_module(
+    return load_histoseg_submodule(
+        "histoseg.contour",
         required=_HISTOSEG_CONTOUR_GENERATION_API,
         histoseg_root=histoseg_root,
         purpose="generate_xenium_explorer_annotations()",

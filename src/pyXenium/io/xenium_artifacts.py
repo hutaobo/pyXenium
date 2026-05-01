@@ -13,7 +13,7 @@ import threading
 import warnings
 import zipfile
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Optional
+from typing import Any, Iterable, Iterator
 
 import fsspec
 import numpy as np
@@ -672,6 +672,8 @@ def read_cell_feature_matrix(
         exact_names=("cell_feature_matrix.zarr", "cell_feature_matrix"),
         kind="Xenium Zarr cell_feature_matrix",
     )
+    if zarr_path is not None and not _looks_like_zarr_matrix_path(zarr_path):
+        zarr_path = None
     h5_path = _resolve_artifact_path(
         base_path,
         exact_names=("cell_feature_matrix.h5",),
@@ -701,6 +703,24 @@ def read_cell_feature_matrix(
     raise FileNotFoundError(
         f"No usable Xenium cell_feature_matrix found under '{base_path}' with prefer='{prefer}'."
     )
+
+
+def _looks_like_zarr_matrix_path(path_or_url: str) -> bool:
+    text = str(path_or_url)
+    if text.endswith((".zip", ".zarr", ".zarr.zip")):
+        return True
+    if is_remote_path(text):
+        return True
+    path = Path(text)
+    if path.is_file():
+        return text.endswith((".zip", ".zarr.zip"))
+    if not path.is_dir():
+        return False
+    if (path / "zarr.json").exists() or (path / ".zgroup").exists() or (path / ".zmetadata").exists():
+        return True
+    if (path / "matrix.mtx.gz").exists() or (path / "features.tsv.gz").exists() or (path / "barcodes.tsv.gz").exists():
+        return False
+    return (path / "X").exists() and (path / "features").exists()
 
 
 def split_rna_and_protein(
@@ -1443,7 +1463,7 @@ def _iter_transcript_parquet_chunks(
 
     filter_expression = None
     if is_gene_col is not None:
-        filter_expression = pyarrow_dataset.field(is_gene_col) == True
+        filter_expression = pyarrow_dataset.field(is_gene_col)
     if genes:
         gene_filter = pyarrow_dataset.field(gene_col).isin(sorted(str(value) for value in genes))
         filter_expression = gene_filter if filter_expression is None else filter_expression & gene_filter

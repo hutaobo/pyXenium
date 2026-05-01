@@ -3,14 +3,18 @@ set -euo pipefail
 
 ROOT="${PDC_CCI_ROOT:-/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04}"
 if [ -f "$ROOT/data/pdc_dataset_env.sh" ]; then
+  sed -i 's/\r$//' "$ROOT/data/pdc_dataset_env.sh"
   # shellcheck disable=SC1090
   . "$ROOT/data/pdc_dataset_env.sh"
 fi
-DATASET_ID="${PDC_CCI_DATASET_ID:-atera_breast_wta}"
-SOURCE_ROOT="${PDC_CCI_SOURCE_ROOT:-$ROOT/data/source_cache/$DATASET_ID/WTA_Preview_FFPE_Breast_Cancer_outs}"
-CELL_GROUPS_RELPATH="${PDC_CCI_CELL_GROUPS_RELPATH:-WTA_Preview_FFPE_Breast_Cancer_cell_groups.csv}"
-TBC_RESULTS="${PDC_CCI_TBC_RESULTS:-$ROOT/data/tbc_results}"
-EXPECTED_CELLS="${PDC_CCI_EXPECTED_CELLS:-}"
+strip_cr() {
+  printf '%s' "$1" | tr -d '\r'
+}
+DATASET_ID="$(strip_cr "${PDC_CCI_DATASET_ID:-atera_breast_wta}")"
+SOURCE_ROOT="$(strip_cr "${PDC_CCI_SOURCE_ROOT:-$ROOT/data/source_cache/$DATASET_ID/WTA_Preview_FFPE_Breast_Cancer_outs}")"
+CELL_GROUPS_RELPATH="$(strip_cr "${PDC_CCI_CELL_GROUPS_RELPATH:-WTA_Preview_FFPE_Breast_Cancer_cell_groups.csv}")"
+TBC_RESULTS="$(strip_cr "${PDC_CCI_TBC_RESULTS:-$ROOT/data/tbc_results}")"
+EXPECTED_CELLS="$(strip_cr "${PDC_CCI_EXPECTED_CELLS:-}")"
 PY_ENV="${PDC_CCI_PREP_ENV:-$ROOT/envs/python/prep}"
 PYTHON_MODULE="${PDC_CCI_PYTHON_MODULE:-${PDC_LR_PYTHON_MODULE:-python/3.12.3}}"
 
