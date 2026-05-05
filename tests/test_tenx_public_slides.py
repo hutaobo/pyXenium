@@ -364,4 +364,5 @@ def test_discover_10x_cli_writes_inventory(tmp_path):
 
 def test_new_10x_public_module_uses_xeniumslide_name_only():
     source = Path("src/pyXenium/io/tenx_public_slides.py").read_text(encoding="utf-8")
-    assert "XeniumSlide" not in source
+    assert "XeniumSlide" in source
+    assert "XeniumSData" not in source

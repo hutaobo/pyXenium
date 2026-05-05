@@ -7,6 +7,11 @@ All notable changes to pyXenium are documented here.
 - Add `pyXenium.perturb` as the lightweight SpatialPerturb Bridge for optional Perturb-seq reference projection handoffs without adding a core runtime dependency.
 - Document AI-Driven Spatial Pathologist via the external `spatho` package as an optional workflow bridge, without adding new pyXenium runtime code or dependencies.
 
+## 0.4.4 - 2026-05-05
+
+- Finalize the `XeniumSlide` rename across the public I/O surface, examples, tests, and docs while removing the legacy `XeniumSData` alias.
+- Refresh GitHub/PyPI-facing version text and installation snippets so the published package metadata matches the new slide-native API.
+
 ## 0.4.1 - 2026-04-26
 
 - Complete the PDC Dardel Slurm validation for the contour-GMI Atera S1/S5 workflow across all 8 stages.

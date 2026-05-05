@@ -51,7 +51,7 @@ pyXenium's nine-feature overview connects Xenium data loading, multimodal spatia
   <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-non--commercial-d97706.svg" alt="License"></a>
 </p>
 
-- Current repository version: `0.4.2`
+- Current repository version: `0.4.4`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [Read the Docs latest](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
