@@ -25,8 +25,8 @@ def test_pdc_stage_plan_uses_scratch_outputs_and_minimal_raw_inputs(tmp_path):
     source.mkdir()
     for name in stage.REQUIRED_RAW_FILES:
         (source / name).write_text("x", encoding="utf-8")
-    (source / "spatialdata.zarr").mkdir()
-    (source / "spatialdata.zarr" / ".zgroup").write_text("{}", encoding="utf-8")
+    (source / "xenium_slide.zarr").mkdir()
+    (source / "xenium_slide.zarr" / ".zgroup").write_text("{}", encoding="utf-8")
 
     plan = stage.build_stage_plan(
         repo_root=tmp_path,
@@ -34,7 +34,7 @@ def test_pdc_stage_plan_uses_scratch_outputs_and_minimal_raw_inputs(tmp_path):
         remote_root="/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04",
         host="pdc",
         include_smoke=True,
-        include_spatialdata_zarr=True,
+        include_slide_zarr=True,
         skip_existing=True,
         archive_path=tmp_path / "payload.tar.gz",
     )
@@ -42,7 +42,7 @@ def test_pdc_stage_plan_uses_scratch_outputs_and_minimal_raw_inputs(tmp_path):
     assert plan["missing_required"] == []
     assert plan["remote_root"].startswith("/cfs/klemming/scratch/h/hutaobo/")
     assert all(item["remote"].startswith(plan["remote_source_cache"]) for item in plan["raw_items"])
-    assert any(item["name"] == "spatialdata.zarr" for item in plan["raw_items"])
+    assert any(item["name"] == "xenium_slide.zarr" for item in plan["raw_items"])
     assert "transcripts.parquet" not in {item["name"] for item in plan["raw_items"]}
     data_root = tmp_path / "benchmarking" / "cci_2026_atera" / "data"
     data_root.mkdir(parents=True)

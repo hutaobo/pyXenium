@@ -8,7 +8,7 @@ import pandas as pd
 from shapely import STRtree, contains, distance, intersects, points
 
 from ._geometry import contour_frame_to_geometry_table
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 __all__ = ["ring_density", "smooth_density_by_distance"]
 
@@ -24,7 +24,7 @@ _SMALL_CONTOUR_FASTPATH_THRESHOLD = 32
 
 
 def ring_density(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     target: str = "transcripts",
@@ -37,7 +37,7 @@ def ring_density(
     ring_width: float,
 ) -> pd.DataFrame:
     """
-    Compute inward/outward ring density around contour annotations in ``XeniumSData``.
+    Compute inward/outward ring density around contour annotations in ``XeniumSlide``.
     """
 
     _validate_distance_window(inward=inward, outward=outward)
@@ -100,7 +100,7 @@ def ring_density(
 
 
 def smooth_density_by_distance(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     target: str = "transcripts",
@@ -202,7 +202,7 @@ def _validate_distance_window(*, inward: float, outward: float) -> None:
 
 def _prepare_contours(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_key: str,
     contour_query: str | None,
 ) -> pd.DataFrame:
@@ -233,7 +233,7 @@ def _feature_context(
 
 def _count_targets_by_interval(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_table: pd.DataFrame,
     support_geometries: np.ndarray,
     interval_edges: np.ndarray,
@@ -344,7 +344,7 @@ def _count_targets_by_interval_small_n(
 
 def _count_smoothed_targets(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_table: pd.DataFrame,
     support_geometries: np.ndarray,
     signed_distance_grid: np.ndarray,
@@ -487,7 +487,7 @@ def _count_smoothed_targets_small_n(
 
 def _iter_target_frames(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     target: str,
     target_query: str | None,
     feature_key: str,
@@ -533,7 +533,7 @@ def _iter_target_frames(
         yield cell_frame
 
 
-def _cell_centroid_frame(*, sdata: XeniumSData, obs: pd.DataFrame) -> pd.DataFrame:
+def _cell_centroid_frame(*, sdata: XeniumSlide, obs: pd.DataFrame) -> pd.DataFrame:
     for x_col, y_col in (
         ("x_centroid", "y_centroid"),
         ("cell_centroid_x", "cell_centroid_y"),

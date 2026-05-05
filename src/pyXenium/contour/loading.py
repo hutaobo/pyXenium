@@ -16,7 +16,7 @@ from pyXenium.io._xenium_defaults import (
     DEFAULT_XENIUM_PIXEL_SIZE_UM,
     DEFAULT_XENIUM_PIXEL_SIZE_UM_SOURCE,
 )
-from pyXenium.io.sdata_model import XeniumImage, XeniumSData
+from pyXenium.io.slide_model import XeniumImage, XeniumSlide
 from pyXenium.io.xenium_artifacts import read_experiment_metadata
 
 __all__ = ["add_contours_from_geojson", "import_histoseg_segmentation_qc"]
@@ -37,7 +37,7 @@ _CONTOUR_PATCH_PADDING_PX = 0
 
 
 def add_contours_from_geojson(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     geojson_path: str | Path,
     *,
     key: str,
@@ -47,20 +47,20 @@ def add_contours_from_geojson(
     extract_he_patches: bool = False,
     he_image_key: str = "he",
     copy: bool = False,
-) -> XeniumSData | None:
+) -> XeniumSlide | None:
     """
-    Import polygon contours from a GeoJSON file into ``XeniumSData.shapes``.
+    Import polygon contours from a GeoJSON file into ``XeniumSlide.shapes``.
 
     The imported contour geometry is normalized into pyXenium's dataframe-based shape
     representation, with coordinates expressed in microns.
 
     When ``extract_he_patches=True``, pyXenium additionally crops one level-0 H&E patch
-    per imported contour and stores it under ``XeniumSData.contour_images[key]`` using
+    per imported contour and stores it under ``XeniumSlide.contour_images[key]`` using
     the contour's axis-aligned bounding box plus a polygon mask.
     """
 
-    if not isinstance(sdata, XeniumSData):
-        raise TypeError("`sdata` must be a XeniumSData instance.")
+    if not isinstance(sdata, XeniumSlide):
+        raise TypeError("`sdata` must be a XeniumSlide instance.")
 
     shape_key = str(key)
     if shape_key in sdata.shapes:
@@ -98,7 +98,7 @@ def add_contours_from_geojson(
     )
 
     if copy:
-        target = XeniumSData(
+        target = XeniumSlide(
             table=sdata.table.copy(),
             points={name: frame.copy() for name, frame in sdata.points.items()},
             shapes={name: frame.copy() for name, frame in sdata.shapes.items()},
@@ -142,12 +142,12 @@ def add_contours_from_geojson(
 
 
 def import_histoseg_segmentation_qc(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     qc_json_path: str | Path,
     *,
     shape_key: str,
 ) -> dict[str, Any]:
-    """Import a HistoSeg segmentation QC JSON report into ``XeniumSData`` metadata.
+    """Import a HistoSeg segmentation QC JSON report into ``XeniumSlide`` metadata.
 
     HistoSeg produces a JSON QC report alongside each segmentation run.  This
     function reads that report and attaches it to the contour registry entry
@@ -159,7 +159,7 @@ def import_histoseg_segmentation_qc(
     Parameters
     ----------
     sdata:
-        A :class:`~pyXenium.io.XeniumSData` instance that already contains the
+        A :class:`~pyXenium.io.XeniumSlide` instance that already contains the
         contour shape under ``sdata.shapes[shape_key]``.
     qc_json_path:
         Path to the HistoSeg segmentation QC JSON file.  Expected to be a flat
@@ -172,8 +172,8 @@ def import_histoseg_segmentation_qc(
     dict
         The parsed QC payload as returned from the JSON file.
     """
-    if not isinstance(sdata, XeniumSData):
-        raise TypeError("`sdata` must be a XeniumSData instance.")
+    if not isinstance(sdata, XeniumSlide):
+        raise TypeError("`sdata` must be a XeniumSlide instance.")
     if shape_key not in sdata.shapes:
         raise KeyError(
             f"`sdata.shapes[{shape_key!r}]` not found. "
@@ -205,7 +205,7 @@ def import_histoseg_segmentation_qc(
 
 
 def _resolve_pixel_size_um(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     pixel_size_um: float | None,
     *,
     he_image: XeniumImage | None = None,
@@ -233,7 +233,7 @@ def _resolve_pixel_size_um(
     return DEFAULT_XENIUM_PIXEL_SIZE_UM, DEFAULT_XENIUM_PIXEL_SIZE_UM_SOURCE
 
 
-def _resolve_experiment_pixel_size_um(sdata: XeniumSData) -> float | None:
+def _resolve_experiment_pixel_size_um(sdata: XeniumSlide) -> float | None:
     for metadata_key in ("experiment", "experiment_xenium"):
         experiment = sdata.metadata.get(metadata_key)
         pixel_size = _pixel_size_from_experiment(experiment)
@@ -315,7 +315,7 @@ def _read_contour_geojson(
 
 
 def _resolve_he_image_for_patch_extraction(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     he_image_key: str,
 ) -> tuple[str, XeniumImage]:
@@ -326,7 +326,7 @@ def _resolve_he_image_for_patch_extraction(
         raise ValueError(
             "H&E patch extraction requires a loaded source image. "
             f"`sdata.images[{resolved_key!r}]` was not found. "
-            "Load the sample with `read_xenium(..., as_='sdata', include_images=True)` first."
+            "Load the sample with `read_xenium(..., as_='slide', include_images=True)` first."
         )
 
     he_image = sdata.images[resolved_key]

@@ -11,7 +11,7 @@ from shapely import intersects, points
 
 from pyXenium.contour import build_contour_feature_table
 from pyXenium.contour._analysis import _prepare_contours
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 from ._types import ContourGmiConfig, ContourGmiDataset
 
@@ -93,7 +93,7 @@ def _cell_xy(adata: Any) -> np.ndarray:
     raise ValueError("AnnData must contain .obsm['spatial'] or recognized coordinate columns in .obs.")
 
 
-def _copy_sdata_with_xy(sdata: XeniumSData, xy: np.ndarray) -> XeniumSData:
+def _copy_sdata_with_xy(sdata: XeniumSlide, xy: np.ndarray) -> XeniumSlide:
     adata = sdata.table.copy()
     adata.obsm["spatial"] = np.asarray(xy, dtype=float).copy()
     for x_col, y_col in (
@@ -106,7 +106,7 @@ def _copy_sdata_with_xy(sdata: XeniumSData, xy: np.ndarray) -> XeniumSData:
         if x_col in adata.obs.columns and y_col in adata.obs.columns:
             adata.obs[x_col] = xy[:, 0]
             adata.obs[y_col] = xy[:, 1]
-    return XeniumSData(
+    return XeniumSlide(
         table=adata,
         points={key: frame.copy() for key, frame in sdata.points.items()},
         shapes={key: frame.copy() for key, frame in sdata.shapes.items()},
@@ -117,7 +117,7 @@ def _copy_sdata_with_xy(sdata: XeniumSData, xy: np.ndarray) -> XeniumSData:
     )
 
 
-def _maybe_coordinate_shuffle(sdata: XeniumSData, config: ContourGmiConfig) -> XeniumSData:
+def _maybe_coordinate_shuffle(sdata: XeniumSlide, config: ContourGmiConfig) -> XeniumSlide:
     if not config.coordinate_shuffle:
         return sdata
     rng = np.random.default_rng(config.random_seed)
@@ -127,11 +127,11 @@ def _maybe_coordinate_shuffle(sdata: XeniumSData, config: ContourGmiConfig) -> X
 
 
 def _copy_sdata_with_endpoint_contours(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_table: pd.DataFrame,
     config: ContourGmiConfig,
-) -> XeniumSData:
+) -> XeniumSlide:
     if config.contour_label_col not in contour_table.columns:
         return sdata
     endpoint_ids = set(
@@ -144,7 +144,7 @@ def _copy_sdata_with_endpoint_contours(
         return sdata
     frame = sdata.shapes[config.contour_key].copy()
     frame = frame.loc[frame["contour_id"].astype(str).isin(endpoint_ids)].copy()
-    return XeniumSData(
+    return XeniumSlide(
         table=sdata.table.copy(),
         points={key: value.copy() for key, value in sdata.points.items()},
         shapes={**{key: value.copy() for key, value in sdata.shapes.items()}, config.contour_key: frame},
@@ -427,17 +427,17 @@ def _combine_feature_blocks(
 
 
 def build_contour_gmi_dataset(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     config: ContourGmiConfig | None = None,
     provenance: Mapping[str, Any] | None = None,
     contour_feature_payload: Mapping[str, Any] | None = None,
 ) -> ContourGmiDataset:
-    """Build a contour-level GMI design matrix from a XeniumSData object."""
+    """Build a contour-level GMI design matrix from a XeniumSlide object."""
 
     config = config or ContourGmiConfig()
-    if not isinstance(sdata, XeniumSData):
-        raise TypeError("`sdata` must be a XeniumSData instance for contour GMI.")
+    if not isinstance(sdata, XeniumSlide):
+        raise TypeError("`sdata` must be a XeniumSlide instance for contour GMI.")
     working_sdata = _maybe_coordinate_shuffle(sdata, config)
     contour_table = _prepare_contours(sdata=working_sdata, contour_key=config.contour_key, contour_query=None)
     if config.contour_label_col not in contour_table.columns:

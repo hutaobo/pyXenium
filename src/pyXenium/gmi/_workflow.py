@@ -800,7 +800,7 @@ def run_contour_gmi(
 def load_atera_breast_for_gmi(dataset_root: str | Path = DEFAULT_ATERA_WTA_BREAST_DATASET_PATH):
     return read_xenium(
         str(dataset_root),
-        as_="sdata",
+        as_="slide",
         prefer="h5",
         include_transcripts=False,
         include_boundaries=False,

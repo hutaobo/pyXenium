@@ -23,7 +23,7 @@ compatibility facade.
 :::{grid-item-card} pyXenium.io
 :link: io
 :link-type: doc
-Xenium artifact readers, SData helpers, and compat export utilities.
+Xenium artifact readers, XeniumSlide store helpers, and slide export utilities.
 :::
 
 :::{grid-item-card} pyXenium.multimodal

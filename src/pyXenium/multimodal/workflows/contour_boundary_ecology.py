@@ -9,8 +9,8 @@ import numpy as np
 import pandas as pd
 
 from pyXenium.contour import build_contour_feature_table
-from pyXenium.io import read_sdata, read_xenium
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io import read_slide, read_xenium
+from pyXenium.io.slide_model import XeniumSlide
 
 from ..contour_boundary_ecology import (
     DEFAULT_BOUNDARY_PROGRAM_LIBRARY,
@@ -27,7 +27,7 @@ __all__ = [
 
 
 def run_contour_boundary_ecology_pilot(
-    sdata_or_path: XeniumSData | str | Path,
+    sdata_or_path: XeniumSlide | str | Path,
     *,
     contour_key: str,
     output_dir: str | Path | None = None,
@@ -105,7 +105,7 @@ def run_contour_boundary_ecology_pilot(
 
 def write_contour_boundary_ecology_artifacts(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_key: str,
     result: dict[str, Any],
     output_dir: str | Path,
@@ -194,17 +194,17 @@ def render_contour_boundary_ecology_report(result: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def _resolve_sdata(sdata_or_path: XeniumSData | str | Path) -> XeniumSData:
-    if isinstance(sdata_or_path, XeniumSData):
+def _resolve_sdata(sdata_or_path: XeniumSlide | str | Path) -> XeniumSlide:
+    if isinstance(sdata_or_path, XeniumSlide):
         return sdata_or_path
     resolved = Path(sdata_or_path).expanduser().resolve()
     if not resolved.exists():
         raise FileNotFoundError(f"Input path does not exist: {resolved}")
     if resolved.suffix.lower() == ".zarr":
-        return read_sdata(resolved)
+        return read_slide(resolved)
     return read_xenium(
         str(resolved),
-        as_="sdata",
+        as_="slide",
         include_transcripts=True,
         include_boundaries=True,
         include_images=True,
@@ -213,7 +213,7 @@ def _resolve_sdata(sdata_or_path: XeniumSData | str | Path) -> XeniumSData:
 
 def _build_sample_summary(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_key: str,
     feature_table: dict[str, Any],
     program_scores: pd.DataFrame,
@@ -273,7 +273,7 @@ def _backend_name(backend: Any) -> str:
 
 def _render_exemplar_montage(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_key: str,
     matched_exemplars: pd.DataFrame,
     output_path: Path,

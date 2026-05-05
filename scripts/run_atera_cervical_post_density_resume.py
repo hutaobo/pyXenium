@@ -21,7 +21,7 @@ from pyXenium.contour._feature_table import (
     _slug,
 )
 from pyXenium.io import write_xenium
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 from pyXenium.multimodal import run_contour_boundary_ecology_pilot
 from pyXenium.validation.atera_wta_cervical_end_to_end import (
     DEFAULT_ATERA_WTA_CERVICAL_CELL_GROUPS,
@@ -32,10 +32,10 @@ from pyXenium.validation.atera_wta_cervical_end_to_end import (
     DEFAULT_ATERA_WTA_CERVICAL_MULTIMODAL_SUBDIR,
     DEFAULT_ATERA_WTA_CERVICAL_OUTPUT_DIRNAME,
     DEFAULT_ATERA_WTA_CERVICAL_SAMPLE_ID,
-    DEFAULT_ATERA_WTA_CERVICAL_SDATA_NAME,
+    DEFAULT_ATERA_WTA_CERVICAL_SLIDE_NAME,
     DEFAULT_ATERA_WTA_CERVICAL_TBC_SUBDIR,
     _load_atera_wta_cervical_adata,
-    _load_atera_wta_cervical_sdata,
+    _load_atera_wta_cervical_slide,
     _load_cervical_cell_groups,
     _resolve_he_pixel_size_um,
     build_atera_wta_cervical_bio6_structures,
@@ -49,7 +49,7 @@ OUTPUT_ROOT = DATASET_ROOT / DEFAULT_ATERA_WTA_CERVICAL_OUTPUT_DIRNAME
 CONTOUR_DIR = OUTPUT_ROOT / "contours_bio6"
 DENSITY_DIR = OUTPUT_ROOT / DEFAULT_ATERA_WTA_CERVICAL_DENSITY_SUBDIR
 MULTIMODAL_DIR = OUTPUT_ROOT / DEFAULT_ATERA_WTA_CERVICAL_MULTIMODAL_SUBDIR
-SDATA_OUTPUT = OUTPUT_ROOT / DEFAULT_ATERA_WTA_CERVICAL_SDATA_NAME
+SLIDE_OUTPUT = OUTPUT_ROOT / DEFAULT_ATERA_WTA_CERVICAL_SLIDE_NAME
 TBC_RESULTS = DATASET_ROOT / DEFAULT_ATERA_WTA_CERVICAL_TBC_SUBDIR
 LOG_PATH = OUTPUT_ROOT / "run_post_density_resume.log"
 
@@ -128,7 +128,7 @@ def acceptance_summary(payload: dict[str, Any]) -> dict[str, Any]:
         "edge_gradients.csv",
         "matched_exemplars.csv",
     ]
-    top_level_files = ["summary.json", "report.md", DEFAULT_ATERA_WTA_CERVICAL_SDATA_NAME]
+    top_level_files = ["summary.json", "report.md", DEFAULT_ATERA_WTA_CERVICAL_SLIDE_NAME]
     return {
         "multimodal_files": {name: (MULTIMODAL_DIR / name).exists() for name in multimodal_files},
         "top_level_files": {name: (OUTPUT_ROOT / name).exists() for name in top_level_files},
@@ -398,7 +398,7 @@ def _feature_columns(contour_features: pd.DataFrame) -> dict[str, list[str]]:
     }
 
 
-def build_lightweight_contour_sdata(sdata: Any) -> XeniumSData:
+def build_lightweight_contour_slide(sdata: Any) -> XeniumSlide:
     contour_shapes = {
         key: sdata.shapes[key]
         for key in (
@@ -410,7 +410,7 @@ def build_lightweight_contour_sdata(sdata: Any) -> XeniumSData:
     metadata = dict(sdata.metadata)
     metadata["lightweight_contour_enriched_copy"] = True
     metadata["omitted_components"] = ["points", "cell_boundaries", "nucleus_boundaries", "images"]
-    return XeniumSData(
+    return XeniumSlide(
         table=sdata.table,
         shapes=contour_shapes,
         images={},
@@ -436,8 +436,8 @@ def main() -> None:
     bio6_structures = build_atera_wta_cervical_bio6_structures(group_df)
     adata = _load_atera_wta_cervical_adata(DATASET_ROOT)
 
-    log("Loading XeniumSData with streamed transcripts, boundaries, and H&E image")
-    sdata = _load_atera_wta_cervical_sdata(DATASET_ROOT)
+    log("Loading XeniumSlide with streamed transcripts, boundaries, and H&E image")
+    sdata = _load_atera_wta_cervical_slide(DATASET_ROOT)
 
     log("Importing existing 6-structure GeoJSON contours without full H&E patch extraction")
     add_contours_from_geojson(
@@ -481,18 +481,18 @@ def main() -> None:
         precomputed_feature_table=feature_table,
     )
 
-    log(f"Writing lightweight contour-enriched SData to {SDATA_OUTPUT}")
-    sdata_to_write = build_lightweight_contour_sdata(sdata)
+    log(f"Writing lightweight contour-enriched slide store to {SLIDE_OUTPUT}")
+    sdata_to_write = build_lightweight_contour_slide(sdata)
     sdata_write_result = write_xenium(
         sdata_to_write,
-        SDATA_OUTPUT,
-        format="sdata",
+        SLIDE_OUTPUT,
+        format="slide",
         overwrite=True,
     )
 
     files = existing_files_payload()
     add_multimodal_files(files)
-    files["contour_enriched_sdata"] = str(sdata_write_result["output_path"])
+    files["contour_enriched_slide"] = str(sdata_write_result["output_path"])
 
     study = {
         "sample_id": DEFAULT_ATERA_WTA_CERVICAL_SAMPLE_ID,
@@ -501,7 +501,7 @@ def main() -> None:
         "tbc": None,
         "tbc_results": str(TBC_RESULTS.resolve()),
         "adata": adata,
-        "sdata": sdata,
+        "slide": sdata,
         "lr": {},
         "pathway": {},
         "contour_generation": {},

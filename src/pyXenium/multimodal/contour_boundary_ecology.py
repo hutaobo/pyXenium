@@ -16,7 +16,7 @@ from pyXenium.contour._feature_table import (
     DEFAULT_CONTOUR_PATHWAYS,
     build_contour_feature_table,
 )
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 __all__ = [
     "DEFAULT_BOUNDARY_PROGRAM_LIBRARY",
@@ -166,7 +166,7 @@ DEFAULT_BREAST_BMNET_BOUNDARY_PROGRAM_LIBRARY["necrotic_hypoxic_rim"]["image"].u
 
 
 def score_contour_boundary_programs(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     feature_table: dict[str, Any] | None = None,

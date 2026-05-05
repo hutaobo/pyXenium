@@ -41,7 +41,7 @@ from .benchmarking import (
     submit_a100_matrix,
 )
 from .io.io import copy_bundled_dataset, load_toy
-from .io.spatialdata_export import DEFAULT_SPATIALDATA_STORE_NAME, export_xenium_to_spatialdata_zarr
+from .io.slide_export import DEFAULT_SLIDE_STORE_NAME, export_xenium_to_slide_zarr
 from .io.backfill import backfill_contour_patches, inspect_backfill_needs, inspect_l3_upgrade, run_l3_upgrade
 from .io.tenx_public_slides import build_10x_public_slides, discover_10x_xenium_datasets
 from .io.xenium_slide_builder import build_atera_slides, build_xenium_slide
@@ -525,12 +525,12 @@ def mechanostress_polarity(base_path, output_dir, offset_norm_threshold, cell_id
     """Compute cell polarity from cell and nucleus centroid offsets."""
     from .io import read_xenium
 
-    sdata = read_xenium(base_path, as_="sdata", include_transcripts=False, include_boundaries=True)
-    if "cell_boundaries" not in sdata.shapes or "nucleus_boundaries" not in sdata.shapes:
+    slide = read_xenium(base_path, as_="slide", include_transcripts=False, include_boundaries=True)
+    if "cell_boundaries" not in slide.shapes or "nucleus_boundaries" not in slide.shapes:
         raise click.ClickException("Both cell_boundaries and nucleus_boundaries are required for polarity analysis.")
     polarity = compute_cell_polarity(
-        cell_boundaries=sdata.shapes["cell_boundaries"],
-        nucleus_boundaries=sdata.shapes["nucleus_boundaries"],
+        cell_boundaries=slide.shapes["cell_boundaries"],
+        nucleus_boundaries=slide.shapes["nucleus_boundaries"],
         cell_id_col=cell_id_col,
         offset_norm_threshold=offset_norm_threshold,
     )
@@ -664,12 +664,12 @@ def gmi_prepare_atera_breast(
         write_spatial_visualizations=write_spatial_visualizations,
         seed=seed,
     )
-    sdata = load_atera_breast_for_gmi(dataset_root)
+    slide = load_atera_breast_for_gmi(dataset_root)
     from .gmi._workflow import _ensure_atera_contours
 
-    geojson = _ensure_atera_contours(sdata, dataset_root=dataset_root, config=config)
+    geojson = _ensure_atera_contours(slide, dataset_root=dataset_root, config=config)
     dataset = build_contour_gmi_dataset(
-        sdata,
+        slide,
         config=config,
         provenance={"dataset_root": str(dataset_root), "sample_id": "atera_wta_ffpe_breast", "contour_geojson": str(geojson)},
     )
@@ -956,12 +956,12 @@ def datasets(name, url, dest):
         click.echo(f"Copied bundled toy dataset to {target}")
 
 
-@app.command("export-spatialdata")
+@app.command("export-slide")
 @click.argument("base_path", required=False, default=DEFAULT_DATASET_PATH)
 @click.option(
     "--output-path",
     default=None,
-    help=f"Optional output Zarr path. Defaults to <base_path>/{DEFAULT_SPATIALDATA_STORE_NAME}.",
+    help=f"Optional output Zarr path. Defaults to <base_path>/{DEFAULT_SLIDE_STORE_NAME}.",
 )
 @click.option("--overwrite", is_flag=True, default=False, help="Overwrite an existing output store.")
 @click.option("--n-jobs", type=int, default=1, show_default=True, help="Compatibility option retained for legacy scripts.")
@@ -969,9 +969,9 @@ def datasets(name, url, dest):
 @click.option("--no-morphology-focus", is_flag=True, default=False, help="Skip morphology_focus image.")
 @click.option("--no-morphology-mip", is_flag=True, default=False, help="Skip morphology_mip image.")
 @click.option("--no-aligned-images", is_flag=True, default=False, help="Skip aligned auxiliary images.")
-def export_spatialdata(base_path, output_path, overwrite, n_jobs, no_transcripts, no_morphology_focus, no_morphology_mip, no_aligned_images):
-    """Convert a Xenium export into pyXenium's SData store at the legacy path name."""
-    payload = export_xenium_to_spatialdata_zarr(
+def export_slide(base_path, output_path, overwrite, n_jobs, no_transcripts, no_morphology_focus, no_morphology_mip, no_aligned_images):
+    """Convert a Xenium export into a pyXenium XeniumSlide store."""
+    payload = export_xenium_to_slide_zarr(
         base_path=base_path,
         output_path=output_path,
         overwrite=overwrite,

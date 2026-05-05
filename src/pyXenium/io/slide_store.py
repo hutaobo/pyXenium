@@ -12,10 +12,10 @@ import numpy as np
 import pandas as pd
 import zarr
 
-from .sdata_model import XeniumFrameChunkSource, XeniumImage, XeniumSData, XeniumSlide
+from .slide_model import XeniumFrameChunkSource, XeniumImage, XeniumSlide
 
-SDATA_FORMAT = "pyxenium.sdata"
-SDATA_VERSION = 1
+SLIDE_FORMAT = "pyxenium.slide"
+SLIDE_VERSION = 1
 _IMAGE_CORE_ATTRS = {
     "axes",
     "dtype",
@@ -432,8 +432,8 @@ def write_xenium_slide(
         shutil.rmtree(temp_root, ignore_errors=True)
 
     root = zarr.open_group(str(target), mode="a")
-    root.attrs["format"] = SDATA_FORMAT
-    root.attrs["version"] = SDATA_VERSION
+    root.attrs["format"] = SLIDE_FORMAT
+    root.attrs["version"] = SLIDE_VERSION
     root.attrs["created_by"] = "pyXenium"
 
     tables_root = root.require_group("tables")
@@ -466,8 +466,8 @@ def write_xenium_slide(
 
     metadata_root = root.require_group("metadata")
     payload = dict(slide.metadata)
-    payload.setdefault("store_version", SDATA_VERSION)
-    payload.setdefault("format", SDATA_FORMAT)
+    payload.setdefault("store_version", SLIDE_VERSION)
+    payload.setdefault("format", SLIDE_FORMAT)
     metadata_root.create_array(
         "json",
         data=np.asarray([json.dumps(payload, ensure_ascii=True, sort_keys=True)], dtype=np.str_),
@@ -475,28 +475,19 @@ def write_xenium_slide(
     )
 
     return {
-        "format": SDATA_FORMAT,
-        "version": SDATA_VERSION,
+        "format": SLIDE_FORMAT,
+        "version": SLIDE_VERSION,
         "output_path": str(target),
         **slide.component_summary(),
     }
 
 
-def write_xenium_sdata(
-    sdata: XeniumSData,
-    path: str | Path,
-    *,
-    overwrite: bool = False,
-) -> dict[str, Any]:
-    return write_xenium_slide(sdata, path, overwrite=overwrite)
-
-
 def read_xenium_slide(path: str | Path) -> XeniumSlide:
     target = Path(path).expanduser()
     root = zarr.open_group(str(target), mode="r")
-    if root.attrs.get("format") != SDATA_FORMAT:
+    if root.attrs.get("format") != SLIDE_FORMAT:
         raise ValueError(
-            f"Unsupported SData format at {target}: {root.attrs.get('format')!r}"
+            f"Unsupported slide store format at {target}: {root.attrs.get('format')!r}"
         )
 
     table = ad.read_zarr(str(target / "tables" / "cells"))
@@ -533,7 +524,3 @@ def read_xenium_slide(path: str | Path) -> XeniumSlide:
         contour_images=contour_images,
         metadata=metadata,
     )
-
-
-def read_xenium_sdata(path: str | Path) -> XeniumSData:
-    return read_xenium_slide(path)

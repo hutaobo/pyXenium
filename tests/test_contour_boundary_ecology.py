@@ -9,7 +9,7 @@ from shapely.geometry import Polygon
 
 from pyXenium.contour import build_contour_feature_table
 from pyXenium.contour._geometry import geometry_table_to_contour_frame
-from pyXenium.io import XeniumImage, XeniumSData, read_sdata, write_xenium
+from pyXenium.io import XeniumImage, XeniumSlide, read_slide, write_xenium
 from pyXenium.multimodal import run_contour_boundary_ecology_pilot, score_contour_boundary_programs
 
 
@@ -26,7 +26,7 @@ def _paint_rect(image: np.ndarray, x0: int, y0: int, x1: int, y1: int, color: tu
     image[y0:y1, x0:x1, :] = np.asarray(color, dtype=np.uint8)
 
 
-def _make_boundary_ecology_sdata() -> XeniumSData:
+def _make_boundary_ecology_sdata() -> XeniumSlide:
     full_image = np.full((220, 220, 3), 245, dtype=np.uint8)
     contour_specs = {
         "immune_exclusion": {"origin": (0, 0), "label": "Immune exclusion"},
@@ -316,7 +316,7 @@ def _make_boundary_ecology_sdata() -> XeniumSData:
     shapes = {"tumor_boundary_contours": geometry_table_to_contour_frame(pd.DataFrame(geometry_rows))}
     points = {"transcripts": pd.DataFrame(all_points)}
 
-    return XeniumSData(
+    return XeniumSlide(
         table=adata,
         points=points,
         shapes=shapes,
@@ -347,8 +347,8 @@ def test_build_contour_feature_table_zone_semantics_and_roundtrip(tmp_path: Path
     assert "gradient__immune__outer_minus_inner" in features.columns
     assert (result["zone_summary"]["zone"].isin({"whole", "core", "inner_rim", "outer_rim"})).all()
 
-    payload = write_xenium(sdata, tmp_path / "boundary_workflow.zarr", format="sdata")
-    reloaded = read_sdata(payload["output_path"])
+    payload = write_xenium(sdata, tmp_path / "boundary_workflow.zarr", format="slide")
+    reloaded = read_slide(payload["output_path"])
     reloaded_result = build_contour_feature_table(
         reloaded,
         contour_key="tumor_boundary_contours",

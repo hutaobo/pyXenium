@@ -27,7 +27,7 @@ from pyXenium.contour import (
     summarize_contour_topology,
 )
 from pyXenium.contour._geometry import contour_frame_to_geometry_table, geometry_table_to_contour_frame
-from pyXenium.io import XeniumFrameChunkSource, XeniumSData, read_sdata, read_xenium, write_xenium
+from pyXenium.io import XeniumFrameChunkSource, XeniumSlide, read_slide, read_xenium, write_xenium
 
 from test_xenium_io import make_xenium_dataset
 
@@ -151,7 +151,7 @@ def _hole_contour_geojson() -> dict:
     }
 
 
-def _make_contour_ready_sdata(*, streamed_transcripts: bool = False) -> XeniumSData:
+def _make_contour_ready_sdata(*, streamed_transcripts: bool = False) -> XeniumSlide:
     obs = pd.DataFrame(
         {
             "x_centroid": [5.0, 9.0, 0.0, 12.0, 14.0, 50.0],
@@ -206,7 +206,7 @@ def _make_contour_ready_sdata(*, streamed_transcripts: bool = False) -> XeniumSD
             },
             chunk_iter_factory=lambda: iter([chunk_1, chunk_2]),
         )
-        return XeniumSData(
+        return XeniumSlide(
             table=adata,
             points={},
             shapes={"contours": contour_frame},
@@ -214,7 +214,7 @@ def _make_contour_ready_sdata(*, streamed_transcripts: bool = False) -> XeniumSD
             metadata={"units": "micron"},
         )
 
-    return XeniumSData(
+    return XeniumSlide(
         table=adata,
         points={"transcripts": transcripts},
         shapes={"contours": contour_frame},
@@ -225,7 +225,7 @@ def _make_contour_ready_sdata(*, streamed_transcripts: bool = False) -> XeniumSD
     )
 
 
-def _make_nearby_contour_sdata() -> XeniumSData:
+def _make_nearby_contour_sdata() -> XeniumSlide:
     sdata = _make_contour_ready_sdata()
     contour_frame = pd.DataFrame(
         {
@@ -252,7 +252,7 @@ def _make_nearby_contour_sdata() -> XeniumSData:
     return sdata
 
 
-def _make_topology_sdata() -> XeniumSData:
+def _make_topology_sdata() -> XeniumSlide:
     sdata = _make_contour_ready_sdata()
     geometry_table = pd.DataFrame(
         {
@@ -276,7 +276,7 @@ def _make_topology_sdata() -> XeniumSData:
     return sdata
 
 
-def _make_biology_sdata(*, streamed_transcripts: bool = False) -> XeniumSData:
+def _make_biology_sdata(*, streamed_transcripts: bool = False) -> XeniumSlide:
     obs = pd.DataFrame(
         {
             "x_centroid": [2.0, 5.0, 8.0, 22.0, 25.0, 28.0, 2.0, 5.0, 8.0, 22.0, 25.0, 28.0],
@@ -376,14 +376,14 @@ def _make_biology_sdata(*, streamed_transcripts: bool = False) -> XeniumSData:
             },
             chunk_iter_factory=lambda: iter([chunk_1, chunk_2]),
         )
-        return XeniumSData(
+        return XeniumSlide(
             table=adata,
             shapes={"biology_contours": contour_frame},
             point_sources={"transcripts": point_source},
             metadata={"units": "micron", "contours": {"biology_contours": {"units": "micron"}}},
         )
 
-    return XeniumSData(
+    return XeniumSlide(
         table=adata,
         points={"transcripts": transcripts},
         shapes={"biology_contours": contour_frame},
@@ -424,7 +424,7 @@ def _xenium_explorer_geojson() -> dict:
     }
 
 
-def _make_complex_contour_sdata() -> XeniumSData:
+def _make_complex_contour_sdata() -> XeniumSlide:
     sdata = _make_contour_ready_sdata()
     donut_frame = pd.DataFrame(
         {
@@ -464,7 +464,7 @@ def _make_complex_contour_sdata() -> XeniumSData:
     return sdata
 
 
-def _geometry_table_for_key(sdata: XeniumSData, contour_key: str) -> pd.DataFrame:
+def _geometry_table_for_key(sdata: XeniumSlide, contour_key: str) -> pd.DataFrame:
     return contour_frame_to_geometry_table(sdata.shapes[contour_key], contour_key=contour_key).sort_values(
         "contour_id",
         kind="stable",
@@ -619,7 +619,7 @@ def test_summarize_contour_topology_falls_back_to_histoseg_root(tmp_path, monkey
 
 def test_add_contours_from_geojson_imports_scales_and_roundtrips(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
-    sdata = read_xenium(str(dataset), as_="sdata", include_images=True, prefer="zarr")
+    sdata = read_xenium(str(dataset), as_="slide", include_images=True, prefer="zarr")
     geojson_path = tmp_path / "contours.geojson"
     _write_geojson(geojson_path, _simple_contour_geojson())
 
@@ -652,8 +652,8 @@ def test_add_contours_from_geojson_imports_scales_and_roundtrips(tmp_path):
     assert "protein_cluster_contours" in sdata.shapes
 
     output = tmp_path / "contour_sdata.zarr"
-    payload = write_xenium(copied, output, format="sdata")
-    reloaded = read_sdata(payload["output_path"])
+    payload = write_xenium(copied, output, format="slide")
+    reloaded = read_slide(payload["output_path"])
     reloaded_frame = reloaded.shapes["protein_cluster_contours"].sort_values(
         ["contour_id", "part_id", "ring_id", "vertex_id"],
         kind="stable",
@@ -663,7 +663,7 @@ def test_add_contours_from_geojson_imports_scales_and_roundtrips(tmp_path):
 
 
 def test_add_contours_from_geojson_uses_default_xenium_pixel_size(tmp_path):
-    sdata = XeniumSData(
+    sdata = XeniumSlide(
         table=ad.AnnData(X=np.zeros((0, 0), dtype=float)),
         metadata={"units": "micron"},
     )
@@ -685,7 +685,7 @@ def test_add_contours_from_geojson_uses_default_xenium_pixel_size(tmp_path):
 
 
 def test_add_contours_from_geojson_keeps_xenium_um_coordinates_with_default_metadata(tmp_path):
-    sdata = XeniumSData(
+    sdata = XeniumSlide(
         table=ad.AnnData(X=np.zeros((0, 0), dtype=float)),
         metadata={"units": "micron"},
     )
@@ -710,7 +710,7 @@ def test_add_contours_from_geojson_keeps_xenium_um_coordinates_with_default_meta
 
 def test_add_contours_from_geojson_prefers_experiment_xenium_pixel_size(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
-    sdata = read_xenium(str(dataset), as_="sdata", include_images=False, prefer="zarr")
+    sdata = read_xenium(str(dataset), as_="slide", include_images=False, prefer="zarr")
     geojson_path = tmp_path / "contours.geojson"
     _write_geojson(geojson_path, _simple_contour_geojson())
 
@@ -729,7 +729,7 @@ def test_add_contours_from_geojson_prefers_experiment_xenium_pixel_size(tmp_path
 
 def test_add_contours_from_geojson_extracts_he_patches_and_roundtrips(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
-    sdata = read_xenium(str(dataset), as_="sdata", include_images=True, prefer="zarr")
+    sdata = read_xenium(str(dataset), as_="slide", include_images=True, prefer="zarr")
     geojson_path = tmp_path / "contours.geojson"
     _write_geojson(geojson_path, _simple_contour_geojson())
 
@@ -800,8 +800,8 @@ def test_add_contours_from_geojson_extracts_he_patches_and_roundtrips(tmp_path):
     assert set(expanded.contour_images["protein_cluster_contours"]) == set(patches)
 
     output = tmp_path / "contour_he_patches.zarr"
-    payload = write_xenium(copied, output, format="sdata")
-    reloaded = read_sdata(payload["output_path"])
+    payload = write_xenium(copied, output, format="slide")
+    reloaded = read_slide(payload["output_path"])
 
     assert payload["contour_images"] == ["protein_cluster_contours"]
     assert "protein_cluster_contours" in reloaded.contour_images
@@ -816,7 +816,7 @@ def test_add_contours_from_geojson_extracts_he_patches_and_roundtrips(tmp_path):
 
 def test_add_contours_from_geojson_extracts_he_patches_with_polygon_holes(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
-    sdata = read_xenium(str(dataset), as_="sdata", include_images=True, prefer="zarr")
+    sdata = read_xenium(str(dataset), as_="slide", include_images=True, prefer="zarr")
     geojson_path = tmp_path / "hole_contours.geojson"
     _write_geojson(geojson_path, _hole_contour_geojson())
 
@@ -839,7 +839,7 @@ def test_add_contours_from_geojson_patch_extraction_requires_loaded_he_image_and
     geojson_path = tmp_path / "contours.geojson"
     _write_geojson(geojson_path, _simple_contour_geojson())
 
-    sdata_without_images = read_xenium(str(dataset), as_="sdata", include_images=False, prefer="zarr")
+    sdata_without_images = read_xenium(str(dataset), as_="slide", include_images=False, prefer="zarr")
     add_contours_from_geojson(
         sdata_without_images,
         geojson_path,
@@ -853,14 +853,14 @@ def test_add_contours_from_geojson_patch_extraction_requires_loaded_he_image_and
 
     with pytest.raises(ValueError, match="include_images=True"):
         add_contours_from_geojson(
-            read_xenium(str(dataset), as_="sdata", include_images=False, prefer="zarr"),
+            read_xenium(str(dataset), as_="slide", include_images=False, prefer="zarr"),
             geojson_path,
             key="protein_cluster_contours",
             extract_he_patches=True,
             copy=True,
         )
 
-    sdata_missing_affine = read_xenium(str(dataset), as_="sdata", include_images=True, prefer="zarr")
+    sdata_missing_affine = read_xenium(str(dataset), as_="slide", include_images=True, prefer="zarr")
     sdata_missing_affine.images["he"].image_to_xenium_affine = None
     with pytest.raises(ValueError, match="image_to_xenium_affine"):
         add_contours_from_geojson(
@@ -873,7 +873,7 @@ def test_add_contours_from_geojson_patch_extraction_requires_loaded_he_image_and
 
     sdata_missing_pixel_size = read_xenium(
         str(dataset),
-        as_="sdata",
+        as_="slide",
         include_images=True,
         prefer="zarr",
     )
@@ -889,7 +889,7 @@ def test_add_contours_from_geojson_patch_extraction_requires_loaded_he_image_and
 
 
 def test_add_contours_from_xenium_explorer_geojson_maps_schema_fields(tmp_path):
-    sdata = XeniumSData(
+    sdata = XeniumSlide(
         table=ad.AnnData(X=np.zeros((0, 0), dtype=float)),
         metadata={"image_artifacts": {"he": {"pixel_size_um": 1.0}}},
     )
@@ -1040,7 +1040,7 @@ def test_add_contours_from_real_geojson_smoke():
     if not real_geojson.exists():
         return
 
-    sdata = XeniumSData(
+    sdata = XeniumSlide(
         table=ad.AnnData(X=np.zeros((0, 0), dtype=float)),
         metadata={"image_artifacts": {"he": {"pixel_size_um": 0.2125}}},
     )
@@ -1151,8 +1151,8 @@ def test_expand_contours_copy_mode_and_roundtrip(tmp_path):
     assert "neighbor_voronoi" not in sdata.shapes
     assert "neighbor_voronoi" in copied.shapes
 
-    output = write_xenium(copied, tmp_path / "contour_roundtrip.zarr", format="sdata")
-    reloaded = read_sdata(output["output_path"])
+    output = write_xenium(copied, tmp_path / "contour_roundtrip.zarr", format="slide")
+    reloaded = read_slide(output["output_path"])
     reloaded_table = _geometry_table_for_key(reloaded, "neighbor_voronoi")
     copied_table = _geometry_table_for_key(copied, "neighbor_voronoi")
     assert set(reloaded_table["contour_id"]) == set(copied_table["contour_id"])

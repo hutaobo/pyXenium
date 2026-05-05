@@ -14,7 +14,7 @@ from pyXenium.contour import (
     ring_density,
     smooth_density_by_distance,
 )
-from pyXenium.io import XeniumSData, read_xenium, write_xenium
+from pyXenium.io import XeniumSlide, read_xenium, write_xenium
 from pyXenium.cci import cci_topology_analysis
 from pyXenium.multimodal import run_contour_boundary_ecology_pilot
 from pyXenium.pathway import pathway_topology_analysis
@@ -33,7 +33,7 @@ DEFAULT_ATERA_WTA_CERVICAL_TOPOLOGY_SUBDIR = "topology"
 DEFAULT_ATERA_WTA_CERVICAL_CONTOUR_SUBDIR = "contours_bio6"
 DEFAULT_ATERA_WTA_CERVICAL_DENSITY_SUBDIR = "density_profiles"
 DEFAULT_ATERA_WTA_CERVICAL_MULTIMODAL_SUBDIR = "multimodal_contour_ecology_bio6"
-DEFAULT_ATERA_WTA_CERVICAL_SDATA_NAME = "cervical_with_contours.sdata"
+DEFAULT_ATERA_WTA_CERVICAL_SLIDE_NAME = "cervical_with_contours_slide.zarr"
 DEFAULT_ATERA_WTA_CERVICAL_HISTOSEG_ROOT = r"D:\GitHub\HistoSeg"
 DEFAULT_ATERA_WTA_CERVICAL_CONTOUR_KEY = "atera_cervical_bio6"
 DEFAULT_ATERA_WTA_CERVICAL_EXPANDED_CONTOUR_KEY = "atera_cervical_bio6_voronoi30um"
@@ -221,10 +221,10 @@ def _load_atera_wta_cervical_adata(dataset_root: str | Path):
     )
 
 
-def _load_atera_wta_cervical_sdata(dataset_root: str | Path) -> XeniumSData:
+def _load_atera_wta_cervical_slide(dataset_root: str | Path) -> XeniumSlide:
     return read_xenium(
         str(dataset_root),
-        as_="sdata",
+        as_="slide",
         prefer="h5",
         include_transcripts=True,
         include_boundaries=True,
@@ -236,7 +236,7 @@ def _load_atera_wta_cervical_sdata(dataset_root: str | Path) -> XeniumSData:
     )
 
 
-def _resolve_he_pixel_size_um(sdata: XeniumSData) -> float:
+def _resolve_he_pixel_size_um(sdata: XeniumSlide) -> float:
     he_image = sdata.images.get("he")
     if he_image is not None and he_image.pixel_size_um is not None:
         return float(he_image.pixel_size_um)
@@ -293,8 +293,8 @@ def build_serializable_cervical_end_to_end_summary(study: dict[str, Any]) -> dic
     adata = study["adata"]
     contour_key = str(study["contour_key"])
     expanded_contour_key = str(study["expanded_contour_key"])
-    contour_frame = study["sdata"].shapes.get(contour_key, pd.DataFrame())
-    expanded_frame = study["sdata"].shapes.get(expanded_contour_key, pd.DataFrame())
+    contour_frame = study["slide"].shapes.get(contour_key, pd.DataFrame())
+    expanded_frame = study["slide"].shapes.get(expanded_contour_key, pd.DataFrame())
     cluster_count = int(adata.obs["cluster"].astype(str).nunique()) if "cluster" in adata.obs.columns else 0
 
     payload = {
@@ -419,7 +419,7 @@ def run_atera_wta_cervical_end_to_end(
     sfplot_root: str | None = None,
     histoseg_root: str = DEFAULT_ATERA_WTA_CERVICAL_HISTOSEG_ROOT,
     export_figures: bool = True,
-    write_sdata_copy: bool = True,
+    write_slide_copy: bool = True,
 ) -> dict[str, Any]:
     start = time.perf_counter()
     dataset_root_path = Path(dataset_root).expanduser().resolve()
@@ -434,7 +434,7 @@ def run_atera_wta_cervical_end_to_end(
     contour_output_dir = resolved_output_root / DEFAULT_ATERA_WTA_CERVICAL_CONTOUR_SUBDIR
     density_dir = resolved_output_root / DEFAULT_ATERA_WTA_CERVICAL_DENSITY_SUBDIR
     multimodal_dir = resolved_output_root / DEFAULT_ATERA_WTA_CERVICAL_MULTIMODAL_SUBDIR
-    sdata_output_path = resolved_output_root / DEFAULT_ATERA_WTA_CERVICAL_SDATA_NAME
+    slide_output_path = resolved_output_root / DEFAULT_ATERA_WTA_CERVICAL_SLIDE_NAME
 
     group_df = _load_cervical_cell_groups(dataset_root_path)
     bio6_structures = build_atera_wta_cervical_bio6_structures(group_df)
@@ -494,7 +494,7 @@ def run_atera_wta_cervical_end_to_end(
         export_figures=export_figures,
     )
 
-    sdata = _load_atera_wta_cervical_sdata(dataset_root_path)
+    sdata = _load_atera_wta_cervical_slide(dataset_root_path)
     contour_artifacts = generate_xenium_explorer_annotations(
         dataset_root_path,
         structures=bio6_structures,
@@ -554,12 +554,12 @@ def run_atera_wta_cervical_end_to_end(
         output_dir=multimodal_dir,
     )
 
-    sdata_write_result: dict[str, Any] | None = None
-    if write_sdata_copy:
-        sdata_write_result = write_xenium(
+    slide_write_result: dict[str, Any] | None = None
+    if write_slide_copy:
+        slide_write_result = write_xenium(
             sdata,
-            sdata_output_path,
-            format="sdata",
+            slide_output_path,
+            format="slide",
             overwrite=True,
         )
 
@@ -603,8 +603,8 @@ def run_atera_wta_cervical_end_to_end(
             },
         )
     )
-    if sdata_write_result is not None:
-        files["contour_enriched_sdata"] = str(sdata_write_result["output_path"])
+    if slide_write_result is not None:
+        files["contour_enriched_slide"] = str(slide_write_result["output_path"])
 
     study = {
         "sample_id": sample_id,
@@ -613,7 +613,7 @@ def run_atera_wta_cervical_end_to_end(
         "tbc": tbc_run,
         "tbc_results": str(resolved_tbc_results),
         "adata": adata,
-        "sdata": sdata,
+        "slide": sdata,
         "cci": cci_result,
         "pathway": pathway_result,
         "contour_generation": contour_artifacts,

@@ -27,32 +27,32 @@ def test_datasets_command_copies_bundled_files(tmp_path):
     assert (target / "transcripts.zarr.zip").exists()
 
 
-def test_export_spatialdata_command(monkeypatch, tmp_path):
+def test_export_slide_command(monkeypatch, tmp_path):
     captured = {}
 
-    def fake_export_xenium_to_spatialdata_zarr(**kwargs):
+    def fake_export_xenium_to_slide_zarr(**kwargs):
         captured.update(kwargs)
         return {
             "base_path": kwargs["base_path"],
-            "output_path": str(tmp_path / "spatialdata.zarr"),
+            "output_path": str(tmp_path / "xenium_slide.zarr"),
             "images": [],
             "labels": [],
             "points": ["transcripts"],
             "shapes": ["cell_boundaries"],
             "tables": ["cells"],
-            "format": "pyxenium.sdata",
+            "format": "pyxenium.slide",
             "version": 1,
         }
 
     monkeypatch.setattr(
-        "pyXenium.__main__.export_xenium_to_spatialdata_zarr",
-        fake_export_xenium_to_spatialdata_zarr,
+        "pyXenium.__main__.export_xenium_to_slide_zarr",
+        fake_export_xenium_to_slide_zarr,
     )
 
     result = CliRunner().invoke(
         app,
         [
-            "export-spatialdata",
+            "export-slide",
             str(tmp_path / "dataset"),
             "--output-path",
             str(tmp_path / "out.zarr"),
@@ -63,7 +63,7 @@ def test_export_spatialdata_command(monkeypatch, tmp_path):
 
     assert result.exit_code == 0
     payload = json.loads(result.output)
-    assert payload["format"] == "pyxenium.sdata"
+    assert payload["format"] == "pyxenium.slide"
     assert captured["output_path"] == str(tmp_path / "out.zarr")
     assert captured["morphology_focus"] is False
     assert captured["aligned_images"] is False

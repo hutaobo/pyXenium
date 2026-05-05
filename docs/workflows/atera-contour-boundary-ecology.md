@@ -30,7 +30,7 @@ It expects the standard Xenium export plus:
 
 1. Loads the Atera Xenium sample with H&E image alignment metadata.
 2. Imports a tutorial-sized subset of Xenium Explorer contours from GeoJSON.
-3. Cuts one level-0 H&E patch per contour into `XeniumSData.contour_images`.
+3. Cuts one level-0 H&E patch per contour into `XeniumSlide.contour_images`.
 4. Builds a contour study table with geometry, pathomics, cell-level
    pseudobulk RNA, pathway scores, cell-cell interaction summaries, and context
    features.

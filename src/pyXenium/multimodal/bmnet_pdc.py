@@ -10,7 +10,7 @@ import pandas as pd
 
 from pyXenium.contour import add_contours_from_geojson, build_contour_feature_table
 from pyXenium.io import read_xenium
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 from .contour_boundary_ecology import score_contour_boundary_programs
 from .morphology_increment import compare_he_vs_xenium_morphology_sources
@@ -310,7 +310,7 @@ def build_bmnet_pilot_backend(
 
 
 def run_bmnet_morphology_increment_pilot(
-    sdata_or_path: XeniumSData | str | Path | None = None,
+    sdata_or_path: XeniumSlide | str | Path | None = None,
     *,
     config: BMNetMorphologyPilotConfig | None = None,
     **overrides: Any,
@@ -417,18 +417,18 @@ def run_bmnet_morphology_increment_pilot(
 
 
 def _resolve_sdata(
-    sdata_or_path: XeniumSData | str | Path | None,
+    sdata_or_path: XeniumSlide | str | Path | None,
     *,
     config: BMNetMorphologyPilotConfig,
-) -> XeniumSData:
-    if isinstance(sdata_or_path, XeniumSData):
+) -> XeniumSlide:
+    if isinstance(sdata_or_path, XeniumSlide):
         return sdata_or_path
     dataset_root = sdata_or_path if sdata_or_path is not None else config.dataset_root
     if dataset_root is None:
         dataset_root = DEFAULT_PDC_XENIUM_ROOT
     return read_xenium(
         str(dataset_root),
-        as_="sdata",
+        as_="slide",
         prefer="h5",
         include_transcripts=bool(config.include_transcripts),
         include_boundaries=True,
@@ -439,7 +439,7 @@ def _resolve_sdata(
     )
 
 
-def _ensure_contours(sdata: XeniumSData, *, config: BMNetMorphologyPilotConfig) -> None:
+def _ensure_contours(sdata: XeniumSlide, *, config: BMNetMorphologyPilotConfig) -> None:
     if config.contour_key in sdata.shapes:
         if bool(config.include_pathomics) and config.contour_key not in sdata.contour_images:
             raise ValueError(
@@ -522,7 +522,7 @@ def _resolve_contour_id_key(geojson: Path, *, requested: str) -> str:
 
 
 def _limit_contours(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     max_contours: int | None,

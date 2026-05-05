@@ -24,7 +24,7 @@ import pandas as pd
 from scipy import sparse
 
 from pyXenium.contour import add_contours_from_geojson, import_histoseg_segmentation_qc
-from pyXenium.io import XeniumSData
+from pyXenium.io import XeniumSlide
 from pyXenium.multimodal import (
     build_spatho_manifest,
     compare_programs_with_embeddings,
@@ -38,7 +38,7 @@ from pyXenium.multimodal import (
 # ---------------------------------------------------------------------------
 
 
-def _make_sdata() -> XeniumSData:
+def _make_sdata() -> XeniumSlide:
     n_cells = 8
     n_genes = 5
     rng = np.random.default_rng(42)
@@ -62,7 +62,7 @@ def _make_sdata() -> XeniumSData:
         [[i * 10.0, j * 10.0] for i in range(2) for j in range(4)], dtype=float
     )
     adata.uns["sample_id"] = "smoke_slide"
-    return XeniumSData(table=adata, shapes={}, metadata={"sample_id": "smoke_slide"})
+    return XeniumSlide(table=adata, shapes={}, metadata={"sample_id": "smoke_slide"})
 
 
 def _write_histoseg_geojson(path: Path) -> None:

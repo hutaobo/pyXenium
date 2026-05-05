@@ -5,7 +5,7 @@ from typing import Any
 
 from .api import read_xenium, warn_unsupported_image_export_flags, write_xenium
 
-DEFAULT_SPATIALDATA_STORE_NAME = "spatialdata.zarr"
+DEFAULT_SLIDE_STORE_NAME = "xenium_slide.zarr"
 
 
 def _sorted_keys(mapping: Any) -> list[str]:
@@ -16,7 +16,7 @@ def _sorted_keys(mapping: Any) -> list[str]:
     return sorted(str(key) for key in mapping)
 
 
-def export_xenium_to_spatialdata_zarr(
+def export_xenium_to_slide_zarr(
     base_path: str | Path,
     *,
     output_path: str | Path | None = None,
@@ -34,17 +34,17 @@ def export_xenium_to_spatialdata_zarr(
     cells_table: bool = True,
 ) -> dict[str, Any]:
     """
-    Compatibility export wrapper that writes pyXenium's own SData schema.
+    Export wrapper that writes pyXenium's own XeniumSlide Zarr schema.
 
-    The output path and summary intentionally preserve the legacy
-    ``export-spatialdata`` surface so existing scripts continue to work while
-    pyXenium no longer depends on ``spatialdata`` or ``spatialdata_io``.
+    This surface intentionally keeps slide export independent from external
+    slide-ecosystem runtime packages while preserving the optional
+    ``XeniumSlide.to_spatialdata()`` bridge for users who separately install it.
     """
 
     del n_jobs
     base_path = Path(base_path).expanduser()
     if output_path is None:
-        output_path = base_path / DEFAULT_SPATIALDATA_STORE_NAME
+        output_path = base_path / DEFAULT_SLIDE_STORE_NAME
     output_path = Path(output_path).expanduser()
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -54,9 +54,9 @@ def export_xenium_to_spatialdata_zarr(
         aligned_images=aligned_images,
     )
 
-    sdata = read_xenium(
+    slide = read_xenium(
         str(base_path),
-        as_="sdata",
+        as_="slide",
         include_transcripts=transcripts,
         stream_transcripts=transcripts,
         include_boundaries=(cells_boundaries or nucleus_boundaries),
@@ -64,14 +64,14 @@ def export_xenium_to_spatialdata_zarr(
     )
 
     if not cells_boundaries:
-        sdata.shapes.pop("cell_boundaries", None)
+        slide.shapes.pop("cell_boundaries", None)
     if not nucleus_boundaries:
-        sdata.shapes.pop("nucleus_boundaries", None)
+        slide.shapes.pop("nucleus_boundaries", None)
     if not cells_table:
-        sdata.table = sdata.table[:0, :].copy()
+        slide.table = slide.table[:0, :].copy()
     if not cells_labels or not nucleus_labels or cells_as_circles is not None:
-        sdata.metadata.setdefault("compat", {})
-        sdata.metadata["compat"].update(
+        slide.metadata.setdefault("compat", {})
+        slide.metadata["compat"].update(
             {
                 "cells_labels_requested": bool(cells_labels),
                 "nucleus_labels_requested": bool(nucleus_labels),
@@ -79,7 +79,7 @@ def export_xenium_to_spatialdata_zarr(
             }
         )
 
-    payload = write_xenium(sdata, output_path, format="sdata", overwrite=overwrite)
+    payload = write_xenium(slide, output_path, format="slide", overwrite=overwrite)
     return {
         "base_path": str(base_path),
         "output_path": str(output_path),

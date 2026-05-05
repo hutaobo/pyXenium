@@ -9,7 +9,7 @@ import pandas as pd
 import zarr
 
 from pyXenium._topology_core import compute_weighted_searcher_findee_distance_matrix_from_df
-from pyXenium.io import XeniumImage, XeniumSData
+from pyXenium.io import XeniumImage, XeniumSlide
 import pyXenium.validation.atera_wta_cervical_end_to_end as cervical_workflow
 import pyXenium.validation.sfplot_tbc_bridge as sfplot_bridge
 
@@ -69,7 +69,7 @@ def _tiny_group_df() -> pd.DataFrame:
     )
 
 
-def _mock_sdata() -> XeniumSData:
+def _mock_sdata() -> XeniumSlide:
     image = XeniumImage(
         levels=[np.zeros((24, 24, 3), dtype=np.uint8)],
         axes="yxc",
@@ -78,7 +78,7 @@ def _mock_sdata() -> XeniumSData:
         image_to_xenium_affine=[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
         pixel_size_um=0.2125,
     )
-    return XeniumSData(
+    return XeniumSlide(
         table=_tiny_adata(),
         images={"he": image},
         metadata={"sample_id": "mock_cervical", "units": "micron"},
@@ -207,7 +207,7 @@ def test_run_atera_wta_cervical_end_to_end_orchestrates_fixed_outputs(tmp_path, 
         del path, kwargs
         if as_ == "anndata":
             return _tiny_adata()
-        if as_ == "sdata":
+        if as_ == "slide":
             return _mock_sdata()
         raise AssertionError(f"Unexpected read_xenium mode: {as_}")
 
@@ -393,7 +393,7 @@ def test_run_atera_wta_cervical_end_to_end_orchestrates_fixed_outputs(tmp_path, 
         del obj, format, overwrite
         target = Path(path)
         target.mkdir(parents=True, exist_ok=True)
-        return {"output_path": str(target), "format": "sdata"}
+        return {"output_path": str(target), "format": "slide"}
 
     monkeypatch.setattr(cervical_workflow, "run_sfplot_tbc_table_bundle", fake_run_sfplot_tbc_table_bundle)
     monkeypatch.setattr(cervical_workflow, "read_xenium", fake_read_xenium)
@@ -441,7 +441,7 @@ def test_run_atera_wta_cervical_end_to_end_orchestrates_fixed_outputs(tmp_path, 
     assert Path(result["files"]["ring_density_csv"]).exists()
     assert Path(result["files"]["smooth_density_csv"]).exists()
     assert Path(result["files"]["multimodal_report_md"]).exists()
-    assert Path(result["files"]["contour_enriched_sdata"]).exists()
+    assert Path(result["files"]["contour_enriched_slide"]).exists()
 
-    assert cervical_workflow.DEFAULT_ATERA_WTA_CERVICAL_CONTOUR_KEY in result["sdata"].shapes
-    assert cervical_workflow.DEFAULT_ATERA_WTA_CERVICAL_EXPANDED_CONTOUR_KEY in result["sdata"].shapes
+    assert cervical_workflow.DEFAULT_ATERA_WTA_CERVICAL_CONTOUR_KEY in result["slide"].shapes
+    assert cervical_workflow.DEFAULT_ATERA_WTA_CERVICAL_EXPANDED_CONTOUR_KEY in result["slide"].shapes

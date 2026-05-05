@@ -28,7 +28,7 @@ workflows.
 :::{grid-item-card} pyXenium.io
 :link: io
 :link-type: doc
-Load a public renal RNA + protein Xenium study, inspect the `XeniumSData`
+Load a public renal RNA + protein Xenium study, inspect the `XeniumSlide`
 components, and see how I/O preserves the structures needed for downstream
 biology.
 :::
@@ -80,7 +80,7 @@ artifacts.
 :link: ai_driven_spatial_pathologist
 :link-type: doc
 Install and call the external `spatho` workflow, and see how pyXenium's
-`XeniumSData` structure supports AI-driven spatial pathology without adding
+`XeniumSlide` structure supports AI-driven spatial pathology without adding
 spatho code to pyXenium.
 :::
 

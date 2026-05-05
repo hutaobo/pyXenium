@@ -17,7 +17,7 @@ from ._analysis import _build_ring_intervals, _prepare_contours, _validate_dista
 from ._geometry import geometry_table_to_contour_frame
 from ._geometry import _normalize_polygonal_geometry
 from ._transform import _copy_sdata
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 __all__ = [
     "compare_contour_cell_composition",
@@ -41,7 +41,7 @@ _CPM_SCALE = 1_000_000.0
 
 
 def summarize_contour_composition(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     contour_query: str | None = None,
@@ -115,7 +115,7 @@ def summarize_contour_composition(
 
 
 def compare_contour_transcript_de(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     groupby: str,
@@ -233,7 +233,7 @@ def compare_contour_transcript_de(
 
 
 def compare_contour_cell_composition(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     groupby: str,
@@ -298,7 +298,7 @@ def compare_contour_cell_composition(
 
 
 def compare_contour_de(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     groupby: str,
@@ -364,7 +364,7 @@ def compare_contour_de(
 
 
 def generate_contour_shells(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     inward: float,
@@ -373,7 +373,7 @@ def generate_contour_shells(
     contour_query: str | None = None,
     output_key: str | None = None,
     copy: bool = False,
-) -> XeniumSData | None:
+) -> XeniumSlide | None:
     """
     Generate independent inward/outward signed-distance shells for each contour.
 
@@ -430,7 +430,7 @@ def generate_contour_shells(
 
 
 def generate_barrier_contour_shells(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     inward: float,
@@ -441,7 +441,7 @@ def generate_barrier_contour_shells(
     barrier_query: str | None = None,
     output_key: str | None = None,
     copy: bool = False,
-) -> XeniumSData | None:
+) -> XeniumSlide | None:
     """
     Generate per-contour shells whose outward rings exclude other contours.
 
@@ -514,12 +514,12 @@ def generate_barrier_contour_shells(
     return target if copy else None
 
 
-def _validate_sdata(sdata: XeniumSData) -> None:
-    if not isinstance(sdata, XeniumSData):
-        raise TypeError("`sdata` must be a XeniumSData instance.")
+def _validate_sdata(sdata: XeniumSlide) -> None:
+    if not isinstance(sdata, XeniumSlide):
+        raise TypeError("`sdata` must be a XeniumSlide instance.")
 
 
-def _prepare_cell_frame(*, sdata: XeniumSData, cell_query: str | None) -> pd.DataFrame:
+def _prepare_cell_frame(*, sdata: XeniumSlide, cell_query: str | None) -> pd.DataFrame:
     obs = sdata.table.obs.copy()
     if cell_query is not None:
         obs = obs.query(cell_query, engine="python")
@@ -703,7 +703,7 @@ def _resolve_requested_genes(
 
 def _count_transcripts_by_contour(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_table: pd.DataFrame,
     transcript_query: str | None,
     feature_key: str,
@@ -758,7 +758,7 @@ def _count_transcripts_by_contour(
 
 def _iter_transcript_frames(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     transcript_query: str | None,
     feature_key: str,
 ):
@@ -782,7 +782,7 @@ def _iter_transcript_frames(
 
 def _iter_transcript_cell_frames(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     transcript_query: str | None,
     feature_key: str,
 ):
@@ -967,7 +967,7 @@ def _normalize_transcript_assignment(assignment: str) -> str:
 
 def _build_contour_transcript_profile(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_key: str,
     contour_table: pd.DataFrame,
     groupby: str,
@@ -1087,7 +1087,7 @@ def _build_contour_transcript_profile(
 
 def _build_contour_transcript_profile_by_cell_id(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_key: str,
     contour_table: pd.DataFrame,
     groupby: str,
@@ -1718,7 +1718,7 @@ def _sort_composition_stats(frame: pd.DataFrame) -> pd.DataFrame:
 
 def _expression_matrix_for_genes(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     layer: str | None,
     genes: str | Sequence[str] | None,
 ):
@@ -1955,7 +1955,7 @@ def _shell_geometry(
 
 def _updated_shell_registry(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     source_key: str,
     output_key: str,
     inward: float,

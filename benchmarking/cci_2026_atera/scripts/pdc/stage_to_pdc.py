@@ -185,7 +185,7 @@ def build_stage_plan(
     remote_source_root: str | None = None,
     host: str,
     include_smoke: bool,
-    include_spatialdata_zarr: bool,
+    include_slide_zarr: bool,
     skip_existing: bool,
     archive_path: Path | None = None,
 ) -> dict[str, Any]:
@@ -219,13 +219,13 @@ def build_stage_plan(
                 "required": True,
             }
         )
-    if include_spatialdata_zarr:
-        local_path = local_xenium_root / "spatialdata.zarr"
+    if include_slide_zarr:
+        local_path = local_xenium_root / "xenium_slide.zarr"
         raw_items.append(
             {
-                "name": "spatialdata.zarr",
+                "name": "xenium_slide.zarr",
                 "local": str(local_path),
-                "remote": f"{remote_cache}/spatialdata.zarr",
+                "remote": f"{remote_cache}/xenium_slide.zarr",
                 "exists": local_path.exists(),
                 "is_dir": True,
                 "bytes": local_size(local_path),
@@ -291,7 +291,7 @@ def build_stage_plan(
         "archive_path": str(archive_path),
         "remote_archive": f"{remote_root}/tmp/pdc_stage_payload.tar.gz",
         "include_smoke": include_smoke,
-        "include_spatialdata_zarr": include_spatialdata_zarr,
+        "include_slide_zarr": include_slide_zarr,
         "skip_existing": skip_existing,
         "mkdirs": mkdirs,
         "raw_items": raw_items,
@@ -388,7 +388,7 @@ def execute_stage_plan(plan: dict[str, Any], *, plan_only: bool = False) -> dict
             "host": plan["host"],
             "remote_root": plan["remote_root"],
             "include_smoke": plan["include_smoke"],
-            "include_spatialdata_zarr": plan["include_spatialdata_zarr"],
+            "include_slide_zarr": plan["include_slide_zarr"],
         },
     }
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".json", delete=False) as handle:
@@ -438,8 +438,8 @@ def main() -> None:
     parser.add_argument("--repo-root", default=None)
     parser.add_argument("--include-smoke", action="store_true", default=True)
     parser.add_argument("--skip-smoke", action="store_false", dest="include_smoke")
-    parser.add_argument("--include-spatialdata-zarr", action="store_true", default=False)
-    parser.add_argument("--skip-spatialdata-zarr", action="store_false", dest="include_spatialdata_zarr")
+    parser.add_argument("--include-slide-zarr", action="store_true", default=False)
+    parser.add_argument("--skip-slide-zarr", action="store_false", dest="include_slide_zarr")
     parser.add_argument("--skip-existing", action="store_true", default=True)
     parser.add_argument("--overwrite-existing", action="store_false", dest="skip_existing")
     parser.add_argument("--archive-path", default=None)
@@ -460,7 +460,7 @@ def main() -> None:
         remote_source_root=args.remote_source_root,
         host=args.host,
         include_smoke=args.include_smoke,
-        include_spatialdata_zarr=args.include_spatialdata_zarr,
+        include_slide_zarr=args.include_slide_zarr,
         skip_existing=args.skip_existing,
         archive_path=Path(args.archive_path) if args.archive_path else None,
     )

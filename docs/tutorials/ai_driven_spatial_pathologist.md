@@ -11,17 +11,17 @@ pyXenium treats this as an optional external workflow bridge, not as a new
 structured Xenium case to `spatho`, while keeping the AI workflow implementation
 in the AI-Driven Spatial Pathologist project.
 
-## Relationship to XeniumSData
+## Relationship to XeniumSlide
 
 The `spatho` tutorial workflow is enabled by the same data model pyXenium uses for
-Xenium I/O and downstream analysis. `XeniumSData` keeps the core case components
+Xenium I/O and downstream analysis. `XeniumSlide` keeps the core case components
 together:
 
-- a cell table in `XeniumSData.table`
-- transcript points in `XeniumSData.points` or streaming `point_sources`
-- cell and nucleus boundaries in `XeniumSData.shapes`
-- H&E image metadata in `XeniumSData.images`
-- SpatialData-compatible conversion through `XeniumSData.to_spatialdata()`
+- a cell table in `XeniumSlide.table`
+- transcript points in `XeniumSlide.points` or streaming `point_sources`
+- cell and nucleus boundaries in `XeniumSlide.shapes`
+- H&E image metadata in `XeniumSlide.images`
+- optional bridge conversion through `XeniumSlide.to_spatialdata()`
 
 This gives AI-Driven Spatial Pathologist a consistent Xenium foundation without
 duplicating pyXenium readers or storing a large spatho wrapper inside pyXenium.
@@ -74,7 +74,7 @@ PDC run, use the upstream documentation:
 
 ## pyXenium boundary
 
-pyXenium provides the Xenium data foundation and the reusable `XeniumSData`
+pyXenium provides the Xenium data foundation and the reusable `XeniumSlide`
 structure. `spatho` owns the AI-driven spatial pathology workflow, organ packs,
 pathology review prompts, and optional local `pathology-ai` backend.
 

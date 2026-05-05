@@ -18,9 +18,11 @@ from .xenium_artifacts import read_he_image
 from .xenium_slide_builder import (
     DEFAULT_MAX_CROP_SIDE_PX,
     _crop_image_level,
+    _extract_feature_patch,
     _geometry_xenium_pixel_to_image_xy,
+    _select_pyramid_level,
+    _slug,
     _to_rgb,
-    extract_contour_patches,
     load_contour_geojson,
 )
 
@@ -382,7 +384,13 @@ def backfill_contour_patches(
         "slide_root": str(inspection.slide_root),
         "audit_only": bool(audit_only),
         "candidate_cases": int(len(candidates)),
-        "completed": int(sum(row.get("status") in {"snapshot_written", "patches_written", "skipped_existing"} for row in results)),
+        "completed": int(
+            sum(
+                row.get("status")
+                in {"snapshot_written", "patches_written", "patches_written_with_skips", "skipped_existing"}
+                for row in results
+            )
+        ),
         "failed": int(sum(row.get("status") == "failed" for row in results)),
         "skipped_by_verdict": int(sum(row.get("status") == "skipped_by_verdict" for row in results)),
         "results_csv": str(results_path),
@@ -621,16 +629,26 @@ def _run_backfill_case(
         he_image = read_he_image(str(row["xenium_root"]))
         if he_image is None:
             raise RuntimeError("No aligned H&E image was found.")
-        patches = extract_contour_patches(
+        patches, patch_failures = _extract_contour_patches_with_failures(
             features=features,
             he_image=he_image,
             output_dir=output_dir / "contour_patches",
             contour_geojson=Path(str(row["source_geojson"])),
             max_crop_side_px=max_crop_side_px,
         )
+        if not patches:
+            _write_patch_failures(output_dir, patch_failures)
+            raise RuntimeError("No contour patches could be extracted from the approved H&E/contour alignment.")
         _write_json(output_dir / "contour_patches_manifest.json", patches)
-        _repair_case_patch_counts(output_dir, len(patches))
-        result.update({"status": "patches_written", "contour_patch_count": len(patches)})
+        _write_patch_failures(output_dir, patch_failures)
+        _repair_case_patch_counts(output_dir, len(patches), skipped_count=len(patch_failures))
+        result.update(
+            {
+                "status": "patches_written_with_skips" if patch_failures else "patches_written",
+                "contour_patch_count": len(patches),
+                "skipped_contour_count": len(patch_failures),
+            }
+        )
         return result
     except Exception as exc:
         return {
@@ -641,6 +659,146 @@ def _run_backfill_case(
             "status": "failed",
             "error": f"{type(exc).__name__}: {exc}",
         }
+
+
+def _extract_contour_patches_with_failures(
+    *,
+    features: list[dict[str, Any]],
+    he_image: Any,
+    output_dir: str | Path,
+    contour_geojson: str | Path,
+    max_crop_side_px: int,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    out = Path(output_dir).expanduser()
+    records: list[dict[str, Any]] = []
+    failures: list[dict[str, Any]] = []
+    for index, feature in enumerate(features, start=1):
+        props = dict(feature["properties"])
+        contour_id = str(props.get("contour_id") or f"contour_{index:05d}")
+        patch_path = out / f"{index:05d}_{_slug(contour_id)}.png"
+        try:
+            if patch_path.exists():
+                patch_meta = _patch_meta_from_existing_image(
+                    geometry=feature["geometry"],
+                    he_image=he_image,
+                    output_path=patch_path,
+                    max_side_px=max_crop_side_px,
+                )
+            else:
+                patch_meta = _extract_feature_patch(
+                    geometry=feature["geometry"],
+                    he_image=he_image,
+                    output_path=patch_path,
+                    max_side_px=max_crop_side_px,
+                )
+        except Exception as exc:
+            failures.append(
+                {
+                    "feature_index": int(index),
+                    "contour_id": contour_id,
+                    "structure_id": props.get("structure_id"),
+                    "structure_label": props.get("structure_label"),
+                    "error": f"{type(exc).__name__}: {exc}",
+                    "bbox": {
+                        "x0": props.get("bbox_x0"),
+                        "y0": props.get("bbox_y0"),
+                        "x1": props.get("bbox_x1"),
+                        "y1": props.get("bbox_y1"),
+                        "coordinate_space": "xenium",
+                    },
+                    "source_geojson": str(Path(contour_geojson).expanduser()),
+                }
+            )
+            continue
+        records.append(
+            {
+                "contour_id": contour_id,
+                "structure_id": props.get("structure_id"),
+                "structure_label": props.get("structure_label"),
+                "structure_name": props.get("structure_label"),
+                "image_path": str(patch_path),
+                "bbox": {
+                    "x0": props.get("bbox_x0"),
+                    "y0": props.get("bbox_y0"),
+                    "x1": props.get("bbox_x1"),
+                    "y1": props.get("bbox_y1"),
+                    "coordinate_space": "xenium",
+                },
+                "pyramid_level": patch_meta["pyramid_level"],
+                "transform": he_image.transform_metadata(),
+                "source_geojson": str(Path(contour_geojson).expanduser()),
+                "patch": patch_meta,
+            }
+        )
+    return records, failures
+
+
+def _patch_meta_from_existing_image(
+    *,
+    geometry: Polygon | MultiPolygon,
+    he_image: Any,
+    output_path: Path,
+    max_side_px: int,
+) -> dict[str, Any]:
+    image_geometry_level0 = _geometry_xenium_pixel_to_image_xy(geometry, he_image)
+    min_x, min_y, max_x, max_y = image_geometry_level0.bounds
+    bbox_level0 = (
+        int(np.floor(min_x)),
+        int(np.floor(min_y)),
+        int(np.ceil(max_x)),
+        int(np.ceil(max_y)),
+    )
+    level_index, scale_x, scale_y = _select_pyramid_level(
+        he_image,
+        bbox_level0=bbox_level0,
+        max_side_px=max_side_px,
+    )
+    level = he_image.levels[level_index]
+    shape_at_level = tuple(int(value) for value in getattr(level, "shape", np.shape(level)))
+    image_width = shape_at_level[he_image.axes.index("x")]
+    image_height = shape_at_level[he_image.axes.index("y")]
+    bbox = (
+        max(int(np.floor(min_x / scale_x)), 0),
+        max(int(np.floor(min_y / scale_y)), 0),
+        min(int(np.ceil(max_x / scale_x)), image_width),
+        min(int(np.ceil(max_y / scale_y)), image_height),
+    )
+    x0, y0, x1, y1 = bbox
+    if x1 <= x0 or y1 <= y0:
+        raise ValueError(f"Contour bbox does not intersect H&E image at level {level_index}: {bbox}")
+    try:
+        from PIL import Image
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError("Reading existing H&E contour patches requires Pillow.") from exc
+    with Image.open(output_path) as image:
+        saved_width, saved_height = image.size
+        rgb = np.asarray(image.convert("RGB"))
+    nonzero = float(np.count_nonzero(rgb.sum(axis=-1) > 3) / max(rgb.shape[0] * rgb.shape[1], 1))
+    return {
+        "path": str(output_path),
+        "original_width": int(x1 - x0),
+        "original_height": int(y1 - y0),
+        "saved_width": int(saved_width),
+        "saved_height": int(saved_height),
+        "nonzero_fraction": nonzero,
+        "pyramid_level": int(level_index),
+        "level_downsample_x": float(scale_x),
+        "level_downsample_y": float(scale_y),
+        "bbox_level_xy": [int(value) for value in bbox],
+        "bbox_level0_xy": [int(value) for value in bbox_level0],
+    }
+
+
+def _write_patch_failures(output_dir: Path, failures: list[dict[str, Any]]) -> None:
+    json_path = output_dir / "contour_patch_failures.json"
+    csv_path = output_dir / "contour_patch_failures.csv"
+    if failures:
+        _write_json(json_path, failures)
+        pd.DataFrame(failures).to_csv(csv_path, index=False)
+        return
+    for path in (json_path, csv_path):
+        if path.exists():
+            path.unlink()
 
 
 def write_alignment_snapshot(
@@ -1073,7 +1231,7 @@ def _norm_token(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "", value.lower())
 
 
-def _repair_case_patch_counts(output_dir: Path, patch_count: int) -> None:
+def _repair_case_patch_counts(output_dir: Path, patch_count: int, *, skipped_count: int = 0) -> None:
     manifest_path = output_dir / "slide_manifest.json"
     manifest = _read_json(manifest_path)
     if manifest:
@@ -1088,7 +1246,13 @@ def _repair_case_patch_counts(output_dir: Path, patch_count: int) -> None:
             warning
             for warning in qc.get("warnings", [])
             if "Contour patch extraction was not run or produced no patches" not in str(warning)
+            and "contours were skipped during contour patch extraction" not in str(warning)
         ]
+        if skipped_count:
+            warnings.append(
+                f"{skipped_count} contours were skipped during contour patch extraction; "
+                "see contour_patch_failures.json."
+            )
         qc["warnings"] = warnings
         _write_json(qc_path, qc)
 

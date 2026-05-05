@@ -44,7 +44,7 @@ It expects the standard Xenium export plus these Atera-specific artifacts:
    - `Luminal-like Amorphous DCIS Cells`
 4. Calls `pyXenium.contour.generate_xenium_explorer_annotations(...)`, which delegates the actual multi-structure contour generation to HistoSeg.
 5. Writes tutorial artifacts under `pyxenium_tutorial_outputs/atera_contour_workflow/` and copies the generated export to `xenium_explorer_annotations.generated.geojson`.
-6. Imports the generated GeoJSON into `XeniumSData` with `add_contours_from_geojson(..., id_key="name", pixel_size_um=0.2125)`.
+6. Imports the generated GeoJSON into `XeniumSlide` with `add_contours_from_geojson(..., id_key="name", pixel_size_um=0.2125)`.
 7. Derives structure-level analysis contours from the Explorer polygons, expands them with `expand_contours(..., distance=50.0, mode="voronoi")`, and prepares shell-density inputs.
 8. Runs `ring_density` and `smooth_density_by_distance` over the curated marker panel with cache-first helpers so the long-running transcript steps can be resumed.
 
@@ -53,7 +53,7 @@ It expects the standard Xenium export plus these Atera-specific artifacts:
 - The legacy `xenium_explorer_annotations.geojson` is treated as a reference artifact and is not overwritten.
 - The notebook writes `xenium_explorer_annotations.generated.geojson` beside the legacy file.
 - The HistoSeg API keeps `min_cells=500` as its package default. The Atera notebook overrides this to `250` so `Apocrine Cells` are retained in the 7-group export.
-- `read_xenium(..., as_="sdata", stream_transcripts=True)` is demonstrated directly on the Atera `transcripts.zarr.zip`, including the real-world case where streamed chunks do not expose `cell_id`.
+- `read_xenium(..., as_="slide", stream_transcripts=True)` is demonstrated directly on the Atera `transcripts.zarr.zip`, including the real-world case where streamed chunks do not expose `cell_id`.
 - Shell profiling is intentionally run on dissolved structure-level analysis contours derived from the Explorer export. This keeps the notebook tractable while preserving the original Explorer polygons for round-tripping and review.
 
 ## Outputs

@@ -18,7 +18,7 @@ from sklearn.preprocessing import StandardScaler
 from pyXenium.contour import build_contour_feature_table
 from pyXenium.contour._analysis import _prepare_contours
 from pyXenium.contour._feature_table import _build_contour_zones, _geometry_membership_mask
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 from pyXenium.mechanostress import compute_cell_polarity, estimate_cell_axes
 
 from .contour_boundary_ecology import score_contour_boundary_programs
@@ -43,7 +43,7 @@ _NATIVE_PREFIX = "xenium_native__"
 
 
 def compare_he_vs_xenium_morphology_sources(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     feature_table: dict[str, Any] | None = None,
@@ -54,8 +54,8 @@ def compare_he_vs_xenium_morphology_sources(
 ) -> dict[str, Any]:
     """Test whether H&E morphology adds information beyond Xenium-native morphology."""
 
-    if not isinstance(sdata, XeniumSData):
-        raise TypeError("`sdata` must be a XeniumSData instance.")
+    if not isinstance(sdata, XeniumSlide):
+        raise TypeError("`sdata` must be a XeniumSlide instance.")
     feature_table = feature_table or build_contour_feature_table(sdata, contour_key=contour_key)
     contour_features = pd.DataFrame(feature_table["contour_features"]).copy()
     if contour_features.empty:
@@ -119,7 +119,7 @@ def compare_he_vs_xenium_morphology_sources(
 def _coerce_program_scores(
     program_scores: pd.DataFrame | dict[str, Any] | None,
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_key: str,
     feature_table: dict[str, Any],
 ) -> pd.DataFrame:
@@ -137,7 +137,7 @@ def _coerce_program_scores(
 
 
 def _build_xenium_native_morphology(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     contour_features: pd.DataFrame,
@@ -166,7 +166,7 @@ def _build_xenium_native_morphology(
     return pd.DataFrame(rows).sort_values("contour_id", kind="stable").reset_index(drop=True)
 
 
-def _build_cell_morphology_metrics(sdata: XeniumSData) -> pd.DataFrame:
+def _build_cell_morphology_metrics(sdata: XeniumSlide) -> pd.DataFrame:
     if "spatial" not in sdata.table.obsm:
         return pd.DataFrame(columns=["cell_id", "x", "y"])
     spatial = np.asarray(sdata.table.obsm["spatial"], dtype=float)

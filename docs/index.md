@@ -66,7 +66,7 @@ pyXenium's nine-feature overview connects Xenium data loading, multimodal spatia
 :::{grid-item-card} Xenium I/O
 :link: guides/xenium-data-loading
 :link-type: doc
-Load Xenium exports, recover partial bundles, round-trip `XeniumSData`, and export compat stores.
+Load Xenium exports, recover partial bundles, round-trip `XeniumSlide`, and export compat stores.
 :::
 
 :::{grid-item-card} Multimodal Analysis
@@ -108,7 +108,7 @@ Compute fibroblast axis strength, tumor-stroma growth patterning, and cell polar
 :::{grid-item-card} AI-Driven Spatial Pathologist
 :link: tutorials/ai_driven_spatial_pathologist
 :link-type: doc
-Call the external `spatho` workflow on Xenium cases structured by pyXenium `XeniumSData`.
+Call the external `spatho` workflow on Xenium cases structured by pyXenium `XeniumSlide`.
 :::
 
 :::{grid-item-card} SpatialPerturb Bridge
@@ -163,12 +163,12 @@ Track documentation, branding, and package-level changes.
 
 ## Feature areas
 
-- `pyXenium.io`: Xenium artifact loading, partial export recovery, SData I/O, and SpatialData-compatible export.
+- `pyXenium.io`: Xenium artifact loading, partial export recovery, XeniumSlide store I/O, and slide export.
 - `pyXenium.multimodal`: canonical RNA + protein loading, immune-resistance scoring, joint analyses, and packaged multimodal workflows.
 - `pyXenium.cci`: topology-native cell-cell interaction analysis primitives.
 - `pyXenium.pathway`: pathway topology analysis and pathway activity scoring.
 - `pyXenium.contour`: GeoJSON contour import and contour-aware density profiling around polygon annotations.
 - `pyXenium.gmi`: contour-level GMI modeling for sparse main-effect and interaction discovery in spatial transcriptomics.
 - `pyXenium.mechanostress`: morphology-derived mechanical stress states from cell/nucleus boundaries and tumor-stroma context.
-- AI-Driven Spatial Pathologist via `spatho`: optional external AI pathology review workflow built on pyXenium's `XeniumSData` case structure, not a pyXenium runtime dependency.
+- AI-Driven Spatial Pathologist via `spatho`: optional external AI pathology review workflow built on pyXenium's `XeniumSlide` case structure, not a pyXenium runtime dependency.
 - `pyXenium.perturb`: SpatialPerturb Bridge for optional Perturb-seq reference projection onto Xenium tissue through the external `SpatialPerturb` package.

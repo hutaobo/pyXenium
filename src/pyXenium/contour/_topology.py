@@ -6,13 +6,13 @@ import pandas as pd
 
 from ._analysis import _prepare_contours
 from ._histoseg import load_histoseg_submodule
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 __all__ = ["summarize_contour_topology"]
 
 
 def summarize_contour_topology(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     contour_query: str | None = None,
@@ -30,8 +30,8 @@ def summarize_contour_topology(
     ``sdata.shapes[contour_key]`` and returns plain pandas tables.
     """
 
-    if not isinstance(sdata, XeniumSData):
-        raise TypeError("`sdata` must be a XeniumSData instance.")
+    if not isinstance(sdata, XeniumSlide):
+        raise TypeError("`sdata` must be a XeniumSlide instance.")
 
     histoseg_topology = _load_histoseg_topology(histoseg_root=histoseg_root)
     contour_table = _prepare_contours(

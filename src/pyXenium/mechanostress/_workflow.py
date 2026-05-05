@@ -7,7 +7,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 from ._axis import compute_ane_density, estimate_cell_axes, summarize_axial_orientation
 from ._polarity import compute_cell_polarity, summarize_cell_polarity
@@ -72,7 +72,7 @@ def _merge_external_cell_table(obs: pd.DataFrame, cell_table: pd.DataFrame | Non
 
 
 def _obs_as_cell_table(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     config: MechanostressConfig,
     cell_table: pd.DataFrame | str | Path | None = None,
@@ -112,7 +112,7 @@ def _join_axis_metadata(axes: pd.DataFrame, cell_table: pd.DataFrame) -> pd.Data
     return axes.merge(metadata.drop_duplicates("cell_id"), on="cell_id", how="left")
 
 
-def _expression_frame_for_genes(sdata: XeniumSData, genes: tuple[str, ...]) -> pd.DataFrame | None:
+def _expression_frame_for_genes(sdata: XeniumSlide, genes: tuple[str, ...]) -> pd.DataFrame | None:
     if not genes:
         return None
     var_names = pd.Index(sdata.table.var_names.astype(str))
@@ -160,14 +160,14 @@ def _apply_axis_filters(axes: pd.DataFrame, *, config: MechanostressConfig) -> p
 
 
 def run_mechanostress_workflow(
-    sdata: XeniumSData | None = None,
+    sdata: XeniumSlide | None = None,
     *,
     base_path: str | Path | None = None,
     cell_table: pd.DataFrame | str | Path | None = None,
     config: MechanostressConfig | None = None,
     output_dir: str | Path | None = None,
 ) -> MechanostressResult:
-    """Run the integrated mechanostress workflow on a XeniumSData object or Xenium export path."""
+    """Run the integrated mechanostress workflow on a XeniumSlide object or Xenium export path."""
 
     config = config or MechanostressConfig()
     if sdata is None:
@@ -175,9 +175,9 @@ def run_mechanostress_workflow(
             raise ValueError("Provide either sdata or base_path.")
         from pyXenium.io import read_xenium
 
-        sdata = read_xenium(str(base_path), as_="sdata", include_transcripts=False, include_boundaries=True)
-    if not isinstance(sdata, XeniumSData):
-        raise TypeError(f"sdata must be a XeniumSData instance, got {type(sdata)!r}.")
+        sdata = read_xenium(str(base_path), as_="slide", include_transcripts=False, include_boundaries=True)
+    if not isinstance(sdata, XeniumSlide):
+        raise TypeError(f"sdata must be a XeniumSlide instance, got {type(sdata)!r}.")
 
     sample_id = config.sample_id or str(sdata.metadata.get("sample_id") or sdata.metadata.get("source_path") or "")
     cell_table = _obs_as_cell_table(sdata, config=config, cell_table=cell_table)
@@ -305,7 +305,7 @@ def run_mechanostress_cohort(
             annotation_path = _find_sample_cell_table(sample_dir, annotation_glob)
             sdata = read_xenium(
                 str(sample_dir),
-                as_="sdata",
+                as_="slide",
                 prefer=prefer,
                 include_transcripts=False,
                 include_boundaries=True,

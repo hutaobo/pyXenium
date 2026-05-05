@@ -14,7 +14,7 @@ metadata in one analysis-ready structure. The surrounding modules show the main
 ways those data are loaded, analyzed, modeled, and handed to optional external
 workflows.
 
-1. **{doc}`Xenium I/O <../guides/xenium-data-loading>`** loads Xenium exports, recovers partial bundles, and writes SpatialData-compatible stores.
+1. **{doc}`Xenium I/O <../guides/xenium-data-loading>`** loads Xenium exports, recovers partial bundles, and writes XeniumSlide stores.
 2. **{doc}`Multimodal Analysis <multimodal-overview>`** prepares RNA, protein, morphology, and H&E-derived context for joint analysis.
 3. **{doc}`Cell-Cell Interaction <../tutorials/cci_index>`** quantifies topology-aware ligand-receptor and sender-receiver patterns.
 4. **{doc}`Pathway Topology <../tutorials/pathway>`** maps pathway scores and pathway activity onto spatial neighborhoods.

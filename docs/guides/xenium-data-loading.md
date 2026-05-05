@@ -3,19 +3,25 @@
 Use `pyXenium.io` when you want low-level Xenium artifact access and `pyXenium.multimodal`
 when you want the canonical RNA + protein `AnnData` used by downstream joint analyses.
 
-## XeniumSData route
+## XeniumSlide route
 
 ```python
 from pyXenium.io import read_xenium
 
-sdata = read_xenium(
+slide = read_xenium(
     "/path/to/xenium_export",
-    as_="sdata",
+    as_="slide",
     prefer="zarr",
 )
 ```
 
 This route is the right choice when you want images, shapes, points, and table-level metadata together.
+
+`XeniumSlide` is inspired by the data-container ideas documented by
+[SpatialData](https://spatialdata.scverse.org/en/stable/), but pyXenium rewrites the
+container and on-disk slide store independently and does not require the `spatialdata`
+package for core slide I/O. The only bridge back to that ecosystem is the optional
+`XeniumSlide.to_spatialdata()` method for users who install `spatialdata` separately.
 
 ## Canonical multimodal AnnData route
 

@@ -1,6 +1,6 @@
 # Contour-aware density profiling
 
-`pyXenium.contour` adds contour-native analysis on top of `XeniumSData`.
+`pyXenium.contour` adds contour-native analysis on top of `XeniumSlide`.
 
 ## Import contour annotations
 
@@ -8,13 +8,13 @@
 from pyXenium.contour import add_contours_from_geojson, expand_contours
 
 add_contours_from_geojson(
-    sdata,
+    slide,
     "/path/to/polygon_units.geojson",
     key="protein_cluster_contours",
 )
 
 expand_contours(
-    sdata,
+    slide,
     contour_key="protein_cluster_contours",
     distance=25.0,
 )
@@ -28,7 +28,7 @@ Use ordinary overlap-preserving expansion when you want a simple buffered layer:
 from pyXenium.contour import expand_contours
 
 expand_contours(
-    sdata,
+    slide,
     contour_key="protein_cluster_contours",
     distance=25.0,
     mode="overlap",
@@ -42,7 +42,7 @@ Use Voronoi expansion when neighboring contour supports must stay mutually exclu
 from pyXenium.contour import expand_contours
 
 expand_contours(
-    sdata,
+    slide,
     contour_key="protein_cluster_contours",
     distance=25.0,
     mode="voronoi",
@@ -57,7 +57,7 @@ expand_contours(
 from pyXenium.contour import ring_density
 
 ring_df = ring_density(
-    sdata,
+    slide,
     contour_key="protein_cluster_contours",
     target="transcripts",
     contour_query='assigned_structure == "Structure 4"',
@@ -74,7 +74,7 @@ ring_df = ring_density(
 from pyXenium.contour import smooth_density_by_distance
 
 smooth_df = smooth_density_by_distance(
-    sdata,
+    slide,
     contour_key="protein_cluster_contours",
     target="transcripts",
     contour_query='assigned_structure == "Structure 4"',

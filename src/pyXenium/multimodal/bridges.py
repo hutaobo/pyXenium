@@ -13,7 +13,7 @@ from scipy.sparse import save_npz
 from scipy.stats import spearmanr
 from sklearn.neighbors import NearestNeighbors
 
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 __all__ = [
     "build_spatho_manifest",
@@ -44,7 +44,7 @@ _TABLE_FORMATS = ("csv", "parquet")
 
 
 def export_for_stgpt(
-    data: ad.AnnData | XeniumSData,
+    data: ad.AnnData | XeniumSlide,
     output_dir: str | Path,
     *,
     contour_key: str | None = None,
@@ -63,7 +63,7 @@ def export_for_stgpt(
     Parameters
     ----------
     data:
-        An :class:`~anndata.AnnData` or :class:`~pyXenium.io.XeniumSData` containing
+        An :class:`~anndata.AnnData` or :class:`~pyXenium.io.XeniumSlide` containing
         the Xenium cell table and optional contour shapes.
     output_dir:
         Directory where all handoff artifacts are written.
@@ -176,7 +176,7 @@ def export_for_stgpt(
 def import_stgpt_embeddings(
     embeddings: str | Path | pd.DataFrame,
     *,
-    target: ad.AnnData | XeniumSData | None = None,
+    target: ad.AnnData | XeniumSlide | None = None,
     entity: str = "cell",
     id_column: str | None = None,
     obsm_key: str = "stgpt",
@@ -323,25 +323,25 @@ def build_spatho_manifest(
     return manifest
 
 
-def _coerce_data(data: ad.AnnData | XeniumSData) -> tuple[ad.AnnData, XeniumSData | None]:
-    if isinstance(data, XeniumSData):
+def _coerce_data(data: ad.AnnData | XeniumSlide) -> tuple[ad.AnnData, XeniumSlide | None]:
+    if isinstance(data, XeniumSlide):
         return data.table, data
     if isinstance(data, ad.AnnData):
         return data, None
-    raise TypeError("data must be an AnnData or XeniumSData instance.")
+    raise TypeError("data must be an AnnData or XeniumSlide instance.")
 
 
-def _target_adata(target: ad.AnnData | XeniumSData | None) -> ad.AnnData | None:
+def _target_adata(target: ad.AnnData | XeniumSlide | None) -> ad.AnnData | None:
     if target is None:
         return None
-    if isinstance(target, XeniumSData):
+    if isinstance(target, XeniumSlide):
         return target.table
     if isinstance(target, ad.AnnData):
         return target
-    raise TypeError("target must be an AnnData, XeniumSData, or None.")
+    raise TypeError("target must be an AnnData, XeniumSlide, or None.")
 
 
-def _resolve_sample_id(adata: ad.AnnData, *, sdata: XeniumSData | None) -> str:
+def _resolve_sample_id(adata: ad.AnnData, *, sdata: XeniumSlide | None) -> str:
     if sdata is not None:
         for key in ("sample_id", "dataset_id", "source_path"):
             value = sdata.metadata.get(key)
@@ -413,7 +413,7 @@ def _rna_matrix(adata: ad.AnnData) -> sparse.csr_matrix:
     return matrix.tocsr() if sparse.issparse(matrix) else sparse.csr_matrix(np.asarray(matrix))
 
 
-def _build_contour_patch_manifest(sdata: XeniumSData, *, contour_key: str) -> pd.DataFrame:
+def _build_contour_patch_manifest(sdata: XeniumSlide, *, contour_key: str) -> pd.DataFrame:
     patches = sdata.contour_images.get(contour_key, {})
     rows = []
     for contour_id, image in patches.items():

@@ -29,7 +29,7 @@ This installs the Sphinx-based documentation stack used by Read the Docs and loc
 ```python
 from pyXenium.io import read_xenium
 
-sdata = read_xenium("/path/to/xenium_export", as_="sdata", prefer="zarr")
+slide = read_xenium("/path/to/xenium_export", as_="slide", prefer="zarr")
 ```
 
 ### Canonical multimodal loading

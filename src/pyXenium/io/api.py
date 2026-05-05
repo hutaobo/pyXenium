@@ -7,8 +7,8 @@ from typing import Any
 import anndata as ad
 import pandas as pd
 
-from .sdata_model import XeniumFrameChunkSource, XeniumSData, XeniumSlide
-from .sdata_store import read_xenium_sdata, read_xenium_slide, write_xenium_slide
+from .slide_model import XeniumFrameChunkSource, XeniumSlide
+from .slide_store import read_xenium_slide, write_xenium_slide
 from .xenium_artifacts import (
     build_feature_summary,
     discover_image_artifacts,
@@ -75,11 +75,19 @@ def _build_obs(
     barcodes,
     cells_csv: str,
     cells_parquet: str | None,
+    cells_path: str | Path | None,
+    cell_id_col: str | None,
+    x_col: str | None,
+    y_col: str | None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     obs = read_cells_table(
         base_path,
         cells_csv=cells_csv,
         cells_parquet=cells_parquet,
+        cells_path=cells_path,
+        cell_id_col=cell_id_col,
+        x_col=x_col,
+        y_col=y_col,
         barcodes=barcodes,
     )
     metadata: dict[str, Any] = {}
@@ -122,16 +130,24 @@ def _assemble_anndata(
     mex_matrix_name: str,
     mex_features_name: str,
     mex_barcodes_name: str,
+    feature_matrix_path: str | Path | None,
     cells_csv: str,
     cells_parquet: str | None,
+    cells_path: str | Path | None,
     clusters_relpath: str | None,
+    cell_groups_path: str | Path | None,
     cluster_column_name: str,
+    cell_id_col: str | None,
+    cluster_col: str | None,
+    x_col: str | None,
+    y_col: str | None,
     include_boundaries: bool,
     include_images: bool,
 ) -> tuple[ad.AnnData, dict[str, pd.DataFrame], dict[str, Any]]:
     matrix, features, barcodes, backend = read_cell_feature_matrix(
         base_path,
         prefer=prefer,
+        feature_matrix_path=feature_matrix_path,
         mex_dirname=mex_dirname,
         mex_matrix_name=mex_matrix_name,
         mex_features_name=mex_features_name,
@@ -143,6 +159,10 @@ def _assemble_anndata(
         barcodes=barcodes,
         cells_csv=cells_csv,
         cells_parquet=cells_parquet,
+        cells_path=cells_path,
+        cell_id_col=cell_id_col,
+        x_col=x_col,
+        y_col=y_col,
     )
 
     analysis = load_xenium_analysis(
@@ -150,6 +170,9 @@ def _assemble_anndata(
         clusters_relpath=clusters_relpath,
         barcodes=barcodes,
         cluster_column_name=cluster_column_name,
+        cell_groups_path=cell_groups_path,
+        cell_id_col=cell_id_col,
+        cluster_col=cluster_col,
     )
     for key, series in analysis.cluster_series.items():
         column_name = analysis.cluster_columns[key]
@@ -225,13 +248,20 @@ def read_xenium(
     cluster_column_name: str = "cluster",
     cells_csv: str = "cells.csv.gz",
     cells_parquet: str | None = None,
+    cells_path: str | Path | None = None,
+    cell_groups_path: str | Path | None = None,
+    feature_matrix_path: str | Path | None = None,
+    cell_id_col: str | None = None,
+    cluster_col: str | None = None,
+    x_col: str | None = None,
+    y_col: str | None = None,
     mex_dirname: str = "cell_feature_matrix",
     mex_matrix_name: str = "matrix.mtx.gz",
     mex_features_name: str = "features.tsv.gz",
     mex_barcodes_name: str = "barcodes.tsv.gz",
 ) -> ad.AnnData | XeniumSlide:
-    if as_ not in {"anndata", "sdata", "slide"}:
-        raise ValueError("as_ must be one of: 'anndata', 'sdata', or 'slide'.")
+    if as_ not in {"anndata", "slide"}:
+        raise ValueError("as_ must be one of: 'anndata' or 'slide'.")
 
     adata, boundaries, metadata = _assemble_anndata(
         base_path=base_path,
@@ -240,10 +270,17 @@ def read_xenium(
         mex_matrix_name=mex_matrix_name,
         mex_features_name=mex_features_name,
         mex_barcodes_name=mex_barcodes_name,
+        feature_matrix_path=feature_matrix_path,
         cells_csv=cells_csv,
         cells_parquet=cells_parquet,
+        cells_path=cells_path,
         clusters_relpath=clusters_relpath,
+        cell_groups_path=cell_groups_path,
         cluster_column_name=cluster_column_name,
+        cell_id_col=cell_id_col,
+        cluster_col=cluster_col,
+        x_col=x_col,
+        y_col=y_col,
         include_boundaries=include_boundaries,
         include_images=include_images,
     )
@@ -287,7 +324,7 @@ def write_xenium(
     target.parent.mkdir(parents=True, exist_ok=True)
 
     if format == "h5ad":
-        table = obj.table if isinstance(obj, XeniumSData) else obj
+        table = obj.table if isinstance(obj, XeniumSlide) else obj
         if target.exists():
             if not overwrite:
                 raise FileExistsError(
@@ -299,24 +336,20 @@ def write_xenium(
             "format": "h5ad",
             "output_path": str(target),
             "tables": ["cells"],
-            "points": sorted(obj.points.keys()) if isinstance(obj, XeniumSData) else [],
-            "shapes": sorted(obj.shapes.keys()) if isinstance(obj, XeniumSData) else [],
-            "images": sorted(obj.images.keys()) if isinstance(obj, XeniumSData) else [],
+            "points": sorted(obj.points.keys()) if isinstance(obj, XeniumSlide) else [],
+            "shapes": sorted(obj.shapes.keys()) if isinstance(obj, XeniumSlide) else [],
+            "images": sorted(obj.images.keys()) if isinstance(obj, XeniumSlide) else [],
             "contour_images": (
-                sorted(obj.contour_images.keys()) if isinstance(obj, XeniumSData) else []
+                sorted(obj.contour_images.keys()) if isinstance(obj, XeniumSlide) else []
             ),
             "labels": [],
         }
 
-    if format in {"sdata", "slide"}:
+    if format == "slide":
         slide = obj if isinstance(obj, XeniumSlide) else XeniumSlide(table=obj)
         return write_xenium_slide(slide, target, overwrite=overwrite)
 
-    raise ValueError("format must be one of: 'h5ad', 'sdata', or 'slide'.")
-
-
-def read_slide(path: str | Path) -> XeniumSlide:
-    return read_xenium_slide(path)
+    raise ValueError("format must be one of: 'h5ad' or 'slide'.")
 
 
 def write_slide(
@@ -329,14 +362,19 @@ def write_slide(
     return write_xenium_slide(obj, path, overwrite=overwrite)
 
 
-def read_sdata(path: str | Path) -> XeniumSData:
-    return read_xenium_sdata(path)
+def read_slide(path: str | Path) -> XeniumSlide:
+    return read_xenium_slide(path)
 
 
-def warn_unsupported_image_export_flags(*, morphology_focus: bool, morphology_mip: bool, aligned_images: bool) -> None:
+def warn_unsupported_image_export_flags(
+    *,
+    morphology_focus: bool,
+    morphology_mip: bool,
+    aligned_images: bool,
+) -> None:
     if morphology_focus or morphology_mip or aligned_images:
         warnings.warn(
-            "pyXenium SData currently exports H&E images only. Legacy morphology/aligned "
+            "pyXenium slide stores currently export H&E images only. Legacy morphology/aligned "
             "image flags are retained for compatibility and do not materialize those image groups.",
             stacklevel=2,
         )

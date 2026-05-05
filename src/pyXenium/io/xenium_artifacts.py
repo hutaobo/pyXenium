@@ -21,7 +21,7 @@ import pandas as pd
 import requests
 from scipy import sparse
 
-from .sdata_model import XeniumImage
+from .slide_model import XeniumImage
 
 try:
     import h5py
@@ -91,7 +91,7 @@ class TiffImageLevel:
     def open_zarr_source(self):
         if tifffile is None or zarr is None:
             raise ImportError(
-                "tifffile and zarr are required to stream OME-TIFF pyramid levels into SData."
+                "tifffile and zarr are required to stream OME-TIFF pyramid levels into a XeniumSlide store."
             )
         store = tifffile.imread(
             self.source_path,
@@ -466,6 +466,20 @@ def _resolve_artifact_path(
     return None
 
 
+def _resolve_explicit_artifact_path(
+    base_path: str,
+    explicit_path: str | os.PathLike[str] | None,
+    *,
+    kind: str,
+) -> str | None:
+    if explicit_path is None:
+        return None
+    path = join_path(base_path, str(explicit_path))
+    if not exists(path):
+        raise FileNotFoundError(f"Explicit {kind} artifact does not exist: {path}")
+    return path
+
+
 def _read_parquet_table(path_or_url: str) -> pd.DataFrame:
     try:
         if str(path_or_url).lower().endswith(".parquet.gz"):
@@ -547,15 +561,20 @@ def read_mex_triplet(
     return matrix.tocsr(), features, pd.Index(barcodes.to_numpy(), name="barcode")
 
 
-def read_cell_feature_matrix_zarr(base_path: str) -> tuple[sparse.csr_matrix, pd.DataFrame, pd.Index]:
+def read_cell_feature_matrix_zarr(
+    base_path: str,
+    *,
+    matrix_path: str | None = None,
+) -> tuple[sparse.csr_matrix, pd.DataFrame, pd.Index]:
     if zarr is None:
         raise ImportError("zarr is required to read Xenium Zarr matrices.")
 
-    matrix_path = _resolve_artifact_path(
-        base_path,
-        exact_names=("cell_feature_matrix.zarr", "cell_feature_matrix"),
-        kind="Xenium Zarr cell_feature_matrix",
-    )
+    if matrix_path is None:
+        matrix_path = _resolve_artifact_path(
+            base_path,
+            exact_names=("cell_feature_matrix.zarr", "cell_feature_matrix"),
+            kind="Xenium Zarr cell_feature_matrix",
+        )
     if matrix_path is None:
         raise FileNotFoundError("No Xenium Zarr cell_feature_matrix found.")
 
@@ -663,11 +682,41 @@ def read_cell_feature_matrix(
     base_path: str,
     *,
     prefer: str = "auto",
+    feature_matrix_path: str | os.PathLike[str] | None = None,
     mex_dirname: str = "cell_feature_matrix",
     mex_matrix_name: str = "matrix.mtx.gz",
     mex_features_name: str = "features.tsv.gz",
     mex_barcodes_name: str = "barcodes.tsv.gz",
 ) -> tuple[sparse.csr_matrix, pd.DataFrame, pd.Index, str]:
+    explicit_matrix_path = _resolve_explicit_artifact_path(
+        base_path,
+        feature_matrix_path,
+        kind="cell_feature_matrix",
+    )
+    if explicit_matrix_path is not None:
+        lower_path = explicit_matrix_path.lower()
+        if lower_path.endswith((".h5", ".hdf5")):
+            matrix, features, barcodes = read_cell_feature_matrix_h5(explicit_matrix_path)
+            return matrix, features, barcodes, "h5"
+        if exists(join_path(explicit_matrix_path, mex_matrix_name)):
+            matrix, features, barcodes = read_mex_triplet(
+                explicit_matrix_path,
+                matrix_name=mex_matrix_name,
+                features_name=mex_features_name,
+                barcodes_name=mex_barcodes_name,
+            )
+            return matrix, features, barcodes, "mex"
+        if _looks_like_zarr_matrix_path(explicit_matrix_path):
+            matrix, features, barcodes = read_cell_feature_matrix_zarr(
+                base_path,
+                matrix_path=explicit_matrix_path,
+            )
+            return matrix, features, barcodes, "zarr"
+        raise ValueError(
+            "Explicit feature_matrix_path must point to a Xenium HDF5 matrix, "
+            "Zarr matrix, or MEX directory."
+        )
+
     zarr_path = _resolve_artifact_path(
         base_path,
         exact_names=("cell_feature_matrix.zarr", "cell_feature_matrix"),
@@ -786,13 +835,60 @@ def normalize_obs_index(frame: pd.DataFrame, *, barcodes: pd.Index | None = None
     return obs
 
 
+def _apply_cells_source_columns(
+    frame: pd.DataFrame,
+    *,
+    cell_id_col: str | None,
+    x_col: str | None,
+    y_col: str | None,
+) -> pd.DataFrame:
+    obs = frame.copy()
+    if cell_id_col is not None:
+        if cell_id_col in obs.columns:
+            obs["cell_id"] = obs[cell_id_col].astype(str)
+        elif "cell_id" not in obs.columns and "barcode" not in obs.columns:
+            raise ValueError(f"Could not find requested cell-id column {cell_id_col!r}.")
+    if x_col is not None or y_col is not None:
+        if not x_col or not y_col:
+            raise ValueError("x_col and y_col must be provided together.")
+        missing = [column for column in (x_col, y_col) if column not in obs.columns]
+        if missing:
+            raise ValueError(f"Could not find requested spatial column(s): {missing}")
+        obs["x_centroid"] = obs[x_col]
+        obs["y_centroid"] = obs[y_col]
+    return obs
+
+
 def read_cells_table(
     base_path: str,
     *,
     cells_csv: str = "cells.csv.gz",
     cells_parquet: str | None = None,
+    cells_path: str | os.PathLike[str] | None = None,
+    cell_id_col: str | None = None,
+    x_col: str | None = None,
+    y_col: str | None = None,
     barcodes: pd.Index | None = None,
 ) -> pd.DataFrame | None:
+    explicit_cells_path = _resolve_explicit_artifact_path(
+        base_path,
+        cells_path,
+        kind="cells table",
+    )
+    if explicit_cells_path is not None:
+        if explicit_cells_path.lower().endswith((".parquet", ".parquet.gz")):
+            obs = _read_parquet_table(explicit_cells_path)
+        else:
+            with open_text(explicit_cells_path) as stream:
+                obs = pd.read_csv(stream)
+        obs = _apply_cells_source_columns(
+            obs,
+            cell_id_col=cell_id_col,
+            x_col=x_col,
+            y_col=y_col,
+        )
+        return normalize_obs_index(obs, barcodes=barcodes)
+
     parquet_path = (
         join_path(base_path, cells_parquet)
         if cells_parquet
@@ -812,10 +908,22 @@ def read_cells_table(
 
     if parquet_path and exists(parquet_path):
         obs = _read_parquet_table(parquet_path)
+        obs = _apply_cells_source_columns(
+            obs,
+            cell_id_col=cell_id_col,
+            x_col=x_col,
+            y_col=y_col,
+        )
         return normalize_obs_index(obs, barcodes=barcodes)
     if csv_path and exists(csv_path):
         with open_text(csv_path) as stream:
             obs = pd.read_csv(stream)
+        obs = _apply_cells_source_columns(
+            obs,
+            cell_id_col=cell_id_col,
+            x_col=x_col,
+            y_col=y_col,
+        )
         return normalize_obs_index(obs, barcodes=barcodes)
     return None
 
@@ -917,14 +1025,27 @@ def discover_projection_artifacts(base_path: str) -> dict[str, XeniumProjectionA
     return selected
 
 
-def _infer_frame_index_column(frame: pd.DataFrame) -> str:
+def _infer_frame_index_column(frame: pd.DataFrame, *, preferred: str | None = None) -> str:
+    if preferred is not None:
+        if preferred not in frame.columns:
+            raise ValueError(f"Could not find requested cluster index column {preferred!r}.")
+        return str(preferred)
     for candidate in ("Barcode", "barcode", "cell_id", "cell", "cellID", "CellID", "cells"):
         if candidate in frame.columns:
             return str(candidate)
     return str(frame.columns[0])
 
 
-def _infer_cluster_column(frame: pd.DataFrame, *, index_col: str) -> str:
+def _infer_cluster_column(
+    frame: pd.DataFrame,
+    *,
+    index_col: str,
+    preferred: str | None = None,
+) -> str:
+    if preferred is not None:
+        if preferred not in frame.columns:
+            raise ValueError(f"Could not find requested cluster label column {preferred!r}.")
+        return str(preferred)
     lower_map = {str(column).lower(): str(column) for column in frame.columns}
     for key in ("cluster", "clusters", "graphclust", "label", "group"):
         if key in lower_map:
@@ -945,6 +1066,8 @@ def read_cluster_series_from_path(
     clusters_path: str,
     *,
     barcodes: pd.Index,
+    cell_id_col: str | None = None,
+    cluster_col: str | None = None,
 ) -> tuple[pd.Series, dict[str, Any]]:
     with open_text(clusters_path) as stream:
         frame = pd.read_csv(stream)
@@ -958,8 +1081,8 @@ def read_cluster_series_from_path(
             "n_obs_assigned": 0,
         }
 
-    index_col = _infer_frame_index_column(frame)
-    cluster_col = _infer_cluster_column(frame, index_col=index_col)
+    index_col = _infer_frame_index_column(frame, preferred=cell_id_col)
+    cluster_col = _infer_cluster_column(frame, index_col=index_col, preferred=cluster_col)
     series = (
         frame[[index_col, cluster_col]]
         .dropna(subset=[index_col])
@@ -1042,12 +1165,34 @@ def load_xenium_analysis(
     barcodes: pd.Index,
     clusters_relpath: str | None,
     cluster_column_name: str = "cluster",
+    cell_groups_path: str | os.PathLike[str] | None = None,
+    cell_id_col: str | None = None,
+    cluster_col: str | None = None,
 ) -> XeniumAnalysisBundle:
     cluster_artifacts = discover_clustering_artifacts(base_path)
     projection_artifacts = discover_projection_artifacts(base_path)
 
     default_cluster_key: str | None = None
-    if clusters_relpath:
+    explicit_cell_groups_path = _resolve_explicit_artifact_path(
+        base_path,
+        cell_groups_path,
+        kind="cell-groups table",
+    )
+    if explicit_cell_groups_path is not None:
+        if is_remote_path(explicit_cell_groups_path):
+            explicit_relpath = explicit_cell_groups_path
+        else:
+            explicit_relpath = _analysis_relative_path(base_path, Path(explicit_cell_groups_path))
+        explicit_key = _cluster_key_from_relpath(explicit_relpath)
+        cluster_artifacts[explicit_key] = XeniumClusteringArtifact(
+            key=explicit_key,
+            path=explicit_cell_groups_path,
+            relpath=explicit_relpath,
+            analysis_depth=explicit_relpath.split("/").count("analysis"),
+        )
+        default_cluster_key = explicit_key
+
+    if clusters_relpath and explicit_cell_groups_path is None:
         explicit_path = join_path(base_path, clusters_relpath)
         if exists(explicit_path):
             explicit_relpath = clusters_relpath.replace("\\", "/")
@@ -1071,7 +1216,12 @@ def load_xenium_analysis(
 
     for key in sorted(cluster_artifacts):
         artifact = cluster_artifacts[key]
-        series, meta = read_cluster_series_from_path(artifact.path, barcodes=barcodes)
+        series, meta = read_cluster_series_from_path(
+            artifact.path,
+            barcodes=barcodes,
+            cell_id_col=cell_id_col if key == default_cluster_key else None,
+            cluster_col=cluster_col if key == default_cluster_key else None,
+        )
         if series.empty and meta["n_rows"] == 0:
             continue
         cluster_series[key] = series

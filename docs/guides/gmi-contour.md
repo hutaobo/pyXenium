@@ -6,14 +6,14 @@ independent contour polygon treated as one pseudo-bulk sample.
 
 ## Data model
 
-The canonical workflow starts from a `XeniumSData` object and a contour layer,
+The canonical workflow starts from a `XeniumSlide` object and a contour layer,
 usually imported from Xenium Explorer GeoJSON with:
 
 ```python
 from pyXenium.contour import add_contours_from_geojson
 
 add_contours_from_geojson(
-    sdata,
+    slide,
     geojson_path="xenium_explorer_annotations.s1_s5.generated.geojson",
     key="s1_s5_contours",
     id_key="name",

@@ -11,7 +11,7 @@ from shapely import intersects, points
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.geometry.base import BaseGeometry
 
-from pyXenium.io.sdata_model import XeniumImage, XeniumSData
+from pyXenium.io.slide_model import XeniumImage, XeniumSlide
 
 from ._analysis import _cell_centroid_frame, _prepare_contours, smooth_density_by_distance
 from .loading import (
@@ -58,7 +58,7 @@ _DEFAULT_GRADIENT_GENESETS: dict[str, list[str]] = {
 
 
 def build_contour_feature_table(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     he_image_key: str = _DEFAULT_IMAGE_KEY,
@@ -77,8 +77,8 @@ def build_contour_feature_table(
     receptor summaries, zone-level composition, and signed-distance gradients.
     """
 
-    if not isinstance(sdata, XeniumSData):
-        raise TypeError("`sdata` must be a XeniumSData instance.")
+    if not isinstance(sdata, XeniumSlide):
+        raise TypeError("`sdata` must be a XeniumSlide instance.")
 
     contour_table = _prepare_contours(sdata=sdata, contour_key=contour_key, contour_query=None)
     contour_table = contour_table.sort_values("contour_id", kind="stable").reset_index(drop=True)
@@ -352,7 +352,7 @@ def build_contour_feature_table(
     }
 
 
-def _resolve_sample_id(sdata: XeniumSData) -> str:
+def _resolve_sample_id(sdata: XeniumSlide) -> str:
     for key in ("sample_id", "sample", "dataset_id"):
         value = sdata.metadata.get(key)
         if value:
@@ -603,7 +603,7 @@ def _compute_contour_context_features(
 
 def _compute_edge_gradients(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     contour_key: str,
     inward: float,
     outward: float,

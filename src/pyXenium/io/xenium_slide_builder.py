@@ -16,8 +16,8 @@ from shapely.ops import transform
 from shapely.strtree import STRtree
 
 from .api import read_xenium
-from .sdata_model import XeniumImage, XeniumSlide
-from .sdata_store import write_xenium_slide
+from .slide_model import XeniumImage, XeniumSlide
+from .slide_store import write_xenium_slide
 from .xenium_artifacts import discover_image_artifacts, read_he_image, resolve_transcripts_path
 
 

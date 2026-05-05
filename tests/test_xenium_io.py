@@ -15,13 +15,13 @@ from scipy.io import mmwrite
 
 import pyXenium.io.api as xenium_api_module
 from pyXenium.io import (
-    XeniumSData,
+    XeniumSlide,
     XeniumSlide,
     build_xenium_slide,
-    export_xenium_to_spatialdata_zarr,
+    export_xenium_to_slide_zarr,
     load_anndata_from_partial,
     load_xenium_gene_protein,
-    read_sdata,
+    read_slide,
     read_slide,
     read_xenium,
     read_xenium_slide,
@@ -482,7 +482,7 @@ def test_read_xenium_discovers_prefixed_hnscc_artifacts(tmp_path):
         frame.to_parquet(base / f"{sample}_{stem}.parquet")
         (base / f"{stem}.csv.gz").unlink()
 
-    sdata = read_xenium(str(base), as_="sdata", prefer="h5", include_transcripts=False)
+    sdata = read_xenium(str(base), as_="slide", prefer="h5", include_transcripts=False)
 
     assert sdata.table.n_obs == 3
     assert "cell_boundaries" in sdata.shapes
@@ -593,16 +593,110 @@ def test_read_xenium_accepts_official_cell_groups_cellid_group_schema(tmp_path):
     assert list(adata.obs["cluster"].astype(str)) == KMEANS2_LABELS
 
 
-def test_read_xenium_sdata_contains_expected_components(tmp_path):
+def _write_explicit_table_bundle(dataset: Path, table_dir: Path, matrix_dir: Path) -> tuple[Path, Path, Path]:
+    cells = pd.read_csv(dataset / "cells.csv.gz")
+    cells = cells.rename(
+        columns={
+            "cell_id": "Barcode",
+            "x_centroid": "center_x",
+            "y_centroid": "center_y",
+        }
+    )
+    table_dir.mkdir(parents=True, exist_ok=True)
+    cells_path = table_dir / "explicit_cells.parquet"
+    cells.to_parquet(cells_path, index=False)
+
+    cell_groups_path = table_dir / "explicit_cell_groups.csv"
+    pd.DataFrame(
+        {"Barcode": BARCODES.to_list(), "Clusters": KMEANS2_LABELS}
+    ).to_csv(cell_groups_path, index=False)
+
+    matrix_dir.mkdir(parents=True, exist_ok=True)
+    feature_matrix_path = matrix_dir / "explicit_cell_feature_matrix.h5"
+    (dataset / "cell_feature_matrix.h5").replace(feature_matrix_path)
+    return cells_path, cell_groups_path, feature_matrix_path
+
+
+def test_read_xenium_accepts_relative_explicit_table_bundle_paths(tmp_path):
+    if h5py is None:
+        pytest.skip("h5py is not available")
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_backends=("h5",),
+        include_analysis=False,
+        include_boundaries=False,
+        include_transcripts=False,
+    )
+    _write_explicit_table_bundle(dataset, dataset / "tables", dataset / "matrices")
+
+    adata = read_xenium(
+        str(dataset),
+        as_="anndata",
+        cells_path="tables/explicit_cells.parquet",
+        cell_groups_path="tables/explicit_cell_groups.csv",
+        feature_matrix_path="matrices/explicit_cell_feature_matrix.h5",
+        cell_id_col="Barcode",
+        cluster_col="Clusters",
+        x_col="center_x",
+        y_col="center_y",
+        include_boundaries=False,
+    )
+
+    assert adata.uns["xenium_io"]["backend"] == "h5"
+    assert list(adata.obs["cluster"].astype(str)) == KMEANS2_LABELS
+    np.testing.assert_allclose(
+        adata.obsm["spatial"],
+        np.asarray([[10.0, 20.0], [20.0, 30.0], [40.0, 50.0]]),
+    )
+
+
+def test_read_xenium_accepts_absolute_explicit_table_bundle_paths(tmp_path):
+    if h5py is None:
+        pytest.skip("h5py is not available")
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_backends=("h5",),
+        include_analysis=False,
+        include_boundaries=False,
+        include_transcripts=False,
+    )
+    cells_path, cell_groups_path, feature_matrix_path = _write_explicit_table_bundle(
+        dataset,
+        tmp_path / "tables",
+        tmp_path / "matrices",
+    )
+
+    adata = read_xenium(
+        str(dataset),
+        as_="anndata",
+        cells_path=cells_path,
+        cell_groups_path=cell_groups_path,
+        feature_matrix_path=feature_matrix_path,
+        cell_id_col="Barcode",
+        cluster_col="Clusters",
+        x_col="center_x",
+        y_col="center_y",
+        include_boundaries=False,
+    )
+
+    assert list(adata.obs["cluster"].astype(str)) == KMEANS2_LABELS
+    cluster_sources = adata.uns["xenium_analysis"]["cluster_sources"].values()
+    assert any(
+        Path(source["path"]).resolve() == cell_groups_path.resolve()
+        for source in cluster_sources
+    )
+
+
+def test_read_xenium_slide_contains_expected_components(tmp_path):
     dataset = make_xenium_dataset(
         tmp_path / "dataset",
         include_extra_clusterings=True,
         include_projections=True,
     )
 
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="mex")
+    sdata = read_xenium(str(dataset), as_="slide", prefer="mex")
 
-    assert isinstance(sdata, XeniumSData)
+    assert isinstance(sdata, XeniumSlide)
     assert sdata.table.n_obs == 3
     assert "transcripts" in sdata.points
     assert {"x", "y", "gene_identity", "gene_name"}.issubset(sdata.points["transcripts"].columns)
@@ -614,14 +708,12 @@ def test_read_xenium_sdata_contains_expected_components(tmp_path):
     np.testing.assert_allclose(sdata.table.obsm["X_umap"], UMAP_VALUES)
 
 
-def test_xenium_slide_is_canonical_and_sdata_alias_stays_compatible(tmp_path):
+def test_xenium_slide_is_canonical_roundtrip_type(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
 
     slide = read_xenium(str(dataset), as_="slide", prefer="zarr", include_images=True)
 
     assert isinstance(slide, XeniumSlide)
-    assert isinstance(slide, XeniumSData)
-    assert XeniumSData is XeniumSlide
     assert slide.table.uns["xenium_slide"]["schema_version"] == 1
     assert "he" in slide.images
 
@@ -630,7 +722,7 @@ def test_xenium_slide_is_canonical_and_sdata_alias_stays_compatible(tmp_path):
     reloaded = read_xenium_slide(output)
     legacy_reloaded = read_slide(output)
 
-    assert payload["format"] == "pyxenium.sdata"
+    assert payload["format"] == "pyxenium.slide"
     assert reloaded.table.shape == slide.table.shape
     assert isinstance(legacy_reloaded, XeniumSlide)
 
@@ -675,18 +767,18 @@ def test_build_xenium_slide_writes_contour_assignments_and_patches(tmp_path):
     assert "contour_id" in slide.table.obs.columns
 
 
-def test_read_xenium_sdata_can_stream_transcripts_for_export(tmp_path):
+def test_read_xenium_slide_can_stream_transcripts_for_export(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset")
 
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="mex", stream_transcripts=True)
+    sdata = read_xenium(str(dataset), as_="slide", prefer="mex", stream_transcripts=True)
 
-    assert isinstance(sdata, XeniumSData)
+    assert isinstance(sdata, XeniumSlide)
     assert "transcripts" not in sdata.points
     assert "transcripts" in sdata.point_sources
     assert sdata.component_summary()["points"] == ["transcripts"]
 
     streamed = sdata.point_sources["transcripts"].materialize()
-    expected = read_xenium(str(dataset), as_="sdata", prefer="mex").points["transcripts"]
+    expected = read_xenium(str(dataset), as_="slide", prefer="mex").points["transcripts"]
     pd.testing.assert_frame_equal(streamed, expected)
 
 
@@ -697,7 +789,7 @@ def test_read_xenium_streamed_transcripts_allow_missing_cell_id(tmp_path):
         transcripts_include_z_coordinate=True,
     )
 
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="mex", stream_transcripts=True)
+    sdata = read_xenium(str(dataset), as_="slide", prefer="mex", stream_transcripts=True)
     streamed = sdata.point_sources["transcripts"].materialize()
 
     assert "cell_id" not in streamed.columns
@@ -715,7 +807,7 @@ def test_read_xenium_streamed_transcripts_preserve_extra_columns(tmp_path):
         },
     )
 
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="mex", stream_transcripts=True)
+    sdata = read_xenium(str(dataset), as_="slide", prefer="mex", stream_transcripts=True)
     streamed = sdata.point_sources["transcripts"].materialize()
 
     assert {"status", "fov_name", "codeword_identity_0", "codeword_identity_1"} <= set(streamed.columns)
@@ -725,10 +817,10 @@ def test_read_xenium_streamed_transcripts_preserve_extra_columns(tmp_path):
     assert streamed["codeword_identity_1"].tolist() == [101, 102, 103, 104]
 
 
-def test_read_xenium_sdata_loads_he_image_and_alignment_metadata(tmp_path):
+def test_read_xenium_slide_loads_he_image_and_alignment_metadata(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
 
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="zarr", include_images=True)
+    sdata = read_xenium(str(dataset), as_="slide", prefer="zarr", include_images=True)
 
     assert "he" in sdata.images
     he = sdata.images["he"]
@@ -758,19 +850,19 @@ def test_read_xenium_sdata_loads_he_image_and_alignment_metadata(tmp_path):
     assert "he" in sdata.metadata["image_artifacts"]
 
 
-def test_sdata_roundtrip(tmp_path):
+def test_slide_roundtrip(tmp_path):
     dataset = make_xenium_dataset(
         tmp_path / "dataset",
         include_extra_clusterings=True,
         include_projections=True,
     )
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="zarr")
+    sdata = read_xenium(str(dataset), as_="slide", prefer="zarr")
 
-    output = tmp_path / "pyxenium_sdata.zarr"
-    payload = write_xenium(sdata, output, format="sdata")
-    reloaded = read_sdata(output)
+    output = tmp_path / "pyxenium_slide.zarr"
+    payload = write_xenium(sdata, output, format="slide")
+    reloaded = read_slide(output)
 
-    assert payload["format"] == "pyxenium.sdata"
+    assert payload["format"] == "pyxenium.slide"
     assert reloaded.table.shape == sdata.table.shape
     assert reloaded.points["transcripts"].shape == sdata.points["transcripts"].shape
     assert reloaded.shapes["cell_boundaries"].shape == sdata.shapes["cell_boundaries"].shape
@@ -781,20 +873,20 @@ def test_sdata_roundtrip(tmp_path):
     assert reloaded.table.uns["xenium_analysis"]["projection_keys"]["umap"] == "X_umap"
 
 
-def test_sdata_roundtrip_preserves_streamed_transcripts(tmp_path):
+def test_slide_roundtrip_preserves_streamed_transcripts(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset")
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="zarr", stream_transcripts=True)
+    sdata = read_xenium(str(dataset), as_="slide", prefer="zarr", stream_transcripts=True)
 
-    output = tmp_path / "pyxenium_sdata_streamed.zarr"
-    payload = write_xenium(sdata, output, format="sdata")
-    reloaded = read_sdata(output)
-    expected = read_xenium(str(dataset), as_="sdata", prefer="zarr").points["transcripts"]
+    output = tmp_path / "pyxenium_slide_streamed.zarr"
+    payload = write_xenium(sdata, output, format="slide")
+    reloaded = read_slide(output)
+    expected = read_xenium(str(dataset), as_="slide", prefer="zarr").points["transcripts"]
 
     assert payload["points"] == ["transcripts"]
     pd.testing.assert_frame_equal(reloaded.points["transcripts"], expected)
 
 
-def test_sdata_roundtrip_preserves_streamed_transcript_extra_columns(tmp_path):
+def test_slide_roundtrip_preserves_streamed_transcript_extra_columns(tmp_path):
     dataset = make_xenium_dataset(
         tmp_path / "dataset_streamed_extra_roundtrip",
         transcripts_include_cell_id=False,
@@ -804,24 +896,24 @@ def test_sdata_roundtrip_preserves_streamed_transcript_extra_columns(tmp_path):
         },
         transcripts_include_z_coordinate=True,
     )
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="zarr", stream_transcripts=True)
+    sdata = read_xenium(str(dataset), as_="slide", prefer="zarr", stream_transcripts=True)
 
-    output = tmp_path / "pyxenium_sdata_streamed_extra.zarr"
-    payload = write_xenium(sdata, output, format="sdata")
-    reloaded = read_sdata(output)
+    output = tmp_path / "pyxenium_slide_streamed_extra.zarr"
+    payload = write_xenium(sdata, output, format="slide")
+    reloaded = read_slide(output)
 
     assert payload["points"] == ["transcripts"]
     assert {"z", "status", "fov_name"} <= set(reloaded.points["transcripts"].columns)
     assert "cell_id" not in reloaded.points["transcripts"].columns
 
 
-def test_sdata_roundtrip_preserves_he_images(tmp_path):
+def test_slide_roundtrip_preserves_he_images(tmp_path):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="zarr", include_images=True)
+    sdata = read_xenium(str(dataset), as_="slide", prefer="zarr", include_images=True)
 
-    output = tmp_path / "pyxenium_sdata_he.zarr"
-    payload = write_xenium(sdata, output, format="sdata")
-    reloaded = read_sdata(output)
+    output = tmp_path / "pyxenium_slide_he.zarr"
+    payload = write_xenium(sdata, output, format="slide")
+    reloaded = read_slide(output)
 
     assert "he" in payload["images"]
     assert "he" in reloaded.images
@@ -847,26 +939,26 @@ def test_load_xenium_gene_protein_wrapper_matches_new_api(tmp_path):
     np.testing.assert_allclose(legacy.obsm["spatial"], modern.obsm["spatial"])
 
 
-def test_export_xenium_to_spatialdata_zarr_writes_compat_store(tmp_path, monkeypatch):
+def test_export_xenium_to_slide_zarr_writes_compat_store(tmp_path, monkeypatch):
     dataset = make_xenium_dataset(tmp_path / "dataset", include_he_image=True)
 
     def _unexpected_materialization(*args, **kwargs):
-        raise AssertionError("export_xenium_to_spatialdata_zarr should stream transcripts.")
+        raise AssertionError("export_xenium_to_slide_zarr should stream transcripts.")
 
     monkeypatch.setattr(xenium_api_module, "read_transcripts_table", _unexpected_materialization)
 
-    payload = export_xenium_to_spatialdata_zarr(str(dataset), overwrite=True)
-    reloaded = read_sdata(payload["output_path"])
+    payload = export_xenium_to_slide_zarr(str(dataset), overwrite=True)
+    reloaded = read_slide(payload["output_path"])
 
-    assert payload["format"] == "pyxenium.sdata"
+    assert payload["format"] == "pyxenium.slide"
     assert payload["tables"] == ["cells"]
     assert payload["points"] == ["transcripts"]
     assert "he" in payload["images"]
     assert "he" in reloaded.images
-    assert isinstance(reloaded, XeniumSData)
+    assert isinstance(reloaded, XeniumSlide)
 
 
-def test_read_xenium_sdata_gracefully_handles_missing_optional_artifacts(tmp_path):
+def test_read_xenium_slide_gracefully_handles_missing_optional_artifacts(tmp_path):
     dataset = make_xenium_dataset(
         tmp_path / "dataset",
         include_backends=("mex",),
@@ -875,7 +967,7 @@ def test_read_xenium_sdata_gracefully_handles_missing_optional_artifacts(tmp_pat
         include_analysis=False,
     )
 
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="mex")
+    sdata = read_xenium(str(dataset), as_="slide", prefer="mex")
 
     assert sdata.table.n_obs == 3
     assert sdata.points == {}
@@ -884,7 +976,7 @@ def test_read_xenium_sdata_gracefully_handles_missing_optional_artifacts(tmp_pat
     assert "X_umap" not in sdata.table.obsm
 
 
-def test_read_xenium_sdata_gracefully_handles_missing_he_image(tmp_path):
+def test_read_xenium_slide_gracefully_handles_missing_he_image(tmp_path):
     dataset = make_xenium_dataset(
         tmp_path / "dataset",
         include_backends=("mex",),
@@ -893,7 +985,7 @@ def test_read_xenium_sdata_gracefully_handles_missing_he_image(tmp_path):
         include_he_image=False,
     )
 
-    sdata = read_xenium(str(dataset), as_="sdata", prefer="mex", include_images=True)
+    sdata = read_xenium(str(dataset), as_="slide", prefer="mex", include_images=True)
 
     assert sdata.images == {}
 

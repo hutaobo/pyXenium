@@ -93,6 +93,6 @@
     "host": "pdc",
     "remote_root": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta",
     "include_smoke": true,
-    "include_spatialdata_zarr": false
+    "include_slide_zarr": false
   }
 }

@@ -13,7 +13,7 @@ from scipy import sparse
 
 import pyXenium as px
 from pyXenium.__main__ import app
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 from pyXenium.mechanostress import (
     MechanostressConfig,
     TumorStromaGrowthConfig,
@@ -52,7 +52,7 @@ def _square_boundary(cell_id: str, center: tuple[float, float], *, size: float =
     return pd.DataFrame({"cell_id": cell_id, "vertex_id": np.arange(len(points)), "x": points[:, 0], "y": points[:, 1]})
 
 
-def _toy_sdata() -> XeniumSData:
+def _toy_sdata() -> XeniumSlide:
     cells = ["s1", "s2", "t1", "t2", "t3"]
     coords = np.array([[0.0, 0.0], [0.0, 2.0], [1.0, 0.5], [2.0, 0.8], [3.0, 0.5]])
     obs = pd.DataFrame(
@@ -78,7 +78,7 @@ def _toy_sdata() -> XeniumSData:
         ],
         ignore_index=True,
     )
-    return XeniumSData(
+    return XeniumSlide(
         table=adata,
         shapes={"cell_boundaries": cell_boundaries, "nucleus_boundaries": nucleus_boundaries},
         metadata={"sample_id": "toy_mechanostress"},

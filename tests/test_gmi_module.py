@@ -31,10 +31,10 @@ from pyXenium.gmi import (
     validate_a100_gmi_path_policy,
     write_contour_gmi_dataset,
 )
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 
-def _toy_sdata(*, contours_per_label: int = 2, cells_per_contour: int = 24) -> XeniumSData:
+def _toy_sdata(*, contours_per_label: int = 2, cells_per_contour: int = 24) -> XeniumSlide:
     rng = np.random.default_rng(7)
     contour_rows: list[dict[str, object]] = []
     obs_rows: list[dict[str, object]] = []
@@ -82,7 +82,7 @@ def _toy_sdata(*, contours_per_label: int = 2, cells_per_contour: int = 24) -> X
     adata = ad.AnnData(X=matrix, obs=obs, var=var)
     adata.obsm["spatial"] = np.vstack(coords)
     contour_frame = geometry_table_to_contour_frame(pd.DataFrame(contour_rows))
-    return XeniumSData(table=adata, shapes={"s1_s5_contours": contour_frame}, metadata={"sample_id": "toy_breast"})
+    return XeniumSlide(table=adata, shapes={"s1_s5_contours": contour_frame}, metadata={"sample_id": "toy_breast"})
 
 
 def _toy_module_dataset() -> ContourGmiDataset:

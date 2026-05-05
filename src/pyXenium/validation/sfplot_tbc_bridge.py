@@ -262,8 +262,8 @@ def run_sfplot_tbc_table_bundle(
     """
     Stable Xenium `t_and_c` generation that preserves the breast workflow output contract.
 
-    The helper prefers sfplot's table-bundle loader while avoiding the legacy
-    `spatialdata_io` dependency chain that breaks on some reviewer environments.
+    The helper prefers sfplot's table-bundle loader while avoiding the older
+    external Xenium I/O dependency chain that breaks on some reviewer environments.
     """
 
     if gene_batch_size <= 0:

@@ -10,7 +10,7 @@ from shapely.geometry import GeometryCollection, MultiPoint
 from shapely.geometry.base import BaseGeometry
 
 from ._geometry import contour_frame_to_geometry_table, geometry_table_to_contour_frame
-from pyXenium.io.sdata_model import XeniumSData
+from pyXenium.io.slide_model import XeniumSlide
 
 __all__ = ["expand_contours"]
 
@@ -21,7 +21,7 @@ _SEED_POINT_ROUND_DECIMALS = 12
 
 
 def expand_contours(
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     *,
     contour_key: str,
     distance: float,
@@ -29,14 +29,14 @@ def expand_contours(
     output_key: str | None = None,
     copy: bool = False,
     voronoi_sample_step: float | None = None,
-) -> XeniumSData | None:
+) -> XeniumSlide | None:
     """
     Expand an existing contour layer into a derived contour layer.
 
     Parameters
     ----------
     sdata
-        Input XeniumSData container.
+        Input XeniumSlide container.
     contour_key
         Source contour key inside ``sdata.shapes``.
     distance
@@ -47,13 +47,13 @@ def expand_contours(
     output_key
         Target contour key. Defaults to ``f"{contour_key}_expanded"``.
     copy
-        When ``True``, return a copied ``XeniumSData``. Otherwise mutate ``sdata`` in place.
+        When ``True``, return a copied ``XeniumSlide``. Otherwise mutate ``sdata`` in place.
     voronoi_sample_step
         Maximum segment length used to sample boundary seed points in Voronoi mode.
     """
 
-    if not isinstance(sdata, XeniumSData):
-        raise TypeError("`sdata` must be a XeniumSData instance.")
+    if not isinstance(sdata, XeniumSlide):
+        raise TypeError("`sdata` must be a XeniumSlide instance.")
 
     source_key = str(contour_key)
     if source_key not in sdata.shapes:
@@ -350,8 +350,8 @@ def _clean_geometry(geometry: BaseGeometry) -> BaseGeometry:
     return cleaned
 
 
-def _copy_sdata(sdata: XeniumSData) -> XeniumSData:
-    return XeniumSData(
+def _copy_sdata(sdata: XeniumSlide) -> XeniumSlide:
+    return XeniumSlide(
         table=sdata.table.copy(),
         points={name: frame.copy() for name, frame in sdata.points.items()},
         shapes={name: frame.copy() for name, frame in sdata.shapes.items()},
@@ -366,7 +366,7 @@ def _copy_sdata(sdata: XeniumSData) -> XeniumSData:
 
 def _updated_contour_registry(
     *,
-    sdata: XeniumSData,
+    sdata: XeniumSlide,
     source_key: str,
     output_key: str,
     distance: float,

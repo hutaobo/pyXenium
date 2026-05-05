@@ -16,7 +16,7 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-from pyXenium.io import read_sdata, read_xenium, write_xenium
+from pyXenium.io import read_slide, read_xenium, write_xenium
 
 
 BACKEND_MARKERS = {
@@ -160,29 +160,29 @@ def audit_complete_root(sample_root: Path, scratch_root: Path) -> dict[str, Any]
     chosen_backend = canonical_backend(backends)
     result["canonical_backend"] = chosen_backend
 
-    sdata = read_xenium(
+    slide = read_xenium(
         str(sample_root),
-        as_="sdata",
+        as_="slide",
         prefer=chosen_backend,
         include_transcripts=AUDIT_INCLUDE_TRANSCRIPTS,
         include_boundaries=AUDIT_INCLUDE_BOUNDARIES,
         include_images=AUDIT_INCLUDE_IMAGES,
     )
-    result["analysis"] = analysis_snapshot(sdata.table)
-    result["artifacts"]["shape_keys"] = sorted(sdata.shapes.keys())
-    result["artifacts"]["point_keys"] = sorted(sdata.points.keys())
+    result["analysis"] = analysis_snapshot(slide.table)
+    result["artifacts"]["shape_keys"] = sorted(slide.shapes.keys())
+    result["artifacts"]["point_keys"] = sorted(slide.points.keys())
 
     sample_scratch = scratch_root / sanitize_name(sample_root)
     sample_scratch.mkdir(parents=True, exist_ok=True)
-    sdata_store = sample_scratch / "roundtrip.sdata.zarr"
+    slide_store = sample_scratch / "roundtrip.slide.zarr"
     h5ad_path = sample_scratch / "roundtrip.h5ad"
 
-    sdata_payload = write_xenium(sdata, sdata_store, format="sdata", overwrite=True)
-    reloaded = read_sdata(sdata_store)
-    verify_roundtrip(sdata, reloaded)
+    slide_payload = write_xenium(slide, slide_store, format="slide", overwrite=True)
+    reloaded = read_slide(slide_store)
+    verify_roundtrip(slide, reloaded)
 
-    h5ad_payload = write_xenium(sdata.table, h5ad_path, format="h5ad", overwrite=True)
-    result["artifacts"]["sdata_output"] = sdata_payload["output_path"]
+    h5ad_payload = write_xenium(slide.table, h5ad_path, format="h5ad", overwrite=True)
+    result["artifacts"]["slide_output"] = slide_payload["output_path"]
     result["artifacts"]["h5ad_output"] = h5ad_payload["output_path"]
 
     return result

@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
-from pyXenium.io import XeniumSData
+from pyXenium.io import XeniumSlide
 from pyXenium.multimodal import (
     build_spatho_manifest,
     compare_programs_with_embeddings,
@@ -16,7 +16,7 @@ from pyXenium.multimodal import (
 )
 
 
-def _toy_sdata() -> XeniumSData:
+def _toy_sdata() -> XeniumSlide:
     adata = ad.AnnData(
         X=sparse.csr_matrix(
             [
@@ -56,7 +56,7 @@ def _toy_sdata() -> XeniumSData:
             "classification_name": ["tumor", "tumor", "stroma", "stroma"],
         }
     )
-    return XeniumSData(table=adata, shapes={"roi": contour_frame}, metadata={"sample_id": "toy_slide"})
+    return XeniumSlide(table=adata, shapes={"roi": contour_frame}, metadata={"sample_id": "toy_slide"})
 
 
 def test_export_for_stgpt_writes_contract_bundle(tmp_path):

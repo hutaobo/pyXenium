@@ -20,7 +20,7 @@ import pytest
 from scipy import sparse
 
 from pyXenium.contour import add_contours_from_geojson, import_histoseg_segmentation_qc
-from pyXenium.io import XeniumSData
+from pyXenium.io import XeniumSlide
 from pyXenium.multimodal import (
     build_spatho_manifest,
     compare_programs_with_embeddings,
@@ -36,7 +36,7 @@ _SCHEMA_VERSION = "pyxenium-bridge-v1"
 _REQUIRED_PACKAGE_KEYS = {"pyXenium", "stGPT", "HistoSeg", "SPatho"}
 
 
-def _toy_sdata() -> XeniumSData:
+def _toy_sdata() -> XeniumSlide:
     adata = ad.AnnData(
         X=sparse.csr_matrix([[1, 0, 3], [0, 2, 1], [4, 0, 0], [0, 1, 5]], dtype=float),
         obs=pd.DataFrame(
@@ -62,7 +62,7 @@ def _toy_sdata() -> XeniumSData:
             }
         )
     }
-    return XeniumSData(table=adata, shapes=shapes, metadata={"sample_id": "s1"})
+    return XeniumSlide(table=adata, shapes=shapes, metadata={"sample_id": "s1"})
 
 
 def _minimal_geojson() -> dict:
@@ -158,7 +158,7 @@ class TestGeoJSONImportContract:
 
 
 class TestHistoSegQCImportContract:
-    """HistoSeg segmentation QC JSON must be importable into XeniumSData."""
+    """HistoSeg segmentation QC JSON must be importable into XeniumSlide."""
 
     def _write_qc_json(self, path: Path, payload: dict | None = None) -> Path:
         if payload is None:
@@ -172,7 +172,7 @@ class TestHistoSegQCImportContract:
         path.write_text(json.dumps(payload), encoding="utf-8")
         return path
 
-    def _sdata_with_contour(self, tmp_path: Path) -> XeniumSData:
+    def _sdata_with_contour(self, tmp_path: Path) -> XeniumSlide:
         sdata = _toy_sdata()
         geojson_path = tmp_path / "c.geojson"
         geojson_path.write_text(json.dumps(_minimal_geojson()), encoding="utf-8")

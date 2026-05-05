@@ -100,7 +100,8 @@ from pyXenium.io import read_xenium
 slide = read_xenium("/path/to/xenium_export", as_="slide", prefer="zarr")
 ```
 
-`XeniumSlide` is the canonical in-memory object. The old `XeniumSData` name remains as a compatibility alias, and `as_="sdata"` still works for legacy code.
+`XeniumSlide` is the only canonical in-memory object in pyXenium. Legacy
+alias-based I/O entrypoints have been removed.
 
 To build Atera-style learning stores with contour-segmented H&E crops:
 
@@ -127,7 +128,7 @@ adata = load_rna_protein_anndata(
 from pyXenium.contour import expand_contours
 
 expand_contours(
-    sdata,
+    slide,
     contour_key="protein_cluster_contours",
     distance=25.0,
     mode="voronoi",
@@ -157,9 +158,9 @@ S5/DCIS RNA program led by `NIBAN1` and `SORL1` under the QC20 primary model.
 from pyXenium.io import read_xenium
 from pyXenium.mechanostress import MechanostressConfig, run_mechanostress_workflow
 
-sdata = read_xenium("/path/to/xenium_export", as_="sdata", include_boundaries=True)
+slide = read_xenium("/path/to/xenium_export", as_="slide", include_boundaries=True)
 result = run_mechanostress_workflow(
-    sdata,
+    slide,
     output_dir="pyxenium_mechanostress_outputs/sample_1",
     config=MechanostressConfig(),
 )
@@ -195,9 +196,18 @@ spatho run --config workflow.json
 
 In pyXenium, this is documented as an optional external workflow bridge rather than a new
 `pyXenium.spatho` namespace.
-The handoff is possible because `XeniumSData` keeps the cell table, transcript points,
-cell/nucleus boundaries, H&E image metadata, and SpatialData-compatible organization together
-for downstream tools.
+The handoff is possible because `XeniumSlide` keeps the cell table, transcript points,
+cell/nucleus boundaries, H&E image metadata, and slide-native organization together
+for downstream tools, with an optional `XeniumSlide.to_spatialdata()` bridge for users
+who separately install that ecosystem.
+
+## Acknowledgement
+
+`XeniumSlide` is inspired by the container ideas popularized by
+[SpatialData](https://spatialdata.scverse.org/en/stable/), while pyXenium now ships a
+fully rewritten independent slide model and Zarr store implementation with no core runtime
+dependency on the `spatialdata` package. If you build on the bridge or the design lineage,
+please also cite [Marconato et al., 2024](https://doi.org/10.1038/s41592-024-02212-x).
 
 ### SpatialPerturb Bridge via SpatialPerturb
 

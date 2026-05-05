@@ -322,7 +322,9 @@ class XeniumSlide:
             from spatialdata.models import Image2DModel
         except Exception as exc:  # pragma: no cover
             raise ImportError(
-                "Optional dependency 'spatialdata' is required for XeniumSlide.to_spatialdata()."
+                "XeniumSlide.to_spatialdata() is an optional bridge that requires the "
+                "'spatialdata' package to be installed separately. pyXenium core slide "
+                "I/O does not depend on spatialdata."
             ) from exc
 
         kwargs: dict[str, Any] = {}
@@ -356,7 +358,3 @@ class XeniumSlide:
             "contour_images": sorted(self.contour_images.keys()),
             "labels": sorted(self.metadata.get("labels", {}).keys()),
         }
-
-
-# Deprecated compatibility alias. New code should import/use XeniumSlide.
-XeniumSData = XeniumSlide
