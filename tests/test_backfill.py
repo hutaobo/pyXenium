@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import numpy as np
 from click.testing import CliRunner
 
 from pyXenium.__main__ import app
@@ -289,3 +290,53 @@ def test_extract_patches_requires_pass_verdict(tmp_path, monkeypatch):
     assert result["skipped_by_verdict"] == 1
     rows = json.loads((slide_root / "backfill_results.json").read_text(encoding="utf-8"))
     assert rows[0]["status"] == "skipped_by_verdict"
+
+
+def test_snapshot_reader_falls_back_around_bad_tiles():
+    from pyXenium.io import backfill as backfill_module
+
+    class Store:
+        def __init__(self):
+            self.closed = False
+
+        def close(self):
+            self.closed = True
+
+    class Source:
+        shape = (8, 8, 3)
+        chunks = (4, 4, 3)
+
+        def __getitem__(self, key):
+            y_slice, x_slice, c_slice = key
+            y0 = y_slice.start or 0
+            y1 = y_slice.stop or self.shape[0]
+            x0 = x_slice.start or 0
+            x1 = x_slice.stop or self.shape[1]
+            if y_slice.step == 2 and x_slice.step == 2:
+                raise RuntimeError("full sparse read failed")
+            if y0 == 4 and x0 == 4:
+                raise RuntimeError("bad tile")
+            tile = np.zeros((y1 - y0, x1 - x0, 3), dtype=np.uint8)
+            tile[..., 0] = 10 + y0
+            tile[..., 1] = 20 + x0
+            tile[..., 2] = 30
+            return tile[:, :, c_slice]
+
+    class Level:
+        shape = (8, 8, 3)
+
+        def open_zarr_source(self):
+            return Store(), Source()
+
+    rgb, step = backfill_module._read_snapshot_rgb(
+        Level(),
+        axes="yxc",
+        width=8,
+        height=8,
+        max_snapshot_side_px=4,
+    )
+
+    assert step == 2
+    assert rgb.shape == (4, 4, 3)
+    assert rgb[0, 0].tolist() == [10, 20, 30]
+    assert rgb[-1, -1].tolist() == [255, 255, 255]

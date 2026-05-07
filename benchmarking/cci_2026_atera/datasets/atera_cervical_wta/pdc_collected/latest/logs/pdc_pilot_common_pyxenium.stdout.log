@@ -1,0 +1,43 @@
+{
+  "method": "pyxenium",
+  "database_mode": "common-db",
+  "input_h5ad": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runs/pilot_common/pyxenium/input_cache/adata_full_from_sparse_bundle.h5ad",
+  "cci_panel_path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runs/pilot_common/pyxenium/raw/limited_cci_resource.tsv",
+  "scores_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runs/pilot_common/pyxenium/pyxenium_scores.tsv",
+  "standardized_tsv": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runs/pilot_common/pyxenium/pyxenium_standardized.tsv",
+  "artifact_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runs/pilot_common/pyxenium/artifacts",
+  "n_rows": 364500,
+  "top_hit": [
+    {
+      "method": "pyxenium",
+      "database_mode": "common-db",
+      "ligand": "APOE",
+      "receptor": "ABCA1",
+      "sender": "Macrophages",
+      "receiver": "Macrophages",
+      "score_raw": 0.6898286956887286,
+      "score_std": 1.0,
+      "rank_within_method": 1.0,
+      "rank_fraction": 1.0,
+      "fdr_or_pvalue": NaN,
+      "resolution": "celltype_pair",
+      "spatial_support_type": "topology_local_contact",
+      "artifact_path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runs/pilot_common/pyxenium/artifacts",
+      "local_contact": 0.12917804348932052,
+      "contact_strength_normalized": 0.8113917365473248,
+      "contact_coverage": 0.02431336438171805,
+      "cross_edge_count": 56471.0
+    }
+  ],
+  "run_summary_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runs/pilot_common/pyxenium/run_summary.json",
+  "elapsed_seconds": 4487.165702373721,
+  "package_versions": {
+    "pyXenium": "0.4.1",
+    "pyxenium": "0.4.1",
+    "anndata": "0.12.11",
+    "scanpy": "1.12.1",
+    "pandas": "2.3.3",
+    "numpy": "2.4.4"
+  },
+  "params_json": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runs/pilot_common/pyxenium/params.json"
+}

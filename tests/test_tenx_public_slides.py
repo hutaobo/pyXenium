@@ -138,6 +138,22 @@ def test_discover_10x_accepts_10x_he_imagealignment_name(tmp_path):
     assert records[0]["has_alignment"] is True
 
 
+def test_discover_10x_accepts_10x_he_unaligned_image_name(tmp_path):
+    xenium_root = tmp_path / "Xenium"
+    case = _make_inventory_case(
+        xenium_root / "Xenium_Breast_Cancer" / "case_outs",
+        uuid="uuid-unaligned-he",
+        run_name="Xenium_V1_FFPE_Human_Breast_IDC_Big_1_outs",
+    )
+    (case / "case_he_unaligned_image.ome.tif").write_bytes(b"placeholder")
+    (case / "case_he_imagealignment.csv").write_text("1,0,0\n0,1,0\n0,0,1\n", encoding="utf-8")
+
+    records = discover_10x_xenium_datasets(xenium_root)
+
+    assert records[0]["has_he"] is True
+    assert records[0]["has_alignment"] is True
+
+
 def test_resolve_10x_dataset_metadata_uses_cache_and_unresolved_fallback(tmp_path):
     record = {
         "experiment_uuid": "uuid-1",

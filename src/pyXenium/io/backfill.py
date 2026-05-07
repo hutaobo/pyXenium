@@ -1278,22 +1278,81 @@ def _read_snapshot_rgb(
     max_snapshot_side_px: int,
 ) -> tuple[np.ndarray, int]:
     step = max(int(np.ceil(max(width, height) / max(float(max_snapshot_side_px), 1.0))), 1)
-    if step <= 1:
-        image = _crop_image_level(level, axes=axes, bbox=(0, 0, width, height))
-        return _to_rgb(image, axes), 1
-    slices = [slice(None)] * len(level.shape)
-    slices[axes.index("x")] = slice(0, width, step)
-    slices[axes.index("y")] = slice(0, height, step)
-    if hasattr(level, "open_zarr_source"):
-        store, source = level.open_zarr_source()
-        try:
-            image = np.asarray(source[tuple(slices)]).copy()
-        finally:
-            if hasattr(store, "close"):
-                store.close()
-    else:
-        image = np.asarray(level[tuple(slices)]).copy()
-    return _to_rgb(image, axes), step
+    try:
+        if step <= 1:
+            image = _crop_image_level(level, axes=axes, bbox=(0, 0, width, height))
+            return _to_rgb(image, axes), 1
+        slices = [slice(None)] * len(level.shape)
+        slices[axes.index("x")] = slice(0, width, step)
+        slices[axes.index("y")] = slice(0, height, step)
+        if hasattr(level, "open_zarr_source"):
+            store, source = level.open_zarr_source()
+            try:
+                image = np.asarray(source[tuple(slices)]).copy()
+            finally:
+                if hasattr(store, "close"):
+                    store.close()
+        else:
+            image = np.asarray(level[tuple(slices)]).copy()
+        return _to_rgb(image, axes), step
+    except Exception:
+        if not hasattr(level, "open_zarr_source"):
+            raise
+        return _read_snapshot_rgb_by_tiles(
+            level,
+            axes=axes,
+            width=width,
+            height=height,
+            step=step,
+        ), step
+
+
+def _read_snapshot_rgb_by_tiles(
+    level: Any,
+    *,
+    axes: str,
+    width: int,
+    height: int,
+    step: int,
+) -> np.ndarray:
+    """Best-effort low-resolution read that tolerates corrupt TIFF tiles."""
+
+    store, source = level.open_zarr_source()
+    try:
+        chunks = tuple(int(value) for value in getattr(source, "chunks", ()) or ())
+        x_index = axes.index("x")
+        y_index = axes.index("y")
+        chunk_x = chunks[x_index] if len(chunks) > x_index and chunks[x_index] > 0 else 1024
+        chunk_y = chunks[y_index] if len(chunks) > y_index and chunks[y_index] > 0 else 1024
+        out_width = int(np.ceil(float(width) / float(max(step, 1))))
+        out_height = int(np.ceil(float(height) / float(max(step, 1))))
+        rgb = np.full((out_height, out_width, 3), 255, dtype=np.uint8)
+        for y0 in range(0, height, chunk_y):
+            y1 = min(y0 + chunk_y, height)
+            y_offset = (step - (y0 % step)) % step
+            if y0 + y_offset >= y1:
+                continue
+            out_y0 = (y0 + y_offset) // step
+            for x0 in range(0, width, chunk_x):
+                x1 = min(x0 + chunk_x, width)
+                x_offset = (step - (x0 % step)) % step
+                if x0 + x_offset >= x1:
+                    continue
+                slices = [slice(None)] * len(level.shape)
+                slices[x_index] = slice(x0, x1)
+                slices[y_index] = slice(y0, y1)
+                try:
+                    tile = np.asarray(source[tuple(slices)]).copy()
+                except Exception:
+                    continue
+                tile_rgb = _to_rgb(tile, axes)
+                sampled = tile_rgb[y_offset::step, x_offset::step, :]
+                out_x0 = (x0 + x_offset) // step
+                rgb[out_y0 : out_y0 + sampled.shape[0], out_x0 : out_x0 + sampled.shape[1], :] = sampled
+        return rgb
+    finally:
+        if hasattr(store, "close"):
+            store.close()
 
 
 def _iter_polygons(geometry: Polygon | MultiPolygon) -> Iterable[Polygon]:

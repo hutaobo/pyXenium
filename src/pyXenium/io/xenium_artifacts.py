@@ -1062,6 +1062,198 @@ def _cluster_key_from_relpath(relpath: str) -> str:
     return str(path.stem or "cluster")
 
 
+def _looks_like_analysis_zarr_path(path_or_url: str | os.PathLike[str]) -> bool:
+    text = str(path_or_url)
+    lower = text.lower()
+    if lower.endswith((".zarr.zip", ".zarr")):
+        return True
+    if is_remote_path(text):
+        return lower.endswith((".zip", ".zarr.zip", ".zarr"))
+    path = Path(text)
+    if path.is_file():
+        return lower.endswith((".zip", ".zarr.zip"))
+    if not path.is_dir():
+        return False
+    has_zarr_marker = (path / "zarr.json").exists() or (path / ".zgroup").exists()
+    return has_zarr_marker and (path / "cell_groups").exists()
+
+
+def _resolve_analysis_zarr_path(base_path: str) -> str | None:
+    return _resolve_artifact_path(
+        base_path,
+        exact_names=("analysis.zarr.zip",),
+        prefixed_patterns=("*_analysis.zarr.zip",),
+        kind="Xenium analysis zarr",
+    )
+
+
+def _default_cluster_label(name: str | None, one_based_index: int) -> str:
+    if name is None:
+        return str(one_based_index)
+    text = str(name)
+    match = re.fullmatch(r"\s*Cluster\s+(\d+)\s*", text, flags=re.IGNORECASE)
+    if match is not None:
+        return str(int(match.group(1)))
+    return text
+
+
+def _analysis_group_names(cell_groups: Any, group_key: str) -> list[str]:
+    names: list[str] = []
+    try:
+        attr_names = cell_groups.attrs.get("group_names", None)
+        if isinstance(attr_names, (list, tuple)) and len(attr_names) > int(group_key):
+            names = [str(value) for value in attr_names[int(group_key)]]
+    except Exception:
+        names = []
+    return names
+
+
+def _analysis_grouping_names(cell_groups: Any, keys: list[str]) -> dict[str, str]:
+    try:
+        raw = cell_groups.attrs.get("grouping_names", None)
+    except Exception:
+        raw = None
+    if not isinstance(raw, (list, tuple)):
+        raw = []
+
+    names: dict[str, str] = {}
+    for key in keys:
+        if key.isdigit() and int(key) < len(raw):
+            names[key] = str(raw[int(key)])
+        else:
+            names[key] = str(key)
+    return names
+
+
+def _analysis_group_bounds(
+    *,
+    indices: np.ndarray,
+    indptr: np.ndarray,
+    n_cells: int,
+    n_named_groups: int,
+) -> list[tuple[int, int]]:
+    if len(indptr) == 0:
+        return []
+
+    has_sentinel = (
+        len(indptr) == n_named_groups + 1
+        or (len(indptr) > 1 and int(indptr[-1]) == len(indices))
+    )
+    starts = [int(value) for value in indptr[:-1 if has_sentinel else None]]
+    stops = [int(value) for value in indptr[1:]] if has_sentinel else [int(value) for value in indptr[1:]]
+
+    if not has_sentinel:
+        seen = set(int(value) for value in indices[: starts[-1]] if 0 <= int(value) < n_cells)
+        end = len(indices)
+        for offset, value in enumerate(indices[starts[-1] :]):
+            cell_index = int(value)
+            if cell_index < 0 or cell_index >= n_cells or cell_index in seen:
+                end = starts[-1] + offset
+                break
+            seen.add(cell_index)
+        stops.append(end)
+
+    bounds: list[tuple[int, int]] = []
+    for start, stop in zip(starts, stops, strict=False):
+        start = max(0, min(int(start), len(indices)))
+        stop = max(start, min(int(stop), len(indices)))
+        bounds.append((start, stop))
+    return bounds
+
+
+def _decode_analysis_cell_group(
+    cell_groups: Any,
+    group_key: str,
+    *,
+    n_cells: int,
+    barcodes: pd.Index | None = None,
+) -> tuple[pd.Series, dict[str, Any]]:
+    indices = np.asarray(cell_groups[group_key]["indices"][:], dtype=np.int64)
+    indptr = np.asarray(cell_groups[group_key]["indptr"][:], dtype=np.int64)
+    names = _analysis_group_names(cell_groups, group_key)
+    n_named_groups = len(names) if names else len(indptr)
+    bounds = _analysis_group_bounds(
+        indices=indices,
+        indptr=indptr,
+        n_cells=n_cells,
+        n_named_groups=n_named_groups,
+    )
+
+    labels = np.full(int(n_cells), "Unassigned", dtype=object)
+    assigned_mask = np.zeros(int(n_cells), dtype=bool)
+    duplicates = 0
+    invalid = 0
+    for group_index, (start, stop) in enumerate(bounds):
+        values = indices[start:stop]
+        valid = (values >= 0) & (values < int(n_cells))
+        invalid += int((~valid).sum())
+        values = values[valid].astype(int, copy=False)
+        duplicates += int(assigned_mask[values].sum())
+        values = values[~assigned_mask[values]]
+        if len(values) == 0:
+            continue
+        label = _default_cluster_label(
+            names[group_index] if group_index < len(names) else None,
+            group_index + 1,
+        )
+        labels[values] = label
+        assigned_mask[values] = True
+
+    index = barcodes if barcodes is not None else None
+    series = pd.Series(labels, index=index, name="cluster")
+    if barcodes is not None:
+        series.index.name = "barcode"
+    meta = {
+        "group_key": str(group_key),
+        "n_clusters": int(len(bounds)),
+        "n_rows": int(len(indices)),
+        "n_obs_assigned": int(assigned_mask.sum()),
+        "n_unassigned": int((~assigned_mask).sum()),
+        "n_duplicate_indices": int(duplicates),
+        "n_invalid_indices": int(invalid),
+        "indptr_has_sentinel": bool(len(indptr) == len(bounds) + 1),
+        "group_names": names,
+    }
+    return series, meta
+
+
+def read_all_analysis_cell_groups(
+    analysis_path: str,
+    *,
+    n_cells: int,
+    barcodes: pd.Index | None = None,
+) -> tuple[dict[str, pd.Series], dict[str, dict[str, Any]]]:
+    group = open_zarr_group(analysis_path)
+    if "cell_groups" not in group:
+        raise KeyError("analysis.zarr artifact is missing 'cell_groups'.")
+
+    cell_groups = group["cell_groups"]
+    if hasattr(cell_groups, "keys"):
+        keys = [str(key) for key in cell_groups.keys()]
+    else:  # pragma: no cover
+        keys = []
+    keys = sorted(keys, key=lambda value: int(value) if value.isdigit() else 10**9)
+    grouping_names = _analysis_grouping_names(cell_groups, keys)
+
+    series_by_key: dict[str, pd.Series] = {}
+    meta_by_key: dict[str, dict[str, Any]] = {}
+    for group_key in keys:
+        grouping_name = grouping_names[group_key]
+        series, meta = _decode_analysis_cell_group(
+            cell_groups,
+            group_key,
+            n_cells=n_cells,
+            barcodes=barcodes,
+        )
+        series_by_key[grouping_name] = series
+        meta_by_key[grouping_name] = {
+            **meta,
+            "grouping_name": grouping_name,
+            "grouping_names": cell_groups.attrs.get("grouping_names", None),
+        }
+    return series_by_key, meta_by_key
+
+
 def read_cluster_series_from_path(
     clusters_path: str,
     *,
@@ -1173,69 +1365,131 @@ def load_xenium_analysis(
     projection_artifacts = discover_projection_artifacts(base_path)
 
     default_cluster_key: str | None = None
+    analysis_zarr_path: str | None = None
+    analysis_zarr_relpath: str | None = None
     explicit_cell_groups_path = _resolve_explicit_artifact_path(
         base_path,
         cell_groups_path,
         kind="cell-groups table",
     )
     if explicit_cell_groups_path is not None:
-        if is_remote_path(explicit_cell_groups_path):
-            explicit_relpath = explicit_cell_groups_path
+        if _looks_like_analysis_zarr_path(explicit_cell_groups_path):
+            analysis_zarr_path = explicit_cell_groups_path
+            analysis_zarr_relpath = (
+                explicit_cell_groups_path
+                if is_remote_path(explicit_cell_groups_path)
+                else _analysis_relative_path(base_path, Path(explicit_cell_groups_path))
+            )
         else:
-            explicit_relpath = _analysis_relative_path(base_path, Path(explicit_cell_groups_path))
-        explicit_key = _cluster_key_from_relpath(explicit_relpath)
-        cluster_artifacts[explicit_key] = XeniumClusteringArtifact(
-            key=explicit_key,
-            path=explicit_cell_groups_path,
-            relpath=explicit_relpath,
-            analysis_depth=explicit_relpath.split("/").count("analysis"),
-        )
-        default_cluster_key = explicit_key
-
-    if clusters_relpath and explicit_cell_groups_path is None:
-        explicit_path = join_path(base_path, clusters_relpath)
-        if exists(explicit_path):
-            explicit_relpath = clusters_relpath.replace("\\", "/")
+            if is_remote_path(explicit_cell_groups_path):
+                explicit_relpath = explicit_cell_groups_path
+            else:
+                explicit_relpath = _analysis_relative_path(base_path, Path(explicit_cell_groups_path))
             explicit_key = _cluster_key_from_relpath(explicit_relpath)
             cluster_artifacts[explicit_key] = XeniumClusteringArtifact(
                 key=explicit_key,
-                path=explicit_path,
+                path=explicit_cell_groups_path,
                 relpath=explicit_relpath,
                 analysis_depth=explicit_relpath.split("/").count("analysis"),
             )
             default_cluster_key = explicit_key
 
+    if clusters_relpath and explicit_cell_groups_path is None:
+        explicit_path = join_path(base_path, clusters_relpath)
+        if exists(explicit_path):
+            explicit_relpath = clusters_relpath.replace("\\", "/")
+            if _looks_like_analysis_zarr_path(explicit_path):
+                analysis_zarr_path = explicit_path
+                analysis_zarr_relpath = explicit_relpath
+            else:
+                explicit_key = _cluster_key_from_relpath(explicit_relpath)
+                cluster_artifacts[explicit_key] = XeniumClusteringArtifact(
+                    key=explicit_key,
+                    path=explicit_path,
+                    relpath=explicit_relpath,
+                    analysis_depth=explicit_relpath.split("/").count("analysis"),
+                )
+                default_cluster_key = explicit_key
+
+    if analysis_zarr_path is None:
+        analysis_zarr_path = _resolve_analysis_zarr_path(base_path)
+        if analysis_zarr_path is not None:
+            analysis_zarr_relpath = (
+                analysis_zarr_path
+                if is_remote_path(analysis_zarr_path)
+                else _analysis_relative_path(base_path, Path(analysis_zarr_path))
+            )
+
+    zarr_cluster_series: dict[str, pd.Series] = {}
+    zarr_cluster_meta: dict[str, dict[str, Any]] = {}
+    if analysis_zarr_path is not None:
+        try:
+            zarr_cluster_series, zarr_cluster_meta = read_all_analysis_cell_groups(
+                analysis_zarr_path,
+                n_cells=len(barcodes),
+                barcodes=barcodes,
+            )
+        except Exception as exc:
+            warnings.warn(
+                f"Unable to read Xenium analysis zarr cluster fallback {analysis_zarr_path!r}: {exc}",
+                stacklevel=2,
+            )
+
     if default_cluster_key is None and "gene_expression_graphclust" in cluster_artifacts:
+        default_cluster_key = "gene_expression_graphclust"
+    if default_cluster_key is None and "gene_expression_graphclust" in zarr_cluster_series:
         default_cluster_key = "gene_expression_graphclust"
     if default_cluster_key is None and cluster_artifacts:
         default_cluster_key = sorted(cluster_artifacts)[0]
+    if default_cluster_key is None and zarr_cluster_series:
+        default_cluster_key = sorted(zarr_cluster_series)[0]
 
     cluster_series: dict[str, pd.Series] = {}
     cluster_columns: dict[str, str] = {}
     cluster_sources: dict[str, dict[str, Any]] = {}
 
-    for key in sorted(cluster_artifacts):
-        artifact = cluster_artifacts[key]
-        series, meta = read_cluster_series_from_path(
-            artifact.path,
-            barcodes=barcodes,
-            cell_id_col=cell_id_col if key == default_cluster_key else None,
-            cluster_col=cluster_col if key == default_cluster_key else None,
-        )
+    for key in sorted(set(cluster_artifacts) | set(zarr_cluster_series)):
+        if key in cluster_artifacts:
+            artifact = cluster_artifacts[key]
+            series, meta = read_cluster_series_from_path(
+                artifact.path,
+                barcodes=barcodes,
+                cell_id_col=cell_id_col if key == default_cluster_key else None,
+                cluster_col=cluster_col if key == default_cluster_key else None,
+            )
+            source_payload = {
+                "path": artifact.path,
+                "relpath": artifact.relpath,
+                "source_type": "clusters.csv",
+                "index_column": meta["index_column"],
+                "cluster_column": meta["cluster_column"],
+                "n_rows": meta["n_rows"],
+                "n_obs_assigned": meta["n_obs_assigned"],
+            }
+        else:
+            series = zarr_cluster_series[key]
+            meta = zarr_cluster_meta[key]
+            source_payload = {
+                "path": analysis_zarr_path,
+                "relpath": analysis_zarr_relpath,
+                "source_type": "analysis.zarr.zip",
+                "index_column": "cell_index",
+                "cluster_column": key,
+                "group_key": meta["group_key"],
+                "n_clusters": meta["n_clusters"],
+                "n_rows": meta["n_rows"],
+                "n_obs_assigned": meta["n_obs_assigned"],
+                "n_unassigned": meta["n_unassigned"],
+                "n_duplicate_indices": meta["n_duplicate_indices"],
+                "n_invalid_indices": meta["n_invalid_indices"],
+            }
         if series.empty and meta["n_rows"] == 0:
             continue
         cluster_series[key] = series
         cluster_columns[key] = (
             cluster_column_name if key == default_cluster_key else f"{cluster_column_name}__{key}"
         )
-        cluster_sources[key] = {
-            "path": artifact.path,
-            "relpath": artifact.relpath,
-            "index_column": meta["index_column"],
-            "cluster_column": meta["cluster_column"],
-            "n_rows": meta["n_rows"],
-            "n_obs_assigned": meta["n_obs_assigned"],
-        }
+        cluster_sources[key] = source_payload
 
     projection_frames: dict[str, pd.DataFrame] = {}
     projection_keys: dict[str, str] = {}
@@ -1473,40 +1727,12 @@ def read_analysis_cell_groups(
         keys = []
     keys = sorted(keys, key=lambda value: int(value) if value.isdigit() else 10**9)
     group_key = prefer_group if prefer_group in keys else keys[0]
-
-    indices = np.asarray(cell_groups[group_key]["indices"][:], dtype=np.int64)
-    indptr = np.asarray(cell_groups[group_key]["indptr"][:], dtype=np.int64)
-    n_groups = len(indptr) - 1
-
-    matrix = sparse.csr_matrix(
-        (np.ones_like(indices, dtype=np.uint8), indices, indptr),
-        shape=(n_groups, int(n_cells)),
+    series, meta = _decode_analysis_cell_group(
+        cell_groups,
+        group_key,
+        n_cells=n_cells,
     )
-    assigned = np.asarray(matrix.sum(axis=0)).ravel()
-    labels = np.asarray(matrix.argmax(axis=0)).ravel()
-    labels[assigned == 0] = -1
-
-    names: list[str] = []
-    try:
-        attr_names = group["cell_groups"].attrs.get("group_names", None)
-        if isinstance(attr_names, (list, tuple)) and len(attr_names) > int(group_key):
-            names = [str(value) for value in attr_names[int(group_key)]]
-    except Exception:
-        names = []
-
-    def _label_name(index: int) -> str:
-        if index < 0:
-            return "Unassigned"
-        if 0 <= index < len(names):
-            return names[index]
-        return f"Cluster {index + 1}"
-
-    series = pd.Series([_label_name(int(value)) for value in labels], name="cluster")
-    meta = {
-        "group_key": str(group_key),
-        "n_clusters": int(n_groups),
-        "grouping_names": group["cell_groups"].attrs.get("grouping_names", None),
-    }
+    meta["grouping_names"] = cell_groups.attrs.get("grouping_names", None)
     return series, meta
 
 
@@ -1850,7 +2076,12 @@ def read_keypoints_validation(
 def discover_he_artifacts(base_path: str) -> dict[str, Any] | None:
     image_path = _first_local_match(
         base_path,
-        ("*_he_image.ome.tif", "*_he_image.ome.tiff"),
+        (
+            "*_he_image.ome.tif",
+            "*_he_image.ome.tiff",
+            "*_he_unaligned_image.ome.tif",
+            "*_he_unaligned_image.ome.tiff",
+        ),
     )
     if image_path is None:
         return None

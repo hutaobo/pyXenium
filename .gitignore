@@ -20,3 +20,12 @@ benchmarking/cci_2026_atera/runs/*
 !benchmarking/cci_2026_atera/runs/.gitkeep
 benchmarking/cci_2026_atera/pdc_collected/
 pyxenium_gmi_modules_stage*.tar.gz
+
+# Ignore oversized generated PDC pilot outputs while keeping lightweight metadata trackable.
+benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/pilot_common/pyxenium/pyxenium_scores.tsv
+benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/pilot_common/pyxenium/pyxenium_standardized.tsv
+benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/runs/pilot_common/pyxenium/artifacts/cci_component_diagnostics.csv
+benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/runs/pilot_common/pyxenium/artifacts/cci_sender_receiver_scores.csv
+benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/runs/pilot_common/pyxenium/input_cache/
+benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/runs/pilot_common/pyxenium/pyxenium_scores.tsv
+benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/runs/pilot_common/pyxenium/pyxenium_standardized.tsv

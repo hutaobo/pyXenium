@@ -1,0 +1,33 @@
+{
+  "method": "pyxenium",
+  "display_name": "pyXenium TopoLink-CCI",
+  "language": "python",
+  "env_name": "pyx-cci-pyxenium",
+  "runner": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runners/python/run_pyxenium.py",
+  "input_manifest": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/input_manifest.json",
+  "input_kind": "sparse_bundle",
+  "input_h5ad": null,
+  "input_bundle_mtx": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/counts_symbol.mtx",
+  "output_dir": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/runs/pilot_common/pyxenium",
+  "database_mode": "common-db",
+  "phase": "full",
+  "max_cci_pairs": 500,
+  "n_perms": 100,
+  "chunk_id": null,
+  "num_chunks": null,
+  "bounded_mode": "full_cells_lr500_pilot",
+  "gpu_id": null,
+  "job_id": "pilot_common_pyxenium",
+  "gzip_standardized": true,
+  "interaction_pairs": 500,
+  "will_execute": true,
+  "input_fingerprint": {
+    "path": "/cfs/klemming/scratch/h/hutaobo/pyxenium_cci_benchmark_2026-04/datasets/atera_cervical_wta/data/full/counts_symbol.mtx",
+    "exists": true,
+    "size_bytes": 8687111392,
+    "mtime": 1777585736.0,
+    "sha256_head": "sha256:first8388608:500b335f56165fb0eb6f182ca7827dba72e8f17e2794246e0d9f95fccee2b319"
+  },
+  "input_manifest_sha256": "sha256:0c22fff86217efa9a710cb90e9f39861cdc5c86dec73a17b8e7e2894d36c0f2d",
+  "cci_resource_sha256": "sha256:3dd32a42f0562ee6e540562035f48c51e0ebe7e335ab29fbf066c132a58aa1a5"
+}

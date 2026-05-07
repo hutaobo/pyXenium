@@ -14,6 +14,7 @@ from scipy import sparse
 from scipy.io import mmwrite
 
 import pyXenium.io.api as xenium_api_module
+from pyXenium.io.xenium_artifacts import read_analysis_cell_groups
 from pyXenium.io import (
     XeniumSlide,
     XeniumSlide,
@@ -149,6 +150,45 @@ def _make_analysis_zip(path: Path) -> None:
     group.create_array("indptr", data=np.asarray([0, 2, 3], dtype=np.int64))
     cell_groups.attrs["group_names"] = [["Tumor", "Immune"]]
     cell_groups.attrs["grouping_names"] = ["graphclust"]
+    store.close()
+
+
+def _make_official_analysis_zip(path: Path) -> None:
+    store = zarr.storage.ZipStore(str(path), mode="w")
+    root = zarr.open_group(store=store, mode="w")
+    cell_groups = root.require_group("cell_groups")
+
+    graph = cell_groups.require_group("0")
+    graph.create_array("indices", data=np.asarray([0, 2, 1], dtype=np.uint32))
+    graph.create_array("indptr", data=np.asarray([0, 2], dtype=np.uint32))
+
+    kmeans = cell_groups.require_group("1")
+    kmeans.create_array("indices", data=np.asarray([0, 1, 2], dtype=np.uint32))
+    kmeans.create_array("indptr", data=np.asarray([0, 1], dtype=np.uint32))
+
+    cell_groups.attrs["group_names"] = [
+        ["Cluster 1", "Cluster 2"],
+        ["Cluster 1", "Cluster 2"],
+    ]
+    cell_groups.attrs["grouping_names"] = [
+        "gene_expression_graphclust",
+        "gene_expression_kmeans_2_clusters",
+    ]
+    cell_groups.attrs["major_version"] = 1
+    cell_groups.attrs["minor_version"] = 0
+    cell_groups.attrs["number_groupings"] = 2
+    store.close()
+
+
+def _make_official_analysis_zip_with_padding(path: Path) -> None:
+    store = zarr.storage.ZipStore(str(path), mode="w")
+    root = zarr.open_group(store=store, mode="w")
+    cell_groups = root.require_group("cell_groups")
+    graph = cell_groups.require_group("0")
+    graph.create_array("indices", data=np.asarray([0, 1, 0], dtype=np.uint32))
+    graph.create_array("indptr", data=np.asarray([0, 1], dtype=np.uint32))
+    cell_groups.attrs["group_names"] = [["Cluster 1", "Cluster 2"]]
+    cell_groups.attrs["grouping_names"] = ["gene_expression_graphclust"]
     store.close()
 
 
@@ -514,6 +554,92 @@ def test_read_xenium_imports_all_clusterings_and_projections(tmp_path):
         "tsne": "X_tsne",
         "umap": "X_umap",
     }
+
+
+def test_read_xenium_falls_back_to_analysis_zarr_zip_when_cluster_csv_missing(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_analysis=False,
+    )
+    _make_official_analysis_zip(dataset / "analysis.zarr.zip")
+
+    adata = read_xenium(str(dataset), as_="anndata", prefer="zarr")
+
+    assert list(adata.obs["cluster"].astype(str)) == ["1", "2", "1"]
+    assert list(adata.obs["cluster__gene_expression_kmeans_2_clusters"].astype(str)) == [
+        "1",
+        "2",
+        "2",
+    ]
+    assert adata.uns["xenium_analysis"]["default_cluster_key"] == "gene_expression_graphclust"
+    assert (
+        adata.uns["xenium_analysis"]["cluster_sources"]["gene_expression_graphclust"]["source_type"]
+        == "analysis.zarr.zip"
+    )
+
+
+def test_read_xenium_csv_cluster_artifacts_override_analysis_zarr_zip(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_analysis=True,
+        include_extra_clusterings=False,
+    )
+    _make_official_analysis_zip(dataset / "analysis.zarr.zip")
+
+    adata = read_xenium(str(dataset), as_="anndata", prefer="zarr")
+
+    assert list(adata.obs["cluster"].astype(str)) == GRAPHCLUST_LABELS
+    assert list(adata.obs["cluster__gene_expression_kmeans_2_clusters"].astype(str)) == [
+        "1",
+        "2",
+        "2",
+    ]
+    assert (
+        adata.uns["xenium_analysis"]["cluster_sources"]["gene_expression_graphclust"]["source_type"]
+        == "clusters.csv"
+    )
+    assert (
+        adata.uns["xenium_analysis"]["cluster_sources"]["gene_expression_kmeans_2_clusters"]["source_type"]
+        == "analysis.zarr.zip"
+    )
+
+
+def test_read_xenium_accepts_analysis_zarr_zip_as_explicit_cell_groups_path(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset",
+        include_analysis=False,
+    )
+    _make_official_analysis_zip(dataset / "custom_analysis.zarr.zip")
+
+    adata = read_xenium(
+        str(dataset),
+        as_="anndata",
+        prefer="zarr",
+        cell_groups_path="custom_analysis.zarr.zip",
+    )
+
+    assert list(adata.obs["cluster"].astype(str)) == ["1", "2", "1"]
+    assert (
+        adata.uns["xenium_analysis"]["cluster_sources"]["gene_expression_graphclust"]["relpath"]
+        == "custom_analysis.zarr.zip"
+    )
+
+
+def test_read_analysis_cell_groups_supports_sentinel_and_official_padding(tmp_path):
+    legacy_path = tmp_path / "legacy_analysis.zarr.zip"
+    padded_path = tmp_path / "padded_analysis.zarr.zip"
+    _make_analysis_zip(legacy_path)
+    _make_official_analysis_zip_with_padding(padded_path)
+
+    legacy, legacy_meta = read_analysis_cell_groups(str(legacy_path), n_cells=3)
+    padded, padded_meta = read_analysis_cell_groups(str(padded_path), n_cells=3)
+
+    assert list(legacy.astype(str)) == ["Tumor", "Immune", "Tumor"]
+    assert legacy_meta["n_clusters"] == 2
+    assert list(padded.astype(str)) == ["1", "2", "Unassigned"]
+    assert padded_meta["n_clusters"] == 2
+    assert padded_meta["n_unassigned"] == 1
+    assert padded_meta["n_duplicate_indices"] == 0
 
 
 def test_read_xenium_prefers_single_layer_analysis_paths(tmp_path):
