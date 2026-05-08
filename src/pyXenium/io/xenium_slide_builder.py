@@ -100,7 +100,7 @@ def build_xenium_slide(
     transcript_path = resolve_transcripts_path(str(root))
     image_artifacts = discover_image_artifacts(str(root))
     slide.metadata.setdefault("schema", {})["name"] = "XeniumSlide"
-    slide.metadata.setdefault("schema", {})["version"] = 1
+    slide.metadata.setdefault("schema", {})["version"] = 2
     slide.metadata["case_name"] = case_name
     slide.metadata["organ"] = organ
     slide.metadata["batch"] = {
@@ -122,7 +122,7 @@ def build_xenium_slide(
         slide.metadata["contour_source"] = dict(contour_source)
     slide.table.uns.setdefault("xenium_slide", {}).update(
         {
-            "schema_version": 1,
+            "schema_version": 2,
             "case_name": case_name,
             "organ": organ,
             "source_path": str(root),

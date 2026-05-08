@@ -43,6 +43,11 @@ def _parse_args() -> argparse.Namespace:
         default=os.environ.get("PYXENIUM_HE_SOURCE_PATH"),
         help="Optional H&E WSI path override for slide stores with stale source_path metadata.",
     )
+    parser.add_argument(
+        "--wsi-reader",
+        default=os.environ.get("PYXENIUM_WSI_READER"),
+        help="Optional WSIData reader override, for example 'tiffslide'.",
+    )
     parser.add_argument("--model", default=os.environ.get("LAZYSLIDE_MODEL", "plip"))
     parser.add_argument("--tile-px", type=int, default=224)
     parser.add_argument("--mpp", type=float, default=0.5)
@@ -74,6 +79,7 @@ def main() -> None:
         contour_pixel_size_um=args.pixel_size_um,
         he_image_key=args.he_image_key,
         he_source_path=args.he_source_path,
+        wsi_reader=args.wsi_reader,
         model=args.model,
         tile_px=args.tile_px,
         mpp=args.mpp,

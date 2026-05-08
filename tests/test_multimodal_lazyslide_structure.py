@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import builtins
 import json
+import sys
+import types
 
 import anndata as ad
 import numpy as np
@@ -13,7 +15,9 @@ from shapely.geometry import Polygon
 from pyXenium.contour._analysis import _prepare_contours
 from pyXenium.contour._geometry import geometry_table_to_contour_frame
 from pyXenium.io import XeniumImage, XeniumSlide
+import pyXenium.multimodal.histoseg_lazyslide as histoseg_lazyslide_module
 from pyXenium.multimodal import (
+    HistoSegLazySlideConfig,
     assign_tiles_to_histoseg_structures,
     histoseg_contours_to_image_table,
     run_histoseg_lazyslide_structure_workflow,
@@ -177,3 +181,179 @@ def test_missing_lazyslide_dependency_has_clear_message(monkeypatch):
             contour_key="histoseg",
             include_boundary_programs=False,
         )
+
+
+def test_open_lazyslide_wsi_prefers_internal_slide_store(monkeypatch):
+    slide = _toy_slide()
+    fake_wsi = types.SimpleNamespace(applied_mpp=None)
+
+    def _set_mpp(value):
+        fake_wsi.applied_mpp = float(value)
+
+    fake_wsi.set_mpp = _set_mpp
+    monkeypatch.setattr(
+        slide,
+        "inspect_wsi",
+        lambda image_key="he": {"wsi_ready": True, "issues": []},
+    )
+    monkeypatch.setattr(slide, "to_wsidata", lambda image_key="he": fake_wsi)
+
+    open_calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+
+    def _open_wsi(*args, **kwargs):
+        open_calls.append((args, kwargs))
+        return object()
+
+    config = HistoSegLazySlideConfig(include_boundary_programs=False, slide_mpp=0.42)
+    wsi, source = histoseg_lazyslide_module._open_lazyslide_wsi(
+        slide,
+        he_image=slide.images["he"],
+        config=config,
+        open_wsi_func=_open_wsi,
+    )
+
+    assert wsi is fake_wsi
+    assert open_calls == []
+    assert fake_wsi.applied_mpp == pytest.approx(0.42)
+    assert source["wsi_source"] == "internal_slide_store"
+
+
+def test_open_lazyslide_wsi_uses_external_override(monkeypatch):
+    slide = _toy_slide()
+    fake_wsi = types.SimpleNamespace(applied_mpp=None)
+
+    def _set_mpp(value):
+        fake_wsi.applied_mpp = float(value)
+
+    fake_wsi.set_mpp = _set_mpp
+    monkeypatch.setattr(
+        slide,
+        "inspect_wsi",
+        lambda image_key="he": {"wsi_ready": False, "issues": ["not used"]},
+    )
+
+    open_calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+
+    def _open_wsi(*args, **kwargs):
+        open_calls.append((args, kwargs))
+        return fake_wsi
+
+    config = HistoSegLazySlideConfig(
+        include_boundary_programs=False,
+        he_source_path="override.svs",
+        wsi_reader="tiffslide",
+        slide_mpp=0.31,
+    )
+    wsi, source = histoseg_lazyslide_module._open_lazyslide_wsi(
+        slide,
+        he_image=slide.images["he"],
+        config=config,
+        open_wsi_func=_open_wsi,
+    )
+
+    assert wsi is fake_wsi
+    assert open_calls == [(("override.svs",), {"reader": "tiffslide"})]
+    assert fake_wsi.applied_mpp == pytest.approx(0.31)
+    assert source["wsi_source"] == "external_override"
+
+
+def test_open_lazyslide_wsi_requires_wsi_ready_internal_source(monkeypatch):
+    slide = _toy_slide()
+    monkeypatch.setattr(
+        slide,
+        "inspect_wsi",
+        lambda image_key="he": {
+            "wsi_ready": False,
+            "issues": ["Expected at least 2 pyramid levels."],
+        },
+    )
+
+    with pytest.raises(ValueError, match="not WSI-ready"):
+        histoseg_lazyslide_module._open_lazyslide_wsi(
+            slide,
+            he_image=slide.images["he"],
+            config=HistoSegLazySlideConfig(include_boundary_programs=False),
+            open_wsi_func=lambda *args, **kwargs: object(),
+        )
+
+
+def test_run_histoseg_lazyslide_structure_workflow_internal_bridge_passes_slide_mpp(monkeypatch):
+    slide = _toy_slide()
+    contour_table = _prepare_contours(sdata=slide, contour_key="histoseg", contour_query=None)
+    image_table = histoseg_contours_to_image_table(contour_table, he_image=slide.images["he"])
+
+    class _FakeWSI:
+        def __init__(self):
+            self._tables: dict[str, ad.AnnData] = {}
+            self.shapes: dict[str, pd.DataFrame] = {}
+
+        def __getitem__(self, key):
+            return self._tables[key]
+
+        def set_mpp(self, value):
+            self.applied_mpp = float(value)
+
+    fake_wsi = _FakeWSI()
+    fake_wsi._tables["plip_histoseg_tiles"] = ad.AnnData(np.asarray([[0.9, 0.1], [0.2, 0.8]]))
+    fake_wsi._tables["plip_histoseg_tiles"].obs_names = pd.Index(["t1", "t2"])
+    fake_wsi._tables["plip_histoseg_tiles"].var_names = pd.Index(["z0", "z1"])
+    fake_wsi._tables["plip_histoseg_tiles"].obs["tile_id"] = ["t1", "t2"]
+
+    monkeypatch.setattr(
+        slide,
+        "inspect_wsi",
+        lambda image_key="he": {"wsi_ready": True, "issues": []},
+    )
+    monkeypatch.setattr(slide, "to_wsidata", lambda image_key="he": fake_wsi)
+
+    recorded_tile_kwargs: dict[str, object] = {}
+
+    fake_geopandas = types.ModuleType("geopandas")
+    fake_geopandas.GeoDataFrame = lambda data, geometry, crs=None: pd.DataFrame(data).assign(geometry=list(geometry))
+
+    fake_lazyslide = types.ModuleType("lazyslide")
+    fake_lazyslide.__version__ = "test"
+    fake_lazyslide.io = types.SimpleNamespace(
+        load_annotations=lambda wsi, annotations=None, join_with=None, key_added=None: wsi.shapes.__setitem__(key_added, annotations)
+    )
+    fake_lazyslide.pp = types.SimpleNamespace(
+        tile_tissues=lambda wsi, tile_px, **kwargs: (
+            recorded_tile_kwargs.update({"tile_px": tile_px, **kwargs}),
+            wsi.shapes.__setitem__(
+                "histoseg_tiles",
+                pd.DataFrame(
+                    {
+                        "tile_id": ["t1", "t2"],
+                        "x": [2.0, 12.0],
+                        "y": [2.0, 2.0],
+                    }
+                ),
+            ),
+        ),
+        tile_graph=lambda *args, **kwargs: None,
+    )
+    fake_lazyslide.tl = types.SimpleNamespace(
+        feature_extraction=lambda *args, **kwargs: None,
+        text_embedding=lambda *args, **kwargs: [],
+        text_image_similarity=lambda *args, **kwargs: None,
+        spatial_features=lambda *args, **kwargs: None,
+        spatial_domain=lambda *args, **kwargs: None,
+    )
+
+    fake_wsidata = types.ModuleType("wsidata")
+    fake_wsidata.open_wsi = lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("external open_wsi should not be used"))
+
+    monkeypatch.setitem(sys.modules, "geopandas", fake_geopandas)
+    monkeypatch.setitem(sys.modules, "lazyslide", fake_lazyslide)
+    monkeypatch.setitem(sys.modules, "wsidata", fake_wsidata)
+
+    result = histoseg_lazyslide_module._run_lazyslide_backend(
+        sdata=slide,
+        image_contours=image_table,
+        he_image=slide.images["he"],
+        config=HistoSegLazySlideConfig(include_boundary_programs=False, slide_mpp=0.37),
+    )
+
+    assert recorded_tile_kwargs["slide_mpp"] == pytest.approx(0.37)
+    assert result["model_status"]["wsi_source"] == "internal_slide_store"
+    assert len(result["tile_features"]) == 2

@@ -1,0 +1,173 @@
+{
+  "input": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/data/WTA_Preview_FFPE_Breast_Cancer_he_image.ome.tif",
+  "jpeg_quality": 90,
+  "levels": [
+    {
+      "downsample": 1.0,
+      "level": 0,
+      "shape_yxs": [
+        47337,
+        90368,
+        3
+      ]
+    },
+    {
+      "downsample": 2.0,
+      "level": 1,
+      "shape_yxs": [
+        23668,
+        45184,
+        3
+      ]
+    },
+    {
+      "downsample": 4.0,
+      "level": 2,
+      "shape_yxs": [
+        11834,
+        22592,
+        3
+      ]
+    },
+    {
+      "downsample": 8.0,
+      "level": 3,
+      "shape_yxs": [
+        5917,
+        11296,
+        3
+      ]
+    },
+    {
+      "downsample": 16.0,
+      "level": 4,
+      "shape_yxs": [
+        2958,
+        5648,
+        3
+      ]
+    },
+    {
+      "downsample": 32.0,
+      "level": 5,
+      "shape_yxs": [
+        1479,
+        2824,
+        3
+      ]
+    },
+    {
+      "downsample": 64.0,
+      "level": 6,
+      "shape_yxs": [
+        739,
+        1412,
+        3
+      ]
+    },
+    {
+      "downsample": 128.0,
+      "level": 7,
+      "shape_yxs": [
+        369,
+        706,
+        3
+      ]
+    },
+    {
+      "downsample": 256.0,
+      "level": 8,
+      "shape_yxs": [
+        184,
+        353,
+        3
+      ]
+    },
+    {
+      "downsample": 513.4545454545455,
+      "level": 9,
+      "shape_yxs": [
+        92,
+        176,
+        3
+      ]
+    }
+  ],
+  "mpp": 0.2737753869520786,
+  "n_levels": 10,
+  "output": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/data/WTA_Preview_FFPE_Breast_Cancer_he_image.tiffslide_pyramid.tif",
+  "runtime_seconds": 77.88930177688599,
+  "started_at_unix": 1778238120.088679,
+  "status": "completed",
+  "tile_px": 512,
+  "verification": {
+    "bounds": [
+      0,
+      0,
+      90368,
+      47337
+    ],
+    "level_downsample": [
+      1.0,
+      2.0000211255703904,
+      4.000042251140781,
+      8.000084502281561,
+      16.001521298174442,
+      32.003042596348884,
+      64.0277401894452,
+      128.1422764227642,
+      256.633152173913,
+      513.9935770750988
+    ],
+    "level_shape": [
+      [
+        47337,
+        90368
+      ],
+      [
+        23668,
+        45184
+      ],
+      [
+        11834,
+        22592
+      ],
+      [
+        5917,
+        11296
+      ],
+      [
+        2958,
+        5648
+      ],
+      [
+        1479,
+        2824
+      ],
+      [
+        739,
+        1412
+      ],
+      [
+        369,
+        706
+      ],
+      [
+        184,
+        353
+      ],
+      [
+        92,
+        176
+      ]
+    ],
+    "magnification": null,
+    "mpp": 0.2737753869520786,
+    "n_level": 10,
+    "raw": "{\"tiffslide.comment\": null, \"tiffslide.vendor\": null, \"tiffslide.quickhash-1\": null, \"tiffslide.background-color\": null, \"tiffslide.objective-power\": null, \"tiffslide.mpp-x\": 0.2737753869520786, \"tiffslide.mpp-y\": 0.2737753869520786, \"tiffslide.bounds-x\": null, \"tiffslide.bounds-y\": null, \"tiffslide.bounds-width\": null, \"tiffslide.bounds-height\": null, \"tiff.ImageDescription\": \"{\\\"shape\\\": [47337, 90368, 3], \\\"axes\\\": \\\"YXS\\\"}\", \"tiffslide.series-index\": 0, \"tiff.ResolutionUnit\": \"CENTIMETER\", \"tiff.XResolution\": 36526.293, \"tiff.YResolution\": 36526.293, \"tiffslide.series-axes\": \"YXS\", \"tiffslide.level[0].downsample\": 1.0, \"tiffslide.level[0].height\": 47337, \"tiffslide.level[0].width\": 90368, \"tiffslide.level[0].tile-height\": 512, \"tiffslide.level[0].tile-width\": 512, \"tiffslide.level[1].downsample\": 2.0000211255703904, \"tiffslide.level[1].height\": 23668, \"tiffslide.level[1].width\": 45184, \"tiffslide.level[1].tile-height\": 512, \"tiffslide.level[1].tile-width\": 512, \"tiffslide.level[2].downsample\": 4.000042251140781, \"tiffslide.level[2].height\": 11834, \"tiffslide.level[2].width\": 22592, \"tiffslide.level[2].tile-height\": 512, \"tiffslide.level[2].tile-width\": 512, \"tiffslide.level[3].downsample\": 8.000084502281561, \"tiffslide.level[3].height\": 5917, \"tiffslide.level[3].width\": 11296, \"tiffslide.level[3].tile-height\": 512, \"tiffslide.level[3].tile-width\": 512, \"tiffslide.level[4].downsample\": 16.001521298174442, \"tiffslide.level[4].height\": 2958, \"tiffslide.level[4].width\": 5648, \"tiffslide.level[4].tile-height\": 512, \"tiffslide.level[4].tile-width\": 512, \"tiffslide.level[5].downsample\": 32.003042596348884, \"tiffslide.level[5].height\": 1479, \"tiffslide.level[5].width\": 2824, \"tiffslide.level[5].tile-height\": 512, \"tiffslide.level[5].tile-width\": 512, \"tiffslide.level[6].downsample\": 64.0277401894452, \"tiffslide.level[6].height\": 739, \"tiffslide.level[6].width\": 1412, \"tiffslide.level[6].tile-height\": 512, \"tiffslide.level[6].tile-width\": 512, \"tiffslide.level[7].downsample\": 128.1422764227642, \"tiffslide.level[7].height\": 369, \"tiffslide.level[7].width\": 706, \"tiffslide.level[7].tile-height\": 512, \"tiffslide.level[7].tile-width\": 512, \"tiffslide.level[8].downsample\": 256.633152173913, \"tiffslide.level[8].height\": 184, \"tiffslide.level[8].width\": 353, \"tiffslide.level[8].tile-height\": 512, \"tiffslide.level[8].tile-width\": 512, \"tiffslide.level[9].downsample\": 513.9935770750988, \"tiffslide.level[9].height\": 92, \"tiffslide.level[9].width\": 176, \"tiffslide.level[9].tile-height\": 512, \"tiffslide.level[9].tile-width\": 512, \"comment\": null, \"vendor\": null, \"quickhash-1\": null, \"background-color\": null, \"objective-power\": null, \"mpp-x\": 0.2737753869520786, \"mpp-y\": 0.2737753869520786, \"bounds-x\": null, \"bounds-y\": null, \"bounds-width\": null, \"bounds-height\": null, \"ImageDescription\": \"{\\\"shape\\\": [47337, 90368, 3], \\\"axes\\\": \\\"YXS\\\"}\", \"series-index\": 0, \"ResolutionUnit\": \"CENTIMETER\", \"XResolution\": 36526.293, \"YResolution\": 36526.293, \"series-axes\": \"YXS\", \"level[0].downsample\": 1.0, \"level[0].height\": 47337, \"level[0].width\": 90368, \"level[0].tile-height\": 512, \"level[0].tile-width\": 512, \"level[1].downsample\": 2.0000211255703904, \"level[1].height\": 23668, \"level[1].width\": 45184, \"level[1].tile-height\": 512, \"level[1].tile-width\": 512, \"level[2].downsample\": 4.000042251140781, \"level[2].height\": 11834, \"level[2].width\": 22592, \"level[2].tile-height\": 512, \"level[2].tile-width\": 512, \"level[3].downsample\": 8.000084502281561, \"level[3].height\": 5917, \"level[3].width\": 11296, \"level[3].tile-height\": 512, \"level[3].tile-width\": 512, \"level[4].downsample\": 16.001521298174442, \"level[4].height\": 2958, \"level[4].width\": 5648, \"level[4].tile-height\": 512, \"level[4].tile-width\": 512, \"level[5].downsample\": 32.003042596348884, \"level[5].height\": 1479, \"level[5].width\": 2824, \"level[5].tile-height\": 512, \"level[5].tile-width\": 512, \"level[6].downsample\": 64.0277401894452, \"level[6].height\": 739, \"level[6].width\": 1412, \"level[6].tile-height\": 512, \"level[6].tile-width\": 512, \"level[7].downsample\": 128.1422764227642, \"level[7].height\": 369, \"level[7].width\": 706, \"level[7].tile-height\": 512, \"level[7].tile-width\": 512, \"level[8].downsample\": 256.633152173913, \"level[8].height\": 184, \"level[8].width\": 353, \"level[8].tile-height\": 512, \"level[8].tile-width\": 512, \"level[9].downsample\": 513.9935770750988, \"level[9].height\": 92, \"level[9].width\": 176, \"level[9].tile-height\": 512, \"level[9].tile-width\": 512}",
+    "shape": [
+      47337,
+      90368
+    ]
+  }
+}

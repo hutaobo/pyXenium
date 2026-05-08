@@ -3,6 +3,7 @@ from importlib import import_module
 from ._xenium_defaults import DEFAULT_XENIUM_PIXEL_SIZE_UM
 from .api import (
     DEFAULT_CLUSTER_RELPATH,
+    inspect_slide_wsi,
     read_slide,
     read_xenium,
     read_xenium_slide,
@@ -28,6 +29,7 @@ __all__ = [
     "discover_10x_xenium_datasets",
     "export_xenium_to_slide_zarr",
     "generate_missing_contours_with_histoseg",
+    "inspect_slide_wsi",
     "load_anndata_from_partial",
     "load_xenium_gene_protein",
     "read_slide",

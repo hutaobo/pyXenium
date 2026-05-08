@@ -40,6 +40,8 @@ result = run_histoseg_lazyslide_structure_workflow(
     contour_geojson="/path/to/xenium_explorer_annotations.s1_s5.generated.geojson",
     contour_key="histoseg_structures",
     output_dir="/path/to/a100/run",
+    he_source_path="/path/to/WTA_Preview_FFPE_Breast_Cancer_he_image.tiffslide_pyramid.tif",
+    wsi_reader="tiffslide",
     model="plip",
     tile_px=224,
     mpp=0.5,
@@ -82,45 +84,66 @@ bash benchmarking/lazyslide_a100/scripts/run_a100_histoseg_lazyslide.sh \
   --max-tiles 2000
 ```
 
-The direct WSI LazySlide path is implemented as the preferred production path.
-On the current Atera breast WTA OME-TIFF, the full WSI run was killed by memory
-pressure because the H&E image is a non-pyramidal 17 GB OME-TIFF. To avoid
-reporting a failed WSI run as biology, the A100 result below uses the existing
-HistoSeg contour patch corpus as the tiling input and runs full PLIP inference
-over every patch.
+### WSI preparation
 
-The patch fallback is still a real image-model run: HistoSeg supplies the
-structure patches, PLIP supplies the image embeddings and text-image scores,
-and pyXenium summarizes the resulting image features by HistoSeg structure.
-It does not rerun segmentation and it does not make synthetic image features.
+The original Atera breast WTA OME-TIFF stores RGB as planar `SYX`. `tifffile`
+can see the internal levels, but `WSIData/open_wsi` defaults to OpenSlide and
+only recognizes one level for this file layout. That made the first direct WSI
+attempt behave like a one-level 17 GB image.
 
-The full PLIP patch command used for this RTD snapshot was:
+The fix is to rewrite the H&E image once into a `tiffslide`-readable tiled
+pyramidal BigTIFF with interleaved `YXS` RGB:
+
+```bash
+PYTHONPATH=src \
+/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/envs/plip-patch/bin/python \
+  benchmarking/lazyslide_a100/scripts/prepare_tiffslide_pyramid.py \
+  --input /data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/data/WTA_Preview_FFPE_Breast_Cancer_he_image.ome.tif \
+  --output /data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/data/WTA_Preview_FFPE_Breast_Cancer_he_image.tiffslide_pyramid.tif \
+  --tile-px 512 \
+  --jpeg-quality 90 \
+  --verify
+```
+
+The prepared WSI validates as 10 levels with MPP 0.2738 and is recorded in
+[`prepared_wsi_manifest.json`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/prepared_wsi_manifest.json).
+
+The full direct LazySlide PLIP command used for this RTD snapshot was:
 
 ```bash
 CUDA_VISIBLE_DEVICES=7 \
 /data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/envs/plip-patch/bin/python \
-  benchmarking/lazyslide_a100/scripts/run_histoseg_patch_plip_workflow.py \
-  --manifest /data/taobo.hu/projects/stgpt_l3_20260504/data/xenium_slides/WTA_Preview_FFPE_Breast_Cancer_outs/contour_patches_manifest.json \
-  --output-dir /data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full \
+  benchmarking/lazyslide_a100/scripts/run_histoseg_lazyslide_workflow.py \
+  --dataset-root /data/taobo.hu/pyxenium_lr_benchmark_2026-04/data/source_cache/breast/WTA_Preview_FFPE_Breast_Cancer_outs/spatialdata.zarr \
+  --histoseg-geojson /data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/data/xenium_explorer_annotations.s1_s5.generated.geojson \
+  --contour-id-key name \
+  --he-source-path /data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/data/WTA_Preview_FFPE_Breast_Cancer_he_image.tiffslide_pyramid.tif \
+  --wsi-reader tiffslide \
+  --output-dir /data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text \
+  --model plip \
   --batch-size 64 \
   --table-format parquet
 ```
 
 ## A100 PLIP result snapshot
 
-The committed RTD artifacts in this page come from a completed A100 run on GPU
-7 using `vinid/plip` through `transformers.CLIPModel`.
+The committed RTD artifacts in this page come from a completed direct WSI
+LazySlide run on GPU 7 using PLIP.
 
 | Field | Value |
 | --- | --- |
-| Workflow | `histoseg_patch_plip_structure_features` |
+| Workflow | `histoseg_lazyslide_structure_workflow` |
+| WSI reader | `tiffslide` |
+| LazySlide | `0.10.1` |
 | GPU | NVIDIA A100-SXM4-40GB |
 | Torch | `2.6.0+cu124` |
-| Model | `vinid/plip` |
-| HistoSeg patches | 2,606 |
-| HistoSeg structures | 7 |
+| Model | `plip` |
+| HistoSeg contours | 1,578 |
+| LazySlide tiles | 3,115 |
+| Assigned tiles | 3,114 |
+| HistoSeg structures | 5 |
 | Embedding dimensions | 512 |
-| Runtime | 61.5 seconds |
+| Runtime | 3,989.3 seconds |
 
 The PLIP text terms used for zero-shot scoring were:
 
@@ -140,13 +163,11 @@ lumen or secretion
 
 | HistoSeg structure | Tiles | Top mean PLIP term | Top tile-label mode | Enriched text-similarity terms |
 | --- | ---: | --- | --- | --- |
-| 11q13 Invasive Tumor Cells | 136 | vascular stroma | adipose tissue | invasive carcinoma, in situ carcinoma, immune infiltrate |
-| Apocrine Cells | 18 | lumen or secretion | lumen or secretion | lumen or secretion, ductal epithelium |
-| Basal-like Structured DCIS Cells | 548 | lumen or secretion | lumen or secretion | ductal epithelium, lumen or secretion, in situ carcinoma |
-| Endothelial Cells | 735 | adipose tissue | adipose tissue | fibrotic stroma, vascular stroma, adipose tissue |
-| Luminal-like Amorphous DCIS Cells | 121 | adipose tissue | adipose tissue | invasive carcinoma, in situ carcinoma |
-| Macrophages | 695 | vascular stroma | adipose tissue | vascular stroma, fibrotic stroma |
-| Plasma Cells | 353 | vascular stroma | lumen or secretion | immune infiltrate, necrosis |
+| S1 | 866 | invasive carcinoma | immune infiltrate | invasive carcinoma, immune infiltrate, in situ carcinoma |
+| S2 | 140 | immune infiltrate | immune infiltrate | immune infiltrate, necrosis, invasive carcinoma |
+| S3 | 797 | necrosis | necrosis | adipose tissue, vascular stroma, fibrotic stroma |
+| S4 | 1,184 | necrosis | fibrotic stroma | fibrotic stroma, vascular stroma, adipose tissue |
+| S5 | 127 | immune infiltrate | immune infiltrate | invasive carcinoma, immune infiltrate, in situ carcinoma |
 
 The enriched terms are one-vs-rest positive PLIP text-similarity features with
 FDR < 0.05 when available. They should be interpreted as image-language
@@ -181,6 +202,8 @@ Key files are:
 - [`tile_feature_summary.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/tile_feature_summary.csv)
 - [`tile_embedding_umap.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/tile_embedding_umap.csv)
 - [`tile_features.parquet`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/tile_features.parquet)
+- [`program_image_associations.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/program_image_associations.csv)
+- [`prepared_wsi_manifest.json`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/prepared_wsi_manifest.json)
 
 ## Interpretation rules
 
@@ -188,16 +211,16 @@ Key files are:
   each HistoSeg structure carries.
 - `structure_differential_features` ranks one-vs-rest image features per
   structure.
-- The current RTD snapshot reports the full PLIP image-feature layer. RNA/image
-  coupling should be generated by joining these structure IDs back to the
-  pyXenium contour feature table and boundary program scores.
+- The current RTD snapshot reports direct LazySlide WSI tiling, PLIP image
+  embeddings, PLIP text-image scores, structure-level RNA summaries, and
+  program/image associations.
 - PLIP is the first required A100 result. CONCH is a comparison result only when
   the model can be loaded with valid credentials.
 
 ## Current implementation status
 
-The pyXenium API, optional dependency boundary, A100 runner, patch fallback,
-artifact schema, and full A100 PLIP image-feature snapshot are implemented.
-The next production hardening step is to convert or cache the breast WTA H&E
-image as a pyramidal WSI so the direct LazySlide WSI backend can tile the same
-HistoSeg structures without memory pressure.
+The pyXenium API, optional dependency boundary, A100 runner, WSI preparation
+script, direct LazySlide WSI backend, artifact schema, and full A100 PLIP
+image-feature snapshot are implemented. The earlier patch-corpus fallback
+remains useful for quick checks, but this page now reports the direct WSI
+LazySlide result.

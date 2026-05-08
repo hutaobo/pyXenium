@@ -98,6 +98,8 @@ class HistoSegLazySlideConfig:
     contour_pixel_size_um: float | None = None
     he_image_key: str = "he"
     he_source_path: str | Path | None = None
+    wsi_reader: str | None = None
+    slide_mpp: float | None = None
     model: str = "plip"
     text_terms: tuple[str, ...] = field(default_factory=lambda: DEFAULT_LAZYSLIDE_TEXT_TERMS)
     tile_px: int = 224
@@ -130,6 +132,8 @@ def run_histoseg_lazyslide_structure_workflow(
     contour_pixel_size_um: float | None = None,
     he_image_key: str = "he",
     he_source_path: str | Path | None = None,
+    wsi_reader: str | None = None,
+    slide_mpp: float | None = None,
     model: str = "plip",
     text_terms: Sequence[str] | None = None,
     tile_px: int = 224,
@@ -165,6 +169,8 @@ def run_histoseg_lazyslide_structure_workflow(
         contour_pixel_size_um=contour_pixel_size_um,
         he_image_key=he_image_key,
         he_source_path=he_source_path,
+        wsi_reader=wsi_reader,
+        slide_mpp=slide_mpp,
         model=model,
         text_terms=tuple(text_terms or DEFAULT_LAZYSLIDE_TEXT_TERMS),
         tile_px=int(tile_px),
@@ -191,8 +197,6 @@ def run_histoseg_lazyslide_structure_workflow(
         contour_query=None,
     )
     he_image = _resolve_he_image(sdata, he_image_key=config.he_image_key)
-    if config.he_source_path is not None:
-        he_image.source_path = str(Path(config.he_source_path).expanduser())
     image_contours = histoseg_contours_to_image_table(contour_table, he_image=he_image)
 
     model_result = _resolve_tile_features(
@@ -478,6 +482,51 @@ def _resolve_he_image(sdata: XeniumSlide, *, he_image_key: str) -> XeniumImage:
     return he_image
 
 
+def _not_wsi_ready_error(diagnostics: Mapping[str, Any], *, image_key: str) -> ValueError:
+    issues = diagnostics.get("issues", []) or []
+    issue_text = "; ".join(str(item) for item in issues if item)
+    if not issue_text:
+        issue_text = "Missing required WSI metadata."
+    return ValueError(
+        f"`slide.images[{image_key!r}]` is not WSI-ready: {issue_text}. "
+        "Either rebuild the slide store with native H&E pyramid metadata or pass "
+        "`he_source_path` explicitly to use an external WSI file override."
+    )
+
+
+def _open_lazyslide_wsi(
+    sdata: XeniumSlide,
+    *,
+    he_image: XeniumImage,
+    config: HistoSegLazySlideConfig,
+    open_wsi_func: Any,
+) -> tuple[Any, dict[str, Any]]:
+    if config.he_source_path is not None:
+        source_path = str(Path(config.he_source_path).expanduser())
+        if config.wsi_reader:
+            wsi = open_wsi_func(source_path, reader=config.wsi_reader)
+        else:
+            wsi = open_wsi_func(source_path)
+        if config.slide_mpp is not None and hasattr(wsi, "set_mpp"):
+            wsi.set_mpp(float(config.slide_mpp))
+        return wsi, {"wsi_source": "external_override", "path": source_path}
+
+    diagnostics = sdata.inspect_wsi(config.he_image_key)
+    if not diagnostics.get("wsi_ready"):
+        raise _not_wsi_ready_error(diagnostics, image_key=config.he_image_key)
+
+    wsi = sdata.to_wsidata(image_key=config.he_image_key)
+    if config.slide_mpp is not None and hasattr(wsi, "set_mpp"):
+        wsi.set_mpp(float(config.slide_mpp))
+    return (
+        wsi,
+        {
+            "wsi_source": "internal_slide_store",
+            "path": str(sdata.metadata.get("slide_store_path") or he_image.source_path),
+        },
+    )
+
+
 def _resolve_tile_features(
     *,
     sdata: XeniumSlide,
@@ -505,6 +554,7 @@ def _resolve_tile_features(
             config=config,
         )
     return _run_lazyslide_backend(
+        sdata=sdata,
         image_contours=image_contours,
         he_image=he_image,
         config=config,
@@ -555,6 +605,7 @@ def _run_custom_lazy_backend(
 
 def _run_lazyslide_backend(
     *,
+    sdata: XeniumSlide,
     image_contours: pd.DataFrame,
     he_image: XeniumImage,
     config: HistoSegLazySlideConfig,
@@ -569,9 +620,6 @@ def _run_lazyslide_backend(
             "`pip install 'pyXenium[lazyslide]'` in the A100 environment."
         ) from exc
 
-    if not he_image.source_path:
-        raise ValueError("The H&E image has no `source_path` for WSIData/open_wsi.")
-
     annotation_key = "histoseg_structures"
     tile_key = "histoseg_tiles"
     feature_key = f"{_slug(config.model)}_{tile_key}"
@@ -583,7 +631,13 @@ def _run_lazyslide_backend(
     }
 
     try:
-        wsi = open_wsi(str(he_image.source_path))
+        wsi, source_info = _open_lazyslide_wsi(
+            sdata,
+            he_image=he_image,
+            config=config,
+            open_wsi_func=open_wsi,
+        )
+        status.update(source_info)
         annotation_frame = image_contours.drop(columns=["geometry"]).copy()
         annotation_frame["tissue_id"] = annotation_frame["contour_id"].astype(str)
         annotations = gpd.GeoDataFrame(
@@ -592,13 +646,14 @@ def _run_lazyslide_backend(
             crs=None,
         )
         _load_lazyslide_annotations(zs, wsi, annotations, key_added=annotation_key)
-        zs.pp.tile_tissues(
-            wsi,
-            int(config.tile_px),
-            mpp=float(config.mpp),
-            tissue_key=annotation_key,
-            key_added=tile_key,
-        )
+        tile_kwargs = {
+            "mpp": float(config.mpp),
+            "tissue_key": annotation_key,
+            "key_added": tile_key,
+        }
+        if config.slide_mpp is not None:
+            tile_kwargs["slide_mpp"] = float(config.slide_mpp)
+        zs.pp.tile_tissues(wsi, int(config.tile_px), **tile_kwargs)
         if config.max_tiles is not None:
             _limit_lazyslide_tiles(wsi, tile_key=tile_key, max_tiles=int(config.max_tiles))
         zs.tl.feature_extraction(
@@ -615,6 +670,7 @@ def _run_lazyslide_backend(
             wsi,
             model=config.model,
             feature_key=feature_key,
+            tile_key=tile_key,
             text_terms=config.text_terms,
         )
         _try_lazyslide_spatial_domain(zs, wsi, model=config.model, tile_key=tile_key)
@@ -677,6 +733,7 @@ def _try_lazyslide_text_similarity(
     *,
     model: str,
     feature_key: str,
+    tile_key: str,
     text_terms: Sequence[str],
 ) -> None:
     try:
@@ -686,11 +743,18 @@ def _try_lazyslide_text_similarity(
                 wsi,
                 text_embeddings,
                 model=model,
+                tile_key=tile_key,
                 softmax=True,
                 feature_key=feature_key,
             )
         except TypeError:
-            zs.tl.text_image_similarity(wsi, text_embeddings, model=model, softmax=True)
+            zs.tl.text_image_similarity(
+                wsi,
+                text_embeddings,
+                model=model,
+                tile_key=tile_key,
+                softmax=True,
+            )
     except Exception:
         return
 
@@ -1174,6 +1238,9 @@ def _build_manifest(
             "he_source_path": sdata.images[config.he_image_key].source_path
             if config.he_image_key in sdata.images
             else None,
+            "wsi_reader": config.wsi_reader,
+            "slide_mpp": config.slide_mpp,
+            "wsi_registry": sdata.metadata.get("wsi", {}),
         },
         "outputs": {
             "n_contours": int(n_contours),

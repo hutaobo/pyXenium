@@ -2143,6 +2143,7 @@ def read_he_image(base_path: str) -> XeniumImage | None:
         series = tif.series[0]
         axes = _normalize_image_axes(series.axes)
         dtype = np.dtype(series.dtype).name
+        native_pyramid = len(series.levels) > 1
         if len(series.levels) > 1:
             levels: list[Any] = []
             for level_index, level in enumerate(series.levels):
@@ -2158,21 +2159,17 @@ def read_he_image(base_path: str) -> XeniumImage | None:
                     )
                 )
         else:
-            if max(int(value) for value in series.shape) <= 8192:
-                base_level = series.asarray(maxworkers=1)
-                levels = _build_image_pyramid(base_level, axes)
-            else:
-                levels = [
-                    TiffImageLevel(
-                        source_path=image_path,
-                        series_index=0,
-                        level_index=0,
-                        shape=tuple(int(value) for value in series.shape),
-                        dtype=np.dtype(series.dtype).name,
-                        axes=axes,
-                        chunks=_infer_tiff_chunks(series, series.axes),
-                    )
-                ]
+            levels = [
+                TiffImageLevel(
+                    source_path=image_path,
+                    series_index=0,
+                    level_index=0,
+                    shape=tuple(int(value) for value in series.shape),
+                    dtype=np.dtype(series.dtype).name,
+                    axes=axes,
+                    chunks=_infer_tiff_chunks(series, series.axes),
+                )
+            ]
 
     metadata = {
         "transform_direction": artifact["transform_direction"],
@@ -2180,6 +2177,7 @@ def read_he_image(base_path: str) -> XeniumImage | None:
         "transform_output_space": artifact["transform_output_space"],
         "transform_output_unit": artifact["transform_output_unit"],
         "xenium_physical_unit": artifact["xenium_physical_unit"],
+        "native_pyramid": native_pyramid,
     }
     if artifact["keypoints_csv_path"] is not None:
         metadata["keypoints_csv_path"] = artifact["keypoints_csv_path"]

@@ -7,7 +7,7 @@ from typing import Any
 import anndata as ad
 import pandas as pd
 
-from .slide_model import XeniumFrameChunkSource, XeniumSlide
+from .slide_model import XeniumFrameChunkSource, XeniumSlide, enrich_slide_wsi_metadata
 from .slide_store import read_xenium_slide, write_xenium_slide
 from .xenium_artifacts import (
     build_feature_summary,
@@ -65,7 +65,8 @@ def _metadata_for_source(
         "feature_summary": build_feature_summary(features),
         "image_artifacts": image_artifacts or {},
         "labels": {},
-        "store_version": 1,
+        "store_version": 2,
+        "format": "pyxenium.slide",
     }
 
 
@@ -223,7 +224,7 @@ def _assemble_anndata(
         experiment=experiment,
     )
     adata.uns["xenium_slide"] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "source_path": str(base_path),
         "backend": backend,
         "units": "micron",
@@ -303,7 +304,7 @@ def read_xenium(
         if he_image is not None:
             images["he"] = he_image
 
-    return XeniumSlide(
+    slide = XeniumSlide(
         table=adata,
         points=points,
         shapes=boundaries,
@@ -311,6 +312,12 @@ def read_xenium(
         metadata=metadata,
         point_sources=point_sources,
     )
+    enrich_slide_wsi_metadata(
+        slide,
+        store_version=2,
+        format_name="pyxenium.slide",
+    )
+    return slide
 
 
 def write_xenium(
@@ -364,6 +371,15 @@ def write_slide(
 
 def read_slide(path: str | Path) -> XeniumSlide:
     return read_xenium_slide(path)
+
+
+def inspect_slide_wsi(
+    path: str | Path,
+    *,
+    image_key: str = "he",
+) -> dict[str, Any]:
+    slide = read_xenium_slide(path)
+    return slide.inspect_wsi(image_key=image_key)
 
 
 def warn_unsupported_image_export_flags(

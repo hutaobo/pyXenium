@@ -10,9 +10,11 @@ import pandas as pd
 import pytest
 import tifffile
 import zarr
+from click.testing import CliRunner
 from scipy import sparse
 from scipy.io import mmwrite
 
+from pyXenium.__main__ import app
 import pyXenium.io.api as xenium_api_module
 from pyXenium.io.xenium_artifacts import read_analysis_cell_groups
 from pyXenium.io import (
@@ -22,6 +24,7 @@ from pyXenium.io import (
     export_xenium_to_slide_zarr,
     load_anndata_from_partial,
     load_xenium_gene_protein,
+    inspect_slide_wsi,
     read_slide,
     read_slide,
     read_xenium,
@@ -231,18 +234,37 @@ def _make_cell_feature_matrix_h5(path: Path) -> None:
         group.create_dataset("barcodes", shape=BARCODES.to_numpy(dtype="S").shape, data=BARCODES.to_numpy(dtype="S"))
 
 
-def _make_he_bundle(base_path: Path) -> np.ndarray:
+def _make_he_bundle(base_path: Path, *, native_pyramid: bool = True) -> np.ndarray:
     image = np.zeros((512, 768, 3), dtype=np.uint8)
     image[..., 0] = np.arange(image.shape[1], dtype=np.uint8)
     image[..., 1] = np.arange(image.shape[0], dtype=np.uint8)[:, None]
     image[..., 2] = 127
-    tifffile.imwrite(
-        base_path / "sample_he_image.ome.tif",
-        image,
-        ome=True,
-        photometric="rgb",
-        metadata={"axes": "YXS"},
-    )
+    image_path = base_path / "sample_he_image.ome.tif"
+    if native_pyramid:
+        level1 = image[::2, ::2, :]
+        with tifffile.TiffWriter(image_path, ome=True) as writer:
+            writer.write(
+                image,
+                photometric="rgb",
+                metadata={"axes": "YXS"},
+                tile=(128, 128),
+                subifds=1,
+            )
+            writer.write(
+                level1,
+                photometric="rgb",
+                metadata={"axes": "YXS"},
+                tile=(128, 128),
+                subfiletype=1,
+            )
+    else:
+        tifffile.imwrite(
+            image_path,
+            image,
+            ome=True,
+            photometric="rgb",
+            metadata={"axes": "YXS"},
+        )
 
     affine = np.asarray(
         [
@@ -348,6 +370,7 @@ def make_xenium_dataset(
     include_transcripts: bool = True,
     include_zarr_sidecars: bool = False,
     include_he_image: bool = False,
+    he_native_pyramid: bool = True,
     include_analysis: bool = True,
     include_extra_clusterings: bool = False,
     include_projections: bool = False,
@@ -445,7 +468,7 @@ def make_xenium_dataset(
         _make_cell_feature_matrix_h5(base_path / "cell_feature_matrix.h5")
 
     if include_he_image:
-        _make_he_bundle(base_path)
+        _make_he_bundle(base_path, native_pyramid=he_native_pyramid)
 
     return base_path
 
@@ -840,8 +863,9 @@ def test_xenium_slide_is_canonical_roundtrip_type(tmp_path):
     slide = read_xenium(str(dataset), as_="slide", prefer="zarr", include_images=True)
 
     assert isinstance(slide, XeniumSlide)
-    assert slide.table.uns["xenium_slide"]["schema_version"] == 1
+    assert slide.table.uns["xenium_slide"]["schema_version"] == 2
     assert "he" in slide.images
+    assert slide.metadata["wsi"]["wsi_ready"] is True
 
     output = tmp_path / "xenium_slide.zarr"
     payload = write_xenium_slide(slide, output)
@@ -849,7 +873,9 @@ def test_xenium_slide_is_canonical_roundtrip_type(tmp_path):
     legacy_reloaded = read_slide(output)
 
     assert payload["format"] == "pyxenium.slide"
+    assert payload["version"] == 2
     assert reloaded.table.shape == slide.table.shape
+    assert reloaded.metadata["wsi"]["default_image_key"] == "he"
     assert isinstance(legacy_reloaded, XeniumSlide)
 
 
@@ -953,6 +979,11 @@ def test_read_xenium_slide_loads_he_image_and_alignment_metadata(tmp_path):
     assert he.axes == "yxc"
     assert len(he.levels) >= 2
     assert he.pixel_size_um == pytest.approx(0.5)
+    assert he.metadata["native_pyramid"] is True
+    assert he.metadata["wsi_ready"] is True
+    assert he.metadata["image_role"] == "wsi_he"
+    assert he.metadata["canonical_wsi_source"] == "internal_slide_store"
+    assert he.metadata["level_downsamples"] == pytest.approx([1.0, 2.0], rel=1e-3)
     assert he.alignment_csv_path is not None
     assert he.alignment_csv_path.endswith("sample_he_alignment.csv")
     np.testing.assert_allclose(
@@ -974,6 +1005,24 @@ def test_read_xenium_slide_loads_he_image_and_alignment_metadata(tmp_path):
         np.asarray([[0.0, 0.0], [10.0, 20.0]]),
     )
     assert "he" in sdata.metadata["image_artifacts"]
+    assert sdata.metadata["wsi"]["default_image_key"] == "he"
+    assert sdata.metadata["wsi"]["wsi_ready"] is True
+    assert sdata.metadata["wsi"]["level_downsamples"] == pytest.approx([1.0, 2.0], rel=1e-3)
+
+
+def test_read_xenium_single_level_he_is_not_wsi_ready(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset_single_level_he",
+        include_he_image=True,
+        he_native_pyramid=False,
+    )
+
+    sdata = read_xenium(str(dataset), as_="slide", prefer="zarr", include_images=True)
+
+    assert "he" in sdata.images
+    assert len(sdata.images["he"].levels) == 1
+    assert sdata.metadata["wsi"]["wsi_ready"] is False
+    assert any("at least 2 pyramid levels" in issue for issue in sdata.metadata["wsi"]["issues"])
 
 
 def test_slide_roundtrip(tmp_path):
@@ -997,6 +1046,7 @@ def test_slide_roundtrip(tmp_path):
     assert list(reloaded.table.obs["cluster__gene_expression_kmeans_2_clusters"].astype(str)) == KMEANS2_LABELS
     np.testing.assert_allclose(reloaded.table.obsm["X_umap"], UMAP_VALUES)
     assert reloaded.table.uns["xenium_analysis"]["projection_keys"]["umap"] == "X_umap"
+    assert reloaded.metadata["store_version"] == 2
 
 
 def test_slide_roundtrip_preserves_streamed_transcripts(tmp_path):
@@ -1051,6 +1101,43 @@ def test_slide_roundtrip_preserves_he_images(tmp_path):
     assert he.keypoints_validation["mean_residual"] == pytest.approx(0.0)
     assert he.transform_metadata()["xenium_physical_unit"] == "micron"
     assert he.transform_metadata()["xenium_pixel_size_um"] == pytest.approx(0.5)
+    assert he.metadata["level_downsamples"] == pytest.approx([1.0, 2.0], rel=1e-3)
+    assert he.metadata["chunk_shapes"][0][0:2] == [128, 128]
+    assert reloaded.metadata["wsi"]["wsi_ready"] is True
+
+
+def test_read_slide_infers_wsi_registry_for_legacy_store(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset_legacy", include_he_image=True)
+    slide = read_xenium(str(dataset), as_="slide", prefer="zarr", include_images=True)
+    output = tmp_path / "legacy_slide.zarr"
+    write_xenium_slide(slide, output)
+
+    root = zarr.open_group(str(output), mode="a")
+    root.attrs["version"] = 1
+    image_group = root["images"]["he"]
+    for key in (
+        "image_role",
+        "canonical_wsi_source",
+        "native_pyramid",
+        "wsi_ready",
+        "level_downsamples",
+        "level0_mpp_um",
+        "n_levels",
+        "chunk_shapes",
+        "wsi_issues",
+    ):
+        if key in image_group.attrs:
+            del image_group.attrs[key]
+    metadata = json.loads(np.asarray(root["metadata"]["json"][...]).astype(str)[0])
+    metadata.pop("wsi", None)
+    metadata["store_version"] = 1
+    root["metadata"]["json"][0] = json.dumps(metadata, ensure_ascii=True, sort_keys=True)
+
+    reloaded = read_slide(output)
+
+    assert reloaded.metadata["store_version"] == 1
+    assert reloaded.metadata["wsi"]["wsi_ready"] is True
+    assert reloaded.metadata["wsi"]["level_downsamples"] == pytest.approx([1.0, 2.0], rel=1e-3)
 
 
 def test_load_xenium_gene_protein_wrapper_matches_new_api(tmp_path):
@@ -1114,6 +1201,40 @@ def test_read_xenium_slide_gracefully_handles_missing_he_image(tmp_path):
     sdata = read_xenium(str(dataset), as_="slide", prefer="mex", include_images=True)
 
     assert sdata.images == {}
+
+
+def test_inspect_slide_wsi_and_cli(tmp_path):
+    dataset = make_xenium_dataset(tmp_path / "dataset_cli", include_he_image=True)
+    slide = read_xenium(str(dataset), as_="slide", prefer="zarr", include_images=True)
+    output = tmp_path / "cli_slide.zarr"
+    write_xenium_slide(slide, output)
+
+    payload = inspect_slide_wsi(output)
+    assert payload["wsi_ready"] is True
+    assert payload["default_image_key"] == "he"
+    assert payload["level_downsamples"] == pytest.approx([1.0, 2.0], rel=1e-3)
+
+    result = CliRunner().invoke(app, ["slide", "check", str(output)])
+    assert result.exit_code == 0
+    cli_payload = json.loads(result.output)
+    assert cli_payload["wsi_ready"] is True
+    assert cli_payload["default_image_key"] == "he"
+
+
+def test_slide_check_returns_non_ready_exit_code(tmp_path):
+    dataset = make_xenium_dataset(
+        tmp_path / "dataset_cli_nonready",
+        include_he_image=True,
+        he_native_pyramid=False,
+    )
+    slide = read_xenium(str(dataset), as_="slide", prefer="zarr", include_images=True)
+    output = tmp_path / "cli_slide_nonready.zarr"
+    write_xenium_slide(slide, output)
+
+    result = CliRunner().invoke(app, ["slide", "check", str(output)])
+    assert result.exit_code == 1
+    cli_payload = json.loads(result.output)
+    assert cli_payload["wsi_ready"] is False
 
 
 def test_read_xenium_supports_double_analysis_directory_variant(tmp_path):

@@ -7,6 +7,9 @@ import anndata as ad
 import numpy as np
 import pandas as pd
 
+WSI_LEVEL_DOWNSAMPLE_RTOL = 0.02
+WSI_LEVEL_DOWNSAMPLE_ATOL = 0.05
+
 
 def _normalize_frame_map(mapping: dict[str, pd.DataFrame] | None) -> dict[str, pd.DataFrame]:
     normalized: dict[str, pd.DataFrame] = {}
@@ -78,6 +81,20 @@ def _coerce_xy_array(values: Any) -> np.ndarray:
     if array.ndim != 2 or array.shape[1] != 2:
         raise ValueError(f"Expected an array with shape (N, 2), got {array.shape}.")
     return array
+
+
+def _level_yx_shape(shape: tuple[int, ...], axes: str) -> tuple[int, int]:
+    return int(shape[axes.index("y")]), int(shape[axes.index("x")])
+
+
+def _to_yxc(level: Any, axes: str) -> np.ndarray:
+    array = np.asarray(level)
+    order = [axes.index("y"), axes.index("x")]
+    if "c" in axes:
+        order.append(axes.index("c"))
+        return np.transpose(array, axes=tuple(order))
+    array = np.transpose(array, axes=tuple(order))
+    return array[..., np.newaxis]
 
 
 @dataclass(frozen=True)
@@ -204,6 +221,118 @@ class XeniumImage:
     def to_numpy_levels(self) -> list[np.ndarray]:
         return [np.asarray(level) for level in self.levels]
 
+    def level_chunk_shapes(self) -> list[tuple[int, ...] | None]:
+        chunk_shapes: list[tuple[int, ...] | None] = []
+        for level in self.levels:
+            chunks = getattr(level, "chunks", None)
+            if not chunks:
+                chunk_shapes.append(None)
+                continue
+            try:
+                chunk_shapes.append(tuple(int(value) for value in chunks))
+            except TypeError:
+                chunk_shapes.append(None)
+        return chunk_shapes
+
+    def infer_level_downsamples(
+        self,
+        *,
+        rtol: float = WSI_LEVEL_DOWNSAMPLE_RTOL,
+        atol: float = WSI_LEVEL_DOWNSAMPLE_ATOL,
+    ) -> tuple[list[float] | None, list[str]]:
+        level_shapes = self.multiscale_shapes()
+        if not level_shapes:
+            return None, ["Image has no multiscale levels."]
+
+        base_y, base_x = _level_yx_shape(level_shapes[0], self.axes)
+        if base_y <= 0 or base_x <= 0:
+            return None, ["Level 0 has invalid spatial dimensions."]
+
+        downsamples: list[float] = []
+        issues: list[str] = []
+        previous: float | None = None
+        for level_index, shape in enumerate(level_shapes):
+            level_y, level_x = _level_yx_shape(shape, self.axes)
+            if level_y <= 0 or level_x <= 0:
+                return None, [f"Level {level_index} has invalid spatial dimensions."]
+
+            y_ratio = float(base_y) / float(level_y)
+            x_ratio = float(base_x) / float(level_x)
+            if not (np.isfinite(y_ratio) and np.isfinite(x_ratio)):
+                return None, [f"Level {level_index} has non-finite downsample ratios."]
+            if not np.isclose(y_ratio, x_ratio, rtol=rtol, atol=atol):
+                issues.append(
+                    "Level "
+                    f"{level_index} has inconsistent x/y downsample ratios "
+                    f"(y={y_ratio:.4f}, x={x_ratio:.4f})."
+                )
+                return None, issues
+
+            downsample = float((y_ratio + x_ratio) / 2.0)
+            if previous is not None and downsample <= previous:
+                issues.append(
+                    f"Level {level_index} is not lower resolution than the previous level."
+                )
+                return None, issues
+            previous = downsample
+            downsamples.append(downsample)
+
+        if downsamples and not np.isclose(downsamples[0], 1.0, rtol=rtol, atol=atol):
+            issues.append(f"Level 0 downsample must be 1.0, got {downsamples[0]:.4f}.")
+            return None, issues
+        return downsamples, issues
+
+    def wsi_diagnostics(
+        self,
+        *,
+        image_key: str = "he",
+        canonical_source: str = "internal_slide_store",
+    ) -> dict[str, Any]:
+        level_shapes = [list(shape) for shape in self.multiscale_shapes()]
+        chunk_shapes = [
+            list(shape) if shape is not None else None for shape in self.level_chunk_shapes()
+        ]
+        level_downsamples, downsample_issues = self.infer_level_downsamples()
+        image_role = str(self.metadata.get("image_role") or ("wsi_he" if image_key == "he" else "image"))
+        native_pyramid = bool(self.metadata.get("native_pyramid", False))
+        issues: list[str] = []
+        if len(self.levels) < 2:
+            issues.append("Expected at least 2 pyramid levels.")
+        if self.pixel_size_um is None:
+            issues.append("Missing level 0 microns-per-pixel metadata.")
+        if self.image_to_xenium_affine is None:
+            issues.append("Missing image_to_xenium_affine metadata.")
+        if level_downsamples is None:
+            issues.extend(downsample_issues or ["Unable to infer level downsample factors."])
+
+        return {
+            "image_key": image_key,
+            "image_role": image_role,
+            "canonical_wsi_source": str(
+                self.metadata.get("canonical_wsi_source") or canonical_source
+            ),
+            "source_path": self.source_path,
+            "alignment_csv_path": self.alignment_csv_path,
+            "axes": self.axes,
+            "dtype": self.dtype,
+            "native_pyramid": native_pyramid,
+            "n_levels": int(len(self.levels)),
+            "level_shapes": level_shapes,
+            "chunk_shapes": chunk_shapes,
+            "level_downsamples": level_downsamples,
+            "level0_mpp_um": float(self.pixel_size_um) if self.pixel_size_um is not None else None,
+            "pixel_size_um": float(self.pixel_size_um) if self.pixel_size_um is not None else None,
+            "transform_kind": self.transform_kind,
+            "transform_direction": self.transform_metadata()["transform_direction"],
+            "transform_input_space": self.transform_metadata()["transform_input_space"],
+            "transform_output_space": self.transform_metadata()["transform_output_space"],
+            "transform_output_unit": self.transform_metadata()["transform_output_unit"],
+            "xenium_physical_unit": self.transform_metadata()["xenium_physical_unit"],
+            "image_to_xenium_affine": self.image_to_xenium_affine,
+            "wsi_ready": not issues,
+            "issues": issues,
+        }
+
     def transform_metadata(self) -> dict[str, Any]:
         metadata = {
             "transform_direction": self.metadata.get(
@@ -316,6 +445,184 @@ class XeniumSlide:
     def to_anndata(self) -> ad.AnnData:
         return self.table.copy()
 
+    def inspect_wsi(self, image_key: str = "he") -> dict[str, Any]:
+        if image_key not in self.images:
+            raise KeyError(f"`slide.images[{image_key!r}]` was not found.")
+        registry = dict(self.metadata.get("wsi", {}))
+        diagnostics = dict(
+            self.images[image_key].wsi_diagnostics(
+                image_key=image_key,
+                canonical_source=str(
+                    registry.get("canonical_source", "internal_slide_store")
+                ),
+            )
+        )
+        diagnostics.update(
+            {
+                "format": self.metadata.get("format", "pyxenium.slide"),
+                "version": self.metadata.get("store_version"),
+                "default_image_key": registry.get("default_image_key", image_key),
+            }
+        )
+        if "slide_store_path" in self.metadata:
+            diagnostics["slide_store_path"] = self.metadata["slide_store_path"]
+        return diagnostics
+
+    def to_wsidata(self, image_key: str = "he"):
+        diagnostics = self.inspect_wsi(image_key=image_key)
+        if not diagnostics["wsi_ready"]:
+            issues = "; ".join(str(item) for item in diagnostics.get("issues", []) if item)
+            raise ValueError(
+                f"`slide.images[{image_key!r}]` is not WSI-ready. {issues}"
+            )
+
+        try:
+            from wsidata import SlideProperties, WSIData
+            from wsidata.reader import ReaderBase
+        except Exception as exc:  # pragma: no cover
+            raise ImportError(
+                "XeniumSlide.to_wsidata() requires the optional `wsidata` dependency. "
+                "Install `pyXenium[lazyslide]` or install `wsidata` separately."
+            ) from exc
+
+        image = self.images[image_key]
+        level_shapes = [tuple(shape) for shape in image.multiscale_shapes()]
+        level_downsamples = diagnostics["level_downsamples"] or [1.0]
+        bounds_y, bounds_x = _level_yx_shape(level_shapes[0], image.axes)
+        properties_payload = {
+            "shape": [int(bounds_y), int(bounds_x)],
+            "n_level": int(len(level_shapes)),
+            "level_shape": [
+                [int(_level_yx_shape(shape, image.axes)[0]), int(_level_yx_shape(shape, image.axes)[1])]
+                for shape in level_shapes
+            ],
+            "level_downsample": [float(value) for value in level_downsamples],
+            "mpp": float(diagnostics["level0_mpp_um"]),
+            "bounds": [0, 0, int(bounds_x), int(bounds_y)],
+            "raw": {
+                "pyxenium_image_key": image_key,
+                "pyxenium_source_path": diagnostics["source_path"],
+            },
+        }
+        if hasattr(SlideProperties, "from_mapping"):
+            properties = SlideProperties.from_mapping(properties_payload)
+        else:  # pragma: no cover
+            properties = SlideProperties(**properties_payload)
+
+        class _PyXeniumInternalReader(ReaderBase):
+            def __init__(self, *, image: XeniumImage, file_path: str, slide_properties: Any):
+                try:
+                    super().__init__(file=file_path)
+                except TypeError:
+                    try:
+                        super().__init__(file_path)
+                    except TypeError:
+                        try:
+                            super().__init__()
+                        except TypeError:
+                            pass
+                self.file = file_path
+                self._reader = image
+                self._properties = slide_properties
+                self._name = "pyxenium_internal"
+
+            @property
+            def name(self) -> str:
+                return self._name
+
+            @property
+            def reader(self) -> Any:
+                return self._reader
+
+            @property
+            def properties(self) -> Any:
+                return self._properties
+
+            @property
+            def raw_properties(self) -> dict[str, Any]:
+                return properties_payload
+
+            @property
+            def associated_images(self) -> dict[str, Any]:
+                return {}
+
+            def create_reader(self) -> Any:
+                return self._reader
+
+            def detach_reader(self) -> None:
+                self._reader = None
+
+            def translate_level(self, level: int) -> int:
+                if level < 0:
+                    level = len(image.levels) + int(level)
+                level = int(level)
+                if level < 0 or level >= len(image.levels):
+                    raise IndexError(f"Invalid pyramid level: {level}")
+                return level
+
+            def get_level(self, level: int, in_bounds: bool = False) -> np.ndarray:
+                del in_bounds
+                level_index = self.translate_level(level)
+                return _to_yxc(image.levels[level_index], image.axes)
+
+            def get_region(
+                self,
+                x: int,
+                y: int,
+                width: int,
+                height: int,
+                level: int = 0,
+                **kwargs,
+            ) -> np.ndarray:
+                del kwargs
+                level_index = self.translate_level(level)
+                downsample = float(level_downsamples[level_index])
+                x0 = int(np.floor(float(x) / downsample))
+                y0 = int(np.floor(float(y) / downsample))
+                x1 = max(x0 + int(width), x0)
+                y1 = max(y0 + int(height), y0)
+                level_data = image.levels[level_index]
+                slices = [slice(None)] * len(image.axes)
+                slices[image.axes.index("y")] = slice(y0, y1)
+                slices[image.axes.index("x")] = slice(x0, x1)
+                region = np.asarray(level_data[tuple(slices)])
+                return _to_yxc(region, image.axes)
+
+            def get_thumbnail(self, size: int, **kwargs) -> np.ndarray:
+                del kwargs
+                thumbnail = self.get_level(-1)
+                if max(thumbnail.shape[0], thumbnail.shape[1]) <= int(size):
+                    return thumbnail
+                step = max(1, int(np.ceil(max(thumbnail.shape[0], thumbnail.shape[1]) / float(size))))
+                return thumbnail[::step, ::step, ...]
+
+        reader = _PyXeniumInternalReader(
+            image=image,
+            file_path=str(
+                self.metadata.get("slide_store_path")
+                or image.source_path
+                or f"pyxenium://{image_key}"
+            ),
+            slide_properties=properties,
+        )
+        wsi = WSIData(
+            reader=reader,
+            attrs={
+                "slide_properties": properties_payload,
+                "pyxenium": {
+                    "image_key": image_key,
+                    "canonical_source": diagnostics["canonical_wsi_source"],
+                },
+            },
+            slide_properties_source="slide",
+        )
+        if "slide_store_path" in self.metadata and hasattr(wsi, "set_wsi_store"):
+            wsi.set_wsi_store(self.metadata["slide_store_path"])
+        return wsi
+
+    def to_wsi_spatialdata(self, image_key: str = "he"):
+        return self.to_wsidata(image_key=image_key)
+
     def to_spatialdata(self):
         try:
             from spatialdata import SpatialData
@@ -358,3 +665,57 @@ class XeniumSlide:
             "contour_images": sorted(self.contour_images.keys()),
             "labels": sorted(self.metadata.get("labels", {}).keys()),
         }
+
+
+def enrich_slide_wsi_metadata(
+    slide: XeniumSlide,
+    *,
+    image_key: str = "he",
+    store_version: int | None = None,
+    format_name: str | None = None,
+    slide_store_path: str | None = None,
+) -> XeniumSlide:
+    metadata = dict(slide.metadata or {})
+    if store_version is not None:
+        metadata["store_version"] = int(store_version)
+    if format_name is not None:
+        metadata["format"] = str(format_name)
+    if slide_store_path is not None:
+        metadata["slide_store_path"] = str(slide_store_path)
+
+    if image_key in slide.images:
+        diagnostics = slide.images[image_key].wsi_diagnostics(image_key=image_key)
+        slide.images[image_key].metadata.update(
+            {
+                "image_role": diagnostics["image_role"],
+                "canonical_wsi_source": diagnostics["canonical_wsi_source"],
+                "native_pyramid": diagnostics["native_pyramid"],
+                "wsi_ready": diagnostics["wsi_ready"],
+                "level_downsamples": diagnostics["level_downsamples"],
+                "chunk_shapes": diagnostics["chunk_shapes"],
+                "level0_mpp_um": diagnostics["level0_mpp_um"],
+                "n_levels": diagnostics["n_levels"],
+                "wsi_issues": diagnostics["issues"],
+            }
+        )
+        metadata["wsi"] = {
+            "default_image_key": image_key,
+            "canonical_source": diagnostics["canonical_wsi_source"],
+            "store_version": metadata.get("store_version"),
+            "n_levels": diagnostics["n_levels"],
+            "level_shapes": diagnostics["level_shapes"],
+            "level_downsamples": diagnostics["level_downsamples"],
+            "chunk_shapes": diagnostics["chunk_shapes"],
+            "level0_mpp_um": diagnostics["level0_mpp_um"],
+            "wsi_ready": diagnostics["wsi_ready"],
+            "native_pyramid": diagnostics["native_pyramid"],
+            "image_role": diagnostics["image_role"],
+            "source_path": diagnostics["source_path"],
+            "alignment_csv_path": diagnostics["alignment_csv_path"],
+            "issues": diagnostics["issues"],
+        }
+    else:
+        metadata.pop("wsi", None)
+
+    slide.metadata = metadata
+    return slide

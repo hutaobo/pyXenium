@@ -40,6 +40,7 @@ from .benchmarking import (
     summarize_run_status,
     submit_a100_matrix,
 )
+from .io import inspect_slide_wsi
 from .io.io import copy_bundled_dataset, load_toy
 from .io.slide_export import DEFAULT_SLIDE_STORE_NAME, export_xenium_to_slide_zarr
 from .io.backfill import backfill_contour_patches, inspect_backfill_needs, inspect_l3_upgrade, run_l3_upgrade
@@ -178,6 +179,31 @@ def slide_build(
         overwrite=overwrite,
     )
     click.echo(json.dumps(result.to_dict(), indent=2))
+
+
+@slide_group.command("check")
+@click.argument("slide_path", type=click.Path(exists=True, file_okay=False, path_type=Path))
+@click.option("--image-key", default="he", show_default=True)
+def slide_check(slide_path, image_key):
+    """Inspect the internal WSI registry for a XeniumSlide store."""
+    try:
+        payload = inspect_slide_wsi(slide_path, image_key=image_key)
+    except Exception as exc:
+        click.echo(
+            json.dumps(
+                {
+                    "slide_path": str(slide_path),
+                    "image_key": image_key,
+                    "valid": False,
+                    "error": str(exc),
+                },
+                indent=2,
+            )
+        )
+        raise click.exceptions.Exit(2)
+
+    click.echo(json.dumps(payload, indent=2))
+    raise click.exceptions.Exit(0 if payload.get("wsi_ready") else 1)
 
 
 @slide_group.command("build-atera")

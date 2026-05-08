@@ -12,11 +12,16 @@ import numpy as np
 import pandas as pd
 import zarr
 
-from .slide_model import XeniumFrameChunkSource, XeniumImage, XeniumSlide
+from .slide_model import (
+    XeniumFrameChunkSource,
+    XeniumImage,
+    XeniumSlide,
+    enrich_slide_wsi_metadata,
+)
 
 SLIDE_FORMAT = "pyxenium.slide"
 LEGACY_SLIDE_FORMATS = {"pyxenium.sdata"}
-SLIDE_VERSION = 1
+SLIDE_VERSION = 2
 _IMAGE_CORE_ATTRS = {
     "axes",
     "dtype",
@@ -222,14 +227,19 @@ def _read_frame_group(group: Any) -> pd.DataFrame:
     return pd.DataFrame(data, columns=columns)
 
 
-def _default_image_chunks(shape: tuple[int, ...], axes: str) -> tuple[int, ...]:
+def _default_image_chunks(
+    shape: tuple[int, ...],
+    axes: str,
+    *,
+    xy_limit: int = 1024,
+) -> tuple[int, ...]:
     chunks = list(int(value) for value in shape)
     if "y" in axes:
         y_index = axes.index("y")
-        chunks[y_index] = min(chunks[y_index], 1024)
+        chunks[y_index] = min(chunks[y_index], int(xy_limit))
     if "x" in axes:
         x_index = axes.index("x")
-        chunks[x_index] = min(chunks[x_index], 1024)
+        chunks[x_index] = min(chunks[x_index], int(xy_limit))
     return tuple(chunks)
 
 
@@ -238,13 +248,28 @@ def _normalize_chunks(
     chunks: tuple[int, ...] | None,
     *,
     axes: str,
+    xy_limit: int = 1024,
 ) -> tuple[int, ...]:
     if not chunks:
-        return _default_image_chunks(shape, axes)
+        return _default_image_chunks(shape, axes, xy_limit=xy_limit)
     normalized = []
     for size, chunk in zip(shape, chunks):
         normalized.append(max(1, min(int(chunk), int(size))))
     return tuple(normalized)
+
+
+def _wsi_preferred_chunks(
+    shape: tuple[int, ...],
+    axes: str,
+    existing: tuple[int, ...] | None,
+) -> tuple[int, ...]:
+    if existing:
+        normalized = _normalize_chunks(shape, existing, axes=axes, xy_limit=512)
+        y_chunk = normalized[axes.index("y")]
+        x_chunk = normalized[axes.index("x")]
+        if y_chunk <= 512 and x_chunk <= 512:
+            return normalized
+    return _default_image_chunks(shape, axes, xy_limit=512)
 
 
 def _iter_chunk_slices(shape: tuple[int, ...], chunks: tuple[int, ...]):
@@ -263,9 +288,10 @@ def _write_array_like_dataset(
     *,
     axes: str,
     chunks: tuple[int, ...] | None = None,
-) -> None:
+    xy_limit: int = 1024,
+) -> tuple[int, ...]:
     shape = tuple(int(value) for value in source.shape)
-    chunk_shape = _normalize_chunks(shape, chunks, axes=axes)
+    chunk_shape = _normalize_chunks(shape, chunks, axes=axes, xy_limit=xy_limit)
     target = parent.create_array(
         key,
         shape=shape,
@@ -275,52 +301,107 @@ def _write_array_like_dataset(
     )
     for slices in _iter_chunk_slices(shape, chunk_shape):
         target[slices] = np.asarray(source[slices])
+    return tuple(int(value) for value in chunk_shape)
 
 
-def _write_image_level(parent: Any, key: str, level: Any, *, axes: str) -> None:
+def _write_image_level(
+    parent: Any,
+    key: str,
+    level: Any,
+    *,
+    axes: str,
+    wsi_chunked: bool,
+) -> tuple[int, ...]:
+    xy_limit = 512 if wsi_chunked else 1024
     if hasattr(level, "open_zarr_source"):
         store = None
         try:
             store, source = level.open_zarr_source()
-            _write_array_like_dataset(
+            source_chunks = getattr(source, "chunks", None) or getattr(level, "chunks", None)
+            preferred_chunks = (
+                _wsi_preferred_chunks(tuple(int(value) for value in source.shape), axes, source_chunks)
+                if wsi_chunked
+                else source_chunks
+            )
+            return _write_array_like_dataset(
                 parent,
                 key,
                 source,
                 axes=axes,
-                chunks=getattr(source, "chunks", None) or getattr(level, "chunks", None),
+                chunks=preferred_chunks,
+                xy_limit=xy_limit,
             )
-            return
         except Exception:
             if store is not None and hasattr(store, "close"):
                 store.close()
             if hasattr(level, "asarray"):
                 array = level.asarray()
-                _write_array_like_dataset(parent, key, array, axes=axes)
-                return
+                preferred_chunks = (
+                    _wsi_preferred_chunks(tuple(int(value) for value in array.shape), axes, None)
+                    if wsi_chunked
+                    else None
+                )
+                return _write_array_like_dataset(
+                    parent,
+                    key,
+                    array,
+                    axes=axes,
+                    chunks=preferred_chunks,
+                    xy_limit=xy_limit,
+                )
             raise
         finally:
             if store is not None and hasattr(store, "close"):
                 store.close()
 
     if hasattr(level, "shape") and hasattr(level, "__getitem__") and not isinstance(level, np.ndarray):
-        _write_array_like_dataset(
+        level_chunks = getattr(level, "chunks", None)
+        preferred_chunks = (
+            _wsi_preferred_chunks(tuple(int(value) for value in level.shape), axes, level_chunks)
+            if wsi_chunked
+            else level_chunks
+        )
+        return _write_array_like_dataset(
             parent,
             key,
             level,
             axes=axes,
-            chunks=getattr(level, "chunks", None),
+            chunks=preferred_chunks,
+            xy_limit=xy_limit,
         )
-        return
 
     if hasattr(level, "asarray") and not isinstance(level, np.ndarray):
         level = level.asarray()
 
-    _write_array_like_dataset(parent, key, np.asarray(level), axes=axes)
+    array = np.asarray(level)
+    preferred_chunks = (
+        _wsi_preferred_chunks(tuple(int(value) for value in array.shape), axes, None)
+        if wsi_chunked
+        else None
+    )
+    return _write_array_like_dataset(
+        parent,
+        key,
+        array,
+        axes=axes,
+        chunks=preferred_chunks,
+        xy_limit=xy_limit,
+    )
 
 
-def _write_single_image_group(group: Any, image: XeniumImage) -> None:
+def _write_single_image_group(group: Any, image: XeniumImage, *, image_key: str) -> None:
+    diagnostics = image.wsi_diagnostics(image_key=image_key)
+    wsi_chunked = diagnostics["image_role"] == "wsi_he"
+    chunk_shapes: list[list[int]] = []
     for level_index, level in enumerate(image.levels):
-        _write_image_level(group, str(level_index), level, axes=image.axes)
+        written_chunks = _write_image_level(
+            group,
+            str(level_index),
+            level,
+            axes=image.axes,
+            wsi_chunked=wsi_chunked,
+        )
+        chunk_shapes.append([int(value) for value in written_chunks])
     transform_metadata = image.transform_metadata()
     group.attrs["axes"] = image.axes
     group.attrs["dtype"] = image.dtype
@@ -336,6 +417,15 @@ def _write_single_image_group(group: Any, image: XeniumImage) -> None:
     group.attrs["image_to_xenium_affine"] = image.image_to_xenium_affine
     group.attrs["alignment_csv_path"] = image.alignment_csv_path
     group.attrs["pixel_size_um"] = image.pixel_size_um
+    group.attrs["image_role"] = diagnostics["image_role"]
+    group.attrs["canonical_wsi_source"] = diagnostics["canonical_wsi_source"]
+    group.attrs["native_pyramid"] = diagnostics["native_pyramid"]
+    group.attrs["wsi_ready"] = diagnostics["wsi_ready"]
+    group.attrs["level_downsamples"] = diagnostics["level_downsamples"]
+    group.attrs["level0_mpp_um"] = diagnostics["level0_mpp_um"]
+    group.attrs["n_levels"] = diagnostics["n_levels"]
+    group.attrs["chunk_shapes"] = chunk_shapes
+    group.attrs["wsi_issues"] = diagnostics["issues"]
     if "xenium_pixel_size_um" in transform_metadata:
         group.attrs["xenium_pixel_size_um"] = transform_metadata["xenium_pixel_size_um"]
     if image.keypoints_validation is not None:
@@ -357,7 +447,7 @@ def _write_single_image_group(group: Any, image: XeniumImage) -> None:
 
 def _write_images_group(parent: Any, images: dict[str, XeniumImage]) -> None:
     for key, image in images.items():
-        _write_single_image_group(parent.require_group(key), image)
+        _write_single_image_group(parent.require_group(key), image, image_key=str(key))
 
 
 def _read_single_image_group(group: Any) -> XeniumImage:
@@ -420,6 +510,11 @@ def write_xenium_slide(
     *,
     overwrite: bool = False,
 ) -> dict[str, Any]:
+    enrich_slide_wsi_metadata(
+        slide,
+        store_version=SLIDE_VERSION,
+        format_name=SLIDE_FORMAT,
+    )
     target = _ensure_writable_path(path, overwrite=overwrite)
     target.mkdir(parents=True, exist_ok=True)
     table_path = target / "tables" / "cells"
@@ -467,6 +562,10 @@ def write_xenium_slide(
 
     metadata_root = root.require_group("metadata")
     payload = dict(slide.metadata)
+    payload.pop("slide_store_path", None)
+    if isinstance(payload.get("wsi"), dict):
+        payload["wsi"] = dict(payload["wsi"])
+        payload["wsi"].pop("slide_store_path", None)
     payload.setdefault("store_version", SLIDE_VERSION)
     payload.setdefault("format", SLIDE_FORMAT)
     metadata_root.create_array(
@@ -518,7 +617,7 @@ def read_xenium_slide(path: str | Path) -> XeniumSlide:
         if len(values):
             metadata = json.loads(values[0])
 
-    return XeniumSlide(
+    slide = XeniumSlide(
         table=table,
         points=points,
         shapes=shapes,
@@ -526,3 +625,13 @@ def read_xenium_slide(path: str | Path) -> XeniumSlide:
         contour_images=contour_images,
         metadata=metadata,
     )
+    inferred_version = root.attrs.get("version", None)
+    if inferred_version is None:
+        inferred_version = 1 if store_format in LEGACY_SLIDE_FORMATS else SLIDE_VERSION
+    enrich_slide_wsi_metadata(
+        slide,
+        store_version=int(inferred_version),
+        format_name=str(store_format),
+        slide_store_path=str(target.resolve()),
+    )
+    return slide
