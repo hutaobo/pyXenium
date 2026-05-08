@@ -84,6 +84,7 @@ _TABLE_FORMATS = ("csv", "parquet")
 _ID_COLUMNS = ("contour_id", "assigned_structure", "structure_id")
 _TEXT_PREFIX = "text_similarity__"
 _EMBEDDING_PREFIX = "embedding__"
+_LAZYSLIDE_TILE_TEXT_MODELS = ("plip", "conch", "omiclip")
 
 
 @dataclass(frozen=True)
@@ -101,7 +102,11 @@ class HistoSegLazySlideConfig:
     wsi_reader: str | None = None
     slide_mpp: float | None = None
     model: str = "plip"
+    text_model: str | None = None
     text_terms: tuple[str, ...] = field(default_factory=lambda: DEFAULT_LAZYSLIDE_TEXT_TERMS)
+    prompt_set_name: str = "breast_histology_v1"
+    prompt_source: str = "manual exploratory prompt set"
+    prompt_review_status: str = "not pathologist-confirmed"
     tile_px: int = 224
     mpp: float = 0.5
     device: str = "cuda"
@@ -135,7 +140,11 @@ def run_histoseg_lazyslide_structure_workflow(
     wsi_reader: str | None = None,
     slide_mpp: float | None = None,
     model: str = "plip",
+    text_model: str | None = None,
     text_terms: Sequence[str] | None = None,
+    prompt_set_name: str = "breast_histology_v1",
+    prompt_source: str = "manual exploratory prompt set",
+    prompt_review_status: str = "not pathologist-confirmed",
     tile_px: int = 224,
     mpp: float = 0.5,
     device: str = "cuda",
@@ -172,7 +181,11 @@ def run_histoseg_lazyslide_structure_workflow(
         wsi_reader=wsi_reader,
         slide_mpp=slide_mpp,
         model=model,
+        text_model=text_model,
         text_terms=tuple(text_terms or DEFAULT_LAZYSLIDE_TEXT_TERMS),
+        prompt_set_name=str(prompt_set_name),
+        prompt_source=str(prompt_source),
+        prompt_review_status=str(prompt_review_status),
         tile_px=int(tile_px),
         mpp=float(mpp),
         device=str(device),
@@ -417,11 +430,14 @@ def aggregate_structure_image_features(
             values = pd.to_numeric(group[column], errors="coerce")
             row[f"{column}__mean"] = float(values.mean()) if values.notna().any() else np.nan
             row[f"{column}__std"] = float(values.std(ddof=0)) if values.notna().any() else np.nan
-        if "top_image_label" in group.columns:
-            label_counts = group["top_image_label"].dropna().astype(str).value_counts()
+        prompt_column = "top_prompt_term" if "top_prompt_term" in group.columns else "top_image_label"
+        if prompt_column in group.columns:
+            label_counts = group[prompt_column].dropna().astype(str).value_counts()
             if not label_counts.empty:
-                row["top_image_label"] = str(label_counts.index[0])
-                row["top_image_label_fraction"] = float(label_counts.iloc[0] / len(group))
+                row["top_prompt_term"] = str(label_counts.index[0])
+                row["top_prompt_term_fraction"] = float(label_counts.iloc[0] / len(group))
+                row["top_image_label"] = row["top_prompt_term"]
+                row["top_image_label_fraction"] = row["top_prompt_term_fraction"]
         if "spatial_domain" in group.columns:
             for domain, count in group["spatial_domain"].dropna().astype(str).value_counts().items():
                 row[f"domain_fraction__{_slug(domain)}"] = float(count / len(group))
@@ -626,6 +642,8 @@ def _run_lazyslide_backend(
     status: dict[str, Any] = {
         "backend": "lazyslide",
         "model": config.model,
+        "embedding_model": config.model,
+        "text_model": config.text_model,
         "status": "started",
         "lazy_module": getattr(zs, "__version__", "unknown"),
     }
@@ -665,14 +683,16 @@ def _run_lazyslide_backend(
             tile_key=tile_key,
             key_added=feature_key,
         )
-        _try_lazyslide_text_similarity(
+        text_status = _try_lazyslide_text_similarity(
             zs,
             wsi,
-            model=config.model,
+            embedding_model=config.model,
+            text_model=config.text_model,
             feature_key=feature_key,
             tile_key=tile_key,
             text_terms=config.text_terms,
         )
+        status["text_similarity"] = text_status
         _try_lazyslide_spatial_domain(zs, wsi, model=config.model, tile_key=tile_key)
         frame = _extract_lazyslide_tile_features(
             wsi,
@@ -731,18 +751,31 @@ def _try_lazyslide_text_similarity(
     zs: Any,
     wsi: Any,
     *,
-    model: str,
+    embedding_model: str,
+    text_model: str | None,
     feature_key: str,
     tile_key: str,
     text_terms: Sequence[str],
-) -> None:
+) -> dict[str, Any]:
+    resolved_text_model, skipped_reason = _resolve_tile_text_model(
+        embedding_model=embedding_model,
+        text_model=text_model,
+        text_terms=text_terms,
+    )
+    if resolved_text_model is None:
+        return {
+            "status": "skipped",
+            "embedding_model": embedding_model,
+            "text_model": text_model,
+            "skipped_reason": skipped_reason,
+        }
     try:
-        text_embeddings = zs.tl.text_embedding(list(text_terms), model=model)
+        text_embeddings = zs.tl.text_embedding(list(text_terms), model=resolved_text_model)
         try:
             zs.tl.text_image_similarity(
                 wsi,
                 text_embeddings,
-                model=model,
+                model=resolved_text_model,
                 tile_key=tile_key,
                 softmax=True,
                 feature_key=feature_key,
@@ -751,12 +784,65 @@ def _try_lazyslide_text_similarity(
             zs.tl.text_image_similarity(
                 wsi,
                 text_embeddings,
-                model=model,
+                model=resolved_text_model,
                 tile_key=tile_key,
                 softmax=True,
             )
-    except Exception:
-        return
+        return {
+            "status": "computed",
+            "embedding_model": embedding_model,
+            "text_model": resolved_text_model,
+            "n_text_terms": int(len(text_terms)),
+        }
+    except Exception as exc:
+        return {
+            "status": "skipped",
+            "embedding_model": embedding_model,
+            "text_model": resolved_text_model,
+            "skipped_reason": str(exc),
+        }
+
+
+def _resolve_tile_text_model(
+    *,
+    embedding_model: str,
+    text_model: str | None,
+    text_terms: Sequence[str],
+) -> tuple[str | None, str | None]:
+    if not text_terms:
+        return None, "No text_terms were provided."
+    embedding_slug = _slug(embedding_model)
+    requested = None if text_model is None else str(text_model).strip()
+    if requested is not None and (requested == "" or _slug(requested) in {"none", "skip", "false", "0"}):
+        return None, "Text similarity was disabled by text_model."
+    resolved = requested or (embedding_model if embedding_slug in _LAZYSLIDE_TILE_TEXT_MODELS else None)
+    if resolved is None:
+        return (
+            None,
+            (
+                f"Embedding model {embedding_model!r} is treated as a vision-only "
+                "foundation model for tile-level pyXenium summaries."
+            ),
+        )
+    resolved_slug = _slug(resolved)
+    if resolved_slug not in _LAZYSLIDE_TILE_TEXT_MODELS:
+        return (
+            None,
+            (
+                f"Text model {resolved!r} is not configured for LazySlide tile-level "
+                "text-image similarity."
+            ),
+        )
+    if resolved_slug != embedding_slug:
+        return (
+            None,
+            (
+                "Tile-level text-image similarity requires the text model and image "
+                f"embedding model to share one latent space; got text_model={resolved!r} "
+                f"and model={embedding_model!r}."
+            ),
+        )
+    return resolved, None
 
 
 def _try_lazyslide_spatial_domain(zs: Any, wsi: Any, *, model: str, tile_key: str) -> None:
@@ -872,16 +958,20 @@ def _normalize_tile_feature_table(
     if max_tiles is not None:
         output = output.iloc[: int(max_tiles)].copy()
     text_columns = [column for column in output.columns if column.startswith(_TEXT_PREFIX)]
-    if text_columns and "top_image_label" not in output.columns:
+    if text_columns and "top_prompt_term" not in output.columns:
         values = output.loc[:, text_columns].apply(pd.to_numeric, errors="coerce")
         top_columns = values.idxmax(axis=1)
-        output["top_image_label"] = [
+        output["top_prompt_term"] = [
             column.removeprefix(_TEXT_PREFIX).replace("_", " ")
             if isinstance(column, str)
             else None
             for column in top_columns
         ]
-        output["top_image_label_score"] = values.max(axis=1).to_numpy(dtype=float)
+        output["top_prompt_similarity"] = values.max(axis=1).to_numpy(dtype=float)
+    if "top_prompt_term" in output.columns and "top_image_label" not in output.columns:
+        output["top_image_label"] = output["top_prompt_term"]
+    if "top_prompt_similarity" in output.columns and "top_image_label_score" not in output.columns:
+        output["top_image_label_score"] = output["top_prompt_similarity"]
     if "domain" in output.columns and "spatial_domain" not in output.columns:
         output["spatial_domain"] = output["domain"].astype(str)
     return output.reset_index(drop=True)
@@ -1224,11 +1314,21 @@ def _build_manifest(
         "config": config.to_dict(),
         "package_boundaries": {
             "HistoSeg": "Owns tissue structure segmentation and contour generation.",
-            "LazySlide": "Owns WSI tiling and PLIP/CONCH image model inference.",
+            "LazySlide": "Owns WSI tiling and pathology foundation model inference.",
             "pyXenium": (
                 "Owns Xenium alignment, structure-level RNA/image summaries, "
                 "and interpretable multimodal associations."
             ),
+        },
+        "prompt_metadata": {
+            "prompt_set_name": config.prompt_set_name,
+            "prompt_source": config.prompt_source,
+            "prompt_review_status": config.prompt_review_status,
+            "text_terms": list(config.text_terms),
+            "requested_text_model": config.text_model,
+            "effective_text_model": dict(model_result.get("model_status", {}))
+            .get("text_similarity", {})
+            .get("text_model"),
         },
         "inputs": {
             "n_cells": int(sdata.table.n_obs),
@@ -1354,6 +1454,7 @@ def _serializable_frame(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def _image_numeric_columns(frame: pd.DataFrame) -> list[str]:
+    has_prompt_similarity = "top_prompt_similarity" in frame.columns
     excluded = {
         "tile_id",
         "tile_x",
@@ -1370,7 +1471,8 @@ def _image_numeric_columns(frame: pd.DataFrame) -> list[str]:
         and (
             str(column).startswith(_EMBEDDING_PREFIX)
             or str(column).startswith(_TEXT_PREFIX)
-            or str(column) in {"top_image_label_score"}
+            or str(column) == "top_prompt_similarity"
+            or (str(column) == "top_image_label_score" and not has_prompt_similarity)
         )
     ]
 
@@ -1430,6 +1532,8 @@ def _empty_structure_image_features() -> pd.DataFrame:
             "classification_name",
             "n_tiles",
             "n_contours",
+            "top_prompt_term",
+            "top_prompt_term_fraction",
             "top_image_label",
             "top_image_label_fraction",
         ]

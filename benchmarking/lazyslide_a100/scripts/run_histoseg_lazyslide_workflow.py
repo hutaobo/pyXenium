@@ -48,7 +48,33 @@ def _parse_args() -> argparse.Namespace:
         default=os.environ.get("PYXENIUM_WSI_READER"),
         help="Optional WSIData reader override, for example 'tiffslide'.",
     )
+    parser.add_argument(
+        "--slide-mpp",
+        type=float,
+        default=float(os.environ["PYXENIUM_SLIDE_MPP"])
+        if os.environ.get("PYXENIUM_SLIDE_MPP")
+        else None,
+        help="Optional physical pixel size of the H&E source image.",
+    )
     parser.add_argument("--model", default=os.environ.get("LAZYSLIDE_MODEL", "plip"))
+    parser.add_argument(
+        "--text-model",
+        default=os.environ.get("LAZYSLIDE_TEXT_MODEL"),
+        help=(
+            "Optional LazySlide vision-language model for tile prompt scoring. "
+            "Use 'none' to disable. If omitted, PLIP/CONCH/OmiCLIP models score "
+            "their own prompts and vision-only models skip prompt scoring."
+        ),
+    )
+    parser.add_argument(
+        "--text-terms",
+        nargs="*",
+        default=None,
+        help="Optional prompt terms for PLIP/CONCH/OmiCLIP tile text-image similarity.",
+    )
+    parser.add_argument("--prompt-set-name", default="breast_histology_v1")
+    parser.add_argument("--prompt-source", default="manual exploratory prompt set")
+    parser.add_argument("--prompt-review-status", default="not pathologist-confirmed")
     parser.add_argument("--tile-px", type=int, default=224)
     parser.add_argument("--mpp", type=float, default=0.5)
     parser.add_argument("--batch-size", type=int, default=64)
@@ -80,7 +106,13 @@ def main() -> None:
         he_image_key=args.he_image_key,
         he_source_path=args.he_source_path,
         wsi_reader=args.wsi_reader,
+        slide_mpp=args.slide_mpp,
         model=args.model,
+        text_model=args.text_model,
+        text_terms=args.text_terms,
+        prompt_set_name=args.prompt_set_name,
+        prompt_source=args.prompt_source,
+        prompt_review_status=args.prompt_review_status,
         tile_px=args.tile_px,
         mpp=args.mpp,
         batch_size=args.batch_size,

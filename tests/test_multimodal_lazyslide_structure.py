@@ -151,6 +151,10 @@ def test_run_histoseg_lazyslide_structure_workflow_with_precomputed_tiles(tmp_pa
     assert int(tile_features["assigned"].sum()) == 4
     assert "embedding__z0" in tile_features.columns
     assert "text_similarity__ductal_epithelium" in tile_features.columns
+    assert "top_prompt_term" in tile_features.columns
+    assert "top_prompt_similarity" in tile_features.columns
+    assert set(tile_features["top_prompt_term"].dropna()) <= {"ductal epithelium", "fibrotic stroma"}
+    assert tile_features["top_image_label"].equals(tile_features["top_prompt_term"])
     assert set(result["structure_image_features"]["assigned_structure"]) == {
         "S1 ductal tumor",
         "S5 fibrotic stroma",
@@ -161,6 +165,8 @@ def test_run_histoseg_lazyslide_structure_workflow_with_precomputed_tiles(tmp_pa
 
     saved = json.loads((tmp_path / "run_manifest.json").read_text(encoding="utf-8"))
     assert saved["model_status"]["backend"] == "precomputed"
+    assert saved["prompt_metadata"]["prompt_set_name"] == "breast_histology_v1"
+    assert saved["prompt_metadata"]["prompt_review_status"] == "not pathologist-confirmed"
     assert (tmp_path / saved["files"]["tile_features"]).exists()
     assert (tmp_path / saved["files"]["structure_image_features"]).exists()
 
@@ -356,4 +362,86 @@ def test_run_histoseg_lazyslide_structure_workflow_internal_bridge_passes_slide_
 
     assert recorded_tile_kwargs["slide_mpp"] == pytest.approx(0.37)
     assert result["model_status"]["wsi_source"] == "internal_slide_store"
+    assert result["model_status"]["text_similarity"]["status"] == "computed"
     assert len(result["tile_features"]) == 2
+
+
+def test_lazyslide_vision_only_foundation_model_skips_prompt_scoring(monkeypatch):
+    slide = _toy_slide()
+    contour_table = _prepare_contours(sdata=slide, contour_key="histoseg", contour_query=None)
+    image_table = histoseg_contours_to_image_table(contour_table, he_image=slide.images["he"])
+
+    class _FakeWSI:
+        def __init__(self):
+            self._tables: dict[str, ad.AnnData] = {}
+            self.shapes: dict[str, pd.DataFrame] = {}
+
+        def __getitem__(self, key):
+            return self._tables[key]
+
+    fake_wsi = _FakeWSI()
+    fake_wsi._tables["uni_histoseg_tiles"] = ad.AnnData(np.asarray([[0.1, 0.9]]))
+    fake_wsi._tables["uni_histoseg_tiles"].obs_names = pd.Index(["t1"])
+    fake_wsi._tables["uni_histoseg_tiles"].var_names = pd.Index(["z0", "z1"])
+
+    monkeypatch.setattr(slide, "inspect_wsi", lambda image_key="he": {"wsi_ready": True, "issues": []})
+    monkeypatch.setattr(slide, "to_wsidata", lambda image_key="he": fake_wsi)
+
+    text_calls: list[str] = []
+
+    def _text_embedding(*args, **kwargs):
+        text_calls.append("called")
+        return []
+
+    fake_geopandas = types.ModuleType("geopandas")
+    fake_geopandas.GeoDataFrame = lambda data, geometry, crs=None: pd.DataFrame(data).assign(geometry=list(geometry))
+
+    fake_lazyslide = types.ModuleType("lazyslide")
+    fake_lazyslide.__version__ = "test"
+    fake_lazyslide.io = types.SimpleNamespace(
+        load_annotations=lambda wsi, annotations=None, join_with=None, key_added=None: wsi.shapes.__setitem__(key_added, annotations)
+    )
+    fake_lazyslide.pp = types.SimpleNamespace(
+        tile_tissues=lambda wsi, tile_px, **kwargs: wsi.shapes.__setitem__(
+            "histoseg_tiles",
+            pd.DataFrame({"tile_id": ["t1"], "x": [2.0], "y": [2.0]}),
+        ),
+        tile_graph=lambda *args, **kwargs: None,
+    )
+    fake_lazyslide.tl = types.SimpleNamespace(
+        feature_extraction=lambda *args, **kwargs: None,
+        text_embedding=_text_embedding,
+        text_image_similarity=lambda *args, **kwargs: None,
+        spatial_features=lambda *args, **kwargs: None,
+        spatial_domain=lambda *args, **kwargs: None,
+    )
+
+    fake_wsidata = types.ModuleType("wsidata")
+    fake_wsidata.open_wsi = lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("external open_wsi should not be used"))
+
+    monkeypatch.setitem(sys.modules, "geopandas", fake_geopandas)
+    monkeypatch.setitem(sys.modules, "lazyslide", fake_lazyslide)
+    monkeypatch.setitem(sys.modules, "wsidata", fake_wsidata)
+
+    result = histoseg_lazyslide_module._run_lazyslide_backend(
+        sdata=slide,
+        image_contours=image_table,
+        he_image=slide.images["he"],
+        config=HistoSegLazySlideConfig(model="uni", include_boundary_programs=False),
+    )
+
+    assert text_calls == []
+    assert result["model_status"]["embedding_model"] == "uni"
+    assert result["model_status"]["text_similarity"]["status"] == "skipped"
+    assert "vision-only foundation model" in result["model_status"]["text_similarity"]["skipped_reason"]
+
+
+def test_explicit_mismatched_text_model_is_skipped():
+    text_model, reason = histoseg_lazyslide_module._resolve_tile_text_model(
+        embedding_model="uni",
+        text_model="plip",
+        text_terms=["invasive carcinoma"],
+    )
+
+    assert text_model is None
+    assert "share one latent space" in reason
