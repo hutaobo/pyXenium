@@ -24,7 +24,8 @@ Large-scale notes
   hundreds of thousands of cells. The intra-cluster adjacency (CSR) is only used for Moran's I on a subset.
 
 Author: (c) 2025
-License: Proprietary; non-commercial use only.
+License: AGPL-3.0-only.
+Maintainer: SPATHO AB.
 """
 
 from __future__ import annotations

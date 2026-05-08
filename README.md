@@ -13,7 +13,7 @@
   <a href="https://pyxenium.readthedocs.io/en/latest/"><img src="https://readthedocs.org/projects/pyxenium/badge/?version=latest" alt="Read the Docs"></a>
   <a href="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml"><img src="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/pypi/pyversions/pyXenium.svg" alt="Python versions"></a>
-  <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-non--commercial-d97706.svg" alt="License"></a>
+  <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-0a7f5a.svg" alt="License"></a>
 </p>
 
 <p align="center">
@@ -57,17 +57,18 @@ and run separately; pyXenium does not vendor them or add them as core runtime de
 
 ## Release & Build
 
-- Current repository version: `0.4.4`
+- Current repository version: `0.4.5`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
 - Supported Python: `>=3.8`
-- License: [pyXenium Non-Commercial License](https://github.com/hutaobo/pyXenium/blob/main/LICENSE)
+- License: [GNU AGPL v3.0 only](https://github.com/hutaobo/pyXenium/blob/main/LICENSE)
+- Maintained by: `SPATHO AB`
 
 ## Install
 
 ```bash
-pip install pyXenium==0.4.4
+pip install pyXenium==0.4.5
 ```
 
 For local development:
@@ -251,9 +252,6 @@ Start here: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/
 
 ## License
 
-Copyright (c) 2025-2026 Taobo Hu. All rights reserved.
-
-This project is source-available, not open source. You may use, modify, and
-redistribute it only for non-commercial purposes under the terms of the
-[LICENSE](https://github.com/hutaobo/pyXenium/blob/main/LICENSE) file. Commercial use requires
-prior written permission from the copyright holder.
+This project is licensed under the [GNU Affero General Public License v3.0 only](https://github.com/hutaobo/pyXenium/blob/main/LICENSE).
+It is maintained by `SPATHO AB`.
+Copyright remains with Taobo Hu and other contributors where applicable.

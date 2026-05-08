@@ -52,7 +52,7 @@
 - I did not claim algorithmic novelty beyond software robustness and data handling, because the strongest direct evidence is for loading, validation and reproducibility rather than for a new statistical method.
 - I did not claim runtime or memory advantages, because no benchmark suite for those quantities was generated here.
 - I did not claim biological findings from the renal dataset beyond the observed loaded counts, top-feature summaries and presence of metadata, because this manuscript draft is positioned as a software note.
-- I did not describe the current license as open source, because the repository metadata states `LicenseRef-Proprietary-NonCommercial`.
+- I did not describe the current license as permissive, because the repository metadata states `AGPL-3.0-only`.
 
 ## Metadata to verify before submission
 
@@ -68,4 +68,4 @@
 ## Submission optics to consider
 
 - `pyproject.toml` currently describes pyXenium as `"A toy Python package for analyzing 10x Xenium data."` This wording is not suitable for manuscript or release metadata and should be strengthened before submission.
-- The current non-commercial source-available license is compatible with the manuscript's factual description, but it may read less favorably than a standard open-source license in reviewer and editor assessment. If the license changes, update the manuscript availability paragraph accordingly.
+- The current `AGPL-3.0-only` license is OSI-approved and consistent with an open-source availability statement, but its strong copyleft and network-use obligations may still matter for downstream commercial adopters. The manuscript should describe that license accurately and separately from maintainer identity (`SPATHO AB`).

@@ -48,15 +48,17 @@ pyXenium's nine-feature overview connects Xenium data loading, multimodal spatia
   <a href="https://pyxenium.readthedocs.io/en/latest/"><img src="https://readthedocs.org/projects/pyxenium/badge/?version=latest" alt="Read the Docs"></a>
   <a href="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml"><img src="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/pypi/pyversions/pyXenium.svg" alt="Python versions"></a>
-  <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-non--commercial-d97706.svg" alt="License"></a>
+  <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-0a7f5a.svg" alt="License"></a>
 </p>
 
-- Current repository version: `0.4.4`
+- Current repository version: `0.4.5`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [Read the Docs latest](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
 - Releases: [GitHub releases](https://github.com/hutaobo/pyXenium/releases)
 - Changelog: [RTD changelog](https://pyxenium.readthedocs.io/en/latest/changelog.html)
+- License: [GNU AGPL v3.0 only](https://github.com/hutaobo/pyXenium/blob/main/LICENSE)
+- Maintained by: `SPATHO AB`
 
 ## Nine core sections
 

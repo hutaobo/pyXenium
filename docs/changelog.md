@@ -7,6 +7,12 @@ All notable changes to pyXenium are documented here.
 - Add `pyXenium.perturb` as the lightweight SpatialPerturb Bridge for optional Perturb-seq reference projection handoffs without adding a core runtime dependency.
 - Document AI-Driven Spatial Pathologist via the external `spatho` package as an optional workflow bridge, without adding new pyXenium runtime code or dependencies.
 
+## 0.4.5 - 2026-05-08
+
+- Switch the repository and package metadata from the prior non-commercial license to `AGPL-3.0-only`.
+- Add `SPATHO AB` as the declared maintainer in public package metadata and user-facing project docs.
+- Refresh scverse submission drafts and manuscript availability text so license and maintainer metadata stay consistent with the release.
+
 ## 0.4.4 - 2026-05-05
 
 - Finalize the `XeniumSlide` rename across the public I/O surface, examples, tests, and docs while removing the legacy `XeniumSData` alias.
