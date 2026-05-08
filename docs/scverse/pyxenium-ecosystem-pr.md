@@ -47,8 +47,8 @@ How does the package use scverse data structures (please describe in a few sente
 ## Additional notes
 
 - Source: https://github.com/hutaobo/pyXenium
-- Documentation: https://pyxenium.readthedocs.io/en/latest/
-- Tutorials: https://pyxenium.readthedocs.io/en/latest/tutorials/index.html
+- Documentation: https://pyxenium.readthedocs.io/
+- Tutorials: https://pyxenium.readthedocs.io/page/tutorials/index.html
 - PyPI: https://pypi.org/project/pyXenium/
 - Maintained by: `SPATHO AB`
 
