@@ -16,6 +16,11 @@
    build_spatial_niches
    score_immune_resistance_program
    score_contour_boundary_programs
+   HistoSegLazySlideConfig
+   run_histoseg_lazyslide_structure_workflow
+   histoseg_contours_to_image_table
+   assign_tiles_to_histoseg_structures
+   aggregate_structure_image_features
    export_for_stgpt
    import_stgpt_embeddings
    compare_programs_with_embeddings

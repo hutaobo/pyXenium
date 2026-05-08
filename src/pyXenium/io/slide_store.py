@@ -15,6 +15,7 @@ import zarr
 from .slide_model import XeniumFrameChunkSource, XeniumImage, XeniumSlide
 
 SLIDE_FORMAT = "pyxenium.slide"
+LEGACY_SLIDE_FORMATS = {"pyxenium.sdata"}
 SLIDE_VERSION = 1
 _IMAGE_CORE_ATTRS = {
     "axes",
@@ -485,9 +486,10 @@ def write_xenium_slide(
 def read_xenium_slide(path: str | Path) -> XeniumSlide:
     target = Path(path).expanduser()
     root = zarr.open_group(str(target), mode="r")
-    if root.attrs.get("format") != SLIDE_FORMAT:
+    store_format = root.attrs.get("format")
+    if store_format not in {SLIDE_FORMAT, *LEGACY_SLIDE_FORMATS}:
         raise ValueError(
-            f"Unsupported slide store format at {target}: {root.attrs.get('format')!r}"
+            f"Unsupported slide store format at {target}: {store_format!r}"
         )
 
     table = ad.read_zarr(str(target / "tables" / "cells"))

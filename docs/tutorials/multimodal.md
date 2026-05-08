@@ -7,6 +7,7 @@
 multimodal_renal_rna_protein
 multimodal_rna_contour_he
 multimodal_bmnet_he_morphology_pdc
+multimodal_histoseg_lazyslide_breast_wta
 ```
 
 The multimodal tutorials show complementary ways to combine Xenium molecular
@@ -36,9 +37,18 @@ Run the breast contour H&E morphology increment pilot on PDC, inspect the
 BM-Net-style feature schema, and compare H&E morphology against Xenium-native
 cell and nucleus morphology.
 :::
+
+:::{grid-item-card} HistoSeg + LazySlide breast WTA image features
+:link: multimodal_histoseg_lazyslide_breast_wta
+:link-type: doc
+Use HistoSeg structures as H&E tiling regions, run optional LazySlide PLIP/CONCH
+features on A100, and aggregate image signatures by structure for RNA/image
+interpretation.
+:::
 ::::
 
 The notebook tutorials use checked artifact bundles for fast Read the Docs
 rendering, with optional rerun cells for local Xenium exports. The BM-Net/PDC
 page documents the completed smoke run and the commands for scaling to real
-pathology backends.
+pathology backends. The HistoSeg + LazySlide page documents the A100 runner and
+the result schema for full breast WTA image-feature snapshots.

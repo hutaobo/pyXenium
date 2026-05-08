@@ -1,0 +1,104 @@
+{
+  "environment": {
+    "cuda_available": true,
+    "device": "cuda",
+    "git_commit": null,
+    "gpu_name": "NVIDIA A100-SXM4-40GB",
+    "platform": "Linux-5.15.0-1072-nvidia-x86_64-with-glibc2.35",
+    "python": "3.11.10 | packaged by conda-forge | (main, Oct 16 2024, 01:27:36) [GCC 13.3.0]",
+    "torch": "2.6.0+cu124"
+  },
+  "inputs": {
+    "manifest": "/data/taobo.hu/projects/stgpt_l3_20260504/data/xenium_slides/WTA_Preview_FFPE_Breast_Cancer_outs/contour_patches_manifest.json",
+    "max_patches": null,
+    "text_terms": [
+      "ductal epithelium",
+      "invasive carcinoma",
+      "in situ carcinoma",
+      "fibrotic stroma",
+      "immune infiltrate",
+      "necrosis",
+      "adipose tissue",
+      "vascular stroma",
+      "lumen or secretion"
+    ]
+  },
+  "model": {
+    "backend": "transformers.CLIPModel",
+    "method_note": "Patch fallback used HistoSeg contour patches because the full WSI LazySlide tiling path was killed by memory pressure on a non-pyramidal 17GB OME-TIFF.",
+    "model_label": "plip",
+    "model_name": "vinid/plip"
+  },
+  "outputs": {
+    "n_embedding_features": 512,
+    "n_structures": 7,
+    "n_tiles": 2606,
+    "paths": {
+      "embedding_projection": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/tile_embedding_umap.csv",
+      "representative_tile_montage": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/representative_tile_montage.png",
+      "spatial_tile_map": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/spatial_tile_map.png",
+      "structure_differential_features": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/structure_differential_features.parquet",
+      "structure_heatmap": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/structure_text_similarity_heatmap.png",
+      "structure_image_features": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/structure_image_features.parquet",
+      "structure_text_summary": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/structure_text_summary.parquet",
+      "tile_embedding_umap": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/tile_embedding_umap.png",
+      "tile_feature_summary": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/tile_feature_summary.parquet",
+      "tile_features": "/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/patch_plip_full/tile_features.parquet"
+    },
+    "top_by_structure": [
+      {
+        "assigned_structure": "11q13 Invasive Tumor Cells",
+        "n_tiles": 136,
+        "top_image_label_mode": "adipose tissue",
+        "top_mean_text_label": "vascular stroma",
+        "top_mean_text_score": 0.2503787769990809
+      },
+      {
+        "assigned_structure": "Apocrine Cells",
+        "n_tiles": 18,
+        "top_image_label_mode": "lumen or secretion",
+        "top_mean_text_label": "lumen or secretion",
+        "top_mean_text_score": 0.2634141710069444
+      },
+      {
+        "assigned_structure": "Basal-like Structured DCIS Cells",
+        "n_tiles": 548,
+        "top_image_label_mode": "lumen or secretion",
+        "top_mean_text_label": "lumen or secretion",
+        "top_mean_text_score": 0.2634609250256615
+      },
+      {
+        "assigned_structure": "Endothelial Cells",
+        "n_tiles": 735,
+        "top_image_label_mode": "adipose tissue",
+        "top_mean_text_label": "adipose tissue",
+        "top_mean_text_score": 0.25920476589073127
+      },
+      {
+        "assigned_structure": "Luminal-like Amorphous DCIS Cells",
+        "n_tiles": 121,
+        "top_image_label_mode": "adipose tissue",
+        "top_mean_text_label": "adipose tissue",
+        "top_mean_text_score": 0.2565282396048554
+      },
+      {
+        "assigned_structure": "Macrophages",
+        "n_tiles": 695,
+        "top_image_label_mode": "adipose tissue",
+        "top_mean_text_label": "vascular stroma",
+        "top_mean_text_score": 0.25704055895908273
+      },
+      {
+        "assigned_structure": "Plasma Cells",
+        "n_tiles": 353,
+        "top_image_label_mode": "lumen or secretion",
+        "top_mean_text_label": "vascular stroma",
+        "top_mean_text_score": 0.25257730889252833
+      }
+    ]
+  },
+  "runtime_seconds": 61.54897093772888,
+  "started_at_unix": 1778228358.1420426,
+  "status": "completed",
+  "workflow": "histoseg_patch_plip_structure_features"
+}

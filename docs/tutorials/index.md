@@ -51,7 +51,7 @@ same breast topology study and connect the scores to cell-state programs.
 :link: multimodal
 :link-type: doc
 Choose among renal RNA + protein analysis, RNA + contour + H&E discovery, and
-the BM-Net/H&E morphology increment pilot on PDC.
+the breast H&E morphology/image-feature pilots on PDC or A100.
 :::
 
 :::{grid-item-card} pyXenium.contour

@@ -1,0 +1,2607 @@
+tile_id,assigned_structure,top_image_label,umap_1,umap_2
+0,11q13 Invasive Tumor Cells,immune infiltrate,13.857536,8.09205
+1,11q13 Invasive Tumor Cells,lumen or secretion,3.9960284,0.045477524
+2,11q13 Invasive Tumor Cells,vascular stroma,-7.110263,5.1837044
+3,11q13 Invasive Tumor Cells,immune infiltrate,13.679189,8.632542
+4,11q13 Invasive Tumor Cells,vascular stroma,-6.565187,5.4554744
+5,11q13 Invasive Tumor Cells,lumen or secretion,-4.7626953,6.3871374
+6,11q13 Invasive Tumor Cells,adipose tissue,-5.0491405,4.159038
+7,11q13 Invasive Tumor Cells,adipose tissue,-4.94992,5.3079786
+8,11q13 Invasive Tumor Cells,adipose tissue,13.029966,8.097056
+9,11q13 Invasive Tumor Cells,necrosis,13.964253,8.0638075
+10,11q13 Invasive Tumor Cells,invasive carcinoma,13.7203045,8.282691
+11,11q13 Invasive Tumor Cells,lumen or secretion,5.1025696,1.3033707
+12,11q13 Invasive Tumor Cells,immune infiltrate,13.7659,8.620772
+13,11q13 Invasive Tumor Cells,invasive carcinoma,12.298365,5.7610307
+14,11q13 Invasive Tumor Cells,immune infiltrate,13.826852,8.066159
+15,11q13 Invasive Tumor Cells,immune infiltrate,13.982562,8.073872
+16,11q13 Invasive Tumor Cells,lumen or secretion,10.47606,3.6722667
+17,11q13 Invasive Tumor Cells,lumen or secretion,10.921173,5.6022263
+18,11q13 Invasive Tumor Cells,vascular stroma,12.863413,8.733016
+19,11q13 Invasive Tumor Cells,vascular stroma,14.138104,8.47035
+20,11q13 Invasive Tumor Cells,immune infiltrate,11.882155,6.053691
+21,11q13 Invasive Tumor Cells,vascular stroma,11.519797,6.461664
+22,11q13 Invasive Tumor Cells,vascular stroma,13.1726675,11.211847
+23,11q13 Invasive Tumor Cells,invasive carcinoma,13.790818,8.152882
+24,11q13 Invasive Tumor Cells,invasive carcinoma,12.378301,5.4256425
+25,11q13 Invasive Tumor Cells,immune infiltrate,11.63655,5.6787515
+26,11q13 Invasive Tumor Cells,immune infiltrate,13.729036,8.342519
+27,11q13 Invasive Tumor Cells,necrosis,10.993354,7.1529336
+28,11q13 Invasive Tumor Cells,adipose tissue,12.9547615,10.832626
+29,11q13 Invasive Tumor Cells,adipose tissue,-5.083187,6.0824504
+30,11q13 Invasive Tumor Cells,adipose tissue,-6.2490325,4.9616284
+31,11q13 Invasive Tumor Cells,necrosis,14.128954,8.049468
+32,11q13 Invasive Tumor Cells,invasive carcinoma,14.284807,8.509431
+33,11q13 Invasive Tumor Cells,immune infiltrate,14.183936,8.320738
+34,11q13 Invasive Tumor Cells,invasive carcinoma,13.791803,8.341658
+35,11q13 Invasive Tumor Cells,immune infiltrate,12.760392,6.5643334
+36,11q13 Invasive Tumor Cells,lumen or secretion,11.738959,4.8383546
+37,11q13 Invasive Tumor Cells,invasive carcinoma,14.00401,8.450809
+38,11q13 Invasive Tumor Cells,lumen or secretion,8.116141,2.9879746
+39,11q13 Invasive Tumor Cells,lumen or secretion,7.7508216,3.7079217
+40,11q13 Invasive Tumor Cells,invasive carcinoma,13.867451,8.374383
+41,11q13 Invasive Tumor Cells,invasive carcinoma,14.2431135,8.566823
+42,11q13 Invasive Tumor Cells,necrosis,14.108555,8.008352
+43,11q13 Invasive Tumor Cells,ductal epithelium,7.8307533,3.090646
+44,11q13 Invasive Tumor Cells,lumen or secretion,5.212368,1.3035405
+45,11q13 Invasive Tumor Cells,ductal epithelium,4.7348857,0.5039501
+46,11q13 Invasive Tumor Cells,immune infiltrate,13.842538,8.128678
+47,11q13 Invasive Tumor Cells,invasive carcinoma,14.089444,8.523884
+48,11q13 Invasive Tumor Cells,lumen or secretion,9.960295,4.735301
+49,11q13 Invasive Tumor Cells,lumen or secretion,6.9661765,2.5663857
+50,11q13 Invasive Tumor Cells,invasive carcinoma,14.247881,8.26004
+51,11q13 Invasive Tumor Cells,adipose tissue,-4.266949,5.086629
+52,11q13 Invasive Tumor Cells,immune infiltrate,13.533476,7.9600406
+53,11q13 Invasive Tumor Cells,vascular stroma,14.12661,8.058549
+54,11q13 Invasive Tumor Cells,immune infiltrate,11.96622,5.081116
+55,11q13 Invasive Tumor Cells,necrosis,12.388668,4.694255
+56,11q13 Invasive Tumor Cells,vascular stroma,13.570724,7.8068666
+57,11q13 Invasive Tumor Cells,adipose tissue,-6.2925835,4.8724794
+58,11q13 Invasive Tumor Cells,lumen or secretion,8.0583725,3.8072097
+59,11q13 Invasive Tumor Cells,necrosis,11.736114,8.05512
+60,11q13 Invasive Tumor Cells,adipose tissue,4.274363,0.2395777
+61,11q13 Invasive Tumor Cells,lumen or secretion,11.244044,5.061332
+62,11q13 Invasive Tumor Cells,invasive carcinoma,14.25393,8.618573
+63,11q13 Invasive Tumor Cells,invasive carcinoma,11.849153,4.934221
+64,11q13 Invasive Tumor Cells,necrosis,14.078464,7.8746247
+65,11q13 Invasive Tumor Cells,necrosis,10.923272,4.760303
+66,11q13 Invasive Tumor Cells,invasive carcinoma,14.303599,8.533119
+67,11q13 Invasive Tumor Cells,adipose tissue,-6.383759,4.793327
+68,11q13 Invasive Tumor Cells,immune infiltrate,14.252825,8.359075
+69,11q13 Invasive Tumor Cells,invasive carcinoma,13.961464,8.3630495
+70,11q13 Invasive Tumor Cells,immune infiltrate,14.285265,8.423435
+71,11q13 Invasive Tumor Cells,lumen or secretion,4.711406,0.56769806
+72,11q13 Invasive Tumor Cells,adipose tissue,7.5734115,2.6806219
+73,11q13 Invasive Tumor Cells,adipose tissue,-3.6750538,2.1790998
+74,11q13 Invasive Tumor Cells,adipose tissue,-4.9527783,3.31725
+75,11q13 Invasive Tumor Cells,lumen or secretion,9.548647,3.2483153
+76,11q13 Invasive Tumor Cells,immune infiltrate,14.233316,8.212515
+77,11q13 Invasive Tumor Cells,adipose tissue,-7.017609,5.3064985
+78,11q13 Invasive Tumor Cells,adipose tissue,-6.7160425,5.1349034
+79,11q13 Invasive Tumor Cells,lumen or secretion,9.120561,3.5902743
+80,11q13 Invasive Tumor Cells,vascular stroma,6.748168,3.2405257
+81,11q13 Invasive Tumor Cells,immune infiltrate,14.278882,8.324934
+82,11q13 Invasive Tumor Cells,invasive carcinoma,14.081719,8.482749
+83,11q13 Invasive Tumor Cells,vascular stroma,13.86309,8.446648
+84,11q13 Invasive Tumor Cells,immune infiltrate,14.222658,8.390235
+85,11q13 Invasive Tumor Cells,immune infiltrate,13.925309,8.053486
+86,11q13 Invasive Tumor Cells,immune infiltrate,13.745677,7.865746
+87,11q13 Invasive Tumor Cells,lumen or secretion,6.7508,3.1101918
+88,11q13 Invasive Tumor Cells,immune infiltrate,12.378365,5.322668
+89,11q13 Invasive Tumor Cells,adipose tissue,-5.256467,6.151894
+90,11q13 Invasive Tumor Cells,lumen or secretion,3.996113,0.020265449
+91,11q13 Invasive Tumor Cells,invasive carcinoma,14.026553,8.484228
+92,11q13 Invasive Tumor Cells,vascular stroma,14.312907,8.37321
+93,11q13 Invasive Tumor Cells,vascular stroma,14.283595,8.495444
+94,11q13 Invasive Tumor Cells,lumen or secretion,11.964798,4.8536253
+95,11q13 Invasive Tumor Cells,adipose tissue,5.069322,1.3011453
+96,11q13 Invasive Tumor Cells,adipose tissue,-4.543447,4.9205775
+97,11q13 Invasive Tumor Cells,vascular stroma,14.100073,8.467825
+98,11q13 Invasive Tumor Cells,adipose tissue,-4.611761,4.316091
+99,11q13 Invasive Tumor Cells,adipose tissue,4.1483097,0.3778364
+100,11q13 Invasive Tumor Cells,adipose tissue,4.402541,0.8055738
+101,11q13 Invasive Tumor Cells,adipose tissue,-3.83702,2.3699052
+102,11q13 Invasive Tumor Cells,immune infiltrate,14.115512,8.475871
+103,11q13 Invasive Tumor Cells,vascular stroma,13.991656,8.515685
+104,11q13 Invasive Tumor Cells,lumen or secretion,9.9529,3.5257068
+105,11q13 Invasive Tumor Cells,lumen or secretion,12.0185,5.628105
+106,11q13 Invasive Tumor Cells,immune infiltrate,13.98627,8.493251
+107,11q13 Invasive Tumor Cells,immune infiltrate,11.189861,5.783593
+108,11q13 Invasive Tumor Cells,invasive carcinoma,14.289972,8.5555105
+109,11q13 Invasive Tumor Cells,adipose tissue,-6.767996,5.2189302
+110,11q13 Invasive Tumor Cells,lumen or secretion,9.8248005,7.132192
+111,11q13 Invasive Tumor Cells,adipose tissue,4.553517,0.65796876
+112,11q13 Invasive Tumor Cells,necrosis,12.318905,4.5809355
+113,11q13 Invasive Tumor Cells,adipose tissue,-4.9911046,3.396963
+114,11q13 Invasive Tumor Cells,lumen or secretion,12.244711,4.341411
+115,11q13 Invasive Tumor Cells,invasive carcinoma,14.077889,8.465796
+116,11q13 Invasive Tumor Cells,lumen or secretion,12.167015,4.591885
+117,11q13 Invasive Tumor Cells,lumen or secretion,11.930082,4.5312796
+118,11q13 Invasive Tumor Cells,adipose tissue,-4.422921,5.9720798
+119,11q13 Invasive Tumor Cells,adipose tissue,-5.316129,6.4225783
+120,11q13 Invasive Tumor Cells,lumen or secretion,7.0002627,2.214458
+121,11q13 Invasive Tumor Cells,adipose tissue,-6.352954,4.521749
+122,11q13 Invasive Tumor Cells,adipose tissue,-5.356635,6.4329405
+123,11q13 Invasive Tumor Cells,adipose tissue,-5.194321,6.612256
+124,11q13 Invasive Tumor Cells,adipose tissue,-5.3045716,6.3076077
+125,11q13 Invasive Tumor Cells,adipose tissue,-4.8452888,6.347762
+126,11q13 Invasive Tumor Cells,adipose tissue,-4.527755,3.331654
+127,11q13 Invasive Tumor Cells,lumen or secretion,4.594035,0.1849504
+128,11q13 Invasive Tumor Cells,adipose tissue,-4.3653917,5.2356625
+129,11q13 Invasive Tumor Cells,lumen or secretion,4.394671,0.2504878
+130,11q13 Invasive Tumor Cells,adipose tissue,-4.5852056,3.3931198
+131,11q13 Invasive Tumor Cells,lumen or secretion,-4.578226,5.893231
+132,11q13 Invasive Tumor Cells,adipose tissue,-5.168731,6.2068677
+133,11q13 Invasive Tumor Cells,adipose tissue,-6.072827,5.6247
+134,11q13 Invasive Tumor Cells,lumen or secretion,-4.4862423,3.4920251
+135,11q13 Invasive Tumor Cells,adipose tissue,-4.589976,3.2933795
+136,Basal-like Structured DCIS Cells,immune infiltrate,12.548751,5.0646358
+137,Basal-like Structured DCIS Cells,adipose tissue,-4.530977,3.2716231
+138,Basal-like Structured DCIS Cells,adipose tissue,-6.3113904,5.668758
+139,Basal-like Structured DCIS Cells,adipose tissue,13.372039,7.5346394
+140,Basal-like Structured DCIS Cells,ductal epithelium,12.223505,4.6428742
+141,Basal-like Structured DCIS Cells,lumen or secretion,9.332021,7.126369
+142,Basal-like Structured DCIS Cells,adipose tissue,-3.945909,2.4886308
+143,Basal-like Structured DCIS Cells,adipose tissue,5.0144467,1.2676562
+144,Basal-like Structured DCIS Cells,immune infiltrate,12.578144,5.1188517
+145,Basal-like Structured DCIS Cells,lumen or secretion,10.592636,5.5521293
+146,Basal-like Structured DCIS Cells,adipose tissue,10.278133,5.797199
+147,Basal-like Structured DCIS Cells,adipose tissue,13.698688,8.557995
+148,Basal-like Structured DCIS Cells,adipose tissue,9.179538,5.8447385
+149,Basal-like Structured DCIS Cells,immune infiltrate,10.812997,6.6633434
+150,Basal-like Structured DCIS Cells,adipose tissue,-6.1281133,4.5069942
+151,Basal-like Structured DCIS Cells,adipose tissue,-3.9510539,2.4977176
+152,Basal-like Structured DCIS Cells,lumen or secretion,-5.6189675,5.627957
+153,Basal-like Structured DCIS Cells,necrosis,11.160106,7.1880984
+154,Basal-like Structured DCIS Cells,adipose tissue,6.8395205,2.672002
+155,Basal-like Structured DCIS Cells,vascular stroma,13.01095,7.6741066
+156,Basal-like Structured DCIS Cells,adipose tissue,4.8881,1.2372063
+157,Basal-like Structured DCIS Cells,invasive carcinoma,12.356032,5.4036994
+158,Basal-like Structured DCIS Cells,lumen or secretion,9.8090315,4.875265
+159,Basal-like Structured DCIS Cells,lumen or secretion,7.8868318,4.517936
+160,Basal-like Structured DCIS Cells,vascular stroma,10.676535,9.376266
+161,Basal-like Structured DCIS Cells,necrosis,9.451392,7.9827027
+162,Basal-like Structured DCIS Cells,adipose tissue,4.8617196,1.1356267
+163,Basal-like Structured DCIS Cells,adipose tissue,12.047877,9.349374
+164,Basal-like Structured DCIS Cells,adipose tissue,-4.913004,6.291263
+165,Basal-like Structured DCIS Cells,adipose tissue,4.461012,0.69263566
+166,Basal-like Structured DCIS Cells,adipose tissue,9.55878,4.6697664
+167,Basal-like Structured DCIS Cells,lumen or secretion,9.024013,4.813738
+168,Basal-like Structured DCIS Cells,lumen or secretion,4.646597,0.28603023
+169,Basal-like Structured DCIS Cells,ductal epithelium,10.021212,5.5966988
+170,Basal-like Structured DCIS Cells,lumen or secretion,7.1169143,3.8458705
+171,Basal-like Structured DCIS Cells,adipose tissue,8.374842,5.4642153
+172,Basal-like Structured DCIS Cells,lumen or secretion,8.999683,3.5132172
+173,Basal-like Structured DCIS Cells,lumen or secretion,6.863598,2.110943
+174,Basal-like Structured DCIS Cells,adipose tissue,-5.3667336,5.8802104
+175,Basal-like Structured DCIS Cells,lumen or secretion,9.388108,3.9549055
+176,Basal-like Structured DCIS Cells,lumen or secretion,7.211761,3.713709
+177,Basal-like Structured DCIS Cells,lumen or secretion,11.400463,5.243036
+178,Basal-like Structured DCIS Cells,lumen or secretion,7.6831465,4.2065854
+179,Basal-like Structured DCIS Cells,lumen or secretion,8.249259,2.9140036
+180,Basal-like Structured DCIS Cells,lumen or secretion,7.5737247,3.6330726
+181,Basal-like Structured DCIS Cells,immune infiltrate,13.881127,8.064909
+182,Basal-like Structured DCIS Cells,adipose tissue,9.613762,5.8254848
+183,Basal-like Structured DCIS Cells,vascular stroma,13.026406,8.411574
+184,Basal-like Structured DCIS Cells,lumen or secretion,7.245893,3.3406272
+185,Basal-like Structured DCIS Cells,adipose tissue,9.324439,5.8668847
+186,Basal-like Structured DCIS Cells,immune infiltrate,12.549451,6.646688
+187,Basal-like Structured DCIS Cells,invasive carcinoma,12.293717,5.5113792
+188,Basal-like Structured DCIS Cells,lumen or secretion,7.134868,3.503538
+189,Basal-like Structured DCIS Cells,lumen or secretion,7.604426,4.3123813
+190,Basal-like Structured DCIS Cells,lumen or secretion,11.230554,5.0578356
+191,Basal-like Structured DCIS Cells,lumen or secretion,8.370147,5.305159
+192,Basal-like Structured DCIS Cells,lumen or secretion,10.346229,3.6645398
+193,Basal-like Structured DCIS Cells,lumen or secretion,9.546332,5.23998
+194,Basal-like Structured DCIS Cells,adipose tissue,8.132324,5.9008274
+195,Basal-like Structured DCIS Cells,lumen or secretion,7.8967037,4.9489822
+196,Basal-like Structured DCIS Cells,necrosis,11.84229,4.956176
+197,Basal-like Structured DCIS Cells,lumen or secretion,9.518879,3.2561057
+198,Basal-like Structured DCIS Cells,adipose tissue,8.44863,6.157315
+199,Basal-like Structured DCIS Cells,adipose tissue,8.70007,5.308633
+200,Basal-like Structured DCIS Cells,invasive carcinoma,13.686109,8.280336
+201,Basal-like Structured DCIS Cells,adipose tissue,-7.321662,4.9586587
+202,Basal-like Structured DCIS Cells,adipose tissue,10.573714,5.9089346
+203,Basal-like Structured DCIS Cells,lumen or secretion,7.7971554,3.535749
+204,Basal-like Structured DCIS Cells,lumen or secretion,10.180699,7.834795
+205,Basal-like Structured DCIS Cells,lumen or secretion,8.139269,4.690669
+206,Basal-like Structured DCIS Cells,adipose tissue,-6.7886252,5.181832
+207,Basal-like Structured DCIS Cells,adipose tissue,-6.710867,5.394396
+208,Basal-like Structured DCIS Cells,adipose tissue,-5.006803,4.512536
+209,Basal-like Structured DCIS Cells,lumen or secretion,7.058888,2.385593
+210,Basal-like Structured DCIS Cells,ductal epithelium,8.902656,6.643379
+211,Basal-like Structured DCIS Cells,adipose tissue,8.147886,4.6286345
+212,Basal-like Structured DCIS Cells,lumen or secretion,4.7850623,0.4497464
+213,Basal-like Structured DCIS Cells,adipose tissue,-4.912554,4.6762977
+214,Basal-like Structured DCIS Cells,adipose tissue,9.9823,5.108276
+215,Basal-like Structured DCIS Cells,immune infiltrate,11.635473,5.993366
+216,Basal-like Structured DCIS Cells,lumen or secretion,-4.571928,5.9553113
+217,Basal-like Structured DCIS Cells,lumen or secretion,10.913586,6.08999
+218,Basal-like Structured DCIS Cells,adipose tissue,4.2784185,0.16645177
+219,Basal-like Structured DCIS Cells,lumen or secretion,7.795384,3.98731
+220,Basal-like Structured DCIS Cells,lumen or secretion,8.291079,3.3285193
+221,Basal-like Structured DCIS Cells,adipose tissue,7.8124022,4.272418
+222,Basal-like Structured DCIS Cells,lumen or secretion,9.430796,4.6140475
+223,Basal-like Structured DCIS Cells,ductal epithelium,11.373162,4.8720584
+224,Basal-like Structured DCIS Cells,lumen or secretion,11.336218,4.766287
+225,Basal-like Structured DCIS Cells,lumen or secretion,7.8301344,3.911209
+226,Basal-like Structured DCIS Cells,lumen or secretion,10.437373,5.2370152
+227,Basal-like Structured DCIS Cells,adipose tissue,-4.600665,3.2850668
+228,Basal-like Structured DCIS Cells,adipose tissue,-4.30352,5.128366
+229,Basal-like Structured DCIS Cells,adipose tissue,-6.065311,5.3218064
+230,Basal-like Structured DCIS Cells,immune infiltrate,11.995007,5.851067
+231,Basal-like Structured DCIS Cells,lumen or secretion,9.964917,3.810789
+232,Basal-like Structured DCIS Cells,adipose tissue,9.21739,7.189148
+233,Basal-like Structured DCIS Cells,adipose tissue,4.28378,0.9279769
+234,Basal-like Structured DCIS Cells,lumen or secretion,8.148643,4.1151977
+235,Basal-like Structured DCIS Cells,lumen or secretion,7.380518,3.4811604
+236,Basal-like Structured DCIS Cells,lumen or secretion,11.168347,5.686345
+237,Basal-like Structured DCIS Cells,adipose tissue,-7.3946247,4.9970384
+238,Basal-like Structured DCIS Cells,lumen or secretion,7.680408,3.580607
+239,Basal-like Structured DCIS Cells,lumen or secretion,-4.3481755,6.156715
+240,Basal-like Structured DCIS Cells,lumen or secretion,8.955706,3.9124558
+241,Basal-like Structured DCIS Cells,lumen or secretion,10.351033,3.7275798
+242,Basal-like Structured DCIS Cells,adipose tissue,-3.7011595,2.2074656
+243,Basal-like Structured DCIS Cells,ductal epithelium,9.152046,5.527334
+244,Basal-like Structured DCIS Cells,lumen or secretion,8.438457,4.183523
+245,Basal-like Structured DCIS Cells,lumen or secretion,10.3861475,3.701553
+246,Basal-like Structured DCIS Cells,lumen or secretion,10.965226,5.100001
+247,Basal-like Structured DCIS Cells,ductal epithelium,9.1289015,6.9739614
+248,Basal-like Structured DCIS Cells,lumen or secretion,10.928552,4.8253746
+249,Basal-like Structured DCIS Cells,immune infiltrate,12.161473,6.1242194
+250,Basal-like Structured DCIS Cells,adipose tissue,4.729855,1.1520169
+251,Basal-like Structured DCIS Cells,adipose tissue,13.605213,7.5618496
+252,Basal-like Structured DCIS Cells,adipose tissue,-6.8091617,5.2270784
+253,Basal-like Structured DCIS Cells,lumen or secretion,7.245805,3.5437987
+254,Basal-like Structured DCIS Cells,lumen or secretion,9.608463,3.8791282
+255,Basal-like Structured DCIS Cells,adipose tissue,-4.9007277,4.544601
+256,Basal-like Structured DCIS Cells,adipose tissue,-5.53808,5.111654
+257,Basal-like Structured DCIS Cells,adipose tissue,12.512815,6.618977
+258,Basal-like Structured DCIS Cells,adipose tissue,-4.909525,6.191379
+259,Basal-like Structured DCIS Cells,adipose tissue,-5.190598,6.631437
+260,Basal-like Structured DCIS Cells,ductal epithelium,10.322255,5.185656
+261,Basal-like Structured DCIS Cells,lumen or secretion,10.379561,3.638509
+262,Basal-like Structured DCIS Cells,lumen or secretion,8.925554,5.91914
+263,Basal-like Structured DCIS Cells,vascular stroma,8.75733,6.7227573
+264,Basal-like Structured DCIS Cells,immune infiltrate,11.445487,5.4960103
+265,Basal-like Structured DCIS Cells,adipose tissue,9.212476,6.039414
+266,Basal-like Structured DCIS Cells,lumen or secretion,11.365206,4.377679
+267,Basal-like Structured DCIS Cells,immune infiltrate,13.5595455,8.083306
+268,Basal-like Structured DCIS Cells,lumen or secretion,13.158757,8.071799
+269,Basal-like Structured DCIS Cells,vascular stroma,13.747286,8.065122
+270,Basal-like Structured DCIS Cells,lumen or secretion,8.1756735,3.4608083
+271,Basal-like Structured DCIS Cells,ductal epithelium,11.8669815,4.955915
+272,Basal-like Structured DCIS Cells,lumen or secretion,10.18085,4.4969172
+273,Basal-like Structured DCIS Cells,immune infiltrate,10.77404,6.101015
+274,Basal-like Structured DCIS Cells,adipose tissue,-5.40689,6.529736
+275,Basal-like Structured DCIS Cells,adipose tissue,8.9575615,4.798265
+276,Basal-like Structured DCIS Cells,adipose tissue,-4.7785587,3.3358948
+277,Basal-like Structured DCIS Cells,adipose tissue,-4.1422668,5.432219
+278,Basal-like Structured DCIS Cells,immune infiltrate,10.250611,5.076985
+279,Basal-like Structured DCIS Cells,lumen or secretion,10.975337,6.2883506
+280,Basal-like Structured DCIS Cells,lumen or secretion,12.178036,4.6413345
+281,Basal-like Structured DCIS Cells,ductal epithelium,9.739473,4.7625957
+282,Basal-like Structured DCIS Cells,lumen or secretion,10.448347,4.8628373
+283,Basal-like Structured DCIS Cells,necrosis,10.55443,4.1783137
+284,Basal-like Structured DCIS Cells,lumen or secretion,7.569584,3.4888396
+285,Basal-like Structured DCIS Cells,adipose tissue,-4.986074,4.879447
+286,Basal-like Structured DCIS Cells,adipose tissue,6.7237234,2.7389612
+287,Basal-like Structured DCIS Cells,lumen or secretion,12.205749,6.0582175
+288,Basal-like Structured DCIS Cells,immune infiltrate,12.864066,7.9696937
+289,Basal-like Structured DCIS Cells,lumen or secretion,11.324551,5.8436713
+290,Basal-like Structured DCIS Cells,necrosis,13.874524,7.6107855
+291,Basal-like Structured DCIS Cells,ductal epithelium,11.342856,4.7329936
+292,Basal-like Structured DCIS Cells,lumen or secretion,9.845219,3.7187667
+293,Basal-like Structured DCIS Cells,adipose tissue,-4.60836,4.267758
+294,Basal-like Structured DCIS Cells,lumen or secretion,11.314392,4.9715014
+295,Basal-like Structured DCIS Cells,adipose tissue,-4.4361935,4.4961596
+296,Basal-like Structured DCIS Cells,lumen or secretion,12.108383,4.565391
+297,Basal-like Structured DCIS Cells,lumen or secretion,7.999581,3.5493422
+298,Basal-like Structured DCIS Cells,necrosis,11.192075,6.2414455
+299,Basal-like Structured DCIS Cells,lumen or secretion,9.250047,3.6098392
+300,Basal-like Structured DCIS Cells,necrosis,10.754609,4.6895075
+301,Basal-like Structured DCIS Cells,lumen or secretion,10.69819,6.042412
+302,Basal-like Structured DCIS Cells,adipose tissue,9.765315,5.5977616
+303,Basal-like Structured DCIS Cells,adipose tissue,9.388219,5.980581
+304,Basal-like Structured DCIS Cells,adipose tissue,-5.782415,6.2670703
+305,Basal-like Structured DCIS Cells,immune infiltrate,12.163266,6.436945
+306,Basal-like Structured DCIS Cells,adipose tissue,-5.2751784,6.4833994
+307,Basal-like Structured DCIS Cells,adipose tissue,5.106915,1.3610146
+308,Basal-like Structured DCIS Cells,lumen or secretion,9.74516,5.8372045
+309,Basal-like Structured DCIS Cells,lumen or secretion,7.747388,2.997707
+310,Basal-like Structured DCIS Cells,fibrotic stroma,8.964979,7.0683556
+311,Basal-like Structured DCIS Cells,ductal epithelium,10.741486,6.3221955
+312,Basal-like Structured DCIS Cells,necrosis,13.927332,8.053731
+313,Basal-like Structured DCIS Cells,immune infiltrate,11.859996,4.92361
+314,Basal-like Structured DCIS Cells,lumen or secretion,8.087908,3.8509142
+315,Basal-like Structured DCIS Cells,adipose tissue,4.8163733,1.1616946
+316,Basal-like Structured DCIS Cells,adipose tissue,6.7485604,2.8770912
+317,Basal-like Structured DCIS Cells,lumen or secretion,8.432095,4.991001
+318,Basal-like Structured DCIS Cells,immune infiltrate,12.909144,7.6816244
+319,Basal-like Structured DCIS Cells,immune infiltrate,11.558906,5.574711
+320,Basal-like Structured DCIS Cells,adipose tissue,5.5195704,1.5784568
+321,Basal-like Structured DCIS Cells,lumen or secretion,-6.918688,4.4617963
+322,Basal-like Structured DCIS Cells,lumen or secretion,4.165028,0.38079056
+323,Basal-like Structured DCIS Cells,lumen or secretion,12.275955,4.74263
+324,Basal-like Structured DCIS Cells,lumen or secretion,6.912851,2.2419224
+325,Basal-like Structured DCIS Cells,lumen or secretion,7.833746,2.823286
+326,Basal-like Structured DCIS Cells,lumen or secretion,11.364045,5.1083884
+327,Basal-like Structured DCIS Cells,lumen or secretion,8.594293,4.384849
+328,Basal-like Structured DCIS Cells,lumen or secretion,5.523346,1.5631092
+329,Basal-like Structured DCIS Cells,lumen or secretion,10.761142,5.5783596
+330,Basal-like Structured DCIS Cells,in situ carcinoma,10.982081,6.069323
+331,Basal-like Structured DCIS Cells,lumen or secretion,8.838227,4.8447127
+332,Basal-like Structured DCIS Cells,adipose tissue,8.147169,5.483435
+333,Basal-like Structured DCIS Cells,lumen or secretion,8.369884,4.0908933
+334,Basal-like Structured DCIS Cells,lumen or secretion,8.204406,3.1405816
+335,Basal-like Structured DCIS Cells,adipose tissue,-5.1383443,6.3139453
+336,Basal-like Structured DCIS Cells,necrosis,12.402579,6.4105635
+337,Basal-like Structured DCIS Cells,adipose tissue,10.372125,5.810657
+338,Basal-like Structured DCIS Cells,adipose tissue,-5.7028713,4.956394
+339,Basal-like Structured DCIS Cells,adipose tissue,-5.111227,5.528398
+340,Basal-like Structured DCIS Cells,lumen or secretion,-4.274892,6.079676
+341,Basal-like Structured DCIS Cells,lumen or secretion,4.390796,0.2862539
+342,Basal-like Structured DCIS Cells,lumen or secretion,8.092875,3.473497
+343,Basal-like Structured DCIS Cells,adipose tissue,-5.048833,5.284363
+344,Basal-like Structured DCIS Cells,lumen or secretion,7.9618626,4.5097675
+345,Basal-like Structured DCIS Cells,lumen or secretion,7.9155426,2.9585407
+346,Basal-like Structured DCIS Cells,adipose tissue,-4.9758563,3.9390438
+347,Basal-like Structured DCIS Cells,immune infiltrate,11.237519,5.7011156
+348,Basal-like Structured DCIS Cells,lumen or secretion,7.673977,4.1546283
+349,Basal-like Structured DCIS Cells,lumen or secretion,6.958782,3.4777393
+350,Basal-like Structured DCIS Cells,lumen or secretion,10.858915,4.7094636
+351,Basal-like Structured DCIS Cells,lumen or secretion,11.138769,5.3436913
+352,Basal-like Structured DCIS Cells,adipose tissue,-3.6771202,2.1808803
+353,Basal-like Structured DCIS Cells,lumen or secretion,8.075062,3.7485023
+354,Basal-like Structured DCIS Cells,vascular stroma,13.2355,8.081895
+355,Basal-like Structured DCIS Cells,lumen or secretion,9.624552,3.5884092
+356,Basal-like Structured DCIS Cells,adipose tissue,-6.360297,4.6259785
+357,Basal-like Structured DCIS Cells,adipose tissue,-5.331687,6.058576
+358,Basal-like Structured DCIS Cells,lumen or secretion,10.613549,5.4546156
+359,Basal-like Structured DCIS Cells,adipose tissue,-5.9561996,5.8226933
+360,Basal-like Structured DCIS Cells,lumen or secretion,9.018416,3.6397235
+361,Basal-like Structured DCIS Cells,adipose tissue,-5.0477567,5.518856
+362,Basal-like Structured DCIS Cells,immune infiltrate,12.842012,8.125317
+363,Basal-like Structured DCIS Cells,lumen or secretion,10.344083,5.789418
+364,Basal-like Structured DCIS Cells,immune infiltrate,14.188831,8.227961
+365,Basal-like Structured DCIS Cells,immune infiltrate,11.507344,5.841237
+366,Basal-like Structured DCIS Cells,lumen or secretion,9.550551,4.1323028
+367,Basal-like Structured DCIS Cells,lumen or secretion,9.509648,3.526467
+368,Basal-like Structured DCIS Cells,lumen or secretion,9.090517,3.2885673
+369,Basal-like Structured DCIS Cells,lumen or secretion,12.40322,4.8365192
+370,Basal-like Structured DCIS Cells,necrosis,12.508373,4.9783597
+371,Basal-like Structured DCIS Cells,adipose tissue,-6.8434877,4.951757
+372,Basal-like Structured DCIS Cells,immune infiltrate,10.652608,3.8222656
+373,Basal-like Structured DCIS Cells,adipose tissue,4.269425,0.65065324
+374,Basal-like Structured DCIS Cells,adipose tissue,-4.98533,6.483969
+375,Basal-like Structured DCIS Cells,necrosis,12.040875,6.5295067
+376,Basal-like Structured DCIS Cells,immune infiltrate,11.126253,5.7839646
+377,Basal-like Structured DCIS Cells,lumen or secretion,7.9214454,3.8409982
+378,Basal-like Structured DCIS Cells,ductal epithelium,13.709102,7.815579
+379,Basal-like Structured DCIS Cells,ductal epithelium,4.7131696,0.45305339
+380,Basal-like Structured DCIS Cells,adipose tissue,-4.6994705,3.7030652
+381,Basal-like Structured DCIS Cells,adipose tissue,-5.3162255,6.286966
+382,Basal-like Structured DCIS Cells,lumen or secretion,8.249591,2.918084
+383,Basal-like Structured DCIS Cells,adipose tissue,-4.9349976,3.4903643
+384,Basal-like Structured DCIS Cells,adipose tissue,-6.5675483,4.548522
+385,Basal-like Structured DCIS Cells,lumen or secretion,4.7408743,0.4677839
+386,Basal-like Structured DCIS Cells,lumen or secretion,8.387042,4.8957047
+387,Basal-like Structured DCIS Cells,lumen or secretion,7.288013,2.9697273
+388,Basal-like Structured DCIS Cells,adipose tissue,-5.0287566,3.9404233
+389,Basal-like Structured DCIS Cells,adipose tissue,7.312493,2.7618341
+390,Basal-like Structured DCIS Cells,lumen or secretion,8.3844595,3.1616685
+391,Basal-like Structured DCIS Cells,lumen or secretion,7.11859,2.2538183
+392,Basal-like Structured DCIS Cells,lumen or secretion,4.580138,0.4376998
+393,Basal-like Structured DCIS Cells,adipose tissue,-5.4588447,6.509791
+394,Basal-like Structured DCIS Cells,lumen or secretion,7.32834,2.792247
+395,Basal-like Structured DCIS Cells,adipose tissue,4.114633,0.39953452
+396,Basal-like Structured DCIS Cells,adipose tissue,10.823898,6.2883496
+397,Basal-like Structured DCIS Cells,lumen or secretion,7.7266183,2.8895667
+398,Basal-like Structured DCIS Cells,adipose tissue,-6.4519,4.8421016
+399,Basal-like Structured DCIS Cells,adipose tissue,-6.3603845,4.8553786
+400,Basal-like Structured DCIS Cells,lumen or secretion,9.532297,3.2520804
+401,Basal-like Structured DCIS Cells,lumen or secretion,8.299295,3.6659007
+402,Basal-like Structured DCIS Cells,adipose tissue,-6.089049,5.5439177
+403,Basal-like Structured DCIS Cells,lumen or secretion,9.486297,4.033416
+404,Basal-like Structured DCIS Cells,adipose tissue,-4.7073298,3.292742
+405,Basal-like Structured DCIS Cells,lumen or secretion,5.142103,1.3883519
+406,Basal-like Structured DCIS Cells,adipose tissue,-4.723907,3.2948086
+407,Basal-like Structured DCIS Cells,ductal epithelium,10.91229,6.4200277
+408,Basal-like Structured DCIS Cells,adipose tissue,-5.1804786,6.4721875
+409,Basal-like Structured DCIS Cells,adipose tissue,-6.494656,5.1169477
+410,Basal-like Structured DCIS Cells,lumen or secretion,7.7754216,3.8759449
+411,Basal-like Structured DCIS Cells,adipose tissue,-6.178684,4.5186625
+412,Basal-like Structured DCIS Cells,lumen or secretion,7.742427,3.1411178
+413,Basal-like Structured DCIS Cells,adipose tissue,4.952111,1.2828795
+414,Basal-like Structured DCIS Cells,lumen or secretion,7.975708,4.849597
+415,Basal-like Structured DCIS Cells,adipose tissue,-5.056689,3.8595312
+416,Basal-like Structured DCIS Cells,adipose tissue,8.129967,5.8465815
+417,Basal-like Structured DCIS Cells,adipose tissue,-6.8627224,5.372213
+418,Basal-like Structured DCIS Cells,adipose tissue,-5.388984,6.221556
+419,Basal-like Structured DCIS Cells,lumen or secretion,8.043595,3.3730407
+420,Basal-like Structured DCIS Cells,adipose tissue,-4.2575593,5.721971
+421,Basal-like Structured DCIS Cells,lumen or secretion,8.689463,3.7614462
+422,Basal-like Structured DCIS Cells,immune infiltrate,14.098561,8.211681
+423,Basal-like Structured DCIS Cells,necrosis,11.110616,5.7920666
+424,Basal-like Structured DCIS Cells,ductal epithelium,9.548576,6.0757027
+425,Basal-like Structured DCIS Cells,lumen or secretion,4.8200116,0.80093545
+426,Basal-like Structured DCIS Cells,lumen or secretion,9.419388,3.52574
+427,Basal-like Structured DCIS Cells,immune infiltrate,11.914957,7.748062
+428,Basal-like Structured DCIS Cells,adipose tissue,8.2034855,6.126294
+429,Basal-like Structured DCIS Cells,lumen or secretion,7.2209873,2.4202554
+430,Basal-like Structured DCIS Cells,adipose tissue,8.34337,3.9106488
+431,Basal-like Structured DCIS Cells,lumen or secretion,10.678196,5.328668
+432,Basal-like Structured DCIS Cells,lumen or secretion,10.191781,4.7000136
+433,Basal-like Structured DCIS Cells,lumen or secretion,10.170476,5.3743463
+434,Basal-like Structured DCIS Cells,adipose tissue,8.023745,5.795443
+435,Basal-like Structured DCIS Cells,adipose tissue,4.6022115,0.20096442
+436,Basal-like Structured DCIS Cells,adipose tissue,-7.348952,4.797379
+437,Basal-like Structured DCIS Cells,ductal epithelium,10.372523,5.1351256
+438,Basal-like Structured DCIS Cells,immune infiltrate,13.383121,7.8669276
+439,Basal-like Structured DCIS Cells,lumen or secretion,9.208009,4.0555763
+440,Basal-like Structured DCIS Cells,lumen or secretion,9.085905,5.4585567
+441,Basal-like Structured DCIS Cells,adipose tissue,9.533269,7.4909806
+442,Basal-like Structured DCIS Cells,adipose tissue,-5.3036633,6.1743054
+443,Basal-like Structured DCIS Cells,lumen or secretion,6.763979,2.5999765
+444,Basal-like Structured DCIS Cells,vascular stroma,10.844445,8.29419
+445,Basal-like Structured DCIS Cells,lumen or secretion,12.29742,7.1356463
+446,Basal-like Structured DCIS Cells,lumen or secretion,7.0719376,2.6417637
+447,Basal-like Structured DCIS Cells,adipose tissue,-4.891353,4.3917623
+448,Basal-like Structured DCIS Cells,lumen or secretion,7.121742,2.644232
+449,Basal-like Structured DCIS Cells,adipose tissue,8.96103,6.7634835
+450,Basal-like Structured DCIS Cells,adipose tissue,-5.7608166,4.9820275
+451,Basal-like Structured DCIS Cells,adipose tissue,8.065738,5.3403754
+452,Basal-like Structured DCIS Cells,lumen or secretion,6.84306,2.7251554
+453,Basal-like Structured DCIS Cells,lumen or secretion,7.1951785,2.8800256
+454,Basal-like Structured DCIS Cells,lumen or secretion,8.309293,3.8243365
+455,Basal-like Structured DCIS Cells,lumen or secretion,8.659128,4.6971974
+456,Basal-like Structured DCIS Cells,lumen or secretion,-6.8005905,5.2907577
+457,Basal-like Structured DCIS Cells,lumen or secretion,9.069647,3.969937
+458,Basal-like Structured DCIS Cells,adipose tissue,-6.6226735,4.4640093
+459,Basal-like Structured DCIS Cells,immune infiltrate,13.661609,8.250663
+460,Basal-like Structured DCIS Cells,lumen or secretion,11.387659,5.1484056
+461,Basal-like Structured DCIS Cells,adipose tissue,-6.3358526,4.479407
+462,Basal-like Structured DCIS Cells,lumen or secretion,7.7073326,4.461491
+463,Basal-like Structured DCIS Cells,adipose tissue,-6.422588,4.928553
+464,Basal-like Structured DCIS Cells,adipose tissue,7.9408846,4.6667995
+465,Basal-like Structured DCIS Cells,lumen or secretion,9.593442,3.241863
+466,Basal-like Structured DCIS Cells,adipose tissue,-6.3674884,4.745659
+467,Basal-like Structured DCIS Cells,lumen or secretion,10.899222,4.465505
+468,Basal-like Structured DCIS Cells,lumen or secretion,8.447833,3.1022851
+469,Basal-like Structured DCIS Cells,adipose tissue,-5.287984,6.5583353
+470,Basal-like Structured DCIS Cells,adipose tissue,4.799935,1.1074545
+471,Basal-like Structured DCIS Cells,lumen or secretion,10.794795,5.04857
+472,Basal-like Structured DCIS Cells,adipose tissue,-3.7307746,2.2429743
+473,Basal-like Structured DCIS Cells,adipose tissue,9.327904,7.508538
+474,Basal-like Structured DCIS Cells,lumen or secretion,8.050102,3.534281
+475,Basal-like Structured DCIS Cells,lumen or secretion,8.933922,3.3802037
+476,Basal-like Structured DCIS Cells,adipose tissue,-3.7059066,2.208572
+477,Basal-like Structured DCIS Cells,adipose tissue,9.982256,6.340476
+478,Basal-like Structured DCIS Cells,lumen or secretion,11.569995,4.832357
+479,Basal-like Structured DCIS Cells,lumen or secretion,6.933205,2.6542497
+480,Basal-like Structured DCIS Cells,lumen or secretion,8.175966,4.6425347
+481,Basal-like Structured DCIS Cells,lumen or secretion,9.540512,4.6818542
+482,Basal-like Structured DCIS Cells,lumen or secretion,8.329442,4.9512305
+483,Basal-like Structured DCIS Cells,adipose tissue,8.921653,6.840338
+484,Basal-like Structured DCIS Cells,fibrotic stroma,11.82435,9.864944
+485,Basal-like Structured DCIS Cells,lumen or secretion,8.011101,5.0360703
+486,Basal-like Structured DCIS Cells,lumen or secretion,9.819511,4.0030785
+487,Basal-like Structured DCIS Cells,lumen or secretion,11.257211,4.9173017
+488,Basal-like Structured DCIS Cells,lumen or secretion,7.7699924,3.6860247
+489,Basal-like Structured DCIS Cells,lumen or secretion,12.014291,5.18006
+490,Basal-like Structured DCIS Cells,lumen or secretion,7.098375,3.6246264
+491,Basal-like Structured DCIS Cells,lumen or secretion,11.8992815,4.889583
+492,Basal-like Structured DCIS Cells,adipose tissue,-6.2337914,4.3920197
+493,Basal-like Structured DCIS Cells,lumen or secretion,-6.9412823,4.464232
+494,Basal-like Structured DCIS Cells,lumen or secretion,8.269439,4.1651025
+495,Basal-like Structured DCIS Cells,adipose tissue,-7.382978,4.8059654
+496,Basal-like Structured DCIS Cells,adipose tissue,-6.0139613,5.8393145
+497,Basal-like Structured DCIS Cells,necrosis,12.249144,6.9052362
+498,Basal-like Structured DCIS Cells,immune infiltrate,12.745483,6.556763
+499,Basal-like Structured DCIS Cells,lumen or secretion,9.6130495,3.2596672
+500,Basal-like Structured DCIS Cells,adipose tissue,7.826443,3.981882
+501,Basal-like Structured DCIS Cells,immune infiltrate,13.881975,8.134994
+502,Basal-like Structured DCIS Cells,lumen or secretion,-4.2142773,4.62294
+503,Basal-like Structured DCIS Cells,lumen or secretion,12.601344,6.397959
+504,Basal-like Structured DCIS Cells,adipose tissue,8.326152,4.637506
+505,Basal-like Structured DCIS Cells,adipose tissue,-4.5454392,6.4346294
+506,Basal-like Structured DCIS Cells,ductal epithelium,8.068838,3.874691
+507,Basal-like Structured DCIS Cells,adipose tissue,-5.6151714,5.0545325
+508,Basal-like Structured DCIS Cells,lumen or secretion,9.505616,3.4484193
+509,Basal-like Structured DCIS Cells,adipose tissue,4.1216416,0.39296848
+510,Basal-like Structured DCIS Cells,adipose tissue,-6.979608,5.3300104
+511,Basal-like Structured DCIS Cells,lumen or secretion,8.457599,3.0419607
+512,Basal-like Structured DCIS Cells,lumen or secretion,7.472329,2.8714864
+513,Basal-like Structured DCIS Cells,lumen or secretion,6.8094716,2.9021068
+514,Basal-like Structured DCIS Cells,lumen or secretion,7.953849,5.2479734
+515,Basal-like Structured DCIS Cells,lumen or secretion,7.9044304,4.6242313
+516,Basal-like Structured DCIS Cells,lumen or secretion,-4.5633726,6.222601
+517,Basal-like Structured DCIS Cells,lumen or secretion,10.85273,5.8402257
+518,Basal-like Structured DCIS Cells,lumen or secretion,10.512545,4.8556924
+519,Basal-like Structured DCIS Cells,immune infiltrate,11.796147,4.921407
+520,Basal-like Structured DCIS Cells,lumen or secretion,8.041229,3.9438772
+521,Basal-like Structured DCIS Cells,lumen or secretion,8.6952505,4.9832144
+522,Basal-like Structured DCIS Cells,lumen or secretion,10.948074,5.255189
+523,Basal-like Structured DCIS Cells,adipose tissue,4.123049,0.2106898
+524,Basal-like Structured DCIS Cells,lumen or secretion,7.534288,2.508364
+525,Basal-like Structured DCIS Cells,adipose tissue,-6.7033434,5.098461
+526,Basal-like Structured DCIS Cells,immune infiltrate,12.235778,5.3919406
+527,Basal-like Structured DCIS Cells,lumen or secretion,8.096294,2.9026215
+528,Basal-like Structured DCIS Cells,lumen or secretion,7.4691525,2.9855168
+529,Basal-like Structured DCIS Cells,adipose tissue,6.760397,2.1767337
+530,Basal-like Structured DCIS Cells,immune infiltrate,13.301796,8.264401
+531,Basal-like Structured DCIS Cells,vascular stroma,9.642816,7.4155874
+532,Basal-like Structured DCIS Cells,lumen or secretion,11.79214,4.912942
+533,Basal-like Structured DCIS Cells,immune infiltrate,12.959476,7.978038
+534,Basal-like Structured DCIS Cells,immune infiltrate,11.446584,5.743294
+535,Basal-like Structured DCIS Cells,adipose tissue,6.877998,3.3444448
+536,Basal-like Structured DCIS Cells,adipose tissue,4.851558,1.1882924
+537,Basal-like Structured DCIS Cells,adipose tissue,-5.0328074,6.6605463
+538,Basal-like Structured DCIS Cells,adipose tissue,7.7396374,4.197926
+539,Basal-like Structured DCIS Cells,invasive carcinoma,12.993162,6.9911647
+540,Basal-like Structured DCIS Cells,adipose tissue,4.92162,1.153459
+541,Basal-like Structured DCIS Cells,necrosis,9.569657,5.217086
+542,Basal-like Structured DCIS Cells,adipose tissue,6.8164487,2.6922843
+543,Basal-like Structured DCIS Cells,lumen or secretion,7.8044877,4.9402823
+544,Basal-like Structured DCIS Cells,immune infiltrate,13.338835,8.054985
+545,Basal-like Structured DCIS Cells,lumen or secretion,7.90939,3.7263274
+546,Basal-like Structured DCIS Cells,lumen or secretion,9.965701,5.3095393
+547,Basal-like Structured DCIS Cells,lumen or secretion,13.654076,7.656175
+548,Basal-like Structured DCIS Cells,ductal epithelium,4.8729377,0.9572349
+549,Basal-like Structured DCIS Cells,adipose tissue,-4.616449,3.3258781
+550,Basal-like Structured DCIS Cells,adipose tissue,-4.910934,3.3579955
+551,Basal-like Structured DCIS Cells,vascular stroma,-7.066878,5.175342
+552,Basal-like Structured DCIS Cells,adipose tissue,-4.8606486,4.8738594
+553,Basal-like Structured DCIS Cells,adipose tissue,-4.8062387,3.6008017
+554,Basal-like Structured DCIS Cells,invasive carcinoma,13.74325,7.70716
+555,Basal-like Structured DCIS Cells,lumen or secretion,10.02516,3.910215
+556,Basal-like Structured DCIS Cells,adipose tissue,8.856057,6.426044
+557,Basal-like Structured DCIS Cells,immune infiltrate,11.67867,5.102297
+558,Basal-like Structured DCIS Cells,adipose tissue,10.736739,5.9858923
+559,Basal-like Structured DCIS Cells,lumen or secretion,7.581983,3.2294586
+560,Basal-like Structured DCIS Cells,immune infiltrate,13.781921,8.1489725
+561,Basal-like Structured DCIS Cells,lumen or secretion,7.6318126,3.0616992
+562,Basal-like Structured DCIS Cells,adipose tissue,-4.9608545,5.085333
+563,Basal-like Structured DCIS Cells,adipose tissue,-4.633345,3.3071191
+564,Basal-like Structured DCIS Cells,lumen or secretion,7.056486,2.3668141
+565,Basal-like Structured DCIS Cells,lumen or secretion,11.184165,5.002495
+566,Basal-like Structured DCIS Cells,adipose tissue,-5.3689656,5.961161
+567,Basal-like Structured DCIS Cells,lumen or secretion,7.959356,2.7251332
+568,Basal-like Structured DCIS Cells,lumen or secretion,8.49431,5.075007
+569,Basal-like Structured DCIS Cells,necrosis,12.534423,5.110875
+570,Basal-like Structured DCIS Cells,lumen or secretion,-5.1378264,5.2960124
+571,Basal-like Structured DCIS Cells,lumen or secretion,11.415936,5.2271023
+572,Basal-like Structured DCIS Cells,lumen or secretion,5.0603805,1.2786791
+573,Basal-like Structured DCIS Cells,adipose tissue,-4.61054,4.9761124
+574,Basal-like Structured DCIS Cells,lumen or secretion,5.195589,0.9863151
+575,Basal-like Structured DCIS Cells,adipose tissue,13.492857,7.645754
+576,Basal-like Structured DCIS Cells,adipose tissue,8.990932,4.2566876
+577,Basal-like Structured DCIS Cells,adipose tissue,-3.9104173,2.4560428
+578,Basal-like Structured DCIS Cells,adipose tissue,-5.0937405,5.2518625
+579,Basal-like Structured DCIS Cells,lumen or secretion,10.891048,6.112544
+580,Basal-like Structured DCIS Cells,lumen or secretion,11.958921,4.653624
+581,Basal-like Structured DCIS Cells,adipose tissue,8.2837515,4.9426026
+582,Basal-like Structured DCIS Cells,adipose tissue,4.9643135,1.2035018
+583,Basal-like Structured DCIS Cells,adipose tissue,-5.8206587,5.5303516
+584,Basal-like Structured DCIS Cells,adipose tissue,-5.4102583,4.246937
+585,Basal-like Structured DCIS Cells,ductal epithelium,10.3247595,6.259333
+586,Basal-like Structured DCIS Cells,lumen or secretion,10.740607,5.4001102
+587,Basal-like Structured DCIS Cells,lumen or secretion,8.044005,2.821178
+588,Basal-like Structured DCIS Cells,adipose tissue,-4.622239,4.5304747
+589,Basal-like Structured DCIS Cells,ductal epithelium,10.948902,5.2286544
+590,Basal-like Structured DCIS Cells,adipose tissue,4.4754725,0.987552
+591,Basal-like Structured DCIS Cells,immune infiltrate,11.743131,5.76573
+592,Basal-like Structured DCIS Cells,immune infiltrate,11.909399,6.531616
+593,Basal-like Structured DCIS Cells,lumen or secretion,7.5096283,2.9786768
+594,Basal-like Structured DCIS Cells,adipose tissue,5.0637336,1.3138875
+595,Basal-like Structured DCIS Cells,adipose tissue,4.118342,0.45024526
+596,Basal-like Structured DCIS Cells,lumen or secretion,11.493532,5.5316033
+597,Basal-like Structured DCIS Cells,adipose tissue,-3.8599188,2.3924375
+598,Basal-like Structured DCIS Cells,lumen or secretion,8.981211,6.78008
+599,Basal-like Structured DCIS Cells,adipose tissue,10.276745,9.306982
+600,Basal-like Structured DCIS Cells,lumen or secretion,9.467559,3.940763
+601,Basal-like Structured DCIS Cells,immune infiltrate,11.076345,4.7033267
+602,Basal-like Structured DCIS Cells,lumen or secretion,8.974517,3.5196407
+603,Basal-like Structured DCIS Cells,lumen or secretion,7.8112617,3.8881433
+604,Basal-like Structured DCIS Cells,adipose tissue,8.06486,3.8921185
+605,Basal-like Structured DCIS Cells,immune infiltrate,12.652235,6.51514
+606,Basal-like Structured DCIS Cells,adipose tissue,-5.158887,6.481647
+607,Basal-like Structured DCIS Cells,ductal epithelium,12.204038,5.834119
+608,Basal-like Structured DCIS Cells,ductal epithelium,7.942152,2.877139
+609,Basal-like Structured DCIS Cells,vascular stroma,10.184537,7.249014
+610,Basal-like Structured DCIS Cells,lumen or secretion,4.3430753,0.33698428
+611,Basal-like Structured DCIS Cells,adipose tissue,-6.3382535,4.533082
+612,Basal-like Structured DCIS Cells,vascular stroma,12.255274,4.632825
+613,Basal-like Structured DCIS Cells,invasive carcinoma,14.082153,8.207858
+614,Basal-like Structured DCIS Cells,adipose tissue,-6.307609,5.276956
+615,Basal-like Structured DCIS Cells,immune infiltrate,12.366875,6.482238
+616,Basal-like Structured DCIS Cells,adipose tissue,-6.8436127,5.259451
+617,Basal-like Structured DCIS Cells,adipose tissue,10.523171,6.7585874
+618,Basal-like Structured DCIS Cells,lumen or secretion,9.121839,3.5882258
+619,Basal-like Structured DCIS Cells,lumen or secretion,7.0018735,2.5637562
+620,Basal-like Structured DCIS Cells,lumen or secretion,11.578454,5.3845735
+621,Basal-like Structured DCIS Cells,adipose tissue,-7.222561,4.8076935
+622,Basal-like Structured DCIS Cells,adipose tissue,4.0966864,0.43082005
+623,Basal-like Structured DCIS Cells,lumen or secretion,8.911024,5.3647866
+624,Basal-like Structured DCIS Cells,adipose tissue,-5.217426,5.9512224
+625,Basal-like Structured DCIS Cells,lumen or secretion,8.244242,3.4153502
+626,Basal-like Structured DCIS Cells,lumen or secretion,9.655936,5.99509
+627,Basal-like Structured DCIS Cells,lumen or secretion,11.233377,5.7315836
+628,Basal-like Structured DCIS Cells,in situ carcinoma,13.578158,8.117938
+629,Basal-like Structured DCIS Cells,adipose tissue,7.771403,3.9880486
+630,Basal-like Structured DCIS Cells,lumen or secretion,10.723067,4.7210107
+631,Basal-like Structured DCIS Cells,lumen or secretion,12.041703,6.0142345
+632,Basal-like Structured DCIS Cells,adipose tissue,-6.88426,4.8042226
+633,Basal-like Structured DCIS Cells,lumen or secretion,9.725355,3.515832
+634,Basal-like Structured DCIS Cells,lumen or secretion,7.0029144,2.1729074
+635,Basal-like Structured DCIS Cells,lumen or secretion,12.3909235,6.69203
+636,Basal-like Structured DCIS Cells,lumen or secretion,12.231041,5.7074704
+637,Basal-like Structured DCIS Cells,lumen or secretion,-4.727541,4.348009
+638,Basal-like Structured DCIS Cells,necrosis,9.102165,4.4673934
+639,Basal-like Structured DCIS Cells,ductal epithelium,10.489289,5.3273406
+640,Basal-like Structured DCIS Cells,adipose tissue,6.756427,2.8566103
+641,Basal-like Structured DCIS Cells,invasive carcinoma,13.579033,7.6917734
+642,Basal-like Structured DCIS Cells,lumen or secretion,4.9853554,1.0952332
+643,Basal-like Structured DCIS Cells,lumen or secretion,6.892559,2.6846156
+644,Basal-like Structured DCIS Cells,lumen or secretion,8.63122,5.7385015
+645,Basal-like Structured DCIS Cells,lumen or secretion,7.7576814,4.231547
+646,Basal-like Structured DCIS Cells,adipose tissue,4.5136213,1.061209
+647,Basal-like Structured DCIS Cells,lumen or secretion,10.451975,3.660963
+648,Basal-like Structured DCIS Cells,lumen or secretion,7.116959,3.7708178
+649,Basal-like Structured DCIS Cells,lumen or secretion,4.663229,0.26382318
+650,Basal-like Structured DCIS Cells,invasive carcinoma,13.571919,8.062366
+651,Basal-like Structured DCIS Cells,fibrotic stroma,8.903795,7.4014096
+652,Basal-like Structured DCIS Cells,invasive carcinoma,13.55712,7.722327
+653,Basal-like Structured DCIS Cells,adipose tissue,10.271748,9.150912
+654,Basal-like Structured DCIS Cells,lumen or secretion,7.2069554,3.8842764
+655,Basal-like Structured DCIS Cells,lumen or secretion,7.7887216,5.241032
+656,Basal-like Structured DCIS Cells,lumen or secretion,8.417574,4.94527
+657,Basal-like Structured DCIS Cells,lumen or secretion,7.104815,2.6527622
+658,Basal-like Structured DCIS Cells,lumen or secretion,9.00504,4.469051
+659,Basal-like Structured DCIS Cells,vascular stroma,13.991464,8.439835
+660,Basal-like Structured DCIS Cells,ductal epithelium,13.74893,7.759484
+661,Basal-like Structured DCIS Cells,adipose tissue,-7.113605,4.5657535
+662,Basal-like Structured DCIS Cells,immune infiltrate,13.310541,7.3583274
+663,Basal-like Structured DCIS Cells,adipose tissue,-3.718981,2.224651
+664,Basal-like Structured DCIS Cells,invasive carcinoma,13.516568,7.730059
+665,Basal-like Structured DCIS Cells,adipose tissue,9.290467,7.0608563
+666,Basal-like Structured DCIS Cells,lumen or secretion,10.497812,5.335853
+667,Basal-like Structured DCIS Cells,vascular stroma,13.507344,8.985546
+668,Basal-like Structured DCIS Cells,lumen or secretion,9.508848,6.7270317
+669,Basal-like Structured DCIS Cells,immune infiltrate,12.488177,6.7782717
+670,Basal-like Structured DCIS Cells,invasive carcinoma,13.674544,7.782927
+671,Basal-like Structured DCIS Cells,ductal epithelium,10.107272,6.735321
+672,Basal-like Structured DCIS Cells,lumen or secretion,11.933479,5.1617365
+673,Basal-like Structured DCIS Cells,lumen or secretion,7.6720257,2.9256446
+674,Basal-like Structured DCIS Cells,lumen or secretion,6.8913574,2.6272287
+675,Basal-like Structured DCIS Cells,lumen or secretion,10.509533,5.905093
+676,Basal-like Structured DCIS Cells,lumen or secretion,9.888616,4.333887
+677,Basal-like Structured DCIS Cells,lumen or secretion,7.818491,3.7808506
+678,Basal-like Structured DCIS Cells,lumen or secretion,8.974779,4.198977
+679,Basal-like Structured DCIS Cells,lumen or secretion,7.8668756,3.7317548
+680,Basal-like Structured DCIS Cells,adipose tissue,7.0794024,2.785475
+681,Basal-like Structured DCIS Cells,lumen or secretion,7.1065054,2.7856708
+682,Basal-like Structured DCIS Cells,adipose tissue,-4.576176,3.2903092
+683,Basal-like Structured DCIS Cells,adipose tissue,-5.3780513,6.5055094
+684,Macrophages,adipose tissue,-4.7836833,3.9354851
+685,Macrophages,adipose tissue,-6.124698,5.7310405
+686,Macrophages,vascular stroma,11.009669,9.967432
+687,Macrophages,adipose tissue,4.9481425,1.1430483
+688,Macrophages,adipose tissue,-5.0562716,4.2380543
+689,Macrophages,necrosis,12.9497385,10.658485
+690,Macrophages,adipose tissue,-5.6298056,6.285339
+691,Macrophages,adipose tissue,11.532091,9.399832
+692,Macrophages,adipose tissue,-6.7764997,5.3039412
+693,Macrophages,adipose tissue,-5.006813,5.4067993
+694,Macrophages,adipose tissue,-3.854165,2.3892694
+695,Macrophages,adipose tissue,-4.790278,6.4057436
+696,Macrophages,fibrotic stroma,12.843622,11.127468
+697,Macrophages,adipose tissue,-5.017536,4.416414
+698,Macrophages,vascular stroma,12.423145,9.223032
+699,Macrophages,adipose tissue,-5.5304074,5.824013
+700,Macrophages,vascular stroma,6.8514867,3.2263334
+701,Macrophages,adipose tissue,-6.00031,5.8164926
+702,Macrophages,adipose tissue,12.138328,8.289979
+703,Macrophages,adipose tissue,-4.757189,4.4440084
+704,Macrophages,necrosis,10.140597,5.168392
+705,Macrophages,adipose tissue,-6.1908474,5.870602
+706,Macrophages,vascular stroma,12.34067,10.147905
+707,Macrophages,adipose tissue,-6.255505,5.2210565
+708,Macrophages,adipose tissue,-5.589755,5.3427134
+709,Macrophages,vascular stroma,11.139762,10.079102
+710,Macrophages,adipose tissue,-5.093705,5.434408
+711,Macrophages,adipose tissue,-6.0563197,5.490748
+712,Macrophages,lumen or secretion,-4.3910728,5.6161137
+713,Macrophages,adipose tissue,-5.100521,6.3308306
+714,Macrophages,lumen or secretion,9.57971,6.3569226
+715,Macrophages,lumen or secretion,-5.3383718,5.530527
+716,Macrophages,vascular stroma,11.754463,10.09494
+717,Macrophages,necrosis,13.784934,8.137334
+718,Macrophages,adipose tissue,-4.612417,6.26434
+719,Macrophages,lumen or secretion,10.5201845,5.1991224
+720,Macrophages,adipose tissue,-4.6790833,4.0854187
+721,Macrophages,adipose tissue,-5.1402326,4.894996
+722,Macrophages,adipose tissue,10.807304,9.284139
+723,Macrophages,lumen or secretion,8.613169,3.574478
+724,Macrophages,adipose tissue,11.787384,9.370788
+725,Macrophages,adipose tissue,-3.7012422,2.2068365
+726,Macrophages,necrosis,11.191481,7.575377
+727,Macrophages,adipose tissue,-5.555479,5.744232
+728,Macrophages,vascular stroma,12.779623,9.613558
+729,Macrophages,vascular stroma,9.09355,4.793035
+730,Macrophages,adipose tissue,-6.5508194,5.680634
+731,Macrophages,adipose tissue,8.897141,5.326726
+732,Macrophages,vascular stroma,11.063501,6.276501
+733,Macrophages,adipose tissue,-4.753703,3.5145068
+734,Macrophages,immune infiltrate,10.982533,7.3904166
+735,Macrophages,lumen or secretion,7.9562693,3.8155315
+736,Macrophages,adipose tissue,4.566089,0.17128335
+737,Macrophages,adipose tissue,-4.5701585,6.4015203
+738,Macrophages,lumen or secretion,10.635052,6.0343614
+739,Macrophages,lumen or secretion,7.764458,2.7603695
+740,Macrophages,adipose tissue,9.639842,5.966395
+741,Macrophages,fibrotic stroma,12.710927,11.158759
+742,Macrophages,lumen or secretion,7.2670426,2.5050862
+743,Macrophages,ductal epithelium,10.009958,5.478507
+744,Macrophages,lumen or secretion,7.8325105,3.3517423
+745,Macrophages,fibrotic stroma,12.5602865,10.221198
+746,Macrophages,vascular stroma,12.647356,10.606823
+747,Macrophages,necrosis,11.148049,5.0198507
+748,Macrophages,vascular stroma,12.510505,9.516124
+749,Macrophages,adipose tissue,-7.090816,5.0566883
+750,Macrophages,vascular stroma,8.920736,4.838307
+751,Macrophages,vascular stroma,11.32052,10.074829
+752,Macrophages,lumen or secretion,8.192528,3.1900432
+753,Macrophages,immune infiltrate,11.306751,6.6011944
+754,Macrophages,adipose tissue,-4.6262507,5.1886215
+755,Macrophages,fibrotic stroma,13.020788,11.271821
+756,Macrophages,lumen or secretion,9.7509365,6.98752
+757,Macrophages,ductal epithelium,9.7875395,5.4284606
+758,Macrophages,necrosis,9.160208,4.805661
+759,Macrophages,adipose tissue,4.1334558,0.38131163
+760,Macrophages,necrosis,10.959653,7.111717
+761,Macrophages,lumen or secretion,8.857051,4.0954127
+762,Macrophages,immune infiltrate,10.796659,4.7688913
+763,Macrophages,adipose tissue,-5.866949,5.202642
+764,Macrophages,adipose tissue,-6.3340044,5.0725527
+765,Macrophages,adipose tissue,-7.054207,5.3599405
+766,Macrophages,adipose tissue,9.698711,7.7780676
+767,Macrophages,adipose tissue,-6.7711916,5.2131844
+768,Macrophages,vascular stroma,12.472452,10.247412
+769,Macrophages,vascular stroma,9.1532955,4.867883
+770,Macrophages,adipose tissue,-5.647252,5.206566
+771,Macrophages,vascular stroma,11.403659,9.544221
+772,Macrophages,immune infiltrate,11.639187,5.823927
+773,Macrophages,vascular stroma,12.075658,9.482314
+774,Macrophages,vascular stroma,9.946895,8.2219095
+775,Macrophages,lumen or secretion,7.651447,3.2524962
+776,Macrophages,adipose tissue,-5.928004,5.733071
+777,Macrophages,immune infiltrate,10.814636,4.0880303
+778,Macrophages,adipose tissue,-4.9603567,6.298531
+779,Macrophages,vascular stroma,10.475363,9.799773
+780,Macrophages,adipose tissue,-4.987793,4.9535656
+781,Macrophages,fibrotic stroma,11.875993,10.4331255
+782,Macrophages,lumen or secretion,-5.1068497,5.494652
+783,Macrophages,adipose tissue,10.039631,8.391654
+784,Macrophages,vascular stroma,10.27094,8.554429
+785,Macrophages,lumen or secretion,10.826112,4.709312
+786,Macrophages,lumen or secretion,9.335923,5.0534883
+787,Macrophages,adipose tissue,12.630181,9.964402
+788,Macrophages,adipose tissue,10.133971,5.968429
+789,Macrophages,immune infiltrate,12.087073,7.782266
+790,Macrophages,adipose tissue,8.9791975,7.2304926
+791,Macrophages,adipose tissue,4.2699766,0.24944824
+792,Macrophages,lumen or secretion,-4.305267,5.5316124
+793,Macrophages,vascular stroma,12.502882,7.7876062
+794,Macrophages,lumen or secretion,9.118316,3.8553731
+795,Macrophages,lumen or secretion,-7.0080266,5.071886
+796,Macrophages,adipose tissue,-5.3754964,5.3802786
+797,Macrophages,adipose tissue,-6.652917,4.6767673
+798,Macrophages,lumen or secretion,-5.390575,5.4141
+799,Macrophages,adipose tissue,5.1554847,1.3494418
+800,Macrophages,adipose tissue,-3.9518182,2.4818363
+801,Macrophages,lumen or secretion,8.172942,4.7988725
+802,Macrophages,immune infiltrate,11.6992235,5.8712955
+803,Macrophages,lumen or secretion,8.846617,4.141601
+804,Macrophages,immune infiltrate,12.0348,8.679205
+805,Macrophages,adipose tissue,-4.880091,5.4090347
+806,Macrophages,fibrotic stroma,9.388536,6.598799
+807,Macrophages,adipose tissue,-5.4673266,5.2842135
+808,Macrophages,vascular stroma,10.481299,9.396144
+809,Macrophages,adipose tissue,-5.962704,4.5047917
+810,Macrophages,adipose tissue,12.938825,10.911617
+811,Macrophages,adipose tissue,8.456897,5.8469696
+812,Macrophages,lumen or secretion,9.098738,3.7211602
+813,Macrophages,lumen or secretion,10.311245,4.8108044
+814,Macrophages,necrosis,10.623326,7.003811
+815,Macrophages,adipose tissue,-5.717636,5.6464696
+816,Macrophages,lumen or secretion,4.7293196,0.48258004
+817,Macrophages,adipose tissue,4.7178154,1.1121987
+818,Macrophages,lumen or secretion,9.721924,4.4682665
+819,Macrophages,adipose tissue,8.693716,6.6601233
+820,Macrophages,vascular stroma,9.631526,6.3083944
+821,Macrophages,vascular stroma,10.367368,8.673453
+822,Macrophages,adipose tissue,-5.2970977,5.802506
+823,Macrophages,adipose tissue,-4.4154553,5.8472166
+824,Macrophages,adipose tissue,-5.0716624,6.551352
+825,Macrophages,lumen or secretion,-4.390577,5.9256086
+826,Macrophages,necrosis,9.65615,6.3963637
+827,Macrophages,lumen or secretion,-4.1846924,5.007237
+828,Macrophages,lumen or secretion,10.686845,5.286456
+829,Macrophages,vascular stroma,12.970995,11.315865
+830,Macrophages,lumen or secretion,9.773179,4.12545
+831,Macrophages,lumen or secretion,10.995305,4.48551
+832,Macrophages,vascular stroma,12.392957,9.797242
+833,Macrophages,adipose tissue,-6.076044,4.480741
+834,Macrophages,lumen or secretion,4.4712715,0.19236332
+835,Macrophages,adipose tissue,-7.074847,4.7625103
+836,Macrophages,adipose tissue,-4.8599296,4.8911886
+837,Macrophages,adipose tissue,-6.0812173,5.63635
+838,Macrophages,lumen or secretion,4.2469864,0.58345944
+839,Macrophages,lumen or secretion,4.9853096,1.197335
+840,Macrophages,adipose tissue,10.047624,5.6012444
+841,Macrophages,lumen or secretion,-4.214677,4.5733647
+842,Macrophages,adipose tissue,-5.0475063,6.2073283
+843,Macrophages,necrosis,10.6280775,6.9108186
+844,Macrophages,adipose tissue,-6.298009,4.532916
+845,Macrophages,adipose tissue,-6.351588,5.0054107
+846,Macrophages,immune infiltrate,10.861189,6.3151345
+847,Macrophages,adipose tissue,-4.904567,5.4658694
+848,Macrophages,adipose tissue,-7.080204,5.2840724
+849,Macrophages,lumen or secretion,9.189574,7.666671
+850,Macrophages,vascular stroma,12.0440445,10.330683
+851,Macrophages,lumen or secretion,10.858297,4.487326
+852,Macrophages,lumen or secretion,7.7773952,4.12074
+853,Macrophages,adipose tissue,-7.0962424,5.042355
+854,Macrophages,immune infiltrate,11.877068,7.0814824
+855,Macrophages,immune infiltrate,9.542818,6.2203608
+856,Macrophages,immune infiltrate,11.195659,6.9707785
+857,Macrophages,adipose tissue,-4.5355854,5.396177
+858,Macrophages,vascular stroma,10.120929,8.132066
+859,Macrophages,adipose tissue,12.388321,9.975259
+860,Macrophages,lumen or secretion,9.6396885,6.3131046
+861,Macrophages,lumen or secretion,-5.2800174,5.1295457
+862,Macrophages,necrosis,11.225875,6.9765396
+863,Macrophages,vascular stroma,10.327519,9.370809
+864,Macrophages,vascular stroma,11.091634,9.109225
+865,Macrophages,lumen or secretion,10.080863,4.915408
+866,Macrophages,lumen or secretion,9.231994,3.1281629
+867,Macrophages,ductal epithelium,11.424814,5.816393
+868,Macrophages,adipose tissue,-4.609285,6.414006
+869,Macrophages,fibrotic stroma,12.639437,11.00463
+870,Macrophages,fibrotic stroma,12.409799,10.059641
+871,Macrophages,adipose tissue,9.737756,5.8678384
+872,Macrophages,vascular stroma,10.1252365,6.4231515
+873,Macrophages,lumen or secretion,10.461217,7.402763
+874,Macrophages,fibrotic stroma,10.8761015,9.579782
+875,Macrophages,adipose tissue,9.297148,5.9412622
+876,Macrophages,adipose tissue,9.28866,4.7583547
+877,Macrophages,adipose tissue,-4.6841803,5.9965324
+878,Macrophages,vascular stroma,9.945233,8.739257
+879,Macrophages,vascular stroma,12.254486,8.4555855
+880,Macrophages,immune infiltrate,10.898464,4.6373725
+881,Macrophages,immune infiltrate,11.379526,6.0853257
+882,Macrophages,adipose tissue,8.8766775,7.0312686
+883,Macrophages,lumen or secretion,10.050187,4.420853
+884,Macrophages,immune infiltrate,11.066139,5.8811255
+885,Macrophages,lumen or secretion,8.650551,3.039647
+886,Macrophages,necrosis,12.506227,8.334116
+887,Macrophages,lumen or secretion,10.862086,5.445956
+888,Macrophages,adipose tissue,8.858288,7.0523853
+889,Macrophages,adipose tissue,8.970104,7.022412
+890,Macrophages,immune infiltrate,11.104381,7.1295304
+891,Macrophages,immune infiltrate,10.775588,5.0325975
+892,Macrophages,vascular stroma,11.4443035,9.228535
+893,Macrophages,vascular stroma,13.126733,11.096978
+894,Macrophages,lumen or secretion,10.508189,4.5545206
+895,Macrophages,vascular stroma,10.768652,6.1304684
+896,Macrophages,necrosis,10.01148,6.122171
+897,Macrophages,fibrotic stroma,8.88455,7.3628073
+898,Macrophages,vascular stroma,10.672774,9.648163
+899,Macrophages,lumen or secretion,7.9525013,2.6333013
+900,Macrophages,lumen or secretion,8.496357,6.0083
+901,Macrophages,adipose tissue,-4.4891334,6.3284116
+902,Macrophages,vascular stroma,7.8841395,2.9931426
+903,Macrophages,adipose tissue,-4.6741147,3.9694798
+904,Macrophages,adipose tissue,8.503634,6.3793306
+905,Macrophages,lumen or secretion,7.8982906,4.5251026
+906,Macrophages,immune infiltrate,9.602382,6.625469
+907,Macrophages,adipose tissue,11.001433,8.502688
+908,Macrophages,immune infiltrate,12.962656,8.13756
+909,Macrophages,adipose tissue,9.3186245,5.9220996
+910,Macrophages,vascular stroma,9.189133,8.043085
+911,Macrophages,immune infiltrate,11.942312,8.422613
+912,Macrophages,fibrotic stroma,13.130879,11.315368
+913,Macrophages,vascular stroma,13.023468,10.199241
+914,Macrophages,lumen or secretion,8.754308,6.342634
+915,Macrophages,vascular stroma,12.331622,10.731742
+916,Macrophages,lumen or secretion,8.09229,4.5843043
+917,Macrophages,ductal epithelium,11.802382,6.2246804
+918,Macrophages,lumen or secretion,9.403019,3.4802456
+919,Macrophages,vascular stroma,12.908275,8.220123
+920,Macrophages,lumen or secretion,5.2106285,1.3704755
+921,Macrophages,vascular stroma,9.448712,8.055024
+922,Macrophages,adipose tissue,11.469794,6.068856
+923,Macrophages,fibrotic stroma,10.3435135,7.7040415
+924,Macrophages,lumen or secretion,9.206549,5.9490857
+925,Macrophages,vascular stroma,12.181774,10.331772
+926,Macrophages,lumen or secretion,10.610818,5.9445596
+927,Macrophages,necrosis,8.985319,7.2340245
+928,Macrophages,lumen or secretion,9.995637,6.8624167
+929,Macrophages,vascular stroma,11.370139,9.9060955
+930,Macrophages,vascular stroma,11.051413,6.7768984
+931,Macrophages,vascular stroma,10.582203,8.763218
+932,Macrophages,adipose tissue,9.335902,8.1702795
+933,Macrophages,adipose tissue,9.793622,4.7504964
+934,Macrophages,adipose tissue,10.727685,9.73992
+935,Macrophages,adipose tissue,9.928211,6.0200396
+936,Macrophages,lumen or secretion,-4.7890778,6.3749013
+937,Macrophages,lumen or secretion,10.025646,3.887757
+938,Macrophages,adipose tissue,-5.5226917,5.4325037
+939,Macrophages,vascular stroma,12.180438,9.258244
+940,Macrophages,adipose tissue,10.969498,8.084501
+941,Macrophages,lumen or secretion,10.112227,4.464834
+942,Macrophages,lumen or secretion,9.313598,8.250664
+943,Macrophages,immune infiltrate,10.33485,4.326675
+944,Macrophages,necrosis,10.183297,7.118267
+945,Macrophages,lumen or secretion,7.9175973,4.51058
+946,Macrophages,lumen or secretion,7.8031874,3.9231348
+947,Macrophages,vascular stroma,11.577214,10.413157
+948,Macrophages,immune infiltrate,11.669288,6.310695
+949,Macrophages,lumen or secretion,7.975492,4.2805567
+950,Macrophages,vascular stroma,9.378025,8.285634
+951,Macrophages,immune infiltrate,11.59172,6.1451097
+952,Macrophages,adipose tissue,-5.1040273,5.723176
+953,Macrophages,vascular stroma,9.09777,7.5460954
+954,Macrophages,vascular stroma,10.08918,4.3669086
+955,Macrophages,lumen or secretion,-4.289108,5.5765653
+956,Macrophages,vascular stroma,10.863586,8.29725
+957,Macrophages,lumen or secretion,10.106127,5.586932
+958,Macrophages,lumen or secretion,10.527195,5.697569
+959,Macrophages,adipose tissue,9.212328,5.765454
+960,Macrophages,lumen or secretion,10.48832,4.3076487
+961,Macrophages,lumen or secretion,7.0956173,2.222315
+962,Macrophages,adipose tissue,-4.8826656,5.0010943
+963,Macrophages,adipose tissue,9.16189,6.59884
+964,Macrophages,lumen or secretion,4.2457666,0.4067511
+965,Macrophages,adipose tissue,10.687574,8.953256
+966,Macrophages,adipose tissue,12.643561,10.254948
+967,Macrophages,lumen or secretion,8.142381,4.7093625
+968,Macrophages,vascular stroma,10.091229,7.9507146
+969,Macrophages,immune infiltrate,10.770538,5.503041
+970,Macrophages,ductal epithelium,10.376106,4.4401894
+971,Macrophages,lumen or secretion,8.641381,5.007025
+972,Macrophages,adipose tissue,-4.915993,5.032984
+973,Macrophages,lumen or secretion,-5.128006,4.9039793
+974,Macrophages,immune infiltrate,11.471821,6.1865396
+975,Macrophages,vascular stroma,12.500549,9.614047
+976,Macrophages,necrosis,10.874217,7.5928082
+977,Macrophages,vascular stroma,12.247305,10.097532
+978,Macrophages,immune infiltrate,12.631201,7.6157002
+979,Macrophages,necrosis,8.934611,7.2477446
+980,Macrophages,lumen or secretion,9.865735,4.140954
+981,Macrophages,vascular stroma,11.967776,10.33739
+982,Macrophages,lumen or secretion,6.8604503,2.630348
+983,Macrophages,lumen or secretion,9.693643,3.66804
+984,Macrophages,vascular stroma,11.89637,9.008844
+985,Macrophages,adipose tissue,-5.879068,4.504317
+986,Macrophages,lumen or secretion,7.8561234,2.6840227
+987,Macrophages,fibrotic stroma,10.8884325,9.834026
+988,Macrophages,fibrotic stroma,12.114292,10.476883
+989,Macrophages,vascular stroma,10.948691,8.95901
+990,Macrophages,lumen or secretion,7.1259985,2.4769316
+991,Macrophages,vascular stroma,11.279794,7.4035974
+992,Macrophages,immune infiltrate,11.317834,4.8492484
+993,Macrophages,immune infiltrate,10.21432,7.1759024
+994,Macrophages,adipose tissue,12.162008,8.35818
+995,Macrophages,immune infiltrate,11.307013,4.831354
+996,Macrophages,adipose tissue,-5.2848506,4.8617396
+997,Macrophages,adipose tissue,-4.99505,4.98376
+998,Macrophages,adipose tissue,8.414973,5.7622986
+999,Macrophages,vascular stroma,10.143779,8.107373
+1000,Macrophages,immune infiltrate,11.455589,5.019853
+1001,Macrophages,lumen or secretion,9.993066,3.8110075
+1002,Macrophages,lumen or secretion,8.768991,7.0136285
+1003,Macrophages,immune infiltrate,11.338988,5.37941
+1004,Macrophages,adipose tissue,10.707967,6.1381955
+1005,Macrophages,adipose tissue,-5.0409384,6.2358756
+1006,Macrophages,adipose tissue,-4.9702578,5.9045777
+1007,Macrophages,ductal epithelium,10.275069,6.514414
+1008,Macrophages,adipose tissue,-4.2894793,6.08714
+1009,Macrophages,fibrotic stroma,11.985737,10.435732
+1010,Macrophages,immune infiltrate,11.364027,6.3677983
+1011,Macrophages,vascular stroma,9.379095,7.4675345
+1012,Macrophages,adipose tissue,12.742765,10.546234
+1013,Macrophages,lumen or secretion,10.441167,5.4877253
+1014,Macrophages,adipose tissue,8.739589,7.1088142
+1015,Macrophages,vascular stroma,9.130964,7.8757753
+1016,Macrophages,adipose tissue,11.560735,9.346254
+1017,Macrophages,lumen or secretion,8.092525,5.0284014
+1018,Macrophages,ductal epithelium,10.041432,5.3654475
+1019,Macrophages,lumen or secretion,-4.1531367,4.576658
+1020,Macrophages,adipose tissue,10.597681,9.323216
+1021,Macrophages,fibrotic stroma,12.643182,9.766669
+1022,Macrophages,fibrotic stroma,11.623559,10.305687
+1023,Macrophages,immune infiltrate,10.410278,5.4993463
+1024,Macrophages,adipose tissue,-4.633421,5.14624
+1025,Macrophages,vascular stroma,10.202085,8.248572
+1026,Macrophages,lumen or secretion,-6.8451905,4.8640943
+1027,Macrophages,immune infiltrate,10.778288,8.355442
+1028,Macrophages,lumen or secretion,9.35643,3.9121513
+1029,Macrophages,adipose tissue,-4.806498,4.255758
+1030,Macrophages,lumen or secretion,8.960869,4.3204746
+1031,Macrophages,immune infiltrate,10.729487,6.9044414
+1032,Macrophages,vascular stroma,12.2751465,8.2196
+1033,Macrophages,adipose tissue,9.427922,7.0955806
+1034,Macrophages,adipose tissue,4.8529897,1.2028363
+1035,Macrophages,vascular stroma,12.828935,9.597321
+1036,Macrophages,vascular stroma,11.047484,8.385071
+1037,Macrophages,lumen or secretion,7.2066684,2.4653306
+1038,Macrophages,adipose tissue,9.447198,7.060257
+1039,Macrophages,adipose tissue,-5.134238,6.339231
+1040,Macrophages,lumen or secretion,4.654156,0.4335981
+1041,Macrophages,adipose tissue,8.443312,5.0915656
+1042,Macrophages,fibrotic stroma,12.998756,11.2202635
+1043,Macrophages,vascular stroma,10.324243,8.023941
+1044,Macrophages,immune infiltrate,12.44507,6.2963047
+1045,Macrophages,immune infiltrate,11.887043,6.8115053
+1046,Macrophages,necrosis,9.984716,7.001801
+1047,Macrophages,lumen or secretion,7.190066,2.3847086
+1048,Macrophages,immune infiltrate,13.18944,7.751306
+1049,Macrophages,adipose tissue,9.209099,4.007448
+1050,Macrophages,fibrotic stroma,12.99919,11.251417
+1051,Macrophages,adipose tissue,-4.8985443,6.4316173
+1052,Macrophages,immune infiltrate,10.376082,7.6162343
+1053,Macrophages,adipose tissue,12.273526,10.684217
+1054,Macrophages,adipose tissue,11.336145,9.1950445
+1055,Macrophages,adipose tissue,8.071448,5.0370526
+1056,Macrophages,adipose tissue,-3.9409916,2.4861639
+1057,Macrophages,vascular stroma,10.882564,8.9459
+1058,Macrophages,fibrotic stroma,12.89352,11.021537
+1059,Macrophages,lumen or secretion,10.08637,4.588316
+1060,Macrophages,vascular stroma,10.25609,8.420786
+1061,Macrophages,adipose tissue,12.910826,10.334886
+1062,Macrophages,immune infiltrate,10.588595,7.210733
+1063,Macrophages,adipose tissue,9.156479,6.01498
+1064,Macrophages,immune infiltrate,11.9915695,6.1082206
+1065,Macrophages,vascular stroma,8.932234,5.6907444
+1066,Macrophages,lumen or secretion,8.456698,3.4641294
+1067,Macrophages,vascular stroma,11.5258665,9.483427
+1068,Macrophages,immune infiltrate,11.813399,7.790515
+1069,Macrophages,adipose tissue,9.408212,5.4379134
+1070,Macrophages,adipose tissue,4.5507154,0.21283555
+1071,Macrophages,lumen or secretion,7.972303,3.4274125
+1072,Macrophages,lumen or secretion,7.3145986,2.5239453
+1073,Macrophages,lumen or secretion,5.305712,1.4355444
+1074,Macrophages,vascular stroma,11.847574,10.352792
+1075,Macrophages,adipose tissue,-7.0854383,4.8804903
+1076,Macrophages,lumen or secretion,8.428273,4.1104026
+1077,Macrophages,lumen or secretion,7.714051,3.6779683
+1078,Macrophages,adipose tissue,8.8633795,7.104784
+1079,Macrophages,adipose tissue,-5.3026614,6.4237843
+1080,Macrophages,adipose tissue,-6.7395496,5.3339972
+1081,Macrophages,lumen or secretion,9.94492,5.8280125
+1082,Macrophages,lumen or secretion,7.584762,3.0633547
+1083,Macrophages,vascular stroma,12.40315,9.627014
+1084,Macrophages,necrosis,10.56384,8.404653
+1085,Macrophages,vascular stroma,10.047866,8.663911
+1086,Macrophages,vascular stroma,12.636663,9.344184
+1087,Macrophages,vascular stroma,9.323555,4.9119563
+1088,Macrophages,lumen or secretion,10.299632,4.3110085
+1089,Macrophages,adipose tissue,4.885675,1.1600295
+1090,Macrophages,immune infiltrate,11.814778,6.4680142
+1091,Macrophages,vascular stroma,12.619019,8.618112
+1092,Macrophages,lumen or secretion,8.224329,4.705419
+1093,Macrophages,adipose tissue,-4.459302,4.59454
+1094,Macrophages,immune infiltrate,11.398606,5.6155014
+1095,Macrophages,immune infiltrate,10.820713,6.472614
+1096,Macrophages,lumen or secretion,8.1621065,2.9176815
+1097,Macrophages,immune infiltrate,12.682765,8.187398
+1098,Macrophages,necrosis,10.77984,6.3949113
+1099,Macrophages,lumen or secretion,9.8021,5.6518106
+1100,Macrophages,lumen or secretion,3.9965296,0.058066487
+1101,Macrophages,immune infiltrate,12.689755,8.935943
+1102,Macrophages,immune infiltrate,12.648494,7.955223
+1103,Macrophages,immune infiltrate,10.49284,8.984073
+1104,Macrophages,adipose tissue,8.84379,6.502274
+1105,Macrophages,lumen or secretion,9.846627,3.837853
+1106,Macrophages,vascular stroma,12.212873,8.526572
+1107,Macrophages,immune infiltrate,11.225815,5.615549
+1108,Macrophages,adipose tissue,-6.6133537,5.256822
+1109,Macrophages,lumen or secretion,-5.331521,5.271791
+1110,Macrophages,adipose tissue,9.023229,6.294178
+1111,Macrophages,necrosis,10.414757,6.789897
+1112,Macrophages,immune infiltrate,12.049703,7.6906104
+1113,Macrophages,lumen or secretion,9.778183,4.512796
+1114,Macrophages,adipose tissue,9.632775,8.438061
+1115,Macrophages,vascular stroma,11.86649,10.309081
+1116,Macrophages,lumen or secretion,8.409857,4.0046206
+1117,Macrophages,vascular stroma,11.68307,9.284137
+1118,Macrophages,adipose tissue,-6.3113365,5.5400434
+1119,Macrophages,ductal epithelium,10.091351,5.5997634
+1120,Macrophages,necrosis,10.089319,5.020846
+1121,Macrophages,vascular stroma,12.561329,9.703513
+1122,Macrophages,immune infiltrate,12.004206,7.43086
+1123,Macrophages,necrosis,11.643402,7.934409
+1124,Macrophages,vascular stroma,9.174293,7.5429277
+1125,Macrophages,immune infiltrate,11.889798,6.629947
+1126,Macrophages,vascular stroma,9.627023,6.953843
+1127,Macrophages,lumen or secretion,7.286511,2.41785
+1128,Macrophages,adipose tissue,13.089449,11.024032
+1129,Macrophages,immune infiltrate,12.248383,8.177879
+1130,Macrophages,adipose tissue,-7.078999,5.026958
+1131,Macrophages,immune infiltrate,12.744103,9.557759
+1132,Macrophages,adipose tissue,-4.2226887,4.6016784
+1133,Macrophages,lumen or secretion,8.9326105,6.9226947
+1134,Macrophages,adipose tissue,8.583622,5.7751474
+1135,Macrophages,adipose tissue,9.674187,5.279467
+1136,Macrophages,lumen or secretion,-4.4076,6.330942
+1137,Macrophages,lumen or secretion,10.752772,4.5843487
+1138,Macrophages,adipose tissue,12.009652,9.331518
+1139,Macrophages,lumen or secretion,8.911453,4.565372
+1140,Macrophages,lumen or secretion,8.234913,6.1465206
+1141,Macrophages,vascular stroma,9.614757,5.4461055
+1142,Macrophages,necrosis,10.569394,7.123774
+1143,Macrophages,lumen or secretion,9.363046,4.599277
+1144,Macrophages,lumen or secretion,10.915775,4.0983844
+1145,Macrophages,lumen or secretion,8.620496,3.1973076
+1146,Macrophages,lumen or secretion,9.737444,5.730756
+1147,Macrophages,adipose tissue,12.741321,8.924234
+1148,Macrophages,adipose tissue,8.619952,4.5380216
+1149,Macrophages,necrosis,11.22834,6.2752824
+1150,Macrophages,lumen or secretion,10.714491,5.386508
+1151,Macrophages,lumen or secretion,-4.401118,5.8219604
+1152,Macrophages,adipose tissue,10.402504,8.268577
+1153,Macrophages,adipose tissue,12.949297,10.699902
+1154,Macrophages,adipose tissue,8.560954,4.8546715
+1155,Macrophages,vascular stroma,9.455476,8.382187
+1156,Macrophages,necrosis,10.860208,4.726147
+1157,Macrophages,lumen or secretion,5.212349,1.403
+1158,Macrophages,lumen or secretion,9.579528,6.2289186
+1159,Macrophages,lumen or secretion,10.279114,5.3215485
+1160,Macrophages,adipose tissue,-5.089565,4.6651163
+1161,Macrophages,immune infiltrate,11.247106,5.5102577
+1162,Macrophages,lumen or secretion,7.04944,2.3058138
+1163,Macrophages,adipose tissue,-4.238737,4.740983
+1164,Macrophages,lumen or secretion,8.465255,3.3896728
+1165,Macrophages,lumen or secretion,-4.3808556,5.3161654
+1166,Macrophages,ductal epithelium,10.247591,5.0672007
+1167,Macrophages,lumen or secretion,4.234088,0.07868375
+1168,Macrophages,adipose tissue,4.844831,1.1690142
+1169,Macrophages,immune infiltrate,10.906018,5.6192746
+1170,Macrophages,adipose tissue,-4.385523,6.2669096
+1171,Macrophages,vascular stroma,9.273272,4.981696
+1172,Macrophages,lumen or secretion,12.177933,4.5996857
+1173,Macrophages,adipose tissue,12.101374,8.987889
+1174,Macrophages,adipose tissue,9.307702,8.128302
+1175,Macrophages,vascular stroma,7.379674,3.2845736
+1176,Macrophages,fibrotic stroma,12.307146,10.643788
+1177,Macrophages,adipose tissue,9.05123,5.4251714
+1178,Macrophages,adipose tissue,10.685952,6.788137
+1179,Macrophages,immune infiltrate,11.78772,6.284775
+1180,Macrophages,lumen or secretion,11.720174,6.8408957
+1181,Macrophages,adipose tissue,-5.7152443,4.323149
+1182,Macrophages,vascular stroma,11.71096,9.11533
+1183,Macrophages,adipose tissue,11.508667,9.427681
+1184,Macrophages,lumen or secretion,-5.368894,6.0714645
+1185,Macrophages,lumen or secretion,-4.4803853,5.315377
+1186,Macrophages,lumen or secretion,7.9179583,3.6518972
+1187,Macrophages,immune infiltrate,11.1771755,6.7488194
+1188,Macrophages,adipose tissue,3.9654758,0.07103535
+1189,Macrophages,adipose tissue,10.115352,7.3139763
+1190,Macrophages,vascular stroma,11.49731,10.145076
+1191,Macrophages,adipose tissue,9.719245,7.1659036
+1192,Macrophages,vascular stroma,11.334515,10.099343
+1193,Macrophages,adipose tissue,-5.008524,6.279922
+1194,Macrophages,fibrotic stroma,13.11114,11.271366
+1195,Macrophages,vascular stroma,9.669236,8.428801
+1196,Macrophages,lumen or secretion,9.352647,3.7644603
+1197,Macrophages,vascular stroma,10.35404,8.450417
+1198,Macrophages,adipose tissue,10.155946,8.308067
+1199,Macrophages,adipose tissue,-6.4001884,4.4636393
+1200,Macrophages,adipose tissue,-4.475954,6.1741605
+1201,Macrophages,adipose tissue,-4.5264974,3.3493443
+1202,Macrophages,lumen or secretion,10.900819,4.8908415
+1203,Macrophages,lumen or secretion,9.809497,3.9520845
+1204,Macrophages,lumen or secretion,9.12815,6.685473
+1205,Macrophages,lumen or secretion,8.229819,2.8855422
+1206,Macrophages,fibrotic stroma,12.728831,9.56024
+1207,Macrophages,adipose tissue,8.866247,6.641253
+1208,Macrophages,vascular stroma,12.537036,10.886349
+1209,Macrophages,immune infiltrate,9.391401,6.461164
+1210,Macrophages,vascular stroma,12.250486,9.9542885
+1211,Macrophages,vascular stroma,10.83966,9.628449
+1212,Macrophages,lumen or secretion,8.677013,3.1174374
+1213,Macrophages,adipose tissue,9.090653,3.8244267
+1214,Macrophages,vascular stroma,10.725203,7.5003304
+1215,Macrophages,fibrotic stroma,12.927388,11.039518
+1216,Macrophages,necrosis,10.744112,6.8634906
+1217,Macrophages,lumen or secretion,9.284875,6.275721
+1218,Macrophages,necrosis,8.670015,5.7345276
+1219,Macrophages,immune infiltrate,12.423085,8.380262
+1220,Macrophages,fibrotic stroma,12.800299,11.048757
+1221,Macrophages,fibrotic stroma,12.544787,10.868955
+1222,Macrophages,adipose tissue,10.678792,8.008457
+1223,Macrophages,adipose tissue,12.9672,10.894836
+1224,Macrophages,adipose tissue,10.986398,9.487381
+1225,Macrophages,fibrotic stroma,12.277877,10.042292
+1226,Macrophages,vascular stroma,11.853083,8.65667
+1227,Macrophages,lumen or secretion,8.072548,4.8029695
+1228,Macrophages,vascular stroma,9.405315,4.8928556
+1229,Macrophages,adipose tissue,9.619733,6.3388987
+1230,Macrophages,vascular stroma,12.6831875,9.970002
+1231,Macrophages,adipose tissue,-6.4101667,5.4278264
+1232,Macrophages,adipose tissue,-3.9678504,2.5122821
+1233,Macrophages,adipose tissue,-3.8959515,2.430479
+1234,Macrophages,immune infiltrate,10.583581,6.140383
+1235,Macrophages,adipose tissue,-4.5067825,4.9956822
+1236,Macrophages,immune infiltrate,11.830963,6.4381313
+1237,Macrophages,vascular stroma,10.855221,9.497661
+1238,Macrophages,adipose tissue,-4.205321,5.602093
+1239,Macrophages,vascular stroma,12.167111,9.82765
+1240,Macrophages,adipose tissue,-6.27344,5.2717
+1241,Macrophages,adipose tissue,-5.7101316,5.218083
+1242,Macrophages,vascular stroma,11.030609,10.077226
+1243,Macrophages,lumen or secretion,7.1135044,2.2912002
+1244,Macrophages,necrosis,10.196556,6.144816
+1245,Macrophages,lumen or secretion,7.1109347,2.5201116
+1246,Macrophages,immune infiltrate,12.336594,6.7385206
+1247,Macrophages,lumen or secretion,5.029812,1.2878573
+1248,Macrophages,necrosis,8.4941,6.6948056
+1249,Macrophages,adipose tissue,8.891416,6.360987
+1250,Macrophages,vascular stroma,11.167126,10.00619
+1251,Macrophages,lumen or secretion,9.123378,7.2092133
+1252,Macrophages,adipose tissue,4.417993,1.066207
+1253,Macrophages,vascular stroma,11.308389,9.981046
+1254,Macrophages,lumen or secretion,7.7334127,4.1152124
+1255,Macrophages,vascular stroma,8.796375,7.735441
+1256,Macrophages,vascular stroma,10.507132,8.9609585
+1257,Macrophages,adipose tissue,10.741153,5.921966
+1258,Macrophages,vascular stroma,10.473747,7.9186172
+1259,Macrophages,vascular stroma,10.291789,9.153661
+1260,Macrophages,lumen or secretion,9.804979,5.226102
+1261,Macrophages,adipose tissue,-6.9698644,4.9368167
+1262,Macrophages,adipose tissue,-4.5372205,4.3866887
+1263,Macrophages,vascular stroma,10.25218,8.3617935
+1264,Macrophages,adipose tissue,10.712718,9.094025
+1265,Macrophages,adipose tissue,4.0980015,0.39117774
+1266,Macrophages,lumen or secretion,8.2218275,5.5584826
+1267,Macrophages,necrosis,10.063295,6.5477376
+1268,Macrophages,adipose tissue,9.024604,7.5018177
+1269,Macrophages,adipose tissue,9.124072,5.8628454
+1270,Macrophages,immune infiltrate,10.957443,4.1574697
+1271,Macrophages,adipose tissue,8.345003,4.5023093
+1272,Macrophages,adipose tissue,12.451638,10.116303
+1273,Macrophages,immune infiltrate,12.397016,8.591979
+1274,Macrophages,vascular stroma,11.2273445,10.133792
+1275,Macrophages,vascular stroma,11.254064,9.936265
+1276,Macrophages,lumen or secretion,-4.370994,6.4089026
+1277,Macrophages,lumen or secretion,6.7827554,3.2265851
+1278,Macrophages,vascular stroma,8.113374,5.6436634
+1279,Macrophages,lumen or secretion,11.19,5.589015
+1280,Macrophages,adipose tissue,8.641445,6.542418
+1281,Macrophages,adipose tissue,-4.64431,3.248416
+1282,Macrophages,lumen or secretion,7.848368,4.499896
+1283,Macrophages,immune infiltrate,11.305972,9.029957
+1284,Macrophages,fibrotic stroma,12.130888,10.596862
+1285,Macrophages,necrosis,10.647793,9.574965
+1286,Macrophages,vascular stroma,11.488286,10.304484
+1287,Macrophages,lumen or secretion,8.283129,3.239561
+1288,Macrophages,vascular stroma,-6.6772084,5.486301
+1289,Macrophages,lumen or secretion,-4.796206,5.416282
+1290,Macrophages,immune infiltrate,11.300475,4.6025057
+1291,Macrophages,fibrotic stroma,12.931068,11.241018
+1292,Macrophages,fibrotic stroma,11.25076,10.155141
+1293,Macrophages,necrosis,11.197549,4.457211
+1294,Macrophages,immune infiltrate,11.690896,6.0193787
+1295,Macrophages,adipose tissue,-4.35979,4.492536
+1296,Macrophages,lumen or secretion,7.425065,2.8149383
+1297,Macrophages,lumen or secretion,-6.030839,5.4485087
+1298,Macrophages,adipose tissue,-6.982121,4.9536996
+1299,Macrophages,adipose tissue,9.217452,7.820845
+1300,Macrophages,immune infiltrate,11.08647,5.632873
+1301,Macrophages,adipose tissue,-6.112149,5.733575
+1302,Macrophages,adipose tissue,-5.7141876,5.2736754
+1303,Macrophages,immune infiltrate,12.277767,8.304308
+1304,Macrophages,lumen or secretion,-5.2230225,5.238893
+1305,Macrophages,lumen or secretion,9.179518,3.710925
+1306,Macrophages,adipose tissue,-5.378809,4.843777
+1307,Macrophages,immune infiltrate,11.563898,6.356711
+1308,Macrophages,vascular stroma,11.112037,9.76809
+1309,Macrophages,vascular stroma,12.048214,10.385273
+1310,Macrophages,lumen or secretion,8.0491,2.65664
+1311,Macrophages,immune infiltrate,11.994396,7.8181143
+1312,Macrophages,vascular stroma,11.125361,9.607566
+1313,Macrophages,ductal epithelium,10.072468,4.8449073
+1314,Macrophages,adipose tissue,-6.346951,4.722147
+1315,Macrophages,lumen or secretion,7.872531,4.3042526
+1316,Macrophages,lumen or secretion,4.769044,0.42170036
+1317,Macrophages,adipose tissue,-4.9608507,5.1812544
+1318,Macrophages,vascular stroma,11.371145,10.200059
+1319,Macrophages,lumen or secretion,8.8283,7.402029
+1320,Macrophages,vascular stroma,11.9217615,8.978245
+1321,Macrophages,lumen or secretion,9.830959,3.7033207
+1322,Macrophages,lumen or secretion,9.693928,3.792635
+1323,Macrophages,lumen or secretion,7.7852883,3.7521267
+1324,Macrophages,vascular stroma,11.334035,10.138219
+1325,Macrophages,adipose tissue,-4.8816056,5.2720895
+1326,Macrophages,vascular stroma,8.924487,4.805802
+1327,Macrophages,lumen or secretion,9.62768,3.6305041
+1328,Macrophages,adipose tissue,-5.552185,6.040398
+1329,Macrophages,adipose tissue,11.761999,9.699968
+1330,Macrophages,immune infiltrate,10.654566,5.4886723
+1331,Macrophages,adipose tissue,11.048651,9.442029
+1332,Macrophages,adipose tissue,-3.7320163,2.2395966
+1333,Macrophages,lumen or secretion,-4.4355855,6.113939
+1334,Macrophages,lumen or secretion,-4.7269487,5.4790473
+1335,Macrophages,adipose tissue,-5.0089016,3.4320984
+1336,Macrophages,adipose tissue,-7.0341606,4.501319
+1337,Macrophages,adipose tissue,-5.5769672,5.1676135
+1338,Macrophages,adipose tissue,-4.445779,4.662148
+1339,Macrophages,adipose tissue,-5.7463336,5.478472
+1340,Macrophages,lumen or secretion,-4.4710793,6.454678
+1341,Macrophages,vascular stroma,-5.8217344,5.5519905
+1342,Macrophages,necrosis,9.021863,7.5084615
+1343,Macrophages,immune infiltrate,11.136768,6.8988733
+1344,Macrophages,adipose tissue,4.2663975,0.24912168
+1345,Macrophages,adipose tissue,4.418028,0.96323687
+1346,Macrophages,adipose tissue,-5.260083,5.150384
+1347,Macrophages,adipose tissue,-6.071136,5.0403285
+1348,Macrophages,adipose tissue,-4.578473,3.290795
+1349,Macrophages,lumen or secretion,5.2549458,1.4027781
+1350,Macrophages,adipose tissue,-6.1158357,4.66804
+1351,Macrophages,vascular stroma,-5.6886144,5.2942796
+1352,Macrophages,adipose tissue,-6.991362,4.810908
+1353,Macrophages,adipose tissue,9.306412,8.281496
+1354,Macrophages,lumen or secretion,9.059347,4.3509088
+1355,Macrophages,adipose tissue,-5.143011,5.2201123
+1356,Macrophages,adipose tissue,9.070226,4.6330843
+1357,Macrophages,necrosis,8.690664,7.3870273
+1358,Macrophages,vascular stroma,-7.090223,5.3907413
+1359,Macrophages,adipose tissue,-7.257947,5.06587
+1360,Macrophages,vascular stroma,9.6605,6.1138787
+1361,Macrophages,adipose tissue,-3.7271876,2.239739
+1362,Macrophages,adipose tissue,4.1953974,0.48200488
+1363,Macrophages,lumen or secretion,8.493012,3.2154543
+1364,Macrophages,adipose tissue,-7.0676513,4.924731
+1365,Macrophages,vascular stroma,-7.3713455,5.124103
+1366,Macrophages,lumen or secretion,5.5140796,1.559382
+1367,Macrophages,necrosis,9.033547,7.1565943
+1368,Macrophages,adipose tissue,-7.081208,4.6624446
+1369,Macrophages,adipose tissue,-5.978627,5.8716226
+1370,Macrophages,lumen or secretion,9.394281,4.1725626
+1371,Macrophages,adipose tissue,-4.6313963,6.501599
+1372,Macrophages,lumen or secretion,-5.622653,5.347248
+1373,Macrophages,adipose tissue,4.042933,0.2842101
+1374,Macrophages,lumen or secretion,-4.187365,4.735767
+1375,Macrophages,adipose tissue,-5.212795,6.043051
+1376,Macrophages,lumen or secretion,5.162946,1.2942041
+1377,Macrophages,adipose tissue,-4.4633617,4.5313554
+1378,Macrophages,vascular stroma,-7.3212247,5.024423
+1379,Plasma Cells,fibrotic stroma,9.783752,8.533791
+1380,Plasma Cells,vascular stroma,10.938518,9.095076
+1381,Plasma Cells,lumen or secretion,8.189175,3.4867532
+1382,Plasma Cells,necrosis,11.704837,7.861387
+1383,Plasma Cells,vascular stroma,9.963018,8.725138
+1384,Plasma Cells,adipose tissue,9.666454,5.7570586
+1385,Plasma Cells,lumen or secretion,7.2623744,2.8841176
+1386,Plasma Cells,vascular stroma,9.055756,7.649198
+1387,Plasma Cells,necrosis,11.401203,7.8318253
+1388,Plasma Cells,necrosis,12.295099,4.493096
+1389,Plasma Cells,vascular stroma,9.7974205,6.566797
+1390,Plasma Cells,vascular stroma,10.589875,9.5259075
+1391,Plasma Cells,vascular stroma,12.686472,8.755759
+1392,Plasma Cells,immune infiltrate,11.69221,6.6211495
+1393,Plasma Cells,vascular stroma,9.128682,7.713701
+1394,Plasma Cells,lumen or secretion,8.976474,5.980177
+1395,Plasma Cells,lumen or secretion,8.429756,3.5344844
+1396,Plasma Cells,vascular stroma,9.594709,4.4394836
+1397,Plasma Cells,necrosis,10.404331,6.870946
+1398,Plasma Cells,lumen or secretion,8.8234005,4.0367503
+1399,Plasma Cells,adipose tissue,9.917561,5.6471715
+1400,Plasma Cells,vascular stroma,9.628818,7.2889137
+1401,Plasma Cells,lumen or secretion,8.519085,4.9148865
+1402,Plasma Cells,immune infiltrate,10.984875,4.478101
+1403,Plasma Cells,vascular stroma,10.564878,8.5722685
+1404,Plasma Cells,lumen or secretion,9.11505,4.610004
+1405,Plasma Cells,lumen or secretion,10.221251,4.290356
+1406,Plasma Cells,necrosis,8.36671,6.7273726
+1407,Plasma Cells,lumen or secretion,11.147972,4.861637
+1408,Plasma Cells,adipose tissue,-5.0402813,4.6141357
+1409,Plasma Cells,vascular stroma,12.774894,9.938679
+1410,Plasma Cells,necrosis,9.219602,4.2692633
+1411,Plasma Cells,adipose tissue,-4.6925592,4.9062486
+1412,Plasma Cells,adipose tissue,-5.5737944,6.515581
+1413,Plasma Cells,adipose tissue,-6.9074645,5.3796034
+1414,Plasma Cells,vascular stroma,9.55073,4.148517
+1415,Plasma Cells,lumen or secretion,9.240883,3.7538598
+1416,Plasma Cells,vascular stroma,11.567716,9.643128
+1417,Plasma Cells,lumen or secretion,9.171939,6.699195
+1418,Plasma Cells,lumen or secretion,10.864636,4.54653
+1419,Plasma Cells,vascular stroma,11.493632,10.380598
+1420,Plasma Cells,immune infiltrate,11.659655,6.3397956
+1421,Plasma Cells,adipose tissue,9.791704,8.245246
+1422,Plasma Cells,adipose tissue,9.714739,7.253784
+1423,Plasma Cells,adipose tissue,8.78995,6.5502
+1424,Plasma Cells,vascular stroma,-7.204665,5.0180144
+1425,Plasma Cells,adipose tissue,-6.586463,5.242673
+1426,Plasma Cells,necrosis,9.634811,7.080966
+1427,Plasma Cells,lumen or secretion,6.900498,3.1323535
+1428,Plasma Cells,vascular stroma,12.731757,9.938476
+1429,Plasma Cells,adipose tissue,11.911165,8.854679
+1430,Plasma Cells,lumen or secretion,8.04248,4.9674416
+1431,Plasma Cells,immune infiltrate,9.424089,7.899618
+1432,Plasma Cells,adipose tissue,11.020473,9.186695
+1433,Plasma Cells,fibrotic stroma,11.060511,10.0228195
+1434,Plasma Cells,immune infiltrate,11.148842,6.406171
+1435,Plasma Cells,vascular stroma,11.273149,9.155808
+1436,Plasma Cells,lumen or secretion,9.369428,6.873952
+1437,Plasma Cells,adipose tissue,8.637465,6.183195
+1438,Plasma Cells,lumen or secretion,6.909805,2.5885534
+1439,Plasma Cells,vascular stroma,11.507587,9.017126
+1440,Plasma Cells,necrosis,10.4089575,6.843129
+1441,Plasma Cells,immune infiltrate,12.223522,7.8414235
+1442,Plasma Cells,vascular stroma,9.3297205,6.6143665
+1443,Plasma Cells,vascular stroma,11.587652,10.031487
+1444,Plasma Cells,lumen or secretion,8.803032,6.2733045
+1445,Plasma Cells,lumen or secretion,9.1394825,8.00303
+1446,Plasma Cells,lumen or secretion,8.162971,5.3947515
+1447,Plasma Cells,necrosis,9.210484,6.468324
+1448,Plasma Cells,adipose tissue,9.970638,7.005467
+1449,Plasma Cells,vascular stroma,9.3875475,8.027147
+1450,Plasma Cells,lumen or secretion,9.002275,6.0727963
+1451,Plasma Cells,immune infiltrate,10.8380575,7.5133824
+1452,Plasma Cells,immune infiltrate,12.738809,8.972213
+1453,Plasma Cells,lumen or secretion,7.9016743,3.153033
+1454,Plasma Cells,immune infiltrate,9.830935,6.087857
+1455,Plasma Cells,vascular stroma,8.917065,7.3928003
+1456,Plasma Cells,lumen or secretion,9.268632,3.2472954
+1457,Plasma Cells,lumen or secretion,9.610438,6.003828
+1458,Plasma Cells,lumen or secretion,10.805162,4.4892325
+1459,Plasma Cells,adipose tissue,-6.1408095,4.515788
+1460,Plasma Cells,adipose tissue,-6.546946,5.348239
+1461,Plasma Cells,adipose tissue,8.836565,6.9448433
+1462,Plasma Cells,lumen or secretion,8.707001,3.2949836
+1463,Plasma Cells,adipose tissue,6.8026605,2.7495327
+1464,Plasma Cells,lumen or secretion,-4.526662,6.3173795
+1465,Plasma Cells,immune infiltrate,10.239783,4.7030516
+1466,Plasma Cells,adipose tissue,-4.2395434,5.6771774
+1467,Plasma Cells,vascular stroma,10.775386,8.075671
+1468,Plasma Cells,lumen or secretion,10.430349,4.5965962
+1469,Plasma Cells,lumen or secretion,10.249471,4.038698
+1470,Plasma Cells,lumen or secretion,9.606749,3.5035102
+1471,Plasma Cells,vascular stroma,11.909344,8.738329
+1472,Plasma Cells,lumen or secretion,9.580333,7.2005906
+1473,Plasma Cells,necrosis,11.257681,7.9871073
+1474,Plasma Cells,vascular stroma,10.247641,8.233288
+1475,Plasma Cells,necrosis,11.149469,7.6899867
+1476,Plasma Cells,vascular stroma,10.662646,9.557917
+1477,Plasma Cells,adipose tissue,10.576776,7.253606
+1478,Plasma Cells,vascular stroma,10.47497,9.716703
+1479,Plasma Cells,lumen or secretion,8.481627,3.3801072
+1480,Plasma Cells,adipose tissue,-7.2823277,5.0325394
+1481,Plasma Cells,immune infiltrate,9.702614,7.686689
+1482,Plasma Cells,vascular stroma,11.32739,10.10949
+1483,Plasma Cells,immune infiltrate,11.16433,7.510922
+1484,Plasma Cells,lumen or secretion,9.441374,3.398663
+1485,Plasma Cells,lumen or secretion,10.729608,5.7477684
+1486,Plasma Cells,vascular stroma,10.385253,8.992755
+1487,Plasma Cells,adipose tissue,10.114994,6.5390973
+1488,Plasma Cells,immune infiltrate,11.264934,6.956538
+1489,Plasma Cells,lumen or secretion,10.375125,6.34031
+1490,Plasma Cells,vascular stroma,10.503673,9.874578
+1491,Plasma Cells,adipose tissue,5.1556225,1.3656493
+1492,Plasma Cells,lumen or secretion,9.453404,7.0110765
+1493,Plasma Cells,vascular stroma,10.502683,9.394516
+1494,Plasma Cells,lumen or secretion,9.088864,3.7468247
+1495,Plasma Cells,adipose tissue,8.819652,7.0039334
+1496,Plasma Cells,adipose tissue,-7.0542455,4.9016347
+1497,Plasma Cells,lumen or secretion,9.311101,4.9936676
+1498,Plasma Cells,vascular stroma,10.499534,9.879998
+1499,Plasma Cells,necrosis,11.668353,7.010302
+1500,Plasma Cells,adipose tissue,9.556777,5.575331
+1501,Plasma Cells,adipose tissue,9.275567,7.7523723
+1502,Plasma Cells,lumen or secretion,10.717217,8.391043
+1503,Plasma Cells,lumen or secretion,10.602702,4.636335
+1504,Plasma Cells,lumen or secretion,10.613305,4.5058336
+1505,Plasma Cells,necrosis,10.476346,6.9021993
+1506,Plasma Cells,lumen or secretion,9.816262,5.427675
+1507,Plasma Cells,lumen or secretion,9.239527,4.5300894
+1508,Plasma Cells,adipose tissue,8.306465,5.7493267
+1509,Plasma Cells,adipose tissue,10.635452,7.126391
+1510,Plasma Cells,immune infiltrate,11.5152445,5.7605376
+1511,Plasma Cells,immune infiltrate,9.887956,4.802674
+1512,Plasma Cells,adipose tissue,8.968299,6.8448753
+1513,Plasma Cells,lumen or secretion,11.6514015,4.4689565
+1514,Plasma Cells,immune infiltrate,11.444447,6.3758426
+1515,Plasma Cells,adipose tissue,9.611277,7.8037376
+1516,Plasma Cells,necrosis,11.000338,7.1893497
+1517,Plasma Cells,immune infiltrate,11.269115,6.4685373
+1518,Plasma Cells,immune infiltrate,11.453664,5.947175
+1519,Plasma Cells,lumen or secretion,7.899533,4.659901
+1520,Plasma Cells,adipose tissue,10.817647,9.423639
+1521,Plasma Cells,immune infiltrate,11.200628,6.512351
+1522,Plasma Cells,lumen or secretion,10.646183,4.9556546
+1523,Plasma Cells,lumen or secretion,10.132501,4.933874
+1524,Plasma Cells,vascular stroma,10.161535,4.6247864
+1525,Plasma Cells,vascular stroma,10.9825945,7.3762536
+1526,Plasma Cells,necrosis,10.907311,7.5785203
+1527,Plasma Cells,immune infiltrate,10.648053,5.6001863
+1528,Plasma Cells,adipose tissue,10.958781,9.438655
+1529,Plasma Cells,vascular stroma,11.872293,10.313521
+1530,Plasma Cells,lumen or secretion,8.4058695,3.3066902
+1531,Plasma Cells,lumen or secretion,8.838437,6.0972586
+1532,Plasma Cells,immune infiltrate,11.543105,6.2290382
+1533,Plasma Cells,immune infiltrate,11.826314,7.0414486
+1534,Plasma Cells,adipose tissue,10.371656,9.223245
+1535,Plasma Cells,lumen or secretion,9.154089,7.018926
+1536,Plasma Cells,adipose tissue,9.567981,7.2213097
+1537,Plasma Cells,adipose tissue,-5.105074,5.4419637
+1538,Plasma Cells,lumen or secretion,7.2866454,2.8328016
+1539,Plasma Cells,adipose tissue,-6.7224264,5.355811
+1540,Plasma Cells,adipose tissue,-4.7021465,3.3527973
+1541,Plasma Cells,immune infiltrate,12.5717535,6.7829685
+1542,Plasma Cells,lumen or secretion,7.140555,2.5113657
+1543,Plasma Cells,immune infiltrate,9.584254,5.755593
+1544,Plasma Cells,lumen or secretion,10.846849,4.844661
+1545,Plasma Cells,adipose tissue,9.141564,5.3411436
+1546,Plasma Cells,necrosis,11.080887,6.9309826
+1547,Plasma Cells,immune infiltrate,12.331602,8.40679
+1548,Plasma Cells,lumen or secretion,10.888072,4.356105
+1549,Plasma Cells,lumen or secretion,10.05354,3.755473
+1550,Plasma Cells,immune infiltrate,11.0336485,4.5676804
+1551,Plasma Cells,vascular stroma,9.72723,8.302874
+1552,Plasma Cells,vascular stroma,10.122985,7.955785
+1553,Plasma Cells,fibrotic stroma,12.269122,9.461464
+1554,Plasma Cells,adipose tissue,8.732372,6.5585895
+1555,Plasma Cells,lumen or secretion,12.316655,4.7782855
+1556,Plasma Cells,lumen or secretion,8.914859,3.6324658
+1557,Plasma Cells,immune infiltrate,11.549003,6.182305
+1558,Plasma Cells,lumen or secretion,8.778164,3.6949165
+1559,Plasma Cells,lumen or secretion,8.3167925,5.6214023
+1560,Plasma Cells,vascular stroma,9.369696,6.008014
+1561,Plasma Cells,immune infiltrate,12.682014,8.884356
+1562,Plasma Cells,lumen or secretion,8.563688,3.4878573
+1563,Plasma Cells,fibrotic stroma,12.5182495,10.57405
+1564,Plasma Cells,lumen or secretion,8.014829,3.425544
+1565,Plasma Cells,vascular stroma,10.444032,8.4077015
+1566,Plasma Cells,lumen or secretion,7.9586735,2.8160589
+1567,Plasma Cells,immune infiltrate,11.237604,6.4932537
+1568,Plasma Cells,immune infiltrate,10.451605,5.43076
+1569,Plasma Cells,necrosis,11.146821,6.515438
+1570,Plasma Cells,lumen or secretion,10.075327,4.3135033
+1571,Plasma Cells,lumen or secretion,7.2485075,4.2512693
+1572,Plasma Cells,vascular stroma,10.320072,8.671074
+1573,Plasma Cells,immune infiltrate,11.248961,4.7366753
+1574,Plasma Cells,lumen or secretion,10.196456,6.496236
+1575,Plasma Cells,vascular stroma,9.298505,7.534609
+1576,Plasma Cells,lumen or secretion,9.258008,4.770443
+1577,Plasma Cells,lumen or secretion,8.385112,2.8616962
+1578,Plasma Cells,adipose tissue,10.7649765,7.926009
+1579,Plasma Cells,lumen or secretion,10.955343,5.0938706
+1580,Plasma Cells,vascular stroma,10.832371,7.4918995
+1581,Plasma Cells,necrosis,10.47051,4.933938
+1582,Plasma Cells,vascular stroma,10.517055,7.607807
+1583,Plasma Cells,lumen or secretion,7.966134,3.1151502
+1584,Plasma Cells,adipose tissue,-5.3519497,6.1975026
+1585,Plasma Cells,vascular stroma,9.023625,7.5656843
+1586,Plasma Cells,immune infiltrate,11.6789875,6.1428795
+1587,Plasma Cells,immune infiltrate,11.232917,7.141753
+1588,Plasma Cells,vascular stroma,11.173406,8.14761
+1589,Plasma Cells,vascular stroma,11.460175,9.7500725
+1590,Plasma Cells,vascular stroma,10.966327,8.567393
+1591,Plasma Cells,adipose tissue,10.252034,5.8488016
+1592,Plasma Cells,immune infiltrate,10.977602,7.227565
+1593,Plasma Cells,vascular stroma,9.010262,7.460728
+1594,Plasma Cells,vascular stroma,12.524324,9.189325
+1595,Plasma Cells,adipose tissue,9.710454,7.1309786
+1596,Plasma Cells,lumen or secretion,7.888811,2.6369677
+1597,Plasma Cells,lumen or secretion,8.5862465,6.441446
+1598,Plasma Cells,necrosis,10.773126,7.2340517
+1599,Plasma Cells,lumen or secretion,10.256386,4.9396777
+1600,Plasma Cells,lumen or secretion,7.9452753,3.9245365
+1601,Plasma Cells,lumen or secretion,9.835695,6.547336
+1602,Plasma Cells,adipose tissue,10.239709,6.0258594
+1603,Plasma Cells,immune infiltrate,10.977562,4.095176
+1604,Plasma Cells,immune infiltrate,12.074326,7.4008718
+1605,Plasma Cells,lumen or secretion,9.411677,5.832566
+1606,Plasma Cells,lumen or secretion,9.053103,3.6616766
+1607,Plasma Cells,vascular stroma,10.748961,7.302618
+1608,Plasma Cells,vascular stroma,10.367019,9.271623
+1609,Plasma Cells,necrosis,10.267405,7.123415
+1610,Plasma Cells,necrosis,11.6320505,6.860837
+1611,Plasma Cells,lumen or secretion,10.204302,4.3521385
+1612,Plasma Cells,vascular stroma,9.790376,7.6174197
+1613,Plasma Cells,vascular stroma,10.772112,9.833131
+1614,Plasma Cells,vascular stroma,10.458968,7.975763
+1615,Plasma Cells,adipose tissue,8.349743,5.798852
+1616,Plasma Cells,lumen or secretion,9.97309,3.5505009
+1617,Plasma Cells,vascular stroma,12.426934,10.183084
+1618,Plasma Cells,lumen or secretion,9.990576,5.8280954
+1619,Plasma Cells,immune infiltrate,11.582669,4.560723
+1620,Plasma Cells,lumen or secretion,9.119155,3.6165354
+1621,Plasma Cells,vascular stroma,10.524041,9.288234
+1622,Plasma Cells,lumen or secretion,8.512381,3.1588395
+1623,Plasma Cells,immune infiltrate,11.678548,6.3771935
+1624,Plasma Cells,lumen or secretion,11.266104,4.9478807
+1625,Plasma Cells,lumen or secretion,8.99625,6.2225313
+1626,Plasma Cells,lumen or secretion,10.313557,4.469362
+1627,Plasma Cells,immune infiltrate,11.37552,6.000659
+1628,Plasma Cells,lumen or secretion,11.06769,4.2957377
+1629,Plasma Cells,immune infiltrate,10.779294,3.9033315
+1630,Plasma Cells,vascular stroma,10.700115,7.324562
+1631,Plasma Cells,vascular stroma,10.385165,8.413603
+1632,Plasma Cells,vascular stroma,13.4142275,8.574731
+1633,Plasma Cells,lumen or secretion,9.282905,4.6566844
+1634,Plasma Cells,necrosis,11.751219,6.988938
+1635,Plasma Cells,adipose tissue,9.250368,7.668536
+1636,Plasma Cells,lumen or secretion,9.453367,3.2053
+1637,Plasma Cells,adipose tissue,9.376671,8.124643
+1638,Plasma Cells,vascular stroma,10.937593,7.318493
+1639,Plasma Cells,adipose tissue,9.849621,6.6161056
+1640,Plasma Cells,necrosis,10.616381,7.59872
+1641,Plasma Cells,vascular stroma,12.563316,5.055149
+1642,Plasma Cells,vascular stroma,9.98077,8.66486
+1643,Plasma Cells,adipose tissue,9.968161,8.771906
+1644,Plasma Cells,vascular stroma,10.454724,9.151431
+1645,Plasma Cells,lumen or secretion,9.370122,6.0530534
+1646,Plasma Cells,adipose tissue,9.115133,5.717679
+1647,Plasma Cells,adipose tissue,9.937422,6.6268973
+1648,Plasma Cells,adipose tissue,9.158678,6.2002525
+1649,Plasma Cells,necrosis,9.030471,7.1504526
+1650,Plasma Cells,vascular stroma,10.252907,7.35999
+1651,Plasma Cells,vascular stroma,10.968047,10.123966
+1652,Plasma Cells,lumen or secretion,9.710968,6.772261
+1653,Plasma Cells,vascular stroma,9.600405,5.121302
+1654,Plasma Cells,lumen or secretion,8.912532,4.291693
+1655,Plasma Cells,immune infiltrate,11.871525,7.162012
+1656,Plasma Cells,necrosis,9.695314,7.8129716
+1657,Plasma Cells,vascular stroma,10.635979,7.908847
+1658,Plasma Cells,adipose tissue,9.02133,5.2636504
+1659,Plasma Cells,adipose tissue,4.186785,0.42669937
+1660,Plasma Cells,lumen or secretion,10.67823,4.536415
+1661,Plasma Cells,vascular stroma,10.712529,8.250299
+1662,Plasma Cells,lumen or secretion,9.208226,5.0759315
+1663,Plasma Cells,vascular stroma,10.402299,7.0721955
+1664,Plasma Cells,vascular stroma,11.479942,9.452412
+1665,Plasma Cells,adipose tissue,10.444596,8.408981
+1666,Plasma Cells,vascular stroma,12.221658,8.09821
+1667,Plasma Cells,lumen or secretion,9.237188,5.820211
+1668,Plasma Cells,vascular stroma,10.619957,7.8734026
+1669,Plasma Cells,lumen or secretion,7.8651967,3.6982846
+1670,Plasma Cells,vascular stroma,10.848248,8.960362
+1671,Plasma Cells,vascular stroma,10.149979,8.287389
+1672,Plasma Cells,vascular stroma,11.803596,10.3522415
+1673,Plasma Cells,vascular stroma,12.592625,9.799874
+1674,Plasma Cells,vascular stroma,11.426745,9.702328
+1675,Plasma Cells,vascular stroma,10.689066,9.902205
+1676,Plasma Cells,vascular stroma,11.167462,9.917473
+1677,Plasma Cells,lumen or secretion,9.442125,5.776985
+1678,Plasma Cells,vascular stroma,9.621356,7.352386
+1679,Plasma Cells,vascular stroma,12.72392,10.103545
+1680,Plasma Cells,immune infiltrate,10.924676,7.133303
+1681,Plasma Cells,lumen or secretion,9.215933,5.783823
+1682,Plasma Cells,lumen or secretion,10.443158,3.6646326
+1683,Plasma Cells,adipose tissue,10.776611,9.122365
+1684,Plasma Cells,vascular stroma,11.660371,8.777466
+1685,Plasma Cells,adipose tissue,11.008681,9.205117
+1686,Plasma Cells,adipose tissue,10.307197,5.977543
+1687,Plasma Cells,adipose tissue,-6.5063863,4.9957113
+1688,Plasma Cells,immune infiltrate,11.002039,4.1484895
+1689,Plasma Cells,immune infiltrate,11.057181,6.4612403
+1690,Plasma Cells,lumen or secretion,10.495918,4.7314777
+1691,Plasma Cells,immune infiltrate,11.556365,6.285678
+1692,Plasma Cells,immune infiltrate,12.00536,7.4545302
+1693,Plasma Cells,vascular stroma,9.094761,7.779104
+1694,Plasma Cells,lumen or secretion,8.925803,3.749105
+1695,Plasma Cells,adipose tissue,9.285248,7.81967
+1696,Plasma Cells,adipose tissue,10.4228945,6.1550756
+1697,Plasma Cells,vascular stroma,11.748153,8.807705
+1698,Plasma Cells,necrosis,12.418648,4.7964644
+1699,Plasma Cells,immune infiltrate,10.810788,3.9817634
+1700,Plasma Cells,vascular stroma,11.201629,9.954162
+1701,Plasma Cells,immune infiltrate,11.17362,6.3136616
+1702,Plasma Cells,vascular stroma,10.801548,9.695203
+1703,Plasma Cells,adipose tissue,5.1160436,1.3046032
+1704,Plasma Cells,lumen or secretion,-4.5853987,6.144754
+1705,Plasma Cells,vascular stroma,12.868531,9.567943
+1706,Plasma Cells,lumen or secretion,7.1388025,2.6190748
+1707,Plasma Cells,immune infiltrate,11.092529,7.917168
+1708,Plasma Cells,immune infiltrate,10.167265,6.3903646
+1709,Plasma Cells,lumen or secretion,10.75847,7.421919
+1710,Plasma Cells,lumen or secretion,10.4453,5.794719
+1711,Plasma Cells,lumen or secretion,11.538223,5.893918
+1712,Plasma Cells,adipose tissue,10.10036,8.130814
+1713,Plasma Cells,lumen or secretion,11.132022,4.937877
+1714,Plasma Cells,immune infiltrate,11.805789,6.731749
+1715,Plasma Cells,adipose tissue,9.952349,7.4689527
+1716,Plasma Cells,lumen or secretion,10.647385,4.693338
+1717,Plasma Cells,lumen or secretion,7.8611965,3.7430832
+1718,Plasma Cells,necrosis,9.6827135,8.503271
+1719,Plasma Cells,immune infiltrate,10.8758545,4.4605036
+1720,Plasma Cells,adipose tissue,10.406848,8.034283
+1721,Plasma Cells,adipose tissue,8.624309,6.334606
+1722,Plasma Cells,adipose tissue,-6.288398,4.8273754
+1723,Plasma Cells,lumen or secretion,8.339393,4.3166475
+1724,Plasma Cells,vascular stroma,10.182363,8.4262905
+1725,Plasma Cells,immune infiltrate,11.752772,6.1194525
+1726,Plasma Cells,lumen or secretion,8.046676,5.790462
+1727,Plasma Cells,lumen or secretion,9.234831,4.561804
+1728,Plasma Cells,lumen or secretion,7.3750277,2.4445584
+1729,Plasma Cells,adipose tissue,-6.0286384,4.527925
+1730,Plasma Cells,adipose tissue,-4.726342,6.4600406
+1731,Plasma Cells,adipose tissue,-6.233624,5.1316996
+1732,Endothelial Cells,adipose tissue,-3.9500213,2.495045
+1733,Endothelial Cells,adipose tissue,-4.4796023,5.3803577
+1734,Endothelial Cells,adipose tissue,-4.4168563,5.2898984
+1735,Endothelial Cells,adipose tissue,-4.4101,4.5126224
+1736,Endothelial Cells,necrosis,10.630234,7.003732
+1737,Endothelial Cells,lumen or secretion,8.5995,3.1011405
+1738,Endothelial Cells,fibrotic stroma,10.44392,9.412748
+1739,Endothelial Cells,lumen or secretion,7.818037,5.0900187
+1740,Endothelial Cells,vascular stroma,10.969199,10.127742
+1741,Endothelial Cells,adipose tissue,10.555194,8.615374
+1742,Endothelial Cells,vascular stroma,10.56961,9.344701
+1743,Endothelial Cells,ductal epithelium,10.178986,5.323363
+1744,Endothelial Cells,necrosis,12.068969,4.3131886
+1745,Endothelial Cells,lumen or secretion,7.1224036,3.187025
+1746,Endothelial Cells,vascular stroma,11.380242,9.344258
+1747,Endothelial Cells,adipose tissue,13.02565,10.700513
+1748,Endothelial Cells,adipose tissue,11.501192,9.484982
+1749,Endothelial Cells,lumen or secretion,7.409122,3.602749
+1750,Endothelial Cells,lumen or secretion,12.261813,4.38178
+1751,Endothelial Cells,fibrotic stroma,12.43923,10.197054
+1752,Endothelial Cells,necrosis,11.579409,9.146137
+1753,Endothelial Cells,necrosis,10.555845,7.235245
+1754,Endothelial Cells,adipose tissue,-5.46032,6.142198
+1755,Endothelial Cells,adipose tissue,8.386011,6.4146986
+1756,Endothelial Cells,adipose tissue,-5.9332757,6.077894
+1757,Endothelial Cells,lumen or secretion,4.820404,0.5489627
+1758,Endothelial Cells,adipose tissue,11.898512,9.357404
+1759,Endothelial Cells,adipose tissue,-4.6981587,4.0783515
+1760,Endothelial Cells,adipose tissue,-7.008423,5.0706363
+1761,Endothelial Cells,vascular stroma,9.8388,7.6926656
+1762,Endothelial Cells,lumen or secretion,-5.1101027,5.6921644
+1763,Endothelial Cells,adipose tissue,10.026989,6.6038885
+1764,Endothelial Cells,adipose tissue,-5.186483,6.240308
+1765,Endothelial Cells,lumen or secretion,4.603076,0.29211006
+1766,Endothelial Cells,vascular stroma,12.814812,10.369161
+1767,Endothelial Cells,immune infiltrate,10.846467,6.9738803
+1768,Endothelial Cells,necrosis,10.122365,5.7152343
+1769,Endothelial Cells,adipose tissue,9.716531,8.202385
+1770,Endothelial Cells,vascular stroma,12.006256,9.372804
+1771,Endothelial Cells,necrosis,12.184838,4.303739
+1772,Endothelial Cells,lumen or secretion,10.579795,8.479736
+1773,Endothelial Cells,vascular stroma,12.136194,10.536902
+1774,Endothelial Cells,fibrotic stroma,12.893985,10.965984
+1775,Endothelial Cells,fibrotic stroma,9.792036,7.601485
+1776,Endothelial Cells,immune infiltrate,11.280145,6.926533
+1777,Endothelial Cells,necrosis,11.366238,7.644332
+1778,Endothelial Cells,adipose tissue,4.658325,0.91166884
+1779,Endothelial Cells,adipose tissue,10.716474,9.569165
+1780,Endothelial Cells,adipose tissue,6.9149647,2.6599538
+1781,Endothelial Cells,lumen or secretion,9.862484,4.742838
+1782,Endothelial Cells,vascular stroma,11.785274,9.133008
+1783,Endothelial Cells,adipose tissue,-5.8972487,5.198999
+1784,Endothelial Cells,immune infiltrate,10.474212,6.357937
+1785,Endothelial Cells,adipose tissue,12.902047,10.790593
+1786,Endothelial Cells,vascular stroma,12.853846,8.12402
+1787,Endothelial Cells,lumen or secretion,10.596043,5.852429
+1788,Endothelial Cells,vascular stroma,12.204564,9.005009
+1789,Endothelial Cells,vascular stroma,11.109798,9.435465
+1790,Endothelial Cells,adipose tissue,-5.128942,4.5053277
+1791,Endothelial Cells,necrosis,10.142669,9.105084
+1792,Endothelial Cells,necrosis,10.774021,9.062875
+1793,Endothelial Cells,adipose tissue,10.415989,8.781252
+1794,Endothelial Cells,lumen or secretion,9.54882,4.0583324
+1795,Endothelial Cells,adipose tissue,11.492843,9.285933
+1796,Endothelial Cells,adipose tissue,10.101051,5.436148
+1797,Endothelial Cells,vascular stroma,9.741196,5.201805
+1798,Endothelial Cells,vascular stroma,11.6866865,9.353589
+1799,Endothelial Cells,adipose tissue,10.39744,5.7396398
+1800,Endothelial Cells,vascular stroma,12.921608,9.600939
+1801,Endothelial Cells,adipose tissue,-4.684943,3.242836
+1802,Endothelial Cells,adipose tissue,-4.951544,3.820666
+1803,Endothelial Cells,adipose tissue,-4.5889378,5.196779
+1804,Endothelial Cells,adipose tissue,-6.8463216,5.3348656
+1805,Endothelial Cells,vascular stroma,11.793892,8.631154
+1806,Endothelial Cells,adipose tissue,-5.0005555,5.8010035
+1807,Endothelial Cells,fibrotic stroma,12.513319,10.407644
+1808,Endothelial Cells,adipose tissue,-4.815161,3.9783812
+1809,Endothelial Cells,adipose tissue,-6.8259254,5.3886127
+1810,Endothelial Cells,adipose tissue,4.86091,1.1598009
+1811,Endothelial Cells,adipose tissue,-4.849482,4.027418
+1812,Endothelial Cells,adipose tissue,-5.1492343,5.566651
+1813,Endothelial Cells,adipose tissue,-5.6039705,5.638719
+1814,Endothelial Cells,lumen or secretion,8.094948,4.7999716
+1815,Endothelial Cells,vascular stroma,13.117126,11.141705
+1816,Endothelial Cells,adipose tissue,8.799835,5.848672
+1817,Endothelial Cells,fibrotic stroma,12.573375,10.506981
+1818,Endothelial Cells,vascular stroma,11.589403,8.9739275
+1819,Endothelial Cells,adipose tissue,7.5211663,4.0768766
+1820,Endothelial Cells,vascular stroma,10.655081,9.305127
+1821,Endothelial Cells,vascular stroma,10.877159,9.793454
+1822,Endothelial Cells,immune infiltrate,12.687862,7.8552427
+1823,Endothelial Cells,adipose tissue,9.70244,7.3159914
+1824,Endothelial Cells,fibrotic stroma,12.882453,11.206838
+1825,Endothelial Cells,vascular stroma,11.812146,10.083604
+1826,Endothelial Cells,adipose tissue,-5.8974056,6.202736
+1827,Endothelial Cells,adipose tissue,-6.1727905,5.8783526
+1828,Endothelial Cells,lumen or secretion,-4.3356934,5.5554338
+1829,Endothelial Cells,fibrotic stroma,12.533971,9.856339
+1830,Endothelial Cells,lumen or secretion,4.7515774,0.41220215
+1831,Endothelial Cells,adipose tissue,-5.5208416,4.4006367
+1832,Endothelial Cells,adipose tissue,9.761008,7.18352
+1833,Endothelial Cells,vascular stroma,11.590785,9.787053
+1834,Endothelial Cells,immune infiltrate,12.386855,7.3099585
+1835,Endothelial Cells,immune infiltrate,10.3216505,6.441337
+1836,Endothelial Cells,vascular stroma,9.09835,7.679795
+1837,Endothelial Cells,adipose tissue,-4.5770526,5.210374
+1838,Endothelial Cells,adipose tissue,11.681757,9.717706
+1839,Endothelial Cells,vascular stroma,10.896887,7.080878
+1840,Endothelial Cells,adipose tissue,-7.0389476,4.987681
+1841,Endothelial Cells,necrosis,8.979127,7.295131
+1842,Endothelial Cells,lumen or secretion,4.64949,0.24944092
+1843,Endothelial Cells,adipose tissue,8.744438,5.936112
+1844,Endothelial Cells,lumen or secretion,5.164994,1.3510362
+1845,Endothelial Cells,adipose tissue,11.93765,9.382725
+1846,Endothelial Cells,adipose tissue,5.0055428,1.2617759
+1847,Endothelial Cells,adipose tissue,11.100415,9.476277
+1848,Endothelial Cells,ductal epithelium,10.505168,5.1544604
+1849,Endothelial Cells,vascular stroma,12.155823,9.418764
+1850,Endothelial Cells,adipose tissue,-4.676264,3.228887
+1851,Endothelial Cells,fibrotic stroma,12.91638,10.938724
+1852,Endothelial Cells,lumen or secretion,8.295653,4.82839
+1853,Endothelial Cells,lumen or secretion,8.216173,6.1784368
+1854,Endothelial Cells,fibrotic stroma,13.0920925,11.306868
+1855,Endothelial Cells,adipose tissue,9.162944,7.2126813
+1856,Endothelial Cells,lumen or secretion,4.355957,0.24270159
+1857,Endothelial Cells,lumen or secretion,10.588296,4.1938133
+1858,Endothelial Cells,lumen or secretion,7.741634,2.6481292
+1859,Endothelial Cells,lumen or secretion,8.055686,3.546333
+1860,Endothelial Cells,vascular stroma,10.560873,7.525842
+1861,Endothelial Cells,vascular stroma,9.089981,4.554158
+1862,Endothelial Cells,adipose tissue,8.03089,4.0313983
+1863,Endothelial Cells,adipose tissue,9.586496,7.9531064
+1864,Endothelial Cells,adipose tissue,11.781285,9.499323
+1865,Endothelial Cells,adipose tissue,-5.566231,5.4615946
+1866,Endothelial Cells,vascular stroma,11.805076,8.560113
+1867,Endothelial Cells,lumen or secretion,7.5293055,2.5946577
+1868,Endothelial Cells,ductal epithelium,9.272597,3.4327471
+1869,Endothelial Cells,adipose tissue,10.953442,9.247198
+1870,Endothelial Cells,vascular stroma,10.245072,8.141175
+1871,Endothelial Cells,adipose tissue,-6.36651,4.5649395
+1872,Endothelial Cells,immune infiltrate,11.085543,5.997782
+1873,Endothelial Cells,adipose tissue,-5.3306656,6.2108173
+1874,Endothelial Cells,vascular stroma,11.028934,9.523388
+1875,Endothelial Cells,fibrotic stroma,12.739604,10.365191
+1876,Endothelial Cells,necrosis,10.0337515,4.0440764
+1877,Endothelial Cells,lumen or secretion,6.865259,2.113279
+1878,Endothelial Cells,necrosis,10.601888,7.061368
+1879,Endothelial Cells,lumen or secretion,-4.6640797,6.201062
+1880,Endothelial Cells,fibrotic stroma,12.899162,11.100054
+1881,Endothelial Cells,immune infiltrate,13.124132,8.340382
+1882,Endothelial Cells,vascular stroma,12.098631,9.927352
+1883,Endothelial Cells,adipose tissue,8.418842,6.0885806
+1884,Endothelial Cells,lumen or secretion,9.127724,3.6783798
+1885,Endothelial Cells,lumen or secretion,10.351795,4.6376877
+1886,Endothelial Cells,adipose tissue,-4.5514536,5.250661
+1887,Endothelial Cells,lumen or secretion,-5.0690603,5.235936
+1888,Endothelial Cells,lumen or secretion,7.8617444,3.5475304
+1889,Endothelial Cells,vascular stroma,12.851275,9.325292
+1890,Endothelial Cells,immune infiltrate,12.197956,6.6534114
+1891,Endothelial Cells,fibrotic stroma,9.975957,8.167375
+1892,Endothelial Cells,vascular stroma,10.870021,7.2351213
+1893,Endothelial Cells,adipose tissue,12.959658,9.755906
+1894,Endothelial Cells,lumen or secretion,7.5951896,2.8851666
+1895,Endothelial Cells,vascular stroma,13.134375,11.32085
+1896,Endothelial Cells,vascular stroma,10.662876,6.271724
+1897,Endothelial Cells,lumen or secretion,-4.730993,6.4298854
+1898,Endothelial Cells,adipose tissue,-6.037111,5.744958
+1899,Endothelial Cells,adipose tissue,-6.3433414,5.786033
+1900,Endothelial Cells,vascular stroma,10.043851,7.7881136
+1901,Endothelial Cells,adipose tissue,-4.1727443,4.9356995
+1902,Endothelial Cells,lumen or secretion,4.738252,0.31564987
+1903,Endothelial Cells,lumen or secretion,-5.1241484,5.3651905
+1904,Endothelial Cells,adipose tissue,10.192134,4.4370337
+1905,Endothelial Cells,lumen or secretion,7.887808,3.145889
+1906,Endothelial Cells,lumen or secretion,-4.200458,5.793652
+1907,Endothelial Cells,lumen or secretion,7.1242666,3.6440268
+1908,Endothelial Cells,adipose tissue,-6.26594,4.5834885
+1909,Endothelial Cells,vascular stroma,10.486007,9.821854
+1910,Endothelial Cells,adipose tissue,13.068621,11.019403
+1911,Endothelial Cells,lumen or secretion,-5.56096,5.2000213
+1912,Endothelial Cells,fibrotic stroma,12.91904,10.669877
+1913,Endothelial Cells,lumen or secretion,4.6372614,0.19700216
+1914,Endothelial Cells,vascular stroma,12.788598,8.176032
+1915,Endothelial Cells,adipose tissue,-6.6108236,4.6607814
+1916,Endothelial Cells,adipose tissue,-5.7035675,5.3968973
+1917,Endothelial Cells,adipose tissue,-4.8813767,5.0113087
+1918,Endothelial Cells,adipose tissue,4.3348207,0.7855608
+1919,Endothelial Cells,lumen or secretion,-5.410166,6.389379
+1920,Endothelial Cells,vascular stroma,10.485087,8.085114
+1921,Endothelial Cells,adipose tissue,8.358964,4.923549
+1922,Endothelial Cells,adipose tissue,10.627444,9.6816025
+1923,Endothelial Cells,vascular stroma,12.449074,8.25576
+1924,Endothelial Cells,adipose tissue,-6.780063,5.260268
+1925,Endothelial Cells,fibrotic stroma,12.969512,9.490783
+1926,Endothelial Cells,adipose tissue,-4.2503138,5.469183
+1927,Endothelial Cells,vascular stroma,10.8394575,7.9448686
+1928,Endothelial Cells,lumen or secretion,7.184147,2.7507298
+1929,Endothelial Cells,adipose tissue,-3.9807558,2.5271425
+1930,Endothelial Cells,adipose tissue,-5.3337107,3.7414134
+1931,Endothelial Cells,vascular stroma,10.26916,8.224023
+1932,Endothelial Cells,adipose tissue,-5.019459,6.441576
+1933,Endothelial Cells,immune infiltrate,11.452397,6.851116
+1934,Endothelial Cells,vascular stroma,10.375163,9.255629
+1935,Endothelial Cells,adipose tissue,4.8744736,1.2246357
+1936,Endothelial Cells,adipose tissue,11.272119,8.169121
+1937,Endothelial Cells,lumen or secretion,9.1979265,3.9539287
+1938,Endothelial Cells,adipose tissue,-6.448649,4.560144
+1939,Endothelial Cells,immune infiltrate,12.740196,7.668924
+1940,Endothelial Cells,lumen or secretion,7.3081603,2.5480018
+1941,Endothelial Cells,vascular stroma,9.929496,8.661489
+1942,Endothelial Cells,adipose tissue,-6.568814,4.928754
+1943,Endothelial Cells,adipose tissue,-5.5635176,5.151838
+1944,Endothelial Cells,vascular stroma,12.984326,8.24389
+1945,Endothelial Cells,necrosis,10.843637,4.876279
+1946,Endothelial Cells,vascular stroma,9.904341,5.205125
+1947,Endothelial Cells,lumen or secretion,8.799845,6.6414723
+1948,Endothelial Cells,adipose tissue,9.28989,7.0409408
+1949,Endothelial Cells,lumen or secretion,11.637055,5.3317556
+1950,Endothelial Cells,adipose tissue,-4.967863,6.1662683
+1951,Endothelial Cells,adipose tissue,9.971368,6.924507
+1952,Endothelial Cells,vascular stroma,12.455503,10.325809
+1953,Endothelial Cells,lumen or secretion,-7.1475463,5.221509
+1954,Endothelial Cells,lumen or secretion,8.9832735,7.026402
+1955,Endothelial Cells,fibrotic stroma,11.045054,9.508201
+1956,Endothelial Cells,adipose tissue,-7.0978513,4.81708
+1957,Endothelial Cells,lumen or secretion,10.42578,5.3785315
+1958,Endothelial Cells,adipose tissue,4.541519,0.18394254
+1959,Endothelial Cells,adipose tissue,11.639507,10.415078
+1960,Endothelial Cells,vascular stroma,12.607988,10.41781
+1961,Endothelial Cells,adipose tissue,11.174989,8.277527
+1962,Endothelial Cells,adipose tissue,12.962047,11.202094
+1963,Endothelial Cells,lumen or secretion,7.940609,3.1095881
+1964,Endothelial Cells,immune infiltrate,11.355044,6.9551473
+1965,Endothelial Cells,immune infiltrate,11.313934,7.145464
+1966,Endothelial Cells,vascular stroma,9.424649,4.8870697
+1967,Endothelial Cells,immune infiltrate,10.033929,4.82129
+1968,Endothelial Cells,lumen or secretion,8.252525,4.3022604
+1969,Endothelial Cells,adipose tissue,8.637279,6.159694
+1970,Endothelial Cells,vascular stroma,12.631388,7.9791346
+1971,Endothelial Cells,vascular stroma,11.012463,8.862254
+1972,Endothelial Cells,lumen or secretion,7.4112687,3.6075237
+1973,Endothelial Cells,adipose tissue,-5.068986,6.358509
+1974,Endothelial Cells,lumen or secretion,9.226118,3.8070743
+1975,Endothelial Cells,fibrotic stroma,11.146907,7.999637
+1976,Endothelial Cells,necrosis,10.052702,5.12019
+1977,Endothelial Cells,adipose tissue,-5.736401,5.7012463
+1978,Endothelial Cells,adipose tissue,-5.0725083,3.4689476
+1979,Endothelial Cells,adipose tissue,12.510731,10.307426
+1980,Endothelial Cells,vascular stroma,12.736154,8.295549
+1981,Endothelial Cells,adipose tissue,4.032145,0.4725006
+1982,Endothelial Cells,adipose tissue,-6.608436,4.9025574
+1983,Endothelial Cells,immune infiltrate,13.516349,8.037311
+1984,Endothelial Cells,adipose tissue,-5.8055296,5.1335206
+1985,Endothelial Cells,adipose tissue,4.2975655,0.832047
+1986,Endothelial Cells,immune infiltrate,10.949679,8.283175
+1987,Endothelial Cells,vascular stroma,10.041141,8.007308
+1988,Endothelial Cells,adipose tissue,10.95859,8.288347
+1989,Endothelial Cells,adipose tissue,4.5588923,1.1132839
+1990,Endothelial Cells,immune infiltrate,10.417182,6.3243613
+1991,Endothelial Cells,vascular stroma,12.633767,8.163826
+1992,Endothelial Cells,vascular stroma,10.705753,9.35183
+1993,Endothelial Cells,vascular stroma,10.790172,7.8652244
+1994,Endothelial Cells,lumen or secretion,9.680131,3.834567
+1995,Endothelial Cells,adipose tissue,9.389268,6.2945633
+1996,Endothelial Cells,vascular stroma,13.0837345,8.302926
+1997,Endothelial Cells,lumen or secretion,6.855278,2.580026
+1998,Endothelial Cells,lumen or secretion,9.905566,4.9715047
+1999,Endothelial Cells,lumen or secretion,9.075681,6.3147864
+2000,Endothelial Cells,lumen or secretion,7.730524,4.0872917
+2001,Endothelial Cells,necrosis,11.081332,5.017733
+2002,Endothelial Cells,vascular stroma,10.275322,9.690133
+2003,Endothelial Cells,lumen or secretion,7.05799,3.49951
+2004,Endothelial Cells,vascular stroma,10.867566,8.430627
+2005,Endothelial Cells,vascular stroma,9.378498,3.9577844
+2006,Endothelial Cells,lumen or secretion,8.245175,4.7664905
+2007,Endothelial Cells,adipose tissue,10.529946,9.400019
+2008,Endothelial Cells,lumen or secretion,10.165028,5.2211924
+2009,Endothelial Cells,lumen or secretion,10.824535,5.356569
+2010,Endothelial Cells,vascular stroma,10.377808,8.317655
+2011,Endothelial Cells,ductal epithelium,10.182457,5.1292515
+2012,Endothelial Cells,lumen or secretion,9.7397585,4.0870533
+2013,Endothelial Cells,vascular stroma,10.710719,6.2030873
+2014,Endothelial Cells,necrosis,11.131059,7.2007036
+2015,Endothelial Cells,ductal epithelium,10.343821,4.900815
+2016,Endothelial Cells,adipose tissue,12.762765,10.623438
+2017,Endothelial Cells,lumen or secretion,11.282331,4.8423266
+2018,Endothelial Cells,vascular stroma,12.228663,8.693041
+2019,Endothelial Cells,adipose tissue,13.01787,10.9275055
+2020,Endothelial Cells,vascular stroma,11.855189,10.039633
+2021,Endothelial Cells,vascular stroma,12.619502,8.545032
+2022,Endothelial Cells,lumen or secretion,7.18856,2.8732867
+2023,Endothelial Cells,lumen or secretion,11.593948,4.5408864
+2024,Endothelial Cells,adipose tissue,10.077233,8.2578125
+2025,Endothelial Cells,ductal epithelium,10.055317,5.029365
+2026,Endothelial Cells,lumen or secretion,7.1560497,3.7718372
+2027,Endothelial Cells,lumen or secretion,8.122976,3.2866852
+2028,Endothelial Cells,vascular stroma,10.992749,9.862228
+2029,Endothelial Cells,vascular stroma,12.173016,8.454056
+2030,Endothelial Cells,adipose tissue,9.047554,4.0125027
+2031,Endothelial Cells,adipose tissue,4.2843995,1.013666
+2032,Endothelial Cells,lumen or secretion,9.263003,3.6499605
+2033,Endothelial Cells,adipose tissue,-5.4722047,5.451868
+2034,Endothelial Cells,fibrotic stroma,12.972124,11.270618
+2035,Endothelial Cells,vascular stroma,11.875856,10.265211
+2036,Endothelial Cells,adipose tissue,9.887349,7.090556
+2037,Endothelial Cells,vascular stroma,13.091415,11.332301
+2038,Endothelial Cells,adipose tissue,9.430221,7.6572056
+2039,Endothelial Cells,lumen or secretion,8.909716,6.4277344
+2040,Endothelial Cells,lumen or secretion,6.8523207,3.240348
+2041,Endothelial Cells,immune infiltrate,12.675533,8.068875
+2042,Endothelial Cells,vascular stroma,11.634121,9.14381
+2043,Endothelial Cells,adipose tissue,10.105986,7.4224634
+2044,Endothelial Cells,lumen or secretion,10.874113,6.2971683
+2045,Endothelial Cells,immune infiltrate,12.210721,6.521692
+2046,Endothelial Cells,adipose tissue,8.663047,5.8989205
+2047,Endothelial Cells,adipose tissue,-5.5229497,4.022608
+2048,Endothelial Cells,lumen or secretion,8.022551,2.7119431
+2049,Endothelial Cells,lumen or secretion,7.220118,4.129691
+2050,Endothelial Cells,immune infiltrate,10.032203,6.430261
+2051,Endothelial Cells,vascular stroma,11.501248,8.411242
+2052,Endothelial Cells,lumen or secretion,10.4066925,4.762267
+2053,Endothelial Cells,fibrotic stroma,12.529898,10.353091
+2054,Endothelial Cells,lumen or secretion,9.989269,5.8127284
+2055,Endothelial Cells,lumen or secretion,7.676492,2.8846018
+2056,Endothelial Cells,adipose tissue,10.614792,8.58857
+2057,Endothelial Cells,lumen or secretion,10.044986,6.215804
+2058,Endothelial Cells,adipose tissue,-6.6254387,5.633529
+2059,Endothelial Cells,necrosis,11.707424,7.0008974
+2060,Endothelial Cells,adipose tissue,-5.470343,6.2763505
+2061,Endothelial Cells,adipose tissue,-6.473125,5.1835284
+2062,Endothelial Cells,immune infiltrate,11.678177,6.2743053
+2063,Endothelial Cells,lumen or secretion,11.245001,4.8233013
+2064,Endothelial Cells,adipose tissue,8.131124,4.627227
+2065,Endothelial Cells,adipose tissue,10.086392,7.5171866
+2066,Endothelial Cells,adipose tissue,-4.5811734,3.2865152
+2067,Endothelial Cells,adipose tissue,9.050416,6.095182
+2068,Endothelial Cells,adipose tissue,-4.9277563,4.0522337
+2069,Endothelial Cells,immune infiltrate,11.788994,7.4726467
+2070,Endothelial Cells,lumen or secretion,4.956001,0.8185018
+2071,Endothelial Cells,adipose tissue,11.650187,9.558381
+2072,Endothelial Cells,adipose tissue,-6.1501493,5.7670307
+2073,Endothelial Cells,lumen or secretion,-4.48827,6.12842
+2074,Endothelial Cells,vascular stroma,12.807961,9.353138
+2075,Endothelial Cells,adipose tissue,-5.2151833,4.549245
+2076,Endothelial Cells,immune infiltrate,11.808801,6.3017464
+2077,Endothelial Cells,ductal epithelium,11.100883,5.822245
+2078,Endothelial Cells,necrosis,11.213226,8.443124
+2079,Endothelial Cells,vascular stroma,12.611251,9.586338
+2080,Endothelial Cells,immune infiltrate,12.327134,8.580836
+2081,Endothelial Cells,lumen or secretion,8.550328,3.490144
+2082,Endothelial Cells,immune infiltrate,9.952805,5.8422403
+2083,Endothelial Cells,adipose tissue,6.7774076,2.750646
+2084,Endothelial Cells,immune infiltrate,11.427202,6.469164
+2085,Endothelial Cells,lumen or secretion,8.49703,3.9459808
+2086,Endothelial Cells,lumen or secretion,10.243395,5.1877403
+2087,Endothelial Cells,immune infiltrate,11.028966,6.1129313
+2088,Endothelial Cells,vascular stroma,13.1915245,8.0999155
+2089,Endothelial Cells,vascular stroma,11.538786,6.238587
+2090,Endothelial Cells,lumen or secretion,9.435023,5.77158
+2091,Endothelial Cells,vascular stroma,12.954071,9.18651
+2092,Endothelial Cells,immune infiltrate,12.894703,9.595517
+2093,Endothelial Cells,vascular stroma,11.724161,9.6567335
+2094,Endothelial Cells,adipose tissue,9.171076,6.9848075
+2095,Endothelial Cells,vascular stroma,12.758072,9.525336
+2096,Endothelial Cells,adipose tissue,-4.4275517,4.6361256
+2097,Endothelial Cells,immune infiltrate,12.613672,5.1976247
+2098,Endothelial Cells,adipose tissue,-6.2108793,4.9445896
+2099,Endothelial Cells,vascular stroma,12.933861,9.592236
+2100,Endothelial Cells,adipose tissue,10.643882,6.012288
+2101,Endothelial Cells,adipose tissue,9.401689,8.025249
+2102,Endothelial Cells,immune infiltrate,11.935196,6.1428356
+2103,Endothelial Cells,vascular stroma,9.309389,8.105539
+2104,Endothelial Cells,lumen or secretion,10.034265,5.160825
+2105,Endothelial Cells,adipose tissue,13.086312,11.096892
+2106,Endothelial Cells,adipose tissue,7.939524,3.1777732
+2107,Endothelial Cells,vascular stroma,12.179884,9.458477
+2108,Endothelial Cells,adipose tissue,-7.1874595,4.8769774
+2109,Endothelial Cells,vascular stroma,10.465352,9.737171
+2110,Endothelial Cells,adipose tissue,12.745361,8.762479
+2111,Endothelial Cells,vascular stroma,10.261737,5.539235
+2112,Endothelial Cells,lumen or secretion,11.107013,4.8685403
+2113,Endothelial Cells,adipose tissue,-7.3383646,4.7469964
+2114,Endothelial Cells,lumen or secretion,9.843996,3.7452283
+2115,Endothelial Cells,fibrotic stroma,12.932715,11.018895
+2116,Endothelial Cells,adipose tissue,11.950818,9.7435055
+2117,Endothelial Cells,necrosis,10.872966,7.291129
+2118,Endothelial Cells,immune infiltrate,11.340601,7.19686
+2119,Endothelial Cells,vascular stroma,12.797148,9.973898
+2120,Endothelial Cells,adipose tissue,-4.921593,6.4533443
+2121,Endothelial Cells,ductal epithelium,10.329298,5.489849
+2122,Endothelial Cells,lumen or secretion,4.7742887,0.68618083
+2123,Endothelial Cells,vascular stroma,12.868306,11.237024
+2124,Endothelial Cells,adipose tissue,-5.2338443,3.9326017
+2125,Endothelial Cells,lumen or secretion,4.1976857,0.19407673
+2126,Endothelial Cells,adipose tissue,11.757366,10.053825
+2127,Endothelial Cells,vascular stroma,12.591644,8.102541
+2128,Endothelial Cells,lumen or secretion,8.228701,5.770376
+2129,Endothelial Cells,adipose tissue,-5.3105984,6.390821
+2130,Endothelial Cells,vascular stroma,10.470759,9.700448
+2131,Endothelial Cells,lumen or secretion,11.481399,4.8118286
+2132,Endothelial Cells,immune infiltrate,11.845454,7.2650304
+2133,Endothelial Cells,vascular stroma,12.764098,9.520423
+2134,Endothelial Cells,vascular stroma,12.02763,9.594399
+2135,Endothelial Cells,necrosis,10.005702,5.5454516
+2136,Endothelial Cells,adipose tissue,12.076854,9.20845
+2137,Endothelial Cells,vascular stroma,12.843929,9.456603
+2138,Endothelial Cells,vascular stroma,10.72152,7.5042987
+2139,Endothelial Cells,lumen or secretion,9.93827,4.92193
+2140,Endothelial Cells,adipose tissue,10.9674,8.3305645
+2141,Endothelial Cells,adipose tissue,10.497405,5.286895
+2142,Endothelial Cells,adipose tissue,10.332706,6.030096
+2143,Endothelial Cells,lumen or secretion,8.065833,4.510584
+2144,Endothelial Cells,vascular stroma,12.832215,9.453903
+2145,Endothelial Cells,adipose tissue,-5.0053043,5.0677123
+2146,Endothelial Cells,adipose tissue,-7.33263,4.8399115
+2147,Endothelial Cells,immune infiltrate,11.429913,6.366564
+2148,Endothelial Cells,lumen or secretion,-4.657224,6.251415
+2149,Endothelial Cells,immune infiltrate,12.207156,6.9626527
+2150,Endothelial Cells,adipose tissue,12.906157,10.762355
+2151,Endothelial Cells,lumen or secretion,8.686285,4.1863317
+2152,Endothelial Cells,lumen or secretion,10.770382,5.068982
+2153,Endothelial Cells,adipose tissue,8.525169,6.687409
+2154,Endothelial Cells,adipose tissue,-6.750091,4.536908
+2155,Endothelial Cells,adipose tissue,4.9496484,1.1745942
+2156,Endothelial Cells,lumen or secretion,-4.1852593,5.842432
+2157,Endothelial Cells,vascular stroma,12.700471,9.494857
+2158,Endothelial Cells,vascular stroma,11.913095,9.862101
+2159,Endothelial Cells,immune infiltrate,10.691558,6.3186946
+2160,Endothelial Cells,adipose tissue,-6.2372537,4.4043946
+2161,Endothelial Cells,lumen or secretion,6.789401,2.8068233
+2162,Endothelial Cells,adipose tissue,-5.893916,6.1687107
+2163,Endothelial Cells,fibrotic stroma,12.86664,9.589445
+2164,Endothelial Cells,adipose tissue,9.838326,7.605729
+2165,Endothelial Cells,adipose tissue,10.290437,5.6289687
+2166,Endothelial Cells,adipose tissue,11.765424,9.833592
+2167,Endothelial Cells,adipose tissue,5.1155653,1.2983366
+2168,Endothelial Cells,immune infiltrate,13.063367,8.94046
+2169,Endothelial Cells,lumen or secretion,8.092814,5.574622
+2170,Endothelial Cells,adipose tissue,11.083721,9.207642
+2171,Endothelial Cells,vascular stroma,12.397666,9.229997
+2172,Endothelial Cells,adipose tissue,12.847049,9.447471
+2173,Endothelial Cells,adipose tissue,9.6971,7.544249
+2174,Endothelial Cells,adipose tissue,-4.1816134,5.6069775
+2175,Endothelial Cells,immune infiltrate,11.863281,7.285539
+2176,Endothelial Cells,necrosis,11.679135,6.2634087
+2177,Endothelial Cells,adipose tissue,-5.0026994,5.085398
+2178,Endothelial Cells,adipose tissue,9.159557,5.107998
+2179,Endothelial Cells,adipose tissue,-4.8609414,4.055841
+2180,Endothelial Cells,vascular stroma,12.513906,9.474235
+2181,Endothelial Cells,immune infiltrate,10.856747,5.233558
+2182,Endothelial Cells,adipose tissue,10.148861,7.4101906
+2183,Endothelial Cells,immune infiltrate,11.162534,5.799086
+2184,Endothelial Cells,lumen or secretion,5.0342717,1.1287777
+2185,Endothelial Cells,lumen or secretion,10.121519,4.444349
+2186,Endothelial Cells,lumen or secretion,9.953088,3.79579
+2187,Endothelial Cells,vascular stroma,12.912474,10.211184
+2188,Endothelial Cells,adipose tissue,-7.29922,5.0811973
+2189,Endothelial Cells,lumen or secretion,9.976491,4.8116846
+2190,Endothelial Cells,adipose tissue,11.846498,9.585124
+2191,Endothelial Cells,lumen or secretion,8.344493,2.9660997
+2192,Endothelial Cells,immune infiltrate,11.246215,6.678978
+2193,Endothelial Cells,adipose tissue,-6.397685,4.948379
+2194,Endothelial Cells,adipose tissue,11.291715,8.8584
+2195,Endothelial Cells,immune infiltrate,10.685404,4.880803
+2196,Endothelial Cells,lumen or secretion,10.753027,4.617697
+2197,Endothelial Cells,vascular stroma,12.987574,9.674177
+2198,Endothelial Cells,adipose tissue,10.995771,7.119501
+2199,Endothelial Cells,vascular stroma,11.321283,7.0891953
+2200,Endothelial Cells,adipose tissue,8.982281,5.857412
+2201,Endothelial Cells,vascular stroma,12.998738,8.1932535
+2202,Endothelial Cells,lumen or secretion,8.087308,4.0834312
+2203,Endothelial Cells,immune infiltrate,12.312623,7.5599937
+2204,Endothelial Cells,lumen or secretion,9.074316,3.5866163
+2205,Endothelial Cells,vascular stroma,10.722607,7.5860476
+2206,Endothelial Cells,lumen or secretion,4.1511865,0.5928994
+2207,Endothelial Cells,adipose tissue,8.263072,4.520696
+2208,Endothelial Cells,lumen or secretion,9.67656,4.2147136
+2209,Endothelial Cells,vascular stroma,10.74247,6.290774
+2210,Endothelial Cells,immune infiltrate,12.6112385,9.476248
+2211,Endothelial Cells,immune infiltrate,12.158894,6.665446
+2212,Endothelial Cells,adipose tissue,9.873517,7.4493327
+2213,Endothelial Cells,vascular stroma,9.310896,8.228281
+2214,Endothelial Cells,adipose tissue,10.640686,9.534419
+2215,Endothelial Cells,lumen or secretion,7.9870353,3.103038
+2216,Endothelial Cells,immune infiltrate,11.456146,6.2722445
+2217,Endothelial Cells,immune infiltrate,12.221387,7.9986334
+2218,Endothelial Cells,lumen or secretion,9.436377,3.5168357
+2219,Endothelial Cells,lumen or secretion,8.021778,5.493824
+2220,Endothelial Cells,lumen or secretion,9.7124195,6.7983294
+2221,Endothelial Cells,adipose tissue,9.4478245,7.4422927
+2222,Endothelial Cells,immune infiltrate,9.899295,7.5404677
+2223,Endothelial Cells,adipose tissue,9.228689,5.0203958
+2224,Endothelial Cells,adipose tissue,4.863352,1.0111432
+2225,Endothelial Cells,necrosis,12.164317,7.404137
+2226,Endothelial Cells,adipose tissue,9.176487,5.4658523
+2227,Endothelial Cells,vascular stroma,9.930403,8.378992
+2228,Endothelial Cells,fibrotic stroma,12.857632,10.925202
+2229,Endothelial Cells,vascular stroma,11.7724495,10.412412
+2230,Endothelial Cells,adipose tissue,-5.020904,4.572182
+2231,Endothelial Cells,lumen or secretion,7.6612606,3.15666
+2232,Endothelial Cells,immune infiltrate,11.314841,7.456787
+2233,Endothelial Cells,vascular stroma,12.327358,7.11561
+2234,Endothelial Cells,vascular stroma,12.174075,10.340239
+2235,Endothelial Cells,vascular stroma,10.525818,7.2725177
+2236,Endothelial Cells,lumen or secretion,10.273503,6.1378818
+2237,Endothelial Cells,vascular stroma,11.917426,8.984818
+2238,Endothelial Cells,vascular stroma,9.207789,5.808873
+2239,Endothelial Cells,adipose tissue,-4.206845,5.985127
+2240,Endothelial Cells,lumen or secretion,8.139379,3.0664654
+2241,Endothelial Cells,adipose tissue,12.867605,9.540879
+2242,Endothelial Cells,vascular stroma,9.693528,4.3489656
+2243,Endothelial Cells,adipose tissue,-5.8942857,4.3303895
+2244,Endothelial Cells,lumen or secretion,7.172711,3.9320688
+2245,Endothelial Cells,immune infiltrate,13.653653,8.142463
+2246,Endothelial Cells,lumen or secretion,9.610666,4.4699125
+2247,Endothelial Cells,lumen or secretion,10.6715555,5.604057
+2248,Endothelial Cells,lumen or secretion,7.5611825,3.1573644
+2249,Endothelial Cells,vascular stroma,12.737466,9.951801
+2250,Endothelial Cells,adipose tissue,-4.7766957,3.2869864
+2251,Endothelial Cells,lumen or secretion,7.710198,2.686558
+2252,Endothelial Cells,vascular stroma,11.087368,8.3406515
+2253,Endothelial Cells,adipose tissue,-4.410494,4.5945086
+2254,Endothelial Cells,lumen or secretion,7.4914474,2.5635726
+2255,Endothelial Cells,fibrotic stroma,12.946872,11.031235
+2256,Endothelial Cells,lumen or secretion,4.7868323,0.4071917
+2257,Endothelial Cells,lumen or secretion,-4.6731,6.2231045
+2258,Endothelial Cells,vascular stroma,10.560574,7.862529
+2259,Endothelial Cells,adipose tissue,9.521664,6.33916
+2260,Endothelial Cells,adipose tissue,-4.9657507,4.051849
+2261,Endothelial Cells,adipose tissue,-4.1107373,5.0378184
+2262,Endothelial Cells,lumen or secretion,-4.275799,6.295166
+2263,Endothelial Cells,vascular stroma,12.37493,9.953571
+2264,Endothelial Cells,vascular stroma,13.14532,8.648648
+2265,Endothelial Cells,immune infiltrate,12.31598,6.907322
+2266,Endothelial Cells,lumen or secretion,11.334633,4.613523
+2267,Endothelial Cells,vascular stroma,12.341417,9.374369
+2268,Endothelial Cells,immune infiltrate,12.737621,9.329316
+2269,Endothelial Cells,adipose tissue,10.665284,6.8848877
+2270,Endothelial Cells,necrosis,9.824168,8.656329
+2271,Endothelial Cells,adipose tissue,-6.814479,5.1268997
+2272,Endothelial Cells,vascular stroma,12.957646,9.449085
+2273,Endothelial Cells,lumen or secretion,9.519877,3.2410243
+2274,Endothelial Cells,adipose tissue,10.591244,6.7467413
+2275,Endothelial Cells,immune infiltrate,11.692219,6.073836
+2276,Endothelial Cells,vascular stroma,12.932138,9.202212
+2277,Endothelial Cells,lumen or secretion,10.701338,5.2780285
+2278,Endothelial Cells,lumen or secretion,8.540036,3.2446392
+2279,Endothelial Cells,adipose tissue,4.3172135,0.770028
+2280,Endothelial Cells,immune infiltrate,12.08224,6.1081376
+2281,Endothelial Cells,necrosis,10.495694,7.138646
+2282,Endothelial Cells,lumen or secretion,8.479411,4.246588
+2283,Endothelial Cells,vascular stroma,9.170827,7.598149
+2284,Endothelial Cells,immune infiltrate,10.294078,6.9265304
+2285,Endothelial Cells,adipose tissue,-4.8893423,3.4279568
+2286,Endothelial Cells,adipose tissue,5.2205024,1.4214768
+2287,Endothelial Cells,vascular stroma,11.367029,8.206574
+2288,Endothelial Cells,lumen or secretion,4.807356,0.43301216
+2289,Endothelial Cells,lumen or secretion,7.1351576,3.772067
+2290,Endothelial Cells,immune infiltrate,13.075284,8.19483
+2291,Endothelial Cells,vascular stroma,13.058271,11.02604
+2292,Endothelial Cells,adipose tissue,9.479356,5.941531
+2293,Endothelial Cells,adipose tissue,9.9386835,6.6309586
+2294,Endothelial Cells,fibrotic stroma,12.72746,10.064226
+2295,Endothelial Cells,vascular stroma,10.747252,6.365814
+2296,Endothelial Cells,adipose tissue,-6.3143363,4.543789
+2297,Endothelial Cells,adipose tissue,-4.7193074,5.23304
+2298,Endothelial Cells,adipose tissue,10.443828,9.469354
+2299,Endothelial Cells,adipose tissue,-4.556329,3.3039877
+2300,Endothelial Cells,vascular stroma,11.697663,10.351339
+2301,Endothelial Cells,vascular stroma,10.404843,9.173303
+2302,Endothelial Cells,vascular stroma,10.921209,7.4344625
+2303,Endothelial Cells,vascular stroma,12.450014,8.812994
+2304,Endothelial Cells,necrosis,10.188254,5.0410166
+2305,Endothelial Cells,adipose tissue,-3.9220788,2.4620924
+2306,Endothelial Cells,vascular stroma,12.265123,8.387731
+2307,Endothelial Cells,fibrotic stroma,12.9437065,9.548601
+2308,Endothelial Cells,adipose tissue,9.553387,6.9042106
+2309,Endothelial Cells,lumen or secretion,8.070487,5.2658663
+2310,Endothelial Cells,ductal epithelium,7.09858,3.8149192
+2311,Endothelial Cells,lumen or secretion,8.02541,3.3791246
+2312,Endothelial Cells,vascular stroma,13.020346,11.307121
+2313,Endothelial Cells,immune infiltrate,13.476688,7.5608416
+2314,Endothelial Cells,vascular stroma,10.974158,9.181946
+2315,Endothelial Cells,adipose tissue,8.528411,6.2344956
+2316,Endothelial Cells,adipose tissue,12.135195,10.164348
+2317,Endothelial Cells,fibrotic stroma,13.055514,11.245293
+2318,Endothelial Cells,lumen or secretion,8.572669,4.130865
+2319,Endothelial Cells,adipose tissue,-7.012253,4.986206
+2320,Endothelial Cells,vascular stroma,10.181197,8.5779505
+2321,Endothelial Cells,vascular stroma,8.727386,7.72944
+2322,Endothelial Cells,fibrotic stroma,12.385872,9.781696
+2323,Endothelial Cells,vascular stroma,13.074224,11.264979
+2324,Endothelial Cells,vascular stroma,7.752029,3.4083366
+2325,Endothelial Cells,fibrotic stroma,12.481728,10.8924885
+2326,Endothelial Cells,vascular stroma,11.9769,10.502286
+2327,Endothelial Cells,vascular stroma,11.278758,10.05487
+2328,Endothelial Cells,adipose tissue,-6.0232587,4.844737
+2329,Endothelial Cells,adipose tissue,9.477615,5.137432
+2330,Endothelial Cells,vascular stroma,11.022974,9.08209
+2331,Endothelial Cells,lumen or secretion,9.151593,3.6073563
+2332,Endothelial Cells,vascular stroma,9.984434,8.811966
+2333,Endothelial Cells,adipose tissue,12.436324,9.610571
+2334,Endothelial Cells,vascular stroma,11.648736,9.023718
+2335,Endothelial Cells,adipose tissue,-7.0552583,4.9584618
+2336,Endothelial Cells,vascular stroma,9.504935,6.910151
+2337,Endothelial Cells,lumen or secretion,8.013476,2.8747933
+2338,Endothelial Cells,adipose tissue,-4.824232,6.26516
+2339,Endothelial Cells,vascular stroma,12.979636,11.220213
+2340,Endothelial Cells,vascular stroma,11.05714,7.1331325
+2341,Endothelial Cells,immune infiltrate,11.80874,7.010536
+2342,Endothelial Cells,vascular stroma,12.637103,8.609827
+2343,Endothelial Cells,adipose tissue,-5.6987214,4.667526
+2344,Endothelial Cells,adipose tissue,-6.773295,5.4959145
+2345,Endothelial Cells,adipose tissue,11.774197,9.08983
+2346,Endothelial Cells,adipose tissue,9.6587515,7.3325953
+2347,Endothelial Cells,lumen or secretion,8.948638,4.7282667
+2348,Endothelial Cells,vascular stroma,9.885652,8.068592
+2349,Endothelial Cells,vascular stroma,11.951128,9.865812
+2350,Endothelial Cells,immune infiltrate,12.128097,6.989441
+2351,Endothelial Cells,lumen or secretion,8.643229,4.358564
+2352,Endothelial Cells,immune infiltrate,12.201916,7.4787416
+2353,Endothelial Cells,vascular stroma,10.564663,7.245642
+2354,Endothelial Cells,vascular stroma,11.921706,10.010904
+2355,Endothelial Cells,adipose tissue,-5.0817223,3.9915156
+2356,Endothelial Cells,lumen or secretion,8.954546,3.509154
+2357,Endothelial Cells,vascular stroma,12.306912,10.752708
+2358,Endothelial Cells,lumen or secretion,8.9963045,4.957907
+2359,Endothelial Cells,adipose tissue,-6.978683,4.3861284
+2360,Endothelial Cells,adipose tissue,-5.6832557,5.6066732
+2361,Endothelial Cells,adipose tissue,-6.6980376,4.5774775
+2362,Endothelial Cells,immune infiltrate,11.436497,6.3628397
+2363,Endothelial Cells,immune infiltrate,11.923814,6.8263874
+2364,Endothelial Cells,vascular stroma,10.604074,7.964693
+2365,Endothelial Cells,immune infiltrate,11.364822,6.905332
+2366,Endothelial Cells,adipose tissue,-4.3120394,4.8414016
+2367,Endothelial Cells,immune infiltrate,11.8960085,6.7667403
+2368,Endothelial Cells,adipose tissue,-5.5625696,6.0782294
+2369,Endothelial Cells,adipose tissue,-6.950571,4.8385196
+2370,Endothelial Cells,vascular stroma,-6.1133323,5.444665
+2371,Endothelial Cells,vascular stroma,9.851378,7.6496034
+2372,Endothelial Cells,adipose tissue,4.9508553,1.2122488
+2373,Endothelial Cells,adipose tissue,11.491148,9.709905
+2374,Endothelial Cells,lumen or secretion,9.598301,4.725995
+2375,Endothelial Cells,adipose tissue,-4.2614074,5.1788545
+2376,Endothelial Cells,adipose tissue,-6.957678,4.4785028
+2377,Endothelial Cells,vascular stroma,9.692212,7.09949
+2378,Endothelial Cells,fibrotic stroma,11.455786,10.210501
+2379,Endothelial Cells,vascular stroma,-6.5043693,5.6679215
+2380,Endothelial Cells,adipose tissue,-7.1057143,4.544103
+2381,Endothelial Cells,vascular stroma,11.228209,9.933562
+2382,Endothelial Cells,immune infiltrate,11.161304,5.1254444
+2383,Endothelial Cells,lumen or secretion,-4.3035793,5.210207
+2384,Endothelial Cells,fibrotic stroma,11.978478,9.986786
+2385,Endothelial Cells,adipose tissue,-4.6404605,4.425977
+2386,Endothelial Cells,adipose tissue,-5.6131835,5.4021826
+2387,Endothelial Cells,adipose tissue,-5.580022,4.9197645
+2388,Endothelial Cells,adipose tissue,-4.2077336,5.0694475
+2389,Endothelial Cells,vascular stroma,11.177004,9.3448715
+2390,Endothelial Cells,adipose tissue,-7.01487,5.3459673
+2391,Endothelial Cells,adipose tissue,-5.6777678,5.14569
+2392,Endothelial Cells,adipose tissue,-6.5673857,4.6883817
+2393,Endothelial Cells,lumen or secretion,-5.0306344,5.2972565
+2394,Endothelial Cells,adipose tissue,-5.0019865,3.4059114
+2395,Endothelial Cells,lumen or secretion,4.974391,0.7499578
+2396,Endothelial Cells,adipose tissue,-4.6452613,5.095395
+2397,Endothelial Cells,adipose tissue,10.015121,8.830766
+2398,Endothelial Cells,lumen or secretion,5.193316,1.3218622
+2399,Endothelial Cells,lumen or secretion,-4.5914683,6.4093237
+2400,Endothelial Cells,vascular stroma,13.093708,9.325438
+2401,Endothelial Cells,vascular stroma,11.061862,9.581275
+2402,Endothelial Cells,immune infiltrate,10.729448,4.322809
+2403,Endothelial Cells,lumen or secretion,-6.0416713,5.1999702
+2404,Endothelial Cells,fibrotic stroma,11.236819,10.06197
+2405,Endothelial Cells,lumen or secretion,-4.5484133,6.471558
+2406,Endothelial Cells,lumen or secretion,10.812677,5.580845
+2407,Endothelial Cells,ductal epithelium,9.821884,5.0048504
+2408,Endothelial Cells,adipose tissue,-5.122528,6.1300406
+2409,Endothelial Cells,necrosis,11.661386,6.709876
+2410,Endothelial Cells,adipose tissue,-5.07619,4.8318696
+2411,Endothelial Cells,adipose tissue,-4.933222,4.473882
+2412,Endothelial Cells,adipose tissue,-5.652265,5.106693
+2413,Endothelial Cells,lumen or secretion,8.986283,6.7345333
+2414,Endothelial Cells,lumen or secretion,-4.4735274,6.3923035
+2415,Endothelial Cells,adipose tissue,-6.833306,4.462974
+2416,Endothelial Cells,necrosis,8.792313,7.716892
+2417,Endothelial Cells,necrosis,10.384915,6.9057994
+2418,Endothelial Cells,vascular stroma,12.308825,10.240693
+2419,Endothelial Cells,vascular stroma,10.634664,8.49147
+2420,Endothelial Cells,lumen or secretion,9.270865,3.6167095
+2421,Endothelial Cells,adipose tissue,-5.674803,5.3142343
+2422,Endothelial Cells,adipose tissue,-4.3773913,5.347841
+2423,Endothelial Cells,adipose tissue,10.279646,8.604046
+2424,Endothelial Cells,vascular stroma,-7.2851677,4.68284
+2425,Endothelial Cells,adipose tissue,-4.2082214,4.6507645
+2426,Endothelial Cells,vascular stroma,10.480007,8.408302
+2427,Endothelial Cells,ductal epithelium,10.9777355,4.3174624
+2428,Endothelial Cells,adipose tissue,-5.4008703,5.2426324
+2429,Endothelial Cells,lumen or secretion,8.821389,4.11227
+2430,Endothelial Cells,lumen or secretion,-5.0531754,5.472755
+2431,Endothelial Cells,lumen or secretion,10.186344,4.235484
+2432,Endothelial Cells,vascular stroma,11.370072,9.562291
+2433,Endothelial Cells,lumen or secretion,7.93146,2.9563527
+2434,Endothelial Cells,vascular stroma,11.141665,9.382902
+2435,Endothelial Cells,adipose tissue,11.964984,9.29496
+2436,Endothelial Cells,lumen or secretion,9.709818,3.5831902
+2437,Endothelial Cells,adipose tissue,-4.802213,3.3733408
+2438,Endothelial Cells,adipose tissue,-6.0886755,4.493255
+2439,Endothelial Cells,lumen or secretion,-5.2112975,5.409421
+2440,Endothelial Cells,adipose tissue,-6.7212143,4.418701
+2441,Endothelial Cells,vascular stroma,-7.229376,4.8404584
+2442,Endothelial Cells,lumen or secretion,8.271472,3.1893787
+2443,Endothelial Cells,adipose tissue,-4.246347,4.672841
+2444,Endothelial Cells,fibrotic stroma,9.098031,7.4763
+2445,Endothelial Cells,adipose tissue,-4.5860453,5.465138
+2446,Endothelial Cells,lumen or secretion,7.6252613,2.7929564
+2447,Endothelial Cells,adipose tissue,-6.4529514,5.0678525
+2448,Endothelial Cells,adipose tissue,-4.5076447,3.322347
+2449,Endothelial Cells,adipose tissue,4.820853,0.74317193
+2450,Endothelial Cells,adipose tissue,-5.1893563,5.158747
+2451,Endothelial Cells,lumen or secretion,10.221621,5.348103
+2452,Endothelial Cells,lumen or secretion,7.6540384,5.107441
+2453,Endothelial Cells,adipose tissue,5.087648,1.3189025
+2454,Endothelial Cells,adipose tissue,-6.4187756,4.8987694
+2455,Endothelial Cells,adipose tissue,-6.0527024,5.159774
+2456,Endothelial Cells,lumen or secretion,-4.7624655,5.583141
+2457,Endothelial Cells,adipose tissue,-5.0509286,3.9705622
+2458,Endothelial Cells,adipose tissue,5.065619,1.3113285
+2459,Endothelial Cells,adipose tissue,-6.370584,4.4032516
+2460,Endothelial Cells,adipose tissue,-7.054774,5.223731
+2461,Endothelial Cells,lumen or secretion,4.742273,0.5121977
+2462,Endothelial Cells,adipose tissue,-3.8083153,2.3277304
+2463,Endothelial Cells,adipose tissue,-4.2723317,5.563993
+2464,Endothelial Cells,adipose tissue,-5.690326,5.301717
+2465,Endothelial Cells,lumen or secretion,-5.2090144,5.7257605
+2466,Endothelial Cells,adipose tissue,-5.8832264,5.6517453
+2467,Apocrine Cells,lumen or secretion,7.5111513,2.572363
+2468,Apocrine Cells,adipose tissue,6.7573576,2.965793
+2469,Apocrine Cells,lumen or secretion,7.4345326,2.991181
+2470,Apocrine Cells,adipose tissue,9.079933,4.4988265
+2471,Apocrine Cells,lumen or secretion,4.8280377,0.6882042
+2472,Apocrine Cells,adipose tissue,9.876325,6.482655
+2473,Apocrine Cells,adipose tissue,-4.885547,4.1823134
+2474,Apocrine Cells,ductal epithelium,12.268289,5.763309
+2475,Apocrine Cells,adipose tissue,-5.133194,6.4427066
+2476,Apocrine Cells,immune infiltrate,11.763599,5.833305
+2477,Apocrine Cells,lumen or secretion,11.240662,4.3768373
+2478,Apocrine Cells,lumen or secretion,13.487576,8.1136465
+2479,Apocrine Cells,adipose tissue,4.1774096,0.3332283
+2480,Apocrine Cells,lumen or secretion,12.037801,6.509183
+2481,Apocrine Cells,lumen or secretion,11.192544,4.4972444
+2482,Apocrine Cells,lumen or secretion,13.545393,8.054518
+2483,Apocrine Cells,lumen or secretion,9.29742,4.6846933
+2484,Apocrine Cells,adipose tissue,-3.7743924,2.2962098
+2485,Luminal-like Amorphous DCIS Cells,invasive carcinoma,14.162373,8.545898
+2486,Luminal-like Amorphous DCIS Cells,vascular stroma,9.208037,7.56464
+2487,Luminal-like Amorphous DCIS Cells,adipose tissue,-3.6949058,2.1992452
+2488,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.1398225,6.402998
+2489,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.8918056,3.954975
+2490,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.5327535,3.3962433
+2491,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.623835,4.252744
+2492,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.037629,5.4430537
+2493,Luminal-like Amorphous DCIS Cells,immune infiltrate,13.148842,9.088237
+2494,Luminal-like Amorphous DCIS Cells,adipose tissue,-6.250222,5.4931717
+2495,Luminal-like Amorphous DCIS Cells,adipose tissue,-6.665179,5.1448913
+2496,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.3022346,4.974752
+2497,Luminal-like Amorphous DCIS Cells,lumen or secretion,5.079234,1.3864616
+2498,Luminal-like Amorphous DCIS Cells,necrosis,12.242558,6.7648973
+2499,Luminal-like Amorphous DCIS Cells,vascular stroma,-7.237392,4.649902
+2500,Luminal-like Amorphous DCIS Cells,vascular stroma,13.912559,8.67455
+2501,Luminal-like Amorphous DCIS Cells,vascular stroma,13.940802,8.283282
+2502,Luminal-like Amorphous DCIS Cells,lumen or secretion,12.27122,4.3551483
+2503,Luminal-like Amorphous DCIS Cells,lumen or secretion,7.6829357,3.8944557
+2504,Luminal-like Amorphous DCIS Cells,lumen or secretion,10.191648,6.3724084
+2505,Luminal-like Amorphous DCIS Cells,lumen or secretion,10.094538,4.732141
+2506,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.9747434,4.731875
+2507,Luminal-like Amorphous DCIS Cells,lumen or secretion,11.561257,5.105424
+2508,Luminal-like Amorphous DCIS Cells,adipose tissue,12.754036,9.924113
+2509,Luminal-like Amorphous DCIS Cells,invasive carcinoma,12.028774,6.188052
+2510,Luminal-like Amorphous DCIS Cells,adipose tissue,-7.0152917,4.8903584
+2511,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.466588,5.4000955
+2512,Luminal-like Amorphous DCIS Cells,immune infiltrate,11.855191,6.336433
+2513,Luminal-like Amorphous DCIS Cells,adipose tissue,9.612524,7.493421
+2514,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.289137,4.055009
+2515,Luminal-like Amorphous DCIS Cells,lumen or secretion,7.20153,3.5972908
+2516,Luminal-like Amorphous DCIS Cells,lumen or secretion,7.575916,2.7918835
+2517,Luminal-like Amorphous DCIS Cells,adipose tissue,11.171841,6.215431
+2518,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.193144,4.759942
+2519,Luminal-like Amorphous DCIS Cells,immune infiltrate,13.346274,8.087694
+2520,Luminal-like Amorphous DCIS Cells,vascular stroma,13.842506,8.622451
+2521,Luminal-like Amorphous DCIS Cells,immune infiltrate,11.177657,5.3623033
+2522,Luminal-like Amorphous DCIS Cells,immune infiltrate,11.5835285,6.096208
+2523,Luminal-like Amorphous DCIS Cells,adipose tissue,14.079703,8.772721
+2524,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.00601,3.3877892
+2525,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.564766,4.933078
+2526,Luminal-like Amorphous DCIS Cells,vascular stroma,10.24382,9.3560295
+2527,Luminal-like Amorphous DCIS Cells,vascular stroma,12.864843,8.337574
+2528,Luminal-like Amorphous DCIS Cells,adipose tissue,-6.4262133,5.6980157
+2529,Luminal-like Amorphous DCIS Cells,adipose tissue,-6.7872953,5.554852
+2530,Luminal-like Amorphous DCIS Cells,adipose tissue,-6.6965275,5.323047
+2531,Luminal-like Amorphous DCIS Cells,necrosis,12.13233,9.096957
+2532,Luminal-like Amorphous DCIS Cells,immune infiltrate,13.620283,8.269155
+2533,Luminal-like Amorphous DCIS Cells,immune infiltrate,11.069415,6.1737776
+2534,Luminal-like Amorphous DCIS Cells,adipose tissue,-6.477429,5.0606046
+2535,Luminal-like Amorphous DCIS Cells,immune infiltrate,12.685182,8.465568
+2536,Luminal-like Amorphous DCIS Cells,adipose tissue,-6.1548634,5.837337
+2537,Luminal-like Amorphous DCIS Cells,lumen or secretion,10.16011,4.776812
+2538,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.746481,6.3403783
+2539,Luminal-like Amorphous DCIS Cells,adipose tissue,13.177383,10.932332
+2540,Luminal-like Amorphous DCIS Cells,vascular stroma,12.809953,8.973601
+2541,Luminal-like Amorphous DCIS Cells,immune infiltrate,14.238706,8.252406
+2542,Luminal-like Amorphous DCIS Cells,necrosis,11.682026,8.100086
+2543,Luminal-like Amorphous DCIS Cells,immune infiltrate,12.462349,8.445578
+2544,Luminal-like Amorphous DCIS Cells,lumen or secretion,9.457533,3.5639458
+2545,Luminal-like Amorphous DCIS Cells,lumen or secretion,7.7811313,2.7317953
+2546,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.6125236,6.113324
+2547,Luminal-like Amorphous DCIS Cells,necrosis,13.811456,8.1026325
+2548,Luminal-like Amorphous DCIS Cells,immune infiltrate,12.836078,7.2824745
+2549,Luminal-like Amorphous DCIS Cells,lumen or secretion,6.9246545,2.1938987
+2550,Luminal-like Amorphous DCIS Cells,immune infiltrate,12.045215,6.494413
+2551,Luminal-like Amorphous DCIS Cells,lumen or secretion,-4.9727855,6.530424
+2552,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.075798,3.4000103
+2553,Luminal-like Amorphous DCIS Cells,immune infiltrate,13.446831,8.186621
+2554,Luminal-like Amorphous DCIS Cells,adipose tissue,6.8505673,3.3346672
+2555,Luminal-like Amorphous DCIS Cells,lumen or secretion,-4.2517385,5.0573587
+2556,Luminal-like Amorphous DCIS Cells,vascular stroma,14.059905,8.853654
+2557,Luminal-like Amorphous DCIS Cells,lumen or secretion,8.155179,2.8949158
+2558,Luminal-like Amorphous DCIS Cells,adipose tissue,14.294803,8.416629
+2559,Luminal-like Amorphous DCIS Cells,adipose tissue,6.763049,2.7362158
+2560,Luminal-like Amorphous DCIS Cells,lumen or secretion,7.2679563,3.9102328
+2561,Luminal-like Amorphous DCIS Cells,immune infiltrate,11.078217,5.926139
+2562,Luminal-like Amorphous DCIS Cells,adipose tissue,9.085471,4.719711
+2563,Luminal-like Amorphous DCIS Cells,immune infiltrate,11.66016,5.72122
+2564,Luminal-like Amorphous DCIS Cells,adipose tissue,-6.1950994,5.6013684
+2565,Luminal-like Amorphous DCIS Cells,lumen or secretion,10.799988,4.4436936
+2566,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.0968084,5.4780197
+2567,Luminal-like Amorphous DCIS Cells,immune infiltrate,13.986023,8.16449
+2568,Luminal-like Amorphous DCIS Cells,lumen or secretion,9.004342,3.7986078
+2569,Luminal-like Amorphous DCIS Cells,adipose tissue,12.935034,9.129514
+2570,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.7365303,4.23995
+2571,Luminal-like Amorphous DCIS Cells,immune infiltrate,9.802544,7.338522
+2572,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.193576,5.6320276
+2573,Luminal-like Amorphous DCIS Cells,lumen or secretion,-4.9959106,6.086631
+2574,Luminal-like Amorphous DCIS Cells,immune infiltrate,12.064385,6.521491
+2575,Luminal-like Amorphous DCIS Cells,immune infiltrate,13.822504,7.9778986
+2576,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.1661196,6.282848
+2577,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.9408474,6.3929963
+2578,Luminal-like Amorphous DCIS Cells,adipose tissue,4.237599,0.65692246
+2579,Luminal-like Amorphous DCIS Cells,lumen or secretion,8.8024235,4.407822
+2580,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.5290008,5.208888
+2581,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.7852964,5.1245008
+2582,Luminal-like Amorphous DCIS Cells,adipose tissue,13.073711,10.717668
+2583,Luminal-like Amorphous DCIS Cells,lumen or secretion,10.081488,4.6600614
+2584,Luminal-like Amorphous DCIS Cells,immune infiltrate,14.282449,8.520271
+2585,Luminal-like Amorphous DCIS Cells,immune infiltrate,12.352266,5.356985
+2586,Luminal-like Amorphous DCIS Cells,lumen or secretion,12.115717,4.771022
+2587,Luminal-like Amorphous DCIS Cells,lumen or secretion,7.3110304,2.7699528
+2588,Luminal-like Amorphous DCIS Cells,lumen or secretion,4.7414427,1.1923652
+2589,Luminal-like Amorphous DCIS Cells,immune infiltrate,11.706126,4.697577
+2590,Luminal-like Amorphous DCIS Cells,ductal epithelium,9.44512,3.388376
+2591,Luminal-like Amorphous DCIS Cells,vascular stroma,13.360901,8.217717
+2592,Luminal-like Amorphous DCIS Cells,adipose tissue,4.218843,0.6590131
+2593,Luminal-like Amorphous DCIS Cells,adipose tissue,-4.84766,3.3188338
+2594,Luminal-like Amorphous DCIS Cells,immune infiltrate,11.943011,5.5893836
+2595,Luminal-like Amorphous DCIS Cells,adipose tissue,14.157503,8.616546
+2596,Luminal-like Amorphous DCIS Cells,lumen or secretion,4.204435,0.6037846
+2597,Luminal-like Amorphous DCIS Cells,vascular stroma,13.750938,8.037908
+2598,Luminal-like Amorphous DCIS Cells,vascular stroma,9.81775,7.684899
+2599,Luminal-like Amorphous DCIS Cells,adipose tissue,-5.0931945,4.457306
+2600,Luminal-like Amorphous DCIS Cells,lumen or secretion,5.1925874,1.3839182
+2601,Luminal-like Amorphous DCIS Cells,lumen or secretion,8.502607,2.9538336
+2602,Luminal-like Amorphous DCIS Cells,lumen or secretion,5.154088,1.3288846
+2603,Luminal-like Amorphous DCIS Cells,lumen or secretion,12.21995,4.305188
+2604,Luminal-like Amorphous DCIS Cells,adipose tissue,4.323779,0.2261932
+2605,Luminal-like Amorphous DCIS Cells,adipose tissue,6.959178,3.4455152

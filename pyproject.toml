@@ -65,6 +65,12 @@ perturb = [
   "SpatialPerturb>=0.3; python_version >= '3.9'",
 ]
 
+lazyslide = [
+  "lazyslide>=0.10; python_version >= '3.11'",
+  "wsidata>=0.3; python_version >= '3.11'",
+  "geopandas>=0.14; python_version >= '3.11'",
+]
+
 docs = [
   "sphinx>=8",
   "pydata-sphinx-theme>=0.16",
