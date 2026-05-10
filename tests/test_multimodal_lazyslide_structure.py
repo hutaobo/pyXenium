@@ -18,9 +18,13 @@ from pyXenium.io import XeniumImage, XeniumSlide
 import pyXenium.multimodal.histoseg_lazyslide as histoseg_lazyslide_module
 from pyXenium.multimodal import (
     HistoSegLazySlideConfig,
+    associate_contour_image_molecular_features,
     assign_tiles_to_histoseg_structures,
+    benchmark_contour_molecular_prediction,
     histoseg_contours_to_image_table,
     run_histoseg_lazyslide_structure_workflow,
+    summarize_morphomolecular_evidence,
+    summarize_wta_pathway_partial_correlations,
 )
 
 
@@ -161,6 +165,14 @@ def test_run_histoseg_lazyslide_structure_workflow_with_precomputed_tiles(tmp_pa
     }
     assert not result["structure_differential_features"].empty
     assert not result["structure_rna_summary"].empty
+    contour_summary = result["contour_multimodal_summary"]
+    assert set(contour_summary["contour_id"]) == {"roi_1", "roi_2"}
+    assert "image_heterogeneity__embedding_cosine_similarity_variance" in contour_summary.columns
+    assert "text_similarity__ductal_epithelium__mean" in contour_summary.columns
+    assert "rna__EPCAM__mean" in contour_summary.columns
+    assert "cell_density_per_1e6_image_px2" in contour_summary.columns
+    assert "cell_boundary_distance_um__mean" in contour_summary.columns
+    assert "tile_boundary_distance_px__mean" in contour_summary.columns
     assert result["run_manifest"]["outputs"]["n_assigned_tiles"] == 4
 
     saved = json.loads((tmp_path / "run_manifest.json").read_text(encoding="utf-8"))
@@ -168,7 +180,164 @@ def test_run_histoseg_lazyslide_structure_workflow_with_precomputed_tiles(tmp_pa
     assert saved["prompt_metadata"]["prompt_set_name"] == "breast_histology_v1"
     assert saved["prompt_metadata"]["prompt_review_status"] == "not pathologist-confirmed"
     assert (tmp_path / saved["files"]["tile_features"]).exists()
+    assert (tmp_path / saved["files"]["contour_multimodal_summary"]).exists()
+    assert (tmp_path / saved["files"]["wta_pathway_partial_correlations"]).exists()
+    assert (tmp_path / saved["files"]["morphomolecular_hero_targets"]).exists()
     assert (tmp_path / saved["files"]["structure_image_features"]).exists()
+
+
+def test_contour_partial_association_controls_structure_labels():
+    frame = pd.DataFrame(
+        {
+            "contour_id": [f"c{i}" for i in range(12)],
+            "assigned_structure": ["S1", "S2"] * 6,
+            "centroid_x": np.arange(12, dtype=float),
+            "centroid_y": np.arange(12, dtype=float)[::-1],
+            "relative_prompt_axis__necrosis_vs_ductal": [
+                0.0,
+                0.2,
+                0.1,
+                0.3,
+                0.2,
+                0.4,
+                0.3,
+                0.5,
+                0.4,
+                0.6,
+                0.5,
+                0.7,
+            ],
+            "program__hypoxia__mean": [
+                0.0,
+                0.4,
+                0.2,
+                0.6,
+                0.4,
+                0.8,
+                0.6,
+                1.0,
+                0.8,
+                1.2,
+                1.0,
+                1.4,
+            ],
+        }
+    )
+
+    associations = associate_contour_image_molecular_features(
+        frame,
+        controls=("assigned_structure",),
+        min_contours=6,
+    )
+
+    top = associations.iloc[0]
+    assert top["image_feature"] == "relative_prompt_axis__necrosis_vs_ductal"
+    assert top["molecular_feature"] == "program__hypoxia__mean"
+    assert top["partial_spearman_rho"] > 0.95
+    assert top["controls"] == "assigned_structure"
+
+
+def test_contour_prediction_benchmark_reports_added_image_value():
+    image_axis = np.linspace(-1.0, 1.0, 20)
+    frame = pd.DataFrame(
+        {
+            "contour_id": [f"c{i}" for i in range(20)],
+            "assigned_structure": ["S1", "S2"] * 10,
+            "centroid_x": np.arange(20, dtype=float),
+            "centroid_y": np.arange(20, dtype=float) % 5,
+            "relative_prompt_axis__fibrotic_vs_immune": image_axis,
+            "program__stromal_activation__mean": image_axis * 2.0,
+        }
+    )
+
+    benchmark = benchmark_contour_molecular_prediction(
+        frame,
+        min_contours=12,
+        max_targets=1,
+    )
+
+    assert benchmark.iloc[0]["target_feature"] == "program__stromal_activation__mean"
+    assert benchmark.iloc[0]["n_image_features"] == 1
+    assert benchmark.iloc[0]["r2_structure_image"] > benchmark.iloc[0]["r2_structure_only"]
+
+
+def test_morphomolecular_evidence_selects_hero_targets_and_contours():
+    contour_summary = pd.DataFrame(
+        {
+            "contour_id": [f"c{i}" for i in range(8)],
+            "assigned_structure": ["S1"] * 4 + ["S2"] * 4,
+            "centroid_x": np.arange(8, dtype=float),
+            "centroid_y": np.arange(8, dtype=float),
+            "relative_prompt_axis__necrosis_vs_ductal": [0.1, 0.2, 0.8, 0.9, 0.0, 0.1, 0.7, 0.8],
+            "program__hypoxia__mean": [0.0, 0.1, 1.0, 1.1, 0.0, 0.2, 1.2, 1.3],
+            "morphology_entropy__top_image_label": [0.1, 0.3, 0.5, 0.8, 0.2, 0.4, 0.6, 0.9],
+            "cell_type_diversity__cell_type__shannon": [0.0, 0.2, 0.4, 0.7, 0.1, 0.3, 0.5, 0.8],
+        }
+    )
+    benchmark = pd.DataFrame(
+        {
+            "target_feature": ["program__hypoxia__mean"],
+            "r2_structure_only": [0.05],
+            "r2_image_only": [0.65],
+            "r2_structure_image": [0.72],
+            "delta_r2_combined_over_structure": [0.67],
+        }
+    )
+    associations = pd.DataFrame(
+        {
+            "image_feature": [
+                "relative_prompt_axis__necrosis_vs_ductal",
+                "morphology_entropy__top_image_label",
+            ],
+            "molecular_feature": [
+                "program__hypoxia__mean",
+                "cell_type_diversity__cell_type__shannon",
+            ],
+            "partial_spearman_rho": [0.92, 0.81],
+            "abs_partial_spearman_rho": [0.92, 0.81],
+            "fdr": [0.01, 0.03],
+            "n_contours": [8, 8],
+        }
+    )
+
+    evidence = summarize_morphomolecular_evidence(
+        contour_summary,
+        prediction_benchmark=benchmark,
+        associations=associations,
+    )
+
+    assert evidence["hero_targets"].iloc[0]["target_feature"] == "program__hypoxia__mean"
+    assert evidence["hero_contours"].iloc[0]["target_feature"] == "program__hypoxia__mean"
+    assert evidence["hero_contours"].iloc[0]["hidden_program_score"] > 0
+    assert "morphology_entropy_vs_ecology_complexity" in set(evidence["concept_tests"]["concept"])
+
+
+def test_wta_pathway_partial_correlation_leaderboard_uses_best_axis_per_pathway():
+    associations = pd.DataFrame(
+        {
+            "image_feature": [
+                "embedding__103__mean",
+                "relative_prompt_axis__necrosis_vs_ductal",
+                "embedding__201__mean",
+            ],
+            "molecular_feature": [
+                "program__wta_hypoxia_glycolysis",
+                "program__wta_hypoxia_glycolysis",
+                "program__wta_t_cell_cytotoxicity",
+            ],
+            "partial_spearman_rho": [-0.7, 0.4, 0.6],
+            "abs_partial_spearman_rho": [0.7, 0.4, 0.6],
+            "fdr": [0.001, 0.02, 0.005],
+            "n_contours": [100, 100, 95],
+            "controls": ["assigned_structure"] * 3,
+        }
+    )
+
+    leaderboard = summarize_wta_pathway_partial_correlations(associations, max_pathways=2)
+
+    assert list(leaderboard["pathway"]) == ["hypoxia_glycolysis", "t_cell_cytotoxicity"]
+    assert leaderboard.iloc[0]["best_image_feature"] == "embedding__103__mean"
+    assert leaderboard.iloc[0]["image_axis_family"] == "foundation_embedding_axis"
 
 
 def test_missing_lazyslide_dependency_has_clear_message(monkeypatch):

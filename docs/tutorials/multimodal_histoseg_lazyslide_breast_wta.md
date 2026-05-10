@@ -73,6 +73,12 @@ structure_image_features.parquet
 structure_differential_features.parquet
 structure_rna_summary.parquet
 structure_program_scores.parquet
+contour_multimodal_summary.parquet
+contour_image_molecular_associations.parquet
+wta_pathway_partial_correlations.parquet
+molecular_prediction_benchmark.parquet
+morphomolecular_hero_targets.parquet
+morphomolecular_hero_contours.parquet
 rna_image_associations.parquet
 program_image_associations.parquet
 run_manifest.json
@@ -194,6 +200,41 @@ features, not as diagnostic labels. The score range is narrow, so the most
 useful signal is the structure-to-structure contrast rather than the absolute
 name of a single top prompt.
 
+### Contour-scale WTA morphomolecular programs
+
+The WTA downstream analysis reuses the completed direct PLIP tile run and scores
+breast/TME gene programs from the Xenium whole-transcriptome matrix at
+HistoSeg-contour scale. The key test is no longer whether H&E beats structure
+labels in cross-validated prediction. In this single sample, HistoSeg labels
+explain much of the coarse molecular variance. The stronger result is residual:
+after controlling for HistoSeg structure, contour centroid, and cell-to-boundary
+distance, prompt-independent PLIP embedding axes remain associated with WTA
+program activity.
+
+Top residual WTA program associations:
+
+| Rank | WTA program | Best H&E axis | Partial Spearman rho | FDR |
+| ---: | --- | --- | ---: | ---: |
+| 1 | luminal_estrogen_response | `embedding__103__mean` | -0.597 | 8.64e-25 |
+| 2 | epithelial_identity | `embedding__103__mean` | -0.496 | 1.10e-16 |
+| 3 | basal_squamous_state | `embedding__480__mean` | 0.492 | 1.89e-16 |
+| 4 | unfolded_protein_response | `embedding__29__mean` | 0.491 | 2.30e-16 |
+| 5 | oxidative_phosphorylation | `embedding__371__mean` | 0.485 | 6.58e-16 |
+| 6 | p53_apoptosis_stress | `embedding__246__mean` | -0.439 | 8.12e-13 |
+| 7 | tls_b_cell_plasma | `embedding__20__mean` | -0.409 | 4.57e-11 |
+| 8 | cell_cycle_proliferation | `embedding__342__mean` | 0.398 | 1.97e-10 |
+| 9 | her2_amplicon_signaling | `embedding__426__mean` | 0.389 | 5.73e-10 |
+| 10 | t_cell_exhaustion_checkpoint | `embedding__115__mean` | -0.377 | 2.52e-09 |
+
+The complete table is available as
+[`wta_pathway_partial_correlations.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/wta_pathway_partial_correlations.csv).
+The hero contour tables are available as
+[`morphomolecular_hero_targets.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/morphomolecular_hero_targets.csv)
+and
+[`morphomolecular_hero_contours.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/morphomolecular_hero_contours.csv).
+
+![WTA morphomolecular hero contour montage](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/hero_patch_montage_mtm_wta.png)
+
 ### Visual outputs
 
 ![PLIP tile embedding UMAP](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/tile_embedding_umap.png)
@@ -221,6 +262,13 @@ Key files are:
 - [`tile_feature_summary.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/tile_feature_summary.csv)
 - [`tile_embedding_umap.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/tile_embedding_umap.csv)
 - [`tile_features.parquet`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/tile_features.parquet)
+- [`contour_multimodal_summary.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/contour_multimodal_summary.csv)
+- [`contour_image_molecular_associations.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/contour_image_molecular_associations.csv)
+- [`wta_pathway_partial_correlations.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/wta_pathway_partial_correlations.csv)
+- [`molecular_prediction_benchmark.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/molecular_prediction_benchmark.csv)
+- [`morphomolecular_hero_targets.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/morphomolecular_hero_targets.csv)
+- [`morphomolecular_hero_contours.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/morphomolecular_hero_contours.csv)
+- [`hero_patch_montage_mtm_wta.png`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/hero_patch_montage_mtm_wta.png)
 - [`program_image_associations.csv`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/program_image_associations.csv)
 - [`prepared_wsi_manifest.json`](../_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/prepared_wsi_manifest.json)
 
@@ -231,8 +279,14 @@ Key files are:
 - `structure_differential_features` ranks one-vs-rest image features per
   structure.
 - The current RTD snapshot reports direct LazySlide WSI tiling, PLIP image
-  embeddings, PLIP prompt-similarity scores, structure-level RNA summaries, and
+  embeddings, PLIP prompt-similarity scores, structure-level RNA summaries,
+  contour-level WTA program scores, partial morphomolecular associations, and
   program/image associations.
+- In the Breast WTA single-sample snapshot, `structure_only` remains the
+  strongest cross-validated baseline for many epithelial markers and programs.
+  Treat the WTA result as evidence for within-structure residual molecular
+  decoding, not as a claim that H&E embeddings improve every molecular
+  prediction benchmark beyond HistoSeg labels.
 - PLIP is the first required A100 result. CONCH, OmiCLIP, UNI, Virchow,
   GigaPath, and other LazySlide foundation models can be run through the same
   `model` entry point when the model files, licenses, and credentials are

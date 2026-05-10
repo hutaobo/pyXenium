@@ -21,6 +21,13 @@ benchmarking/cci_2026_atera/runs/*
 benchmarking/cci_2026_atera/pdc_collected/
 pyxenium_gmi_modules_stage*.tar.gz
 
+# Generated manuscript packaging outputs; keep the source scripts and selected RTD
+# evidence tables/images trackable instead.
+docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/mTM_WTA_NatureBiotech_Package*.zip
+docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/naturebiotech_package/
+docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/hero_patch_montage_mtm_filtered.png
+docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/morphomolecular_concept_tests.csv
+
 # Ignore oversized generated PDC pilot outputs while keeping lightweight metadata trackable.
 benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/pilot_common/pyxenium/pyxenium_scores.tsv
 benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/pilot_common/pyxenium/pyxenium_standardized.tsv

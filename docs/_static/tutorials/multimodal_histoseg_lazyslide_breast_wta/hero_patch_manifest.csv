@@ -1,0 +1,37 @@
+rank,contour_id,assigned_structure,target_feature,image_feature,hidden_program_score,target_z_within_structure,image_z_within_structure,x0,y0,width,height,patch_path,label
+1,S3 S3 #163.1,S3,rna__MKI67__mean,relative_prompt_axis__fibrotic_vs_immune,26.13297148635048,6.8261598964184795,-3.828356188969704,80555,29098,1285,1070,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_01_S3_S3__163_1.png,"S3
+rna__MKI67
+score 26.13"
+2,S3 S3 #424.1,S3,rna__CXCL13__mean,embedding__439__mean,12.501851383520828,5.575589572506199,2.242247428894109,70548,17783,1150,1635,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_02_S3_S3__424_1.png,"S3
+rna__CXCL13
+score 12.50"
+3,S3 S3 #351.1,S3,rna__KRT18__mean,embedding__194__mean,8.574021697097766,4.17013274144195,-2.0560548617291827,73468,38038,1534,1550,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_03_S3_S3__351_1.png,"S3
+rna__KRT18
+score 8.57"
+4,S1 S1 #78.1,S1,rna__VWF__mean,embedding__377__mean,5.883293436843368,4.026518974429213,1.4611363995068136,69356,31152,1690,1219,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_04_S1_S1__78_1.png,"S1
+rna__VWF
+score 5.88"
+5,S2 S2 #363.1,S2,rna__CXCL13__mean,embedding__439__mean,5.546238570625411,2.4291167084386633,2.2832326464010473,72608,16476,2302,1874,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_05_S2_S2__363_1.png,"S2
+rna__CXCL13
+score 5.55"
+6,S1 S1 #56.1,S1,rna__KRT19__mean,embedding__379__mean,5.239251709491083,3.179571399000086,-1.64778551950075,75797,38217,2342,1820,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_06_S1_S1__56_1.png,"S1
+rna__KRT19
+score 5.24"
+7,S3 S3 #94.1,S3,rna__KRT8__mean,embedding__29__mean,5.205278584420009,3.497678328629789,1.4882096337484443,78692,4378,6407,4136,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_07_S3_S3__94_1.png,"S3
+rna__KRT8
+score 5.21"
+8,S1 S1 #70.1,S1,rna__SPP1__mean,embedding__492__mean,4.858253929144148,3.7933682062725627,-1.2807230052465597,73035,37679,2339,2354,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_08_S1_S1__70_1.png,"S1
+rna__SPP1
+score 4.86"
+9,S1 S1 #13.1,S1,rna__CD3D__mean,embedding__173__mean,4.547478284194092,4.481037051006613,1.0148272001394307,84668,38951,1595,1037,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_09_S1_S1__13_1.png,"S1
+rna__CD3D
+score 4.55"
+10,S3 S3 #517.1,S3,rna__CXCL13__mean,embedding__439__mean,4.150708825460944,5.271282440407556,0.7874191664713808,65819,23441,2039,3447,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_10_S3_S3__517_1.png,"S3
+rna__CXCL13
+score 4.15"
+11,S3 S3 #211.1,S3,rna__CD3D__mean,embedding__173__mean,4.099455379619202,-1.540839614541587,-2.6605334785858457,78100,14812,1256,1307,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_11_S3_S3__211_1.png,"S3
+rna__CD3D
+score 4.10"
+12,S4 S4 #278.1,S4,rna__TRAC__mean,embedding__51__mean,4.097794123179207,1.7214291483783424,-2.3804605185403642,69031,14704,2152,3398,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_core_gene3_tileonly_20260508/hero_patches/hero_12_S4_S4__278_1.png,"S4
+rna__TRAC
+score 4.10"

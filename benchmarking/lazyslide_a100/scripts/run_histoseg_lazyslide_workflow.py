@@ -82,6 +82,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--max-tiles", type=int, default=None)
     parser.add_argument("--table-format", choices=("csv", "parquet"), default="parquet")
     parser.add_argument("--skip-rna", action="store_true")
+    parser.add_argument("--skip-wta-programs", action="store_true")
+    parser.add_argument("--wta-program-library", default="breast_tme_wta_v1")
     parser.add_argument("--skip-boundary-programs", action="store_true")
     return parser.parse_args()
 
@@ -120,7 +122,9 @@ def main() -> None:
         max_tiles=args.max_tiles,
         table_format=args.table_format,
         include_rna=not args.skip_rna,
+        include_wta_programs=not args.skip_wta_programs,
         include_boundary_programs=not args.skip_boundary_programs,
+        wta_program_library=args.wta_program_library,
     )
     manifest = Path(args.output_dir) / "run_manifest.json"
     print(f"Wrote HistoSeg + LazySlide artifacts to: {Path(args.output_dir).resolve()}")

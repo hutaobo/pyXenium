@@ -38,10 +38,18 @@ def _export_tables(run_dir: Path) -> None:
     for stem in [
         "tile_features",
         "tile_assignments",
+        "contour_multimodal_summary",
         "structure_image_features",
         "structure_differential_features",
         "structure_rna_summary",
         "structure_program_scores",
+        "contour_image_molecular_associations",
+        "wta_pathway_partial_correlations",
+        "molecular_prediction_benchmark",
+        "morphomolecular_hero_targets",
+        "morphomolecular_hero_contours",
+        "morphomolecular_concept_tests",
+        "boundary_coupling_summary",
         "program_image_associations",
         "rna_image_associations",
         "image_contours",
@@ -175,9 +183,12 @@ def _plot_structure_heatmap(run_dir: Path, summary: pd.DataFrame, terms: list[st
 
 
 def _plot_spatial_map(run_dir: Path, tile: pd.DataFrame) -> None:
+    x_col, y_col = _tile_xy_columns(tile)
+    if x_col is None or y_col is None:
+        return
     fig, ax = plt.subplots(figsize=(8.5, 5), dpi=180)
     for name, group in tile.groupby("assigned_structure", sort=True):
-        ax.scatter(group["tile_x"], group["tile_y"], s=7, alpha=0.7, label=str(name))
+        ax.scatter(group[x_col], group[y_col], s=7, alpha=0.7, label=str(name))
     ax.invert_yaxis()
     ax.set_aspect("equal", adjustable="box")
     ax.set_xlabel("H&E x pixel")
@@ -187,6 +198,13 @@ def _plot_spatial_map(run_dir: Path, tile: pd.DataFrame) -> None:
     fig.tight_layout()
     fig.savefig(run_dir / "spatial_tile_map.png", bbox_inches="tight")
     plt.close(fig)
+
+
+def _tile_xy_columns(tile: pd.DataFrame) -> tuple[str | None, str | None]:
+    for x_col, y_col in (("tile_x", "tile_y"), ("x", "y"), ("centroid_x", "centroid_y")):
+        if x_col in tile.columns and y_col in tile.columns:
+            return x_col, y_col
+    return None, None
 
 
 def _write_montage(run_dir: Path, tile: pd.DataFrame, wsi_path: Path) -> None:

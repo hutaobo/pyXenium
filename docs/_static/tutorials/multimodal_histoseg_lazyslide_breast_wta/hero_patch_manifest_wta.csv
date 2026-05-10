@@ -1,0 +1,37 @@
+rank,contour_id,assigned_structure,target_feature,image_feature,hidden_program_score,target_z_within_structure,image_z_within_structure,x0,y0,width,height,patch_path,label
+1,S3 S3 #424.1,S3,rna__ESR1__mean,embedding__359__mean,12.49558932106745,3.5291200804054603,-3.540709592299232,70548,17783,1150,1635,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_01_S3_S3__424_1.png,"S3
+rna__ESR1
+score 12.50"
+2,S3 S3 #163.1,S3,rna__EPCAM__mean,embedding__103__mean,12.242714916676276,3.728349455867639,-3.283682246418402,80555,29098,1285,1070,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_02_S3_S3__163_1.png,"S3
+rna__EPCAM
+score 12.24"
+3,S1 S1 #2.1,S1,program__wta_collagen_ecm_organization,embedding__262__mean,10.62311506894525,3.7420637380912387,2.83883862287282,86338,35686,1220,1709,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_03_S1_S1__2_1.png,"S1
+wta_collagen_ecm_organization
+score 10.62"
+4,S3 S3 #351.1,S3,program__wta_collagen_ecm_organization,embedding__262__mean,9.976413106233565,-3.1467096685172216,-3.1704269402568066,73468,38038,1534,1550,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_04_S3_S3__351_1.png,"S3
+wta_collagen_ecm_organization
+score 9.98"
+5,S1 S1 #56.1,S1,rna__KRT19__mean,embedding__379__mean,5.239251709491083,3.179571399000086,-1.64778551950075,75797,38217,2342,1820,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_05_S1_S1__56_1.png,"S1
+rna__KRT19
+score 5.24"
+6,S3 S3 #131.1,S3,program__wta_luminal_estrogen_response,embedding__103__mean,5.093293313211022,2.085615766674323,-2.442105297915289,82807,24584,1024,1309,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_06_S3_S3__131_1.png,"S3
+wta_luminal_estrogen_response
+score 5.09"
+7,S4 S4 #205.1,S4,program__wta_p53_apoptosis_stress,embedding__246__mean,4.706850861328808,1.9239304952865304,-2.446476560801027,74802,5380,1782,2636,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_07_S4_S4__205_1.png,"S4
+wta_p53_apoptosis_stress
+score 4.71"
+8,S3 S3 #188.1,S3,program__wta_angiogenesis_endothelial,embedding__173__mean,4.698926406379688,-1.6795043804505432,-2.797805388944062,79042,15040,1446,2267,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_08_S3_S3__188_1.png,"S3
+wta_angiogenesis_endothelial
+score 4.70"
+9,S3 S3 #259.1,S3,program__wta_oxidative_phosphorylation,embedding__371__mean,4.525696236762087,-2.7836499202162313,-1.6258137217235045,75964,12025,1717,1275,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_09_S3_S3__259_1.png,"S3
+wta_oxidative_phosphorylation
+score 4.53"
+10,S2 S2 #185.1,S2,program__wta_epithelial_identity,embedding__103__mean,4.504606715311611,2.693501707461948,-1.672397943105907,81343,13894,1097,1024,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_10_S2_S2__185_1.png,"S2
+wta_epithelial_identity
+score 4.50"
+11,S2 S2 #426.1,S2,program__wta_angiogenesis_endothelial,embedding__173__mean,4.214523211090819,-1.625758479377672,-2.5923427523528013,71141,29445,1215,1549,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_11_S2_S2__426_1.png,"S2
+wta_angiogenesis_endothelial
+score 4.21"
+12,S4 S4 #278.1,S4,rna__TRAC__mean,embedding__51__mean,4.097794123179207,1.7214291483783424,-2.3804605185403642,69031,14704,2152,3398,/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/hero_patches_wta/hero_12_S4_S4__278_1.png,"S4
+rna__TRAC
+score 4.10"
