@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Draft PR Text for `scverse/ecosystem-packages`
 
 ## Summary
