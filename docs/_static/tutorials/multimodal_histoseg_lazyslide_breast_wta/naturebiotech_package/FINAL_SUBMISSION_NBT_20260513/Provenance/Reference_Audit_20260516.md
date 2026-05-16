@@ -7,9 +7,10 @@ Scope: NBT one-figure initial submission manuscript references in `Manuscript_In
 - Reference count: 20.
 - Every numbered reference is cited at least once in the manuscript body.
 - No out-of-range numbered citations were detected.
-- Every reference has a DOI or official URL.
+- Complete DOI/URL evidence is retained below for internal audit. The publication-facing manuscript reference list uses the compact Nature Biotechnology Brief Communication style, with article titles omitted and DOI links omitted for standard journal articles where volume/page or article numbers are present.
 - One inappropriate citation was removed: the PLIP/UNI embedding-axis non-identifiability sentence no longer cites spatial transcriptomics technology papers.
 - Publication-facing files were regenerated after reference edits.
+- The compact reference list was introduced to satisfy the NBT Brief Communication guidance that main text length is 1,000-1,500 words including abstract, references and figure legends, and that article titles are omitted from references.
 
 ## Checked references
 

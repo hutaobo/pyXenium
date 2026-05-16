@@ -96,6 +96,7 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 | Breast | stromal-remodeling/CAF/ECM | UNI | 0.377 | collagen_ecm_organization | moderate |
 | Breast | immune ecology/TLS/immune exclusion | PLIP | 0.409 | tls_b_cell_plasma | moderate |
 | Breast | immune ecology/TLS/immune exclusion | UNI | 0.391 | t_cell_exhaustion_checkpoint | moderate |
+| Breast | invasion/boundary/EMT | PLIP | NA | not_detected | not_detected |
 | Breast | invasion/boundary/EMT | UNI | 0.304 | emt_invasion | weak |
 | Cervical | endocrine/epithelial identity | PLIP | 0.522 | epithelial_identity | strong |
 | Cervical | endocrine/epithelial identity | UNI | 0.527 | epithelial_identity | strong |

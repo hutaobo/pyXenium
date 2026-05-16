@@ -73,4 +73,8 @@ Source data are provided for Fig. 1 panels, spatial permutation defense, block-b
 
 ## Code availability
 
-The mTM analysis code is available in pyXenium v0.4.6 at [https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6](https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6), with manuscript-level full replication scripts under `manuscript/mtm_wta_nbt_replication/`. The GitHub release provides immutable source-code archives and includes a release manifest recording the exact release commit. HistoSeg contour-generation software is maintained separately in HistoSeg.
+The mTM analysis code is available in pyXenium v0.4.6 at [https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6](https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6). The exact initial-submission manuscript package is archived under the repository release `nbt-initial-submission-20260516` at [https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516](https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516). Manuscript-level full replication scripts are provided under `manuscript/mtm_wta_nbt_replication/`. HistoSeg contour-generation software is maintained separately in HistoSeg.
+
+## Large language model assistance
+
+OpenAI Codex was used to assist with manuscript-package formatting, editorial consistency checks and automated QA scripting. The author reviewed the final text, analyses and claims, and takes responsibility for the submitted work.

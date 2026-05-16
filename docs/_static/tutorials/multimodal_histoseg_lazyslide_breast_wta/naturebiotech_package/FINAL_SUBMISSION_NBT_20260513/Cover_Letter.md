@@ -12,6 +12,8 @@ The study is deliberately conservative about what the data support. HistoSeg con
 
 We believe the Brief Communication format is appropriate because the manuscript makes one focused methodological and biological point: foundation-model morphology can add residual information within spatial-omics-defined contours rather than merely reproduce those contours. The accompanying source data, code-release reference and reproducibility notes are included to make the initial submission package auditable.
 
+There are no related manuscripts by the author under consideration or in press elsewhere. I have not had prior discussions with a Nature Biotechnology editor about the work described in this manuscript.
+
 Sincerely,
 
 Taobo Hu

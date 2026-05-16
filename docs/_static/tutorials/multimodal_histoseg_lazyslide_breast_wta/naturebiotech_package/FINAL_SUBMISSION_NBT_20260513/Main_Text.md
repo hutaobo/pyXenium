@@ -22,26 +22,26 @@ Finally, ring-level boundary profiles nominated candidate molecularly active zon
 
 ## References
 
-1. Ståhl, P.L. et al. Visualization and analysis of gene expression in tissue sections by spatial transcriptomics. Science 353, 78-82 (2016). https://doi.org/10.1126/science.aaf2403
-2. Chen, K.H., Boettiger, A.N., Moffitt, J.R., Wang, S. & Zhuang, X. RNA imaging. Spatially resolved, highly multiplexed RNA profiling in single cells. Science 348, aaa6090 (2015). https://doi.org/10.1126/science.aaa6090
-3. Rodriques, S.G. et al. Slide-seq: a scalable technology for measuring genome-wide expression at high spatial resolution. Science 363, 1463-1467 (2019). https://doi.org/10.1126/science.aaw1219
-4. Eng, C.H.L. et al. Transcriptome-scale super-resolved imaging in tissues by RNA seqFISH+. Nature 568, 235-239 (2019). https://doi.org/10.1038/s41586-019-1049-y
-5. Rao, A., Barkley, D., França, G.S. & Yanai, I. Exploring tissue architecture using spatial transcriptomics. Nature 596, 211-220 (2021). https://doi.org/10.1038/s41586-021-03634-9
-6. He, B. et al. Integrating spatial gene expression and breast tumour morphology via deep learning. Nat. Biomed. Eng. 4, 827-834 (2020). https://doi.org/10.1038/s41551-020-0578-x
-7. Zhang, D. et al. Inferring super-resolution tissue architecture by integrating spatial transcriptomics with histology. Nat. Biotechnol. 42, 1372-1377 (2024). https://doi.org/10.1038/s41587-023-02019-9
-8. Jaume, G. et al. HEST-1k: a dataset for spatial transcriptomics and histology image analysis. Adv. Neural Inf. Process. Syst. 37, Dataset and Benchmark Track (2024). https://doi.org/10.52202/079017-1704
-9. Huang, T., Liu, T., Babadi, M., Ying, R. & Jin, W. STPath: a generative foundation model for integrating spatial transcriptomics and whole-slide images. npj Digit. Med. 8, 659 (2025). https://doi.org/10.1038/s41746-025-02020-3
-10. Liu, T., Huang, T., Ding, T. et al. Leveraging multi-modal foundation models for analysing spatial multi-omic and histopathology data. Nat. Biomed. Eng. (2026). https://doi.org/10.1038/s41551-025-01602-6
-11. Yang, C. et al. PAST: a multimodal single-cell foundation model for histopathology and spatial transcriptomics in cancer. Preprint at arXiv (2025). https://doi.org/10.48550/arXiv.2507.06418
-12. Huang, Z., Bianchi, F., Yuksekgonul, M. et al. A visual-language foundation model for pathology image analysis using medical Twitter. Nat. Med. 29, 2307-2316 (2023). https://doi.org/10.1038/s41591-023-02504-3
-13. Lu, M.Y., Chen, B., Williamson, D.F.K. et al. A visual-language foundation model for computational pathology. Nat. Med. 30, 863-874 (2024). https://doi.org/10.1038/s41591-024-02856-4
-14. Chen, R.J., Ding, T., Lu, M.Y. et al. Towards a general-purpose foundation model for computational pathology. Nat. Med. 30, 850-862 (2024). https://doi.org/10.1038/s41591-024-02857-3
-15. Xu, H., Usuyama, N., Bagga, J. et al. A whole-slide foundation model for digital pathology from real-world data. Nature 630, 181-188 (2024). https://doi.org/10.1038/s41586-024-07441-w
-16. Vorontsov, E., Bozkurt, A., Casson, A. et al. A foundation model for clinical-grade computational pathology and rare cancers detection. Nat. Med. 30, 2924-2935 (2024). https://doi.org/10.1038/s41591-024-03141-0
-17. Zheng, Y., Abila, E., Chrenková, E. et al. LazySlide: accessible and interoperable whole-slide image analysis. Nat. Methods 23, 728-731 (2026). https://doi.org/10.1038/s41592-026-03044-7
-18. Marconato, L., Palla, G., Yamauchi, K.A. et al. SpatialData: an open and universal data framework for spatial omics. Nat. Methods 22, 58-62 (2025). https://doi.org/10.1038/s41592-024-02212-x
-19. Palla, G. et al. Squidpy: a scalable framework for spatial omics analysis. Nat. Methods 19, 171-178 (2022). https://doi.org/10.1038/s41592-021-01358-2
-20. 10x Genomics. Preview Data: Atera In Situ Gene Expression, FFPE Human Breast Cancer; Preview Data: Atera In Situ Gene Expression, FFPE Human Cervical Cancer. https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-breast-cancer; https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-cervical-cancer (accessed 16 May 2026).
+1. Ståhl, P.L. et al. Science 353, 78-82 (2016).
+2. Chen, K.H., Boettiger, A.N., Moffitt, J.R., Wang, S. & Zhuang, X. Science 348, aaa6090 (2015).
+3. Rodriques, S.G. et al. Science 363, 1463-1467 (2019).
+4. Eng, C.H.L. et al. Nature 568, 235-239 (2019).
+5. Rao, A., Barkley, D., França, G.S. & Yanai, I. Nature 596, 211-220 (2021).
+6. He, B. et al. Nat. Biomed. Eng. 4, 827-834 (2020).
+7. Zhang, D. et al. Nat. Biotechnol. 42, 1372-1377 (2024).
+8. Jaume, G. et al. Adv. Neural Inf. Process. Syst. 37 (2024).
+9. Huang, T., Liu, T., Babadi, M., Ying, R. & Jin, W. npj Digit. Med. 8, 659 (2025).
+10. Liu, T., Huang, T., Ding, T. et al. Nat. Biomed. Eng. https://doi.org/10.1038/s41551-025-01602-6 (2026).
+11. Yang, C. et al. Preprint at arXiv https://doi.org/10.48550/arXiv.2507.06418 (2025).
+12. Huang, Z., Bianchi, F., Yuksekgonul, M. et al. Nat. Med. 29, 2307-2316 (2023).
+13. Lu, M.Y., Chen, B., Williamson, D.F.K. et al. Nat. Med. 30, 863-874 (2024).
+14. Chen, R.J., Ding, T., Lu, M.Y. et al. Nat. Med. 30, 850-862 (2024).
+15. Xu, H., Usuyama, N., Bagga, J. et al. Nature 630, 181-188 (2024).
+16. Vorontsov, E., Bozkurt, A., Casson, A. et al. Nat. Med. 30, 2924-2935 (2024).
+17. Zheng, Y., Abila, E., Chrenková, E. et al. Nat. Methods 23, 728-731 (2026).
+18. Marconato, L., Palla, G., Yamauchi, K.A. et al. Nat. Methods 22, 58-62 (2025).
+19. Palla, G. et al. Nat. Methods 19, 171-178 (2022).
+20. 10x Genomics. Atera In Situ preview datasets: FFPE human breast cancer and FFPE human cervical cancer. https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-breast-cancer; https://www.10xgenomics.com/datasets/atera-wta-ffpe-human-cervical-cancer (accessed 16 May 2026).
 
 ## Figure legend
 
@@ -69,7 +69,7 @@ Source data for Fig. 1 and Supplementary Figs. 1-3 are included with the submiss
 
 ### Code availability
 
-The mTM analysis and packaging code is available in pyXenium v0.4.6 at https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6, with manuscript-level replication scripts under `manuscript/mtm_wta_nbt_replication/`. HistoSeg contour-generation software is maintained separately at https://github.com/hutaobo/HistoSeg.
+The mTM analysis and packaging code is available in pyXenium v0.4.6 at https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6. The exact initial-submission manuscript package is archived under the repository release `nbt-initial-submission-20260516` at https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516. Manuscript-level replication scripts are provided under `manuscript/mtm_wta_nbt_replication/`. HistoSeg contour-generation software is maintained separately at https://github.com/hutaobo/HistoSeg.
 
 ### Ethics and data-use statement
 
