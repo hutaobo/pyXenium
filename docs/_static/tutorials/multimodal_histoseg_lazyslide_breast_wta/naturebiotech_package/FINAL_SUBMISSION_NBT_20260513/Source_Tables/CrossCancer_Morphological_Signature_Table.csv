@@ -1,0 +1,21 @@
+dataset,program_family,model,max_abs_partial_rho,top_pathway,top_partial_rho,support_call
+breast,endocrine/epithelial identity,PLIP,0.5966828070613327,luminal_estrogen_response,-0.5966828070613327,strong
+breast,endocrine/epithelial identity,UNI,0.5863588618366933,luminal_estrogen_response,-0.5863588618366933,strong
+breast,metabolic/stress,PLIP,0.4910235943283026,unfolded_protein_response,0.4910235943283026,strong
+breast,metabolic/stress,UNI,0.4562508518802485,oxidative_phosphorylation,-0.4562508518802485,strong
+breast,stromal-remodeling/CAF/ECM,PLIP,0.3304112291126158,collagen_ecm_organization,0.3304112291126158,weak
+breast,stromal-remodeling/CAF/ECM,UNI,0.3768965348336236,collagen_ecm_organization,-0.3768965348336236,moderate
+breast,immune ecology/TLS/immune exclusion,PLIP,0.4091289018039984,tls_b_cell_plasma,-0.4091289018039984,moderate
+breast,immune ecology/TLS/immune exclusion,UNI,0.3909301306362649,t_cell_exhaustion_checkpoint,0.3909301306362649,moderate
+breast,invasion/boundary/EMT,PLIP,,not_detected,,not_detected
+breast,invasion/boundary/EMT,UNI,0.3037533216933442,emt_invasion,0.3037533216933442,weak
+cervical,endocrine/epithelial identity,PLIP,0.522184084404558,epithelial_identity,0.522184084404558,strong
+cervical,endocrine/epithelial identity,UNI,0.5273150725314932,epithelial_identity,-0.5273150725314932,strong
+cervical,metabolic/stress,PLIP,0.4874911058285079,oxidative_phosphorylation,-0.4874911058285079,strong
+cervical,metabolic/stress,UNI,0.5547145368126256,oxidative_phosphorylation,0.5547145368126256,strong
+cervical,stromal-remodeling/CAF/ECM,PLIP,0.5546367783538505,myofibroblast_caf_activation,-0.5546367783538505,strong
+cervical,stromal-remodeling/CAF/ECM,UNI,0.6145227511396415,stromal_encapsulation,-0.6145227511396415,strong
+cervical,immune ecology/TLS/immune exclusion,PLIP,0.550629559322338,tls_adjacent_activation,0.550629559322338,strong
+cervical,immune ecology/TLS/immune exclusion,UNI,0.6332495591064775,immune_exclusion,-0.6332495591064775,strong
+cervical,invasion/boundary/EMT,PLIP,0.5519909003397802,emt_invasive_front,0.5519909003397802,strong
+cervical,invasion/boundary/EMT,UNI,0.5337338714577103,emt_invasion,0.5337338714577103,strong

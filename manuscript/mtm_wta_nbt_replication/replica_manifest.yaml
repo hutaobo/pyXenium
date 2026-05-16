@@ -1,0 +1,59 @@
+project: mtm_wta_nbt_brief_communication
+release:
+  pyxenium_version: v0.4.6
+  release_url: https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6
+  commit_sha: recorded_in_release_asset
+repositories:
+  histoseg:
+    url: https://github.com/hutaobo/HistoSeg
+    role: Atera WTA spatial-transcriptomics contour generation through histoseg.contour
+  pyxenium:
+    url: https://github.com/hutaobo/pyXenium
+    role: WTA loading, direct WSI LazySlide integration, residual decoding, figures and submission packaging
+
+raw_inputs:
+  breast:
+    dataset_root_env: BREAST_DATASET_ROOT
+    histoseg_geojson_env: BREAST_HISTOSEG_GEOJSON
+    he_ome_tif_env: BREAST_HE_OME_TIF
+    work_dir_env: BREAST_WORK_DIR
+    required_for_full_gpu_replica: true
+  cervical:
+    dataset_root_env: CERVICAL_DATASET_ROOT
+    histoseg_geojson_env: CERVICAL_HISTOSEG_GEOJSON
+    he_ome_tif_env: CERVICAL_HE_OME_TIF
+    work_dir_env: CERVICAL_WORK_DIR
+    required_for_full_gpu_replica: false
+
+software:
+  python_env_env: PYTHON
+  cuda_visible_devices_env: CUDA_VISIBLE_DEVICES
+  package_scripts:
+    - benchmarking/lazyslide_a100/scripts/prepare_tiffslide_pyramid.py
+    - benchmarking/lazyslide_a100/scripts/run_histoseg_lazyslide_workflow.py
+    - benchmarking/lazyslide_a100/scripts/run_mtm_downstream_from_tiles.py
+    - benchmarking/lazyslide_a100/scripts/compose_nbt_brief_main_figure.py
+    - benchmarking/lazyslide_a100/scripts/enhance_mtm_nature_assets.py
+    - benchmarking/lazyslide_a100/scripts/prepare_nbt_initial_submission_upload.py
+
+run_order:
+  - prepare_tiffslide_pyramid_for_breast_he
+  - run_breast_direct_wsi_plip
+  - optionally_run_cervical_direct_wsi_or_downstream_from_precomputed_tiles
+  - regenerate_composite_figure
+  - regenerate_nature_enhanced_assets
+  - regenerate_initial_submission_upload_package
+
+expected_outputs:
+  final_package_dir: docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/naturebiotech_package/FINAL_SUBMISSION_NBT_20260513
+  upload_package_dir: docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/naturebiotech_package/NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE
+  main_figure: NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Figures/Figure_1.pdf
+  manuscript_docx: NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Manuscript_Initial_Submission.docx
+  online_methods_docx: NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Online_Methods.docx
+  supplementary_information_docx: NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Supplementary_Information.docx
+
+validation_values:
+  breast_s3_luminal_er_partial_rho: -0.639
+  breast_s3_upr_partial_rho: 0.515
+  breast_s3_oxphos_partial_rho: 0.531
+  spatial_permutation_empirical_p: 9.999e-05
