@@ -77,6 +77,8 @@ Decision gate: if the top three breast S3 results remain stable in sign and appr
 
 Goal: strengthen biological interpretation using information already available or quickly obtainable.
 
+Status, 2026-05-16: first-pass breast S3 PLIP component-gene audit completed on A100 for luminal estrogen response, unfolded protein response and oxidative phosphorylation. Compact outputs are tracked in `gene_component_validation_A100_summary_20260516.csv`, `gene_component_validation_A100_long_20260516.csv` and `gene_component_validation_A100_report_20260516.md`. This is a component-gene sanity check, not orthogonal protein/IHC validation.
+
 Actions:
 
 - Gene-level sanity checks within Atera WTA:
@@ -162,9 +164,10 @@ If Priorities 1-5 are completed with strong results:
 2. Completed: write `recompute_main_numbers.py`.
 3. Completed for PLIP first pass: run leave-one-spatial-block-out, local mismatch and centroid-jitter analyses on A100 outputs.
 4. Completed for UNI first pass: reconstruct Figure 1e UNI candidates from A100 association tables and run the same spatial-sensitivity checks.
-5. Next: generate blinded patch-review panels for pathologist/morphology review.
-6. Next: search and inventory any additional usable public 10x Atera/Xenium datasets.
-7. Update manuscript/SI only after the new results pass numeric and claim-audit checks.
+5. Completed for breast S3 first pass: run component-gene sanity checks for the three locked PLIP programs.
+6. Next: generate blinded patch-review panels for pathologist/morphology review.
+7. Next: search and inventory any additional usable public 10x Atera/Xenium datasets.
+8. Update manuscript/SI only after the new results pass numeric and claim-audit checks.
 
 ## Official-policy anchors
 

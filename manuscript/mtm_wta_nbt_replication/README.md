@@ -72,6 +72,23 @@ The runner produces leave-one-spatial-block-out, local mismatched-pair and
 centroid-jitter sensitivity tables. Generated sensitivity outputs are ignored by
 git until they are reviewed and explicitly promoted into the manuscript package.
 
+For component-gene validation of candidate WTA programs after a full mTM run:
+
+```bash
+python3 manuscript/mtm_wta_nbt_replication/run_gene_component_validation.py \
+  --dataset-root /path/to/WTA_Preview_FFPE_Breast_Cancer_outs \
+  --contour-geojson /path/to/xenium_explorer_annotations.s1_s5.generated.geojson \
+  --contour-multimodal /path/to/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509/contour_multimodal_summary.parquet \
+  --candidates docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/naturebiotech_package/NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Source_Data/Figure_1c_Spatial_Permutation_Source_Data.csv \
+  --dataset breast \
+  --model plip \
+  --out-dir manuscript/mtm_wta_nbt_replication/gene_component_validation_20260516
+```
+
+This script audits whether candidate H&E embedding axes track the component
+genes of the nominated WTA programs. It is a biological sanity check and does
+not replace IHC/protein validation.
+
 ## Expected manuscript values
 
 The rebuild should preserve the following reported values:
