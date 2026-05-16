@@ -47,6 +47,8 @@ Decision gate: complete before any resubmission or revision. This is the safest 
 
 Goal: reduce the easiest statistical criticism: residual morphology-WTA associations may still reflect unmodeled local spatial autocorrelation or registration artifacts.
 
+Status, 2026-05-16: first-pass PLIP spatial sensitivity checks completed on A100 for the locked breast top-three associations and cervical cross-cancer associations. Compact outputs are tracked in `spatial_sensitivity_A100_summary_20260516.csv` and `spatial_sensitivity_A100_summary_20260516.md`. The current result supports sign stability under leave-one-spatial-block-out, local mismatch controls and centroid-covariate jitter, but does not yet cover UNI or full registration perturbation.
+
 Actions:
 
 - Add leave-one-spatial-block-out analysis:
@@ -156,12 +158,13 @@ If Priorities 1-5 are completed with strong results:
 
 ## Immediate next work order
 
-1. Build processed-data archive contents locally.
-2. Write `recompute_main_numbers.py`.
-3. Run leave-one-spatial-block-out and distance-matched negative-control analyses on A100 outputs.
-4. Generate blinded patch-review panels for pathologist/morphology review.
-5. Search and inventory any additional usable public 10x Atera/Xenium datasets.
-6. Update manuscript/SI only after the new results pass numeric and claim-audit checks.
+1. Completed: build processed-data archive contents locally.
+2. Completed: write `recompute_main_numbers.py`.
+3. Completed for PLIP first pass: run leave-one-spatial-block-out, local mismatch and centroid-jitter analyses on A100 outputs.
+4. Next: run the same spatial-sensitivity checks for UNI where the required contour tables and candidate rows are available.
+5. Next: generate blinded patch-review panels for pathologist/morphology review.
+6. Next: search and inventory any additional usable public 10x Atera/Xenium datasets.
+7. Update manuscript/SI only after the new results pass numeric and claim-audit checks.
 
 ## Official-policy anchors
 
