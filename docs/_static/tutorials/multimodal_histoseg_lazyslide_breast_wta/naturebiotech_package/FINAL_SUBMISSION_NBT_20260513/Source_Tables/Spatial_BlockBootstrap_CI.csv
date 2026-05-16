@@ -1,0 +1,14 @@
+dataset,model,program,program_family,n_bootstrap,bootstrap_rho_median,bootstrap_rho_ci_low,bootstrap_rho_ci_high,bootstrap_block_scheme
+breast,plip,luminal_estrogen_response,endocrine/epithelial identity,2000,-0.6516698549643227,-0.7424922328315411,-0.5278333871570504,centroid x/y quartile blocks
+breast,plip,unfolded_protein_response,metabolic/stress,2000,0.5185596949440194,0.3582498135643142,0.6575836883623736,centroid x/y quartile blocks
+breast,plip,oxidative_phosphorylation,metabolic/stress,2000,0.5314223984470279,0.4044974219334056,0.6571582158597307,centroid x/y quartile blocks
+cervical,plip,myofibroblast_caf_activation,stromal-remodeling/CAF/ECM,2000,-0.5531973613013792,-0.628455454252006,-0.4839789848844974,centroid x/y quartile blocks
+cervical,plip,emt_invasive_front,invasion/boundary/EMT,2000,0.5522782703304105,0.42508438159438083,0.6461841060023674,centroid x/y quartile blocks
+cervical,plip,tls_adjacent_activation,immune ecology/TLS/immune exclusion,2000,0.5513024952134241,0.4746471129499698,0.6313571786105454,centroid x/y quartile blocks
+cervical,plip,collagen_ecm_organization,stromal-remodeling/CAF/ECM,2000,-0.5433440457365472,-0.6235921915740261,-0.4688989175901569,centroid x/y quartile blocks
+cervical,plip,immune_exclusion,immune ecology/TLS/immune exclusion,2000,0.5436188221226226,0.43097265015137276,0.6564606998809511,centroid x/y quartile blocks
+cervical,plip,stromal_encapsulation,stromal-remodeling/CAF/ECM,2000,0.5385509643895358,0.43958456570898724,0.6284606596339045,centroid x/y quartile blocks
+cervical,plip,epithelial_identity,endocrine/epithelial identity,2000,0.5240425774221285,0.38567228408559867,0.6158140339205603,centroid x/y quartile blocks
+cervical,plip,immune_activation,immune ecology/TLS/immune exclusion,2000,0.5038005690205645,0.40543752733590127,0.5966399558378621,centroid x/y quartile blocks
+cervical,plip,oxidative_phosphorylation,metabolic/stress,2000,-0.4875071191280029,-0.630773856658101,-0.3017293105755046,centroid x/y quartile blocks
+cervical,plip,emt_invasion,invasion/boundary/EMT,2000,0.4823011259119965,0.4042787734377377,0.557901332349972,centroid x/y quartile blocks

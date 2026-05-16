@@ -1,0 +1,73 @@
+# Full Markdown Reader: mTM WTA NBT Submission
+
+Generated UTC: 2026-05-16T10:17:46+00:00
+
+This reader reorganizes the final `Main_Text.md` for mobile review. It does not add new claims, new statistics or unverified references.
+
+## Table of Contents
+
+- [Foundation-model morphology maps residual programs in spatial-omics contours](#foundation-model-morphology-maps-residual-programs-in-spatial-omics-contours)
+  - [Abstract](#abstract)
+  - [References](#references)
+  - [Figure legend](#figure-legend)
+    - [Figure 1](#figure-1)
+
+## Figure Callouts
+
+- [Figure 2 Nature SVG](Figure_2_Luminal_ER_HeroPatch_4Pairs_Nature.svg)
+- [Figure 4 Nature SVG](Figure_4_CrossCancer_Morphological_Signature_Table_Nature.svg)
+- [Original Figure 1 PNG](../Figure_1_mTM_Framework.png)
+- [Original Figure 3 PNG](../Figure_3_MAZ_Stable_Coupled_Profiles.png)
+
+## Reference Link Audit
+
+Reference anchors currently named in the manuscript or project prompt:
+
+- [STPath](https://www.nature.com/articles/s41746-025-02020-3)
+- [10x Atera](https://www.10xgenomics.com/platforms/atera)
+- [spEMO](https://www.nature.com/articles/s41551-025-01602-6.pdf)
+- [PAST](https://huggingface.co/papers/2507.06418)
+
+Direct URLs already present in `Main_Text.md`:
+
+- https://doi.org/10.1038/s41551-025-01602-6
+- https://doi.org/10.48550/arXiv.2507.06418
+- https://www.10xgenomics.com/platforms/atera
+
+## Main Text with Anchors
+
+<a id="foundation-model-morphology-maps-residual-programs-in-spatial-omics-contours"></a>
+# Foundation-model morphology maps residual programs in spatial-omics contours
+
+<a id="abstract"></a>
+## Abstract
+
+Spatial whole-transcriptome (WTA) imaging defines molecular tissue contours, yet H&E morphology may retain residual information within them. We introduce morphomolecular translation mapping, a contour-constrained framework that maps H&E foundation-model embeddings to residual WTA programs after discrete contour labels and spatial covariates are fixed. In breast and cervical WTA data, mTM nominates endocrine, stress, stromal, immune and boundary programs exceeding compartment-aware spatial nulls.
+
+Spatial biology is rapidly moving from sparse assays to high-resolution, whole-transcriptome maps. At the same time, pathology foundation models now extract powerful representations from H&E whole-slide images, and recent multimodal systems such as STPath, spEMO and PAST frame histology-spatial-omics integration as a foundation-model problem<sup>1-3</sup>. Most work in this area asks whether H&E can reconstruct gene expression, spatial domains or downstream labels. We asked a more conservative question: after a spatial-omics workflow has already defined molecular-spatial tissue contours, do H&E foundation-model embeddings still map WTA variation that those contour labels leave unresolved? This shifts the benchmark from expression prediction to residual biological decoding. It also avoids treating square tiles or whole slides as the primary biological unit when the available spatial-omics data already define irregular, interpretable tissue regions.
+
+We developed morphomolecular translation mapping (mTM), a contour-constrained residual decoding framework (Fig. 1). HistoSeg contours were generated from Atera WTA cell-coordinate and cluster information, not from H&E image segmentation. The same polygons then served as the shared geometry for direct-WSI LazySlide PLIP or UNI H&E embeddings, Atera WTA program summaries and residual statistical testing. This provenance is central to the claim. The contours are therefore not independent histological labels; the design is conservative rather than circular in the claim being tested because the spatial-omics contour label is treated as a discrete covariate, whereas mTM asks whether H&E embeddings map continuous WTA program variation that remains within that label. mTM is not a standalone morphology-only predictor; it is a paired H&E-WTA framework that tests whether morphology contributes residual information after coarse WTA-derived spatial structure, centroid position and boundary-distance covariates are controlled. The contour scale is intentionally intermediate: it is larger than a single tile, retains local tissue context and is still small enough to expose within-label molecular heterogeneity.
+
+In breast WTA, the strongest evidence came from S3 contours, which define a molecular-spatial class but are not molecularly homogeneous. mTM resolves where each S3 contour lies along residual continua of endocrine, stress and metabolic state. Within S3, PLIP-derived morphology was associated with residual luminal estrogen-response variation (partial Spearman's rho -0.639, P = 4.79 × 10<sup>-19</sup>, n = 157), unfolded-protein-response variation (partial Spearman's rho 0.515, P = 7.91 × 10<sup>-12</sup>) and oxidative-phosphorylation variation (partial Spearman's rho 0.531, P = 1.38 × 10<sup>-12</sup>). The direction of the image axis is arbitrary, so the biological statement is not that one embedding coordinate has a universal meaning. Rather, contours sharing the same spatial-omics-derived label retained continuous endocrine, stress and metabolic WTA variation that was mapped by H&E foundation-model features. The luminal estrogen-response result is the clearest discovery example because it occurs after restricting to one discrete contour label and after spatial covariate adjustment. Hero patches in Fig. 1b are therefore illustrative examples selected after statistical ranking, not a blinded visual diagnostic claim.
+
+We next tested whether these associations were simply consequences of spatial autocorrelation. Molecular residuals were permuted within strata preserving spatial-omics-derived contour label, centroid-position bins and boundary-distance bins. The breast luminal estrogen-response, unfolded-protein-response and oxidative-phosphorylation associations remained stronger than the compartment-aware null distributions, each with empirical P = 9.999 × 10<sup>-5</sup>. Across breast and cervical analyses, 13 candidate associations passed the 95% spatial-null gate, and the strongest candidates also exceeded the 99% null threshold. This does not remove all fine-scale spatial dependence, but it makes the main claim stricter than a standard contour-level correlation. A cervical Atera WTA dataset served as a cross-cancer stress test rather than a direct replication of the breast luminal phenotype. In that second epithelial cancer context, residual decoding recovered stromal-remodeling, immune-ecology and invasion-associated programs, including myofibroblast CAF activation, EMT/invasive-front, TLS-adjacent activation, collagen/ECM organization and immune exclusion; these also exceeded the same spatial-null threshold. PLIP and UNI agreement was evaluated only at the program-family level, because embedding axes can rotate or change sign between models<sup>4,5</sup>. Thus, the cervical result supports transfer of the residual-decoding workflow to a different epithelial cancer setting, while cohort-level generality remains a future test.
+
+Finally, ring-level boundary profiles nominated candidate molecularly active zones where H&E and WTA gradients co-varied at selected tissue interfaces. We use this language deliberately. The current data support conservative boundary co-variation, not causality, temporal ordering or a directional mechanism. Similarly, Atera WTA provides an 18,000-gene discovery layer<sup>6</sup>, but transcript evidence does not replace protein validation. The correct translational interpretation is prospective: mTM nominates morphology-associated molecular states and boundary ecologies for validation in larger cohorts and, where clinically relevant, by IHC or orthogonal molecular assays. Its immediate contribution is a rigorous residual test showing that foundation-model morphology can add information within spatial-omics-defined contours rather than merely reproduce those contours. More broadly, mTM reframes H&E-spatial-omics integration as a controlled interrogation of what remains after molecular-spatial labels are fixed. That framing should be useful for future whole-transcriptome imaging studies in which contour labels are available but within-contour functional states remain unresolved.
+
+<a id="references"></a>
+## References
+
+1. Huang, T., Liu, T., Babadi, M. et al. npj Digit. Med. 8, 659 (2025).
+2. Liu, T., Huang, T., Ding, T. et al. Nat. Biomed. Eng. https://doi.org/10.1038/s41551-025-01602-6 (2026).
+3. Yang, C., Li, H., Wu, Y. et al. Preprint at arXiv https://doi.org/10.48550/arXiv.2507.06418 (2025).
+4. Huang, Z., Bianchi, F., Yuksekgonul, M. et al. Nat. Med. 29, 2307-2316 (2023).
+5. Chen, R.J., Ding, T., Lu, M.Y. et al. Nat. Med. 30, 850-862 (2024).
+6. 10x Genomics. Atera In Situ. https://www.10xgenomics.com/platforms/atera (accessed 16 May 2026).
+
+<a id="figure-legend"></a>
+## Figure legend
+
+<a id="figure-1"></a>
+### Figure 1
+
+Fig. 1 | Contour-constrained residual decoding maps WTA programs from H&E morphology. a, HistoSeg contours are generated from Atera WTA cell-coordinate and cluster information, then used as the shared geometry for H&E LazySlide PLIP/UNI embeddings and Atera WTA program summaries. b, Breast S3 luminal estrogen-response examples show high- and low-program contours under the same spatial-omics-derived contour label; labels report WTA program z-score and oriented H&E embedding z-score. c, Top residual programs exceed compartment-aware spatial-null thresholds after preserving contour label, centroid and boundary-distance bins. d, Candidate molecularly active zone examples show ring-level H&E-WTA boundary co-variation. e, Cross-cancer candidate program-family signatures summarize PLIP and UNI recovery in breast and cervical WTA; dot area reports maximum absolute partial Spearman's rho and text reports the top WTA program.

@@ -1,0 +1,43 @@
+dataset,pathway,program_family,min_abs_partial_rho,model_agnostic_call,dictionary_strength
+breast,luminal_estrogen_response,endocrine/epithelial identity,0.5863588618366933,stable_strong,strong
+breast,epithelial_identity,endocrine/epithelial identity,0.4929842710778948,stable_strong,strong
+breast,basal_squamous_state,endocrine/epithelial identity,0.4922975624406062,stable_strong,strong
+breast,oxidative_phosphorylation,metabolic/stress,0.4562508518802485,stable_strong,strong
+breast,unfolded_protein_response,metabolic/stress,0.4304221559759244,stable_moderate,moderate
+breast,p53_apoptosis_stress,metabolic/stress,0.4117691030026936,stable_moderate,moderate
+breast,cell_cycle_proliferation,other,0.397709512448716,not_stable,moderate
+breast,tls_b_cell_plasma,immune ecology/TLS/immune exclusion,0.3849035955349776,not_stable,moderate
+breast,t_cell_exhaustion_checkpoint,immune ecology/TLS/immune exclusion,0.3765064582517542,not_stable,moderate
+breast,her2_amplicon_signaling,other,0.3718238931868619,not_stable,moderate
+breast,complement_inflammation,other,0.3624596648421248,not_stable,moderate
+breast,interferon_alpha_response,other,0.3465710796720652,not_stable,weak
+breast,chemokine_recruitment,other,0.3366862914949606,not_stable,weak
+breast,collagen_ecm_organization,stromal-remodeling/CAF/ECM,0.3304112291126158,not_stable,weak
+breast,emt_invasion,invasion/boundary/EMT,0.3037533216933442,not_stable,weak
+breast,angiogenesis_endothelial,other,0.3014105663220297,not_stable,weak
+breast,myeloid_spp1_macrophage,immune ecology/TLS/immune exclusion,0.3006069730413374,not_stable,weak
+breast,antigen_presentation_interferon,other,0.2990818406428145,not_stable,weak
+breast,t_cell_cytotoxicity,immune ecology/TLS/immune exclusion,0.2981431348867819,not_stable,weak
+breast,pericyte_smooth_muscle,other,0.2966110694234651,not_stable,weak
+breast,hypoxia_glycolysis,metabolic/stress,0.2945723553239601,not_stable,weak
+breast,adipocyte_lipid_state,other,0.2875406847508484,not_stable,weak
+breast,myofibroblast_caf_activation,stromal-remodeling/CAF/ECM,0.2862316957400544,not_stable,weak
+cervical,myofibroblast_caf_activation,stromal-remodeling/CAF/ECM,0.5546367783538505,stable_strong,strong
+cervical,tls_adjacent_activation,immune ecology/TLS/immune exclusion,0.550629559322338,stable_strong,strong
+cervical,collagen_ecm_organization,stromal-remodeling/CAF/ECM,0.5455068221700174,stable_strong,strong
+cervical,immune_exclusion,immune ecology/TLS/immune exclusion,0.543928085731983,stable_strong,strong
+cervical,stromal_encapsulation,stromal-remodeling/CAF/ECM,0.5407668005498537,stable_strong,strong
+cervical,emt_invasive_front,invasion/boundary/EMT,0.5273141942940347,stable_strong,strong
+cervical,epithelial_identity,endocrine/epithelial identity,0.522184084404558,stable_strong,strong
+cervical,immune_activation,immune ecology/TLS/immune exclusion,0.5048677850916053,stable_strong,strong
+cervical,oxidative_phosphorylation,metabolic/stress,0.4874911058285079,stable_strong,strong
+cervical,emt_invasion,invasion/boundary/EMT,0.4786591638609392,stable_strong,strong
+cervical,tgf_beta_response,stromal-remodeling/CAF/ECM,0.442434742581421,stable_moderate,moderate
+cervical,cell_cycle_proliferation,other,0.4242217993861372,stable_moderate,moderate
+cervical,t_cell_exhaustion_checkpoint,immune ecology/TLS/immune exclusion,0.3995330339292579,stable_moderate,moderate
+cervical,necrotic_hypoxic_rim,other,0.3897285407497113,stable_moderate,moderate
+cervical,basal_squamous_state,endocrine/epithelial identity,0.3835404727076305,stable_moderate,moderate
+cervical,unfolded_protein_response,metabolic/stress,0.3679145023610234,stable_moderate,moderate
+cervical,hypoxia_glycolysis,metabolic/stress,0.3437014896469593,not_stable,weak
+cervical,p53_apoptosis_stress,metabolic/stress,0.3351419223320988,not_stable,weak
+cervical,myeloid_activation,immune ecology/TLS/immune exclusion,0.3203683183431308,not_stable,weak

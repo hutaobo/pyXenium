@@ -1,4 +1,8 @@
 project: mtm_wta_nbt_brief_communication
+release:
+  pyxenium_version: v0.4.6
+  release_url: https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6
+  commit_sha: recorded_in_release_asset
 repositories:
   histoseg:
     url: https://github.com/hutaobo/HistoSeg
