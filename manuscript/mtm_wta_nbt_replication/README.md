@@ -13,6 +13,7 @@ Two levels are supported.
 
 1. Full GPU analysis from raw inputs. This requires local access to the Atera WTA outputs, HistoSeg contour GeoJSON files and H&E WSI files. It regenerates direct WSI LazySlide features and contour-level mTM outputs.
 2. Submission-package rebuild from existing manuscript source tables and figures. This regenerates the Nature-style composite figure, Online Methods/SI docx files and upload directory without rerunning PLIP/UNI.
+3. Reviewer-side processed-data validation. This uses deposited source-data CSVs and sanitized processed summary tables to validate the main reported numbers without raw 10x files or remote compute access.
 
 Raw 10x Genomics Atera WTA input files are not redistributed in this repository. Provide them through the environment variables documented in `replica_manifest.yaml`.
 
@@ -47,6 +48,29 @@ For a local Windows rebuild of figures and submission files:
 cd D:\GitHub\pyXenium
 powershell -ExecutionPolicy Bypass -File manuscript\mtm_wta_nbt_replication\run_full_replica.ps1
 ```
+
+For a reviewer-facing processed-data archive and main-number validation:
+
+```bash
+cd /path/to/pyXenium
+python3 manuscript/mtm_wta_nbt_replication/build_processed_data_archive.py
+python3 manuscript/mtm_wta_nbt_replication/recompute_main_numbers.py
+```
+
+This creates `manuscript/mtm_wta_nbt_replication/processed_data_archive_20260516/` and a sibling zip file for DOI deposition. Generated archive files are ignored by git; the builder and validation script are tracked.
+
+For spatial sensitivity checks after a full mTM run has produced
+`contour_multimodal_summary.parquet`:
+
+```bash
+python3 manuscript/mtm_wta_nbt_replication/run_spatial_sensitivity.py \
+  --run-dir /path/to/runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509 \
+  --out-dir manuscript/mtm_wta_nbt_replication/spatial_sensitivity_20260516
+```
+
+The runner produces leave-one-spatial-block-out, local mismatched-pair and
+centroid-jitter sensitivity tables. Generated sensitivity outputs are ignored by
+git until they are reviewed and explicitly promoted into the manuscript package.
 
 ## Expected manuscript values
 

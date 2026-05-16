@@ -20,6 +20,9 @@ benchmarking/cci_2026_atera/runs/*
 !benchmarking/cci_2026_atera/runs/.gitkeep
 benchmarking/cci_2026_atera/pdc_collected/
 pyxenium_gmi_modules_stage*.tar.gz
+manuscript/mtm_wta_nbt_replication/processed_data_archive_*/
+manuscript/mtm_wta_nbt_replication/*processed_data_archive*.zip
+manuscript/mtm_wta_nbt_replication/spatial_sensitivity_*/
 
 # Generated manuscript packaging outputs; keep the source scripts and selected RTD
 # evidence tables/images trackable instead.
