@@ -8,7 +8,7 @@ HistoSeg contours were generated from Atera WTA cell-coordinate tables and clust
 
 ### Non-independence of contour construction and residual estimand
 
-The spatial-omics origin of the HistoSeg contours means that they are not independent histological labels. The analysis therefore estimates within-label residual association rather than independent contour discovery. We denote the spatial-omics-derived discrete contour label as `C`, spatial covariates including centroid and boundary-distance bins as `S`, the continuous WTA program score as `Y` and the H&E foundation-model feature as `X`. The reported association is computed between residualized `X | C,S` and residualized `Y | C,S`. This does not prove standalone morphology-only clinical prediction and does not exclude all contour-construction-induced coupling, but it rules out the simpler explanation that mTM merely rediscovers the discrete HistoSeg label.
+The spatial-omics origin of the HistoSeg contours means that they are not independent histological labels. The analysis therefore estimates within-label residual association rather than independent contour discovery. We denote the spatial-omics-derived discrete contour label as `C`, spatial covariates including centroid and boundary-distance bins as `S`, the continuous WTA program score as `Y` and the H&E foundation-model feature as `X`. The reported association is computed between residualized `X | C,S` and residualized `Y | C,S`. This does not prove standalone morphology-only clinical prediction and does not exclude all contour-construction-induced coupling, but it argues against the simpler explanation that mTM merely rediscovers the discrete HistoSeg label.
 
 ### Symbol table for the residual model
 
@@ -26,7 +26,7 @@ The spatial-omics origin of the HistoSeg contours means that they are not indepe
 
 ### Residual statistical model
 
-Contour-level molecular and image features were rank transformed and residualized against predeclared covariates: spatial-omics-derived HistoSeg contour label, centroid x/y coordinates and available boundary-distance summaries. For the breast S3 analysis, the contour label was constant and was omitted from the model matrix. In matrix notation, `Z_i = [1, one-hot(C_i), S_i]`, `r^X_k = (I - P_Z) rank(X_k)`, `r^Y = (I - P_Z) rank(Y)`, and `rho_k = cor(r^X_k, r^Y)`, where `P_Z = Z(Z'Z)^-1Z'`. Associations were reported as partial Spearman's rho between residualized image and WTA program vectors.
+Contour-level molecular and image features were rank transformed and residualized against specified covariates: spatial-omics-derived HistoSeg contour label, centroid x/y coordinates and available boundary-distance summaries. For the breast S3 analysis, the contour label was constant and was omitted from the model matrix. In matrix notation, `Z_i = [1, one-hot(C_i), S_i]`, `r^X_k = (I - P_Z) rank(X_k)`, `r^Y = (I - P_Z) rank(Y)`, and `rho_k = cor(r^X_k, r^Y)`, where `P_Z = Z(Z'Z)^-1Z'`. Associations were reported as partial Spearman's rho between residualized image and WTA program vectors.
 
 ### Spatial permutation and block bootstrap
 
@@ -40,11 +40,11 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 
 | File | Contents |
 |---|---|
-| `Figure_2_Hero_Patches_Source_Data.csv` | contour IDs, WTA z-scores and oriented H&E embedding z-scores for breast S3 hero patches |
-| `Figure_3_MAZ_QC_Source_Data.csv` | conservative boundary co-variation summaries used for the MAZ panel and Supplementary Fig. 3 |
-| `Figure_4_CrossCancer_Signature_Source_Data.csv` | program-family recovery summary across breast/cervical and PLIP/UNI |
-| `Supplementary_Spatial_Permutation_Source_Data.csv` | spatial-null permutation results for reported candidate programs |
-| `Supplementary_BlockBootstrap_Source_Data.csv` | spatial block-bootstrap confidence intervals |
+| `Figure_1b_Hero_Patches_Source_Data.csv` | contour IDs, WTA z-scores and oriented H&E embedding z-scores for breast S3 hero patches |
+| `Figure_1c_Spatial_Permutation_Source_Data.csv` | spatial-null permutation results for reported candidate programs |
+| `Figure_1c_BlockBootstrap_Source_Data.csv` | spatial block-bootstrap confidence intervals |
+| `Figure_1d_MAZ_QC_Source_Data.csv` | conservative boundary co-variation summaries used for the MAZ panel and Supplementary Fig. 3 |
+| `Figure_1e_CrossCancer_Signature_Source_Data.csv` | program-family signature summary across breast/cervical and PLIP/UNI |
 
 ## Supplementary Tables
 
@@ -52,9 +52,9 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 
 | Dataset | Model | Program | Program family | n contours | Observed partial Spearman's rho | Permutations | Empirical P | 99% null threshold |
 |---|---|---|---|---:|---:|---:|---:|---:|
-| Breast | PLIP | luminal_estrogen_response | endocrine/epithelial identity | 157 | -0.652 | 10,000 | 9.999 × 10<sup>-5</sup> | 0.306 |
-| Breast | PLIP | unfolded_protein_response | metabolic/stress | 157 | 0.523 | 10,000 | 9.999 × 10<sup>-5</sup> | 0.232 |
-| Breast | PLIP | oxidative_phosphorylation | metabolic/stress | 157 | 0.536 | 10,000 | 9.999 × 10<sup>-5</sup> | 0.290 |
+| Breast | PLIP | luminal_estrogen_response | endocrine/epithelial identity | 157 | -0.639 | 10,000 | 9.999 × 10<sup>-5</sup> | 0.306 |
+| Breast | PLIP | unfolded_protein_response | metabolic/stress | 157 | 0.515 | 10,000 | 9.999 × 10<sup>-5</sup> | 0.232 |
+| Breast | PLIP | oxidative_phosphorylation | metabolic/stress | 157 | 0.531 | 10,000 | 9.999 × 10<sup>-5</sup> | 0.290 |
 | Cervical | PLIP | myofibroblast_caf_activation | stromal-remodeling/CAF/ECM | 215 | -0.555 | 10,000 | 9.999 × 10<sup>-5</sup> | 0.450 |
 | Cervical | PLIP | emt_invasive_front | invasion/boundary/EMT | 215 | 0.552 | 10,000 | 9.999 × 10<sup>-5</sup> | 0.430 |
 | Cervical | PLIP | tls_adjacent_activation | immune ecology/TLS/immune exclusion | 215 | 0.551 | 10,000 | 9.999 × 10<sup>-5</sup> | 0.465 |
@@ -84,7 +84,7 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 | Cervical | PLIP | oxidative_phosphorylation | 2,000 | -0.488 | -0.631 to -0.302 |
 | Cervical | PLIP | emt_invasion | 2,000 | 0.482 | 0.404 to 0.558 |
 
-### Supplementary Table 3. Program-family recovery by cancer and model
+### Supplementary Table 3. Program-family signatures by cancer and model
 
 | Dataset | Program family | Model | Maximum absolute partial Spearman's rho | Top WTA program | Support |
 |---|---|---|---:|---|---|
@@ -117,9 +117,9 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 | 2 | high | S3 S3 #445.1 | 2.30 | 2.53 |
 | 2 | low | S3 S3 #516.1 | -1.07 | -1.30 |
 | 3 | high | S3 S3 #82.1 | 2.23 | 2.71 |
-| 3 | low | S3 S3 #533.1 | -0.932 | -1.61 |
+| 3 | low | S3 S3 #533.1 | -0.93 | -1.61 |
 | 4 | high | S3 S3 #287.1 | 1.82 | 2.65 |
-| 4 | low | S3 S3 #543.1 | -0.833 | -1.81 |
+| 4 | low | S3 S3 #543.1 | -0.83 | -1.81 |
 
 ## Supplementary Figure Captions
 
@@ -127,8 +127,8 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 
 **Supplementary Fig. 2 | Expanded breast S3 luminal estrogen-response examples.** High- and low-program S3 contours are shown as expanded H&E examples for Fig. 1b. These patches share the same spatial-omics-derived contour label and were selected after statistical ranking; they are not a blinded visual diagnostic claim.
 
-**Supplementary Fig. 3 | Expanded boundary co-variation profiles.** Ring-level profiles show H&E-WTA co-variation at selected tissue interfaces. These examples support conservative boundary co-variation and do not imply causality, temporal ordering or directional boundary effects.
+**Supplementary Fig. 3 | Expanded boundary co-variation profiles.** Ring-level profiles show H&E-WTA co-variation at selected tissue interfaces. These examples illustrate conservative boundary co-variation and do not imply causality, temporal ordering or directional boundary effects.
 
 ## Source Data
 
-Source Data files accompany Fig. 1 and Supplementary Figs. 1-3. They include the full spatial permutation table, block-bootstrap confidence intervals, cross-cancer program-family signature table, MAZ quality-control table and hero-patch metadata. No IHC or protein validation is claimed.
+Source Data files accompany Fig. 1 and Supplementary Figs. 1-3. The upload package names these files by the relevant Fig. 1 panel to avoid stale multi-figure numbering. They include the full spatial permutation table, block-bootstrap confidence intervals, cross-cancer program-family signature table, MAZ quality-control table and hero-patch metadata. No IHC or protein validation is claimed.

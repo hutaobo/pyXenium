@@ -31,6 +31,16 @@ export CUDA_VISIBLE_DEVICES=7
 bash manuscript/mtm_wta_nbt_replication/run_full_replica.sh
 ```
 
+The manuscript-facing result tables were generated on `sscb-a100.scilifelab.se`. The A100 source-of-truth run roots are:
+
+- Breast: `/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507`
+- Breast PLIP mTM: `runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509`
+- Breast UNI mTM: `runs/direct_lazyslide_uni_full_mtm_wta_20260509`
+- Cervical: `/data/taobo.hu/pyxenium_lazyslide_cervical_wta_20260511`
+- Cervical PLIP/UNI mTM: `runs/direct_lazyslide_plip_full_mtm_wta` and `runs/direct_lazyslide_uni_full_mtm_wta`
+
+PDC paths are dataset storage and transfer provenance for the breast Atera WTA input copy. They are not the source of the NBT/mTM result tables.
+
 For a local Windows rebuild of figures and submission files:
 
 ```powershell

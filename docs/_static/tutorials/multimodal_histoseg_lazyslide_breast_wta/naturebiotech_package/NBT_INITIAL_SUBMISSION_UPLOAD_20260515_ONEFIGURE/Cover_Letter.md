@@ -1,16 +1,17 @@
-# Cover Letter Draft v2
+# Cover Letter
 
 Dear Editor,
 
-We submit "Foundation-model morphology maps residual programs in spatial-omics contours" as a Brief Communication for Nature Biotechnology.
+Please consider "Foundation-model morphology maps residual programs in spatial-omics contours" as a Brief Communication for Nature Biotechnology.
 
-The work is not another H&E-to-expression prediction leaderboard. mTM asks a sharper residual question: after interpretable HistoSeg contours derived from Atera WTA cell coordinates and cluster labels define tissue compartments, do foundation-model H&E embeddings still encode molecular state within those compartments? In breast Atera WTA, the answer is yes for luminal estrogen response, unfolded protein response and oxidative phosphorylation inside S3. In cervical Atera WTA, PLIP and UNI recover stable stromal-remodeling, immune-ecology and invasion-associated programs.
+The manuscript introduces morphomolecular translation mapping (mTM), a contour-constrained framework for asking whether H&E foundation-model embeddings map residual WTA program variation after spatial-omics-derived contour labels and spatial covariates have already been fixed. This framing differs from H&E-to-expression prediction benchmarks: the primary question is not whether morphology can reconstruct broad molecular domains, but whether morphology carries measurable molecular information within already defined WTA contours.
 
-We explicitly address the non-independence of the contour construction. Because HistoSeg contours are spatial-omics-derived, the analysis does not claim independent histological labels. Instead, it asks a stricter question: after the WTA-derived discrete label has already absorbed coarse molecular-spatial structure, can H&E morphology explain residual continuous program variation? In this framing, discrete contour classes define the compartment; mTM maps residual position within the compartment.
+In breast Atera WTA, mTM nominates residual luminal estrogen-response, unfolded-protein-response and oxidative-phosphorylation continua inside S3 contours. In cervical Atera WTA, the same residual-decoding workflow nominates stromal-remodeling, immune-ecology and invasion-associated programs. The reported associations are tested against compartment-aware spatial permutations that preserve contour labels, centroid-position bins and boundary-distance bins; 13 candidate associations pass the 95% spatial-null gate.
 
-We added a statistical defense designed for likely reviewer concerns: 13 candidate associations passed a stratified spatial-permutation gate that preserves coarse structure, centroid position and boundary-distance strata. This supports residual morphology-molecular coupling beyond coarse spatial autocorrelation.
+The study is deliberately conservative about what the data support. HistoSeg contours were generated from Atera WTA cell-coordinate and cluster information rather than from H&E segmentation, so the manuscript does not claim independent histological contour discovery, morphology-only deployment, causality, directional boundary mechanisms or protein-level validation. Instead, it uses Atera WTA as a discovery layer to nominate morphology-associated molecular states and boundary ecologies for future orthogonal validation.
 
-The manuscript is deliberately conservative. HistoSeg contours are not H&E-derived segmentation masks, so the study does not claim standalone morphology-only clinical deployment. Instead, it tests whether H&E morphology contributes residual information after coarse WTA-derived spatial structure has already been controlled. We do not claim IHC/protein validation, causality or directional boundary effects. Instead, we use 18,000-gene spatial WTA as a discovery layer and present mTM as a paired H&E-WTA framework for nominating molecular states and boundary ecologies for future orthogonal validation.
+We believe the Brief Communication format is appropriate because the manuscript makes one focused methodological and biological point: foundation-model morphology can add residual information within spatial-omics-defined contours rather than merely reproduce those contours. The accompanying source data, code-release reference and reproducibility notes are included to make the initial submission package auditable.
 
 Sincerely,
-The authors
+
+Taobo Hu

@@ -10,7 +10,7 @@ HistoSeg contours were generated from Atera WTA spatial-transcriptomics inputs, 
 
 ## H&E WSI embedding
 
-The original H&E OME-TIFF was converted into a tiled pyramidal BigTIFF readable by the direct WSI workflow. LazySlide was run on the converted WSI with PLIP for the primary analysis and UNI for model-sensitivity analysis where available. Tile-level image embeddings were assigned to HistoSeg contours using registered spatial geometry, and contour-level image summaries were computed from the tiles assigned to each polygon. No H&E-derived contour segmentation was introduced during this step. The direct WSI and contour aggregation code is implemented in [pyXenium](https://github.com/hutaobo/pyXenium), primarily under the `pyXenium.multimodal` workflow and manuscript-level scripts in `benchmarking/lazyslide_a100/scripts`.
+The original H&E OME-TIFF was converted into a tiled pyramidal BigTIFF readable by the direct WSI workflow. LazySlide was run on the converted WSI with PLIP for the primary analysis and UNI for model-sensitivity analysis where available. Tile-level image embeddings were assigned to HistoSeg contours using registered spatial geometry, and contour-level image summaries were computed from the tiles assigned to each polygon. No H&E-derived contour segmentation was introduced during this step. The direct WSI and contour aggregation code is implemented in [pyXenium](https://github.com/hutaobo/pyXenium), primarily through the `pyXenium.multimodal` workflow and manuscript-level replication scripts in the repository.
 
 ## WTA program scoring
 
@@ -22,7 +22,7 @@ For contour \(i\), let \(T_i\) be the set of LazySlide tiles assigned to that co
 
 ## Non-independence of contour construction and residual estimand
 
-The HistoSeg contours are not independent histological labels. We therefore define the estimand as a within-label residual association rather than an independent label-recovery task. For contour \(i\), let \(C_i\) denote the spatial-omics-derived discrete contour label, \(S_i\) denote spatial covariates including centroid coordinates and boundary-distance bins, \(X_{ik}\) denote H&E foundation-model feature \(k\), and \(Y_i\) denote a continuous WTA program score. The covariate design matrix is
+The HistoSeg contours are not independent histological labels. We therefore define the estimand as a within-label residual association rather than an independent label-prediction task. For contour \(i\), let \(C_i\) denote the spatial-omics-derived discrete contour label, \(S_i\) denote spatial covariates including centroid coordinates and boundary-distance bins, \(X_{ik}\) denote H&E foundation-model feature \(k\), and \(Y_i\) denote a continuous WTA program score. The covariate design matrix is
 
 \[
 Z_i = [1,\mathrm{onehot}(C_i),S_i].
@@ -61,15 +61,15 @@ The permutation mitigates coarse spatial-autocorrelation explanations but does n
 
 ## Boundary co-variation
 
-Boundary profiles were computed in distance rings around selected tissue interfaces. For each selected program-feature pair, WTA program values and oriented H&E feature values were summarized across signed distance bins from contour boundaries. Candidate molecularly active zones were called only as ring-level H&E-WTA co-variation. No causal, temporal or directional boundary interpretation is claimed.
+Boundary profiles were computed in distance rings around selected tissue interfaces. For each selected program-feature pair, WTA program values and oriented H&E feature values were summarized across signed distance bins from contour boundaries. Candidate molecularly active zones were described only as ring-level H&E-WTA co-variation. No causal, temporal or directional boundary interpretation is claimed.
 
 ## Software and reproducibility
 
-HistoSeg contour-generation software is maintained at [https://github.com/hutaobo/HistoSeg](https://github.com/hutaobo/HistoSeg). The mTM analysis, direct WSI embedding, contour aggregation, statistical defense, figure composition and submission-package preparation are implemented in [pyXenium](https://github.com/hutaobo/pyXenium). Manuscript-level full replication scripts are provided under `manuscript/mtm_wta_nbt_replication/` in the pyXenium repository. They define the expected raw input paths, run order, A100/Linux commands, local packaging commands and expected output files.
+HistoSeg contour-generation software is maintained at [https://github.com/hutaobo/HistoSeg](https://github.com/hutaobo/HistoSeg). The mTM analysis, direct WSI embedding, contour aggregation, statistical defense, figure composition and submission-package preparation are implemented in [pyXenium](https://github.com/hutaobo/pyXenium). Manuscript-level full replication scripts are provided under `manuscript/mtm_wta_nbt_replication/` in the pyXenium repository. They define the expected raw input paths, run order, GPU/Linux commands, local packaging commands and expected output files.
 
 ## Data availability
 
-Source data are provided for the figure panels, spatial permutation defense, block-bootstrap summaries, cross-cancer program-family summaries, MAZ quality-control table and hero-patch metadata. Raw 10x Genomics Atera WTA input files are not redistributed by this manuscript package and should be obtained from the original source or supplied through local paths specified in the replication manifest. No IHC or protein-validation data were generated for this study.
+Source data are provided for Fig. 1 panels, spatial permutation defense, block-bootstrap summaries, cross-cancer program-family summaries, MAZ quality-control table and hero-patch metadata. Raw 10x Genomics Atera WTA and H&E input files are not redistributed by this manuscript package and should be obtained from the original public/vendor example dataset source pages. No IHC or protein-validation data were generated for this study.
 
 ## Code availability
 

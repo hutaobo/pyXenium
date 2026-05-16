@@ -25,6 +25,19 @@ raw_inputs:
     work_dir_env: CERVICAL_WORK_DIR
     required_for_full_gpu_replica: false
 
+a100_source_runs:
+  host: sscb-a100.scilifelab.se
+  breast_root: /data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507
+  breast_plip_mtm_run: runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509
+  breast_uni_mtm_run: runs/direct_lazyslide_uni_full_mtm_wta_20260509
+  cervical_root: /data/taobo.hu/pyxenium_lazyslide_cervical_wta_20260511
+  cervical_plip_mtm_run: runs/direct_lazyslide_plip_full_mtm_wta
+  cervical_uni_mtm_run: runs/direct_lazyslide_uni_full_mtm_wta
+
+pdc_context:
+  role: breast Atera WTA dataset storage and transfer provenance only
+  not_core_mtm_result_source: true
+
 software:
   python_env_env: PYTHON
   cuda_visible_devices_env: CUDA_VISIBLE_DEVICES
@@ -51,6 +64,7 @@ expected_outputs:
   manuscript_docx: NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Manuscript_Initial_Submission.docx
   online_methods_docx: NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Online_Methods.docx
   supplementary_information_docx: NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Supplementary_Information.docx
+  provenance_dir: NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Provenance
 
 validation_values:
   breast_s3_luminal_er_partial_rho: -0.639

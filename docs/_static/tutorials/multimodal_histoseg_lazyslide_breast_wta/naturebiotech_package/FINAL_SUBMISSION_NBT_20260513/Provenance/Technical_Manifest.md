@@ -6,6 +6,10 @@ Generated UTC: 2026-05-13T11:41:55+00:00
 
 This manifest documents the local artifacts used to generate the final-polish Result 2 statistical defense, Figure 4 cross-cancer dictionary, Figure 2 hero patch panel and manuscript consistency pass.
 
+## Runtime provenance clarification
+
+The NBT/mTM manuscript-facing result tables and figures are synchronized from A100 LazySlide/mTM runs, not from PDC workflow outputs. Breast A100 outputs are under `/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507`, including `runs/direct_lazyslide_plip_full_text_mtm_wta_programs_20260509` and `runs/direct_lazyslide_uni_full_mtm_wta_20260509`. Cervical A100 outputs are under `/data/taobo.hu/pyxenium_lazyslide_cervical_wta_20260511`, including `runs/direct_lazyslide_plip_full_mtm_wta` and `runs/direct_lazyslide_uni_full_mtm_wta`. PDC paths record dataset storage and transfer provenance for the breast Atera WTA input copy only.
+
 ## Repository
 
 - Git commit: `063045ab34efaf5906771a5d1c9b81fe94f75471`

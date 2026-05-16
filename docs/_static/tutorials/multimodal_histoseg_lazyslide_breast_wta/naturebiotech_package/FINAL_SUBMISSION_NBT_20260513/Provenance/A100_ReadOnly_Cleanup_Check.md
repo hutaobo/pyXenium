@@ -4,13 +4,14 @@ Checked UTC: 2026-05-13T12:17:40Z
 
 Remote host: `sscb-a100.scilifelab.se`
 
-Remote root:
+Remote roots:
 
-`/data/taobo.hu/pyxenium_lazyslide_cervical_wta_20260511`
+- `/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507`
+- `/data/taobo.hu/pyxenium_lazyslide_cervical_wta_20260511`
 
 Result:
 
-- Remote root exists: yes.
+- Remote roots exist: yes.
 - Running mTM/autopilot/LazySlide jobs detected: none.
 - Temporary candidates searched: `*.tmp`, `core.*`, `*Traceback*`, `*traceback*`.
 - Temporary candidates found within max depth 4: none.
