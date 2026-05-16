@@ -12,3 +12,13 @@ cervical,plip,epithelial_identity,215,0.522184,0.522184,16,1,0.190561,True,0.01,
 cervical,plip,immune_activation,215,0.504868,0.504868,16,1,0.228906,True,0.01,1
 cervical,plip,oxidative_phosphorylation,215,-0.487491,-0.487491,16,1,0.14739,True,0.01,1
 cervical,plip,emt_invasion,215,0.478659,0.478659,16,1,0.160595,True,0.01,1
+breast,uni,luminal_estrogen_response,300,-0.586359,-0.586359,16,1,0.276549,True,0.01,1
+breast,uni,oxidative_phosphorylation,300,-0.456251,-0.456251,16,1,0.181975,True,0.01,1
+breast,uni,collagen_ecm_organization,300,-0.376897,-0.376897,16,1,0.16508,True,0.01,1
+breast,uni,t_cell_exhaustion_checkpoint,300,0.39093,0.39093,16,1,0.104856,True,0.01,1
+breast,uni,emt_invasion,300,0.303753,0.303753,16,1,0.17334,True,0.01,1
+cervical,uni,epithelial_identity,215,-0.527315,-0.527315,16,1,0.12389,True,0.01,1
+cervical,uni,oxidative_phosphorylation,215,0.554715,0.554715,16,1,0.136469,True,0.01,1
+cervical,uni,stromal_encapsulation,215,-0.614523,-0.614523,16,1,0.128435,True,0.01,1
+cervical,uni,immune_exclusion,215,-0.63325,-0.63325,16,1,0.134007,True,0.01,1
+cervical,uni,emt_invasion,215,0.533734,0.533734,16,1,0.138684,True,0.01,1

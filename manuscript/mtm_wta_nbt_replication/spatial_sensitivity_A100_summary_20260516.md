@@ -7,9 +7,11 @@ This file records a first-pass spatial robustness analysis for the mTM residual-
 - Remote host alias: `a100`
 - Remote working directory: `/data/taobo.hu/pyxenium_lazyslide_breast_wta_20260507/runs/spatial_sensitivity_20260516`
 - Script: `manuscript/mtm_wta_nbt_replication/run_spatial_sensitivity.py`
-- Candidate source-data table: `docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/naturebiotech_package/NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Source_Data/Figure_1c_Spatial_Permutation_Source_Data.csv`
-- Breast PLIP run summarized from A100 full-run contour table.
-- Cervical PLIP run summarized from A100 full-run contour table.
+- PLIP candidate source-data table: `docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/naturebiotech_package/NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Source_Data/Figure_1c_Spatial_Permutation_Source_Data.csv`
+- UNI candidate source-data table: `docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/naturebiotech_package/NBT_INITIAL_SUBMISSION_UPLOAD_20260515_ONEFIGURE/Source_Data/Figure_1e_CrossCancer_Signature_Source_Data.csv`
+- UNI image-feature candidates were reconstructed by matching Figure 1e program-level rho values to A100 `contour_image_molecular_associations.parquet` rows.
+- Breast PLIP and UNI runs summarized from A100 full-run contour tables.
+- Cervical PLIP and UNI runs summarized from A100 full-run contour tables.
 
 ## Checks Performed
 
@@ -34,13 +36,23 @@ This file records a first-pass spatial robustness analysis for the mTM residual-
 | cervical | PLIP | immune_activation | 215 | 0.504868 | 0.504868 | 16 | 1.00 | 0.228906 | True | 0.01 | 1.00 |
 | cervical | PLIP | oxidative_phosphorylation | 215 | -0.487491 | -0.487491 | 16 | 1.00 | 0.147390 | True | 0.01 | 1.00 |
 | cervical | PLIP | emt_invasion | 215 | 0.478659 | 0.478659 | 16 | 1.00 | 0.160595 | True | 0.01 | 1.00 |
+| breast | UNI | luminal_estrogen_response | 300 | -0.586359 | -0.586359 | 16 | 1.00 | 0.276549 | True | 0.01 | 1.00 |
+| breast | UNI | oxidative_phosphorylation | 300 | -0.456251 | -0.456251 | 16 | 1.00 | 0.181975 | True | 0.01 | 1.00 |
+| breast | UNI | collagen_ecm_organization | 300 | -0.376897 | -0.376897 | 16 | 1.00 | 0.165080 | True | 0.01 | 1.00 |
+| breast | UNI | t_cell_exhaustion_checkpoint | 300 | 0.390930 | 0.390930 | 16 | 1.00 | 0.104856 | True | 0.01 | 1.00 |
+| breast | UNI | emt_invasion | 300 | 0.303753 | 0.303753 | 16 | 1.00 | 0.173340 | True | 0.01 | 1.00 |
+| cervical | UNI | epithelial_identity | 215 | -0.527315 | -0.527315 | 16 | 1.00 | 0.123890 | True | 0.01 | 1.00 |
+| cervical | UNI | oxidative_phosphorylation | 215 | 0.554715 | 0.554715 | 16 | 1.00 | 0.136469 | True | 0.01 | 1.00 |
+| cervical | UNI | stromal_encapsulation | 215 | -0.614523 | -0.614523 | 16 | 1.00 | 0.128435 | True | 0.01 | 1.00 |
+| cervical | UNI | immune_exclusion | 215 | -0.633250 | -0.633250 | 16 | 1.00 | 0.134007 | True | 0.01 | 1.00 |
+| cervical | UNI | emt_invasion | 215 | 0.533734 | 0.533734 | 16 | 1.00 | 0.138684 | True | 0.01 | 1.00 |
 
 ## Interpretation
 
-All candidate associations retained their sign across all 16 leave-one-spatial-block-out recomputations. All observed absolute correlations exceeded the 95th percentile of the local mismatch-control distribution. Centroid jitter up to 1% of slide span did not flip any candidate association.
+All 23 candidate associations retained their sign across all 16 leave-one-spatial-block-out recomputations. All observed absolute correlations exceeded the 95th percentile of the local mismatch-control distribution. Centroid jitter up to 1% of slide span did not flip any candidate association.
 
 This strengthens the residual-decoding result by arguing that the strongest reported contour-level associations are not explained by a single spatial block, nearest-neighbor rematching, or small centroid-coordinate perturbations.
 
 ## Limits
 
-These checks do not replace a full registration-perturbation analysis, an independent external cohort, protein/IHC validation, or morphology-only diagnostic benchmarking. The breast observed rho values differ slightly from the submitted source-data values because this script recomputes partial Spearman correlations directly from the contour table; the manuscript should continue to use the locked source-data values unless the source-data package is intentionally updated.
+These checks do not replace a full registration-perturbation analysis, an independent external cohort, protein/IHC validation, or morphology-only diagnostic benchmarking. The breast PLIP observed rho values differ slightly from the submitted source-data values because this script recomputes partial Spearman correlations directly from the contour table; the manuscript should continue to use the locked source-data values unless the source-data package is intentionally updated. The UNI values match the Figure 1e source-data values after reconstructing the image-feature candidates from the full-run association tables.
