@@ -1,0 +1,6 @@
+item	name	path	description
+Supplementary Table 1	method_completion_matrix	D:\GitHub\pyXenium\benchmarking\cci_2026_atera\results\method_completion_matrix.tsv	Full/bounded/failure status for all benchmarked methods.
+Supplementary Table 2	validation_evidence	D:\GitHub\pyXenium\benchmarking\cci_2026_atera\pdc_validation_v2_collected\topolink_cci_validation_v2\tables\topolink_cci_validation_v2_evidence.tsv	False-positive controls and evidence classes for seven CCI axes.
+Supplementary Table 3	synthetic_truth_metrics	D:\GitHub\pyXenium\benchmarking\cci_2026_atera\results\publication_benchmark_24h_20260511\pdc_collected\publication_benchmark_24h_20260511\synthetic_truth\tables\synthetic_truth_metrics.tsv	Synthetic Truth AUROC/AUPRC and top-k metrics.
+Supplementary Table 4	breast_cervical_top_axes	D:\GitHub\pyXenium\benchmarking\cci_2026_atera\results\preview_completed_20260511\source_data\fig4_breast_cervical_topolink_comparison.tsv	Cross-dataset TopoLink-CCI top axes.
+Source image	vwf_selp_hotspot_overlay	D:\GitHub\pyXenium\benchmarking\cci_2026_atera\vwf_selp_deep_dive\figures\vwf_selp_hotspot_spatial_overlay.png	Spatial hotspot image used in Figure 2c.

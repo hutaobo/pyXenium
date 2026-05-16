@@ -1,0 +1,9 @@
+risk	x	y	color
+"co-expression
+false positives"	0.06	0.66	#B91C1C
+"cell abundance
+bias"	0.58	0.66	#D97706
+"proximity without
+molecular support"	0.06	0.28	#2563EB
+"CCI resource
+ambiguity"	0.58	0.28	#6D28D9

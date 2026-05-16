@@ -1,0 +1,7 @@
+dataset	axis	sender_receiver	CCI_score	local_contact	cross_edge_count
+breast	EFNB2-PECAM1	Endothelial Cells -> Endothelial Cells	0.7469197326713805	0.2101050418451564	12779
+breast	VWF-LRP1	Endothelial Cells -> CAFs, DCIS Associated	0.7479758913021439	0.3461937505325735	13942
+breast	VWF-SELP	Endothelial Cells -> Endothelial Cells	0.7912892368005828	0.2912449657481761	12779
+cervical	NECTIN1-NECTIN4	Differentiating Tumor Cells -> Differentiating Tumor Cells	0.7200858321974746	0.196002977332405	192596
+cervical	DSC3-DSG3	Differentiating Tumor Cells -> Differentiating Tumor Cells	0.7980197639144863	0.3635656171474897	192596
+cervical	DSC2-DSG3	Differentiating Tumor Cells -> Differentiating Tumor Cells	0.802241901834575	0.4465555000415315	192596

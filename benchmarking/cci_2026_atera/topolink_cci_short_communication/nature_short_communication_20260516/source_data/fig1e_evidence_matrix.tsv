@@ -1,0 +1,8 @@
+axis	pyxenium_rank	CCI_score	support_count	evidence_class	expression_specificity_support	cell_label_permutation_support	spatial_null_support	matched_gene_control_support	downstream_target_support	functional_received_signal_support	cross_method_support	bootstrap_stability_support
+VWF-SELP	1	0.7912892368005828	8	strong	True	True	True	True	True	True	True	True
+VWF-LRP1	2	0.7479758913021439	8	strong	True	True	True	True	True	True	True	True
+MMRN2-CD93	10	0.7107166026857937	8	strong	True	True	True	True	True	True	True	True
+CD48-CD2	16	0.6849877065459009	8	strong	True	True	True	True	True	True	True	True
+DLL4-NOTCH3	24	0.6695148471220083	8	strong	True	True	True	True	True	True	True	True
+CXCL12-CXCR4	28	0.6616803690861207	7	strong	True	True	False	True	True	True	True	True
+JAG1-NOTCH2	45	0.6339181063246662	6	strong	True	True	True	False	False	True	True	True

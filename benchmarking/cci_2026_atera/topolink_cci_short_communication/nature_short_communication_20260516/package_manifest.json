@@ -1,0 +1,34 @@
+{
+  "created_at": "2026-05-16T10:43:20.084429+00:00",
+  "target": "Nature Methods Brief Communication",
+  "fallback_target": "Nature Biotechnology Brief Communication",
+  "backend": "Python/Matplotlib via nature-figure contract",
+  "figures": {
+    "figure_1": {
+      "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_topolink_cci_method_validation.pdf",
+      "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_topolink_cci_method_validation.svg",
+      "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_topolink_cci_method_validation.png",
+      "tiff": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_topolink_cci_method_validation.tiff"
+    },
+    "figure_2": {
+      "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_2_topolink_cci_discovery_benchmark.pdf",
+      "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_2_topolink_cci_discovery_benchmark.svg",
+      "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_2_topolink_cci_discovery_benchmark.png",
+      "tiff": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_2_topolink_cci_discovery_benchmark.tiff"
+    },
+    "one_figure_fallback": {
+      "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_fallback_single_main.pdf",
+      "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_fallback_single_main.svg",
+      "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_fallback_single_main.png",
+      "tiff": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_fallback_single_main.tiff"
+    }
+  },
+  "manuscripts": {
+    "main": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\manuscript\\topolink_cci_short_communication.md",
+    "methods": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\manuscript\\online_methods.md",
+    "inquiry": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\manuscript\\presubmission_inquiry.md"
+  },
+  "docx": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\manuscript\\topolink_cci_short_communication_review_copy.docx",
+  "review_pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\manuscript\\topolink_cci_short_communication_review_copy.pdf",
+  "supplementary_manifest": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\manuscript\\supplementary_data_manifest.tsv"
+}

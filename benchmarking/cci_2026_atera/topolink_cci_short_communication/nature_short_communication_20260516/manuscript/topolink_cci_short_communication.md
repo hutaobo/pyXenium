@@ -1,0 +1,32 @@
+# Topology-guided prioritization of spatial cell-cell interaction axes
+
+**Target journal:** Nature Methods Brief Communication
+**Fallback journal:** Nature Biotechnology Brief Communication
+**Method:** TopoLink-CCI
+
+## Abstract
+
+Spatial cell-cell interaction inference is confounded by co-expression, cell abundance and incomplete molecular resources. We introduce TopoLink-CCI, a topology-guided framework that integrates tissue topology, expression specificity and local contact, then challenges candidates with orthogonal controls. In Xenium WTA breast and cervical cancers, TopoLink-CCI scales to whole datasets and prioritizes interpretable vascular, stromal, immune and tumor interaction axes.
+
+## Main text
+
+Spatial transcriptomics has made it possible to infer cell-cell interaction (CCI) axes in intact tissues, but high-resolution whole-transcriptome imaging also increases false-positive risk. Ligand and receptor genes can appear biologically plausible because both are strongly expressed, because the corresponding cell types are abundant, or because a curated molecular resource includes extracellular-matrix, adhesion, scavenger-receptor and shared activation-state relationships that are not classical secreted signaling events. Spatial proximity improves interpretation but does not by itself prove molecular exchange, receptor activation or causal signaling. The central problem is therefore not only to rank candidate molecular pairs, but to prioritize CCI hypotheses that are compatible with tissue topology, local organization and independent controls.
+
+We developed TopoLink-CCI as a topology-guided CCI prioritization framework in pyXenium. In CCI-resource mode, each ligand, receptor, sender and receiver combination is scored by six retained components: sender topology anchor, receiver topology anchor, sender-receiver structure bridge, sender expression support, receiver expression support and local contact support. The discovery score is a prior-weighted geometric mean of these components, so a high score requires concordance across topology, expression and spatial contact rather than any single high-expression feature. Because every component is exported, users can diagnose whether an axis is topology-driven, expression-driven, contact-sensitive or potentially dominated by a resource prior. This design explicitly treats the score as a discovery statistic, not as proof of protein-level communication.
+
+We first evaluated the scoring logic in a topology-preserving Synthetic Truth benchmark. The full TopoLink-CCI model achieved AUROC 0.9919 and AUPRC 0.8333, whereas the topology-anchor-only model retained high AUROC (0.9839) but dropped to AUPRC 0.5833. We then applied TopoLink-CCI to Atera Xenium WTA breast cancer, generating 1,319,600 common-resource CCI hypotheses from 170,057 cells. The expanded breast benchmark includes 18 terminalized methods: nine full results, six bounded subset results and three reproducible failure cards, with no deferred methods. Seven representative axes were evaluated with orthogonal controls inspired by established CCI methods, including cell-label permutation, spatial nulls, matched-expression gene controls, downstream target support, received-signal association, cross-method consensus, component ablation and bootstrap stability.
+
+TopoLink-CCI prioritized biologically interpretable axes spanning vascular activation, stromal matrix biology, immune adhesion, Notch signaling and tumor-intrinsic adhesion. The top breast axis, VWF-SELP from endothelial cells to endothelial cells, is best interpreted as an endothelial activation and vascular adhesion niche consistent with Weibel-Palade body biology, not as direct proof of VWF/P-selectin protein release. Cross-dataset application to Xenium WTA cervical cancer produced 2,404,971 hypotheses and a distinct top tumor-adhesion axis, DSC2-DSG3 in differentiating tumor cells, supporting tissue-context-specific prioritization. TopoLink-CCI is therefore a spatial CCI hypothesis-prioritization framework: it narrows a large molecular search space to axes consistent with tissue topology, expression specificity, local contact and independent computational controls, while leaving causal signaling and protein-level mechanism to orthogonal experimental validation.
+
+## Figure legends
+
+**Figure 1 | TopoLink-CCI method and validation logic.** **a,** Spatial CCI inference is vulnerable to co-expression, cell-abundance, proximity and resource-composition false positives. **b,** TopoLink-CCI scores each candidate using sender and receiver topology anchors, structure bridging, expression support and local contact. **c,** Workflow from Xenium WTA and pyXenium topology maps to ranked CCI axes and validation controls. **d,** Synthetic Truth evaluation shows that the full model achieves AUROC 0.9919 and AUPRC 0.8333, whereas topology-anchor-only scoring loses precision-recall performance. **e,** Orthogonal evidence matrix for seven interpretable breast cancer axes.
+
+**Figure 2 | Whole-dataset discovery and biological interpretation.** **a,** Top interpretable Breast WTA axes ranked by TopoLink-CCI score. **b,** VWF-SELP component decomposition shows joint topology, expression and local-contact support. **c,** VWF-SELP endothelial hotspots are shown as RNA-level spatial evidence. **d,** The expanded breast benchmark terminalizes 18 methods into full, bounded and reproducible-failure tiers. **e,** Canonical recovery is compared by within-method rank rather than raw score. **f,** Breast and cervical WTA datasets yield tissue-context-specific top axes.
+
+## Guardrails
+
+- TopoLink-CCI score is a discovery score, not proof of ligand binding, protein secretion, receptor activation or causal signaling.
+- Raw scores are not compared across methods.
+- Full whole-dataset and bounded subset methods are explicitly separated.
+- F1, AUROC and AUPRC are used only for Synthetic Truth or predefined canonical truth sets.

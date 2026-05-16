@@ -1,0 +1,13 @@
+component	x	y	color
+"sender
+anchor"	0.08	0.68	#0F766E
+"receiver
+anchor"	0.38	0.68	#6D28D9
+"structure
+bridge"	0.68	0.68	#2563EB
+"sender
+expression"	0.08	0.36	#15803D
+"receiver
+expression"	0.38	0.36	#15803D
+"local
+contact"	0.68	0.36	#D97706

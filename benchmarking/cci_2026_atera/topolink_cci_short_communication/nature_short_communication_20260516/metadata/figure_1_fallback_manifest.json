@@ -1,0 +1,25 @@
+{
+  "figure_id": "figure_1_fallback",
+  "created_at": "2026-05-16T10:43:19.782012+00:00",
+  "claim": "Single-display-item fallback combining method, validation and discovery evidence.",
+  "outputs": {
+    "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_fallback_single_main.pdf",
+    "svg": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_fallback_single_main.svg",
+    "png": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_fallback_single_main.png",
+    "tiff": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_1_fallback_single_main.tiff"
+  },
+  "source_data": {
+    "fallback_a_score": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\source_data\\fallback_a_score_architecture.tsv",
+    "fallback_b_synthetic": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\source_data\\fallback_b_synthetic_truth.tsv",
+    "fallback_c_evidence": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\source_data\\fallback_c_evidence_matrix.tsv",
+    "fallback_d_status": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\source_data\\fallback_d_method_status.tsv",
+    "fallback_e_cross_dataset": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\source_data\\fallback_e_cross_dataset.tsv"
+  },
+  "figure_contract": {
+    "backend": "Python/Matplotlib",
+    "pdf_fonttype": 42,
+    "svg_fonttype": "none",
+    "source_data_required": true,
+    "journal_target": "Nature Methods Brief Communication"
+  }
+}
