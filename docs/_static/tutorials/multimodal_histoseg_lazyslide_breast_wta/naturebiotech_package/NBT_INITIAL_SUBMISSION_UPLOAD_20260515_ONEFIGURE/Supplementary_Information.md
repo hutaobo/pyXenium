@@ -32,6 +32,8 @@ Contour-level molecular and image features were rank transformed and residualize
 
 For the spatial-null defense, molecular residuals were permuted within strata preserving contour label, centroid-position bins and boundary-distance bins. This retains coarse compartmental and spatial organization while breaking contour-wise H&E-to-WTA pairing. Empirical P values were calculated as `(1 + sum_b 1{|rho_b^null| >= |rho_obs|}) / (1 + B)`. The permutation mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence, registration uncertainty or biological coupling induced by the original spatial-omics contour construction. Spatial block bootstrap resampled centroid x/y quartile blocks to estimate confidence intervals.
 
+Additional A100 sensitivity checks were run after the locked source-data package was assembled. Candidate associations were recomputed after leaving out each of 16 spatial blocks, compared with 1,000 local mismatched-pair controls and recalculated under centroid-covariate jitter up to 1% of slide span. Component-gene audits recomputed contour-level means for genes inside the selected breast S3 WTA programs and tested whether the reported H&E embedding axis tracked these component genes under the same residual framework. These checks strengthen transcript-level consistency but do not replace independent IHC/protein validation.
+
 ### Boundary co-variation analysis
 
 Boundary profiles were computed in distance rings around selected tissue interfaces. Candidate molecularly active zones were interpreted only as ring-level H&E-WTA co-variation. Causal, temporal or directional boundary interpretations were not assigned.
@@ -45,6 +47,9 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 | `Figure_1c_BlockBootstrap_Source_Data.csv` | spatial block-bootstrap confidence intervals |
 | `Figure_1d_MAZ_QC_Source_Data.csv` | conservative boundary co-variation summaries used for the MAZ panel and Supplementary Fig. 3 |
 | `Figure_1e_CrossCancer_Signature_Source_Data.csv` | program-family signature summary across breast/cervical and PLIP/UNI |
+| `Supplementary_Table_5_SpatialSensitivity_Source_Data.csv` | A100 leave-one-block, local mismatch and centroid-jitter sensitivity summary |
+| `Supplementary_Table_6_GeneComponent_Summary_Source_Data.csv` | breast S3 PLIP component-gene audit summary |
+| `Supplementary_Table_6_GeneComponent_Long_Source_Data.csv` | per-gene component audit values for selected breast S3 PLIP programs |
 
 ## Supplementary Tables
 
@@ -122,6 +127,23 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 | 4 | high | S3 S3 #287.1 | 1.82 | 2.65 |
 | 4 | low | S3 S3 #543.1 | -0.83 | -1.81 |
 
+### Supplementary Table 5. A100 spatial sensitivity summary
+
+| Dataset | Model | Candidate programs | Leave-one-block sign-stable | Exceed local mismatch q95 | Minimum centroid-jitter sign stability |
+|---|---|---:|---:|---:|---:|
+| Breast | PLIP | 3 | 3/3 | 3/3 | 1.00 |
+| Breast | UNI | 5 | 5/5 | 5/5 | 1.00 |
+| Cervical | PLIP | 10 | 10/10 | 10/10 | 1.00 |
+| Cervical | UNI | 5 | 5/5 | 5/5 | 1.00 |
+
+### Supplementary Table 6. Breast S3 component-gene audit
+
+| Program | Program genes found | Effective image-gene n | Reported program-image rho | Median image-gene rho | Image-gene sign-match fraction | Program high-low positive fraction | Strongest component gene |
+|---|---:|---:|---:|---:|---:|---:|---|
+| luminal_estrogen_response | 9 | 157 | -0.639 | -0.560 | 1.00 | 1.00 | XBP1 |
+| unfolded_protein_response | 9 | 157 | 0.515 | 0.285 | 0.78 | 1.00 | XBP1 |
+| oxidative_phosphorylation | 8 | 157 | 0.531 | 0.341 | 0.88 | 1.00 | COX6C |
+
 ## Supplementary Figure Captions
 
 **Supplementary Fig. 1 | Spatial permutation defense.** Program residuals were permuted within compartment-aware strata defined by spatial-omics-derived contour labels, centroid-position bins and boundary-distance bins. Observed residual associations are compared with the compartment-aware spatial null; this test mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence.
@@ -132,4 +154,4 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 
 ## Source Data
 
-Source Data files accompany Fig. 1 and Supplementary Figs. 1-3. The upload package names these files by the relevant Fig. 1 panel to avoid stale multi-figure numbering. They include the full spatial permutation table, block-bootstrap confidence intervals, cross-cancer program-family signature table, MAZ quality-control table and hero-patch metadata. No IHC or protein validation is claimed.
+Source Data files accompany Fig. 1, Supplementary Figs. 1-3 and the supplementary robustness tables. The upload package names figure-panel files by the relevant Fig. 1 panel and names robustness tables by supplementary-table number to avoid stale multi-figure numbering. They include the full spatial permutation table, block-bootstrap confidence intervals, cross-cancer program-family signature table, MAZ quality-control table, hero-patch metadata, spatial-sensitivity summary and component-gene audit tables. No IHC or protein validation is claimed.

@@ -16,6 +16,8 @@ The original H&E OME-TIFF was converted into a tiled pyramidal BigTIFF readable 
 
 Atera WTA measurements were summarized within the same contour polygons used for image-feature aggregation. Program scores were assembled for biologically interpretable families including endocrine/epithelial identity, metabolic/stress, stromal-remodeling/CAF/ECM, immune ecology/TLS/immune exclusion and invasion/boundary/EMT. Breast analyses focused on luminal estrogen response, unfolded protein response and oxidative phosphorylation in S3 contours. Cervical analyses tested stromal, immune and invasion programs as a cross-cancer stress test. Program scores were treated as continuous contour-level WTA readouts rather than as categorical labels.
 
+For component-gene audit analyses, contour-level normalized means were recomputed for the genes comprising each selected breast S3 WTA program. The reported H&E embedding axis was then tested against each component gene using the same rank-residualized partial Spearman framework and the same spatial covariates. These analyses were used as transcript-level sanity checks only; they are not independent IHC or protein validation.
+
 ## Contour-level aggregation
 
 For contour \(i\), let \(T_i\) be the set of LazySlide tiles assigned to that contour and \(G_i\) the cells or transcripts assigned to the same contour polygon. H&E image features were summarized as contour-level means or related summaries across \(T_i\), and WTA program scores were summarized across \(G_i\). These paired summaries define a contour-level table in which each row has the same geometry, the same spatial-omics-derived contour label and matched H&E/WTA measurements.
@@ -57,7 +59,7 @@ P_{\mathrm{emp}} =
 {1 + B}.
 \]
 
-The permutation mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence, registration uncertainty or biological coupling induced by the original spatial-omics contour construction. Spatial block bootstrap resampled centroid x/y spatial blocks and recomputed \(\rho\) to estimate 95% confidence intervals.
+The permutation mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence, registration uncertainty or biological coupling induced by the original spatial-omics contour construction. Spatial block bootstrap resampled centroid x/y spatial blocks and recomputed \(\rho\) to estimate 95% confidence intervals. Additional sensitivity checks recomputed candidate associations after leaving out each spatial block, compared observed pairings with local mismatched-pair controls and jittered centroid covariates by up to 1% of slide span.
 
 ## Boundary co-variation
 
@@ -69,11 +71,11 @@ HistoSeg contour-generation software is maintained at [https://github.com/hutaob
 
 ## Data availability
 
-Source data are provided for Fig. 1 panels, spatial permutation defense, block-bootstrap summaries, cross-cancer program-family summaries, MAZ quality-control table and hero-patch metadata. Raw 10x Genomics Atera WTA and H&E input files are not redistributed by this manuscript package and should be obtained from the original public/vendor example dataset source pages. No IHC or protein-validation data were generated for this study.
+Source data are provided for Fig. 1 panels, spatial permutation defense, block-bootstrap summaries, cross-cancer program-family summaries, MAZ quality-control table, hero-patch metadata, spatial-sensitivity summaries and component-gene audits. Raw 10x Genomics Atera WTA and H&E input files are not redistributed by this manuscript package and should be obtained from the original public/vendor example dataset source pages. No IHC or protein-validation data were generated for this study.
 
 ## Code availability
 
-The mTM analysis code is available in pyXenium v0.4.6 at [https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6](https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6). The exact initial-submission manuscript package is archived under the repository release `nbt-initial-submission-20260516` at [https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516](https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516). Manuscript-level full replication scripts are provided under `manuscript/mtm_wta_nbt_replication/`. HistoSeg contour-generation software is maintained separately in HistoSeg.
+The mTM analysis code is available in pyXenium v0.4.6 at [https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6](https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6). The science-hardened initial-submission manuscript package is archived under the repository release `nbt-initial-submission-20260516-science-hardening` at [https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516-science-hardening](https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516-science-hardening). Manuscript-level full replication scripts are provided under `manuscript/mtm_wta_nbt_replication/`. HistoSeg contour-generation software is maintained separately in HistoSeg.
 
 ## Large language model assistance
 

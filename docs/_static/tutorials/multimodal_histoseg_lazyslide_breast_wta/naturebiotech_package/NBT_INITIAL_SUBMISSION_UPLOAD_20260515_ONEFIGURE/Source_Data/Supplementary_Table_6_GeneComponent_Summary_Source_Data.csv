@@ -1,0 +1,4 @@
+dataset,model,program,assigned_structure_filter,n_contours_in_filter,min_effective_image_gene_n,median_effective_image_gene_n,n_program_genes_found,reported_program_image_partial_rho,median_image_gene_partial_spearman_rho,image_gene_sign_match_fraction,program_top_minus_bottom_positive_fraction,strongest_component_gene_by_abs_rho
+breast,plip,luminal_estrogen_response,S3,562,157,157.0,9,-0.638984976735276,-0.559717568138434,1.0,1.0,XBP1
+breast,plip,unfolded_protein_response,S3,562,157,157.0,9,0.5154375113360024,0.28504666479711827,0.7777777777777778,1.0,XBP1
+breast,plip,oxidative_phosphorylation,S3,562,157,157.0,8,0.5311278430822853,0.34083662475724374,0.875,1.0,COX6C
