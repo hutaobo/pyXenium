@@ -1,0 +1,32 @@
+{
+  "run_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed43_bins12_null32_20260512_2039",
+  "output_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed43_bins12_null32_20260512_2039\\evidence_pack",
+  "source_tables": [
+    "fig1_breast_discovery_he_pathway_associations.csv",
+    "fig2_cross_cancer_pathway_family_validation.csv",
+    "fig2_cross_cancer_validation_without_candidate_plip_axes.csv",
+    "fig_source_top_family_associations.csv",
+    "supp_table_input_manifests.csv",
+    "supp_table_matched_random_gene_controls.csv",
+    "supp_table_pathway_coverage.csv",
+    "supp_table_plip_feature_axis_diagnostics.csv",
+    "supp_table_spatial_nulls.csv"
+  ],
+  "notes": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed43_bins12_null32_20260512_2039\\evidence_pack\\methods_statistics_notes.md",
+  "claim_boundary": "pathway-family stress test; no direct cervical replication claim",
+  "breast_embedding_backend_status": "transformers_clip:vinid/plip",
+  "cervical_embedding_backend_status": "transformers_clip:vinid/plip",
+  "cross_cancer_recovered": 10,
+  "cross_cancer_total": 10,
+  "axis_masked_cross_cancer_recovered": 10,
+  "axis_masked_cross_cancer_total": 10,
+  "candidate_generic_plip_axes": 0,
+  "breast_spatial_null_pass95": 10,
+  "breast_spatial_null_pass99": 10,
+  "cervical_spatial_null_pass95": 10,
+  "cervical_spatial_null_pass99": 10,
+  "breast_negative_control_pass95": 10,
+  "breast_negative_control_pass99": 9,
+  "cervical_negative_control_pass95": 10,
+  "cervical_negative_control_pass99": 8
+}

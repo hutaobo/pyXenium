@@ -1,0 +1,14 @@
+{
+  "output_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_3000_bins18_vs_bins12_stability_20260512_1934",
+  "run_dirs": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed17_null12_20260512_1908",
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed29_null12_20260512_1918",
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed17_bins12_null12_20260512_1934",
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed29_bins12_null12_20260512_1924"
+  ],
+  "n_runs": 4,
+  "min_cross_cancer_recovered": 0,
+  "median_cross_cancer_recovered": 7.0,
+  "max_cross_cancer_recovered": 9,
+  "stable_recovered_pathways": []
+}

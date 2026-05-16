@@ -1,0 +1,74 @@
+pathway,family,gene,weight,direction,source,evidence_tag
+luminal_estrogen_response,endocrine_epithelial_identity,ESR1,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+luminal_estrogen_response,endocrine_epithelial_identity,PGR,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+luminal_estrogen_response,endocrine_epithelial_identity,GATA3,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+luminal_estrogen_response,endocrine_epithelial_identity,FOXA1,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+luminal_estrogen_response,endocrine_epithelial_identity,XBP1,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+luminal_estrogen_response,endocrine_epithelial_identity,AGR2,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+luminal_estrogen_response,endocrine_epithelial_identity,KRT8,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+luminal_estrogen_response,endocrine_epithelial_identity,KRT18,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+luminal_estrogen_response,endocrine_epithelial_identity,TFF1,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+luminal_estrogen_response,endocrine_epithelial_identity,GREB1,1.0,1.0,curated_cancer_pathway_v1,ER/luminal epithelial program
+epithelial_identity,endocrine_epithelial_identity,EPCAM,1.0,1.0,curated_cancer_pathway_v1,epithelial adhesion/cytokeratin state
+epithelial_identity,endocrine_epithelial_identity,KRT8,1.0,1.0,curated_cancer_pathway_v1,epithelial adhesion/cytokeratin state
+epithelial_identity,endocrine_epithelial_identity,KRT18,1.0,1.0,curated_cancer_pathway_v1,epithelial adhesion/cytokeratin state
+epithelial_identity,endocrine_epithelial_identity,KRT19,1.0,1.0,curated_cancer_pathway_v1,epithelial adhesion/cytokeratin state
+epithelial_identity,endocrine_epithelial_identity,CDH1,1.0,1.0,curated_cancer_pathway_v1,epithelial adhesion/cytokeratin state
+epithelial_identity,endocrine_epithelial_identity,CLDN4,1.0,1.0,curated_cancer_pathway_v1,epithelial adhesion/cytokeratin state
+epithelial_identity,endocrine_epithelial_identity,TACSTD2,1.0,1.0,curated_cancer_pathway_v1,epithelial adhesion/cytokeratin state
+basal_squamous_state,endocrine_epithelial_identity,KRT5,1.0,1.0,curated_cancer_pathway_v1,basal/squamous epithelial state
+basal_squamous_state,endocrine_epithelial_identity,KRT14,1.0,1.0,curated_cancer_pathway_v1,basal/squamous epithelial state
+basal_squamous_state,endocrine_epithelial_identity,KRT17,1.0,1.0,curated_cancer_pathway_v1,basal/squamous epithelial state
+basal_squamous_state,endocrine_epithelial_identity,TP63,1.0,1.0,curated_cancer_pathway_v1,basal/squamous epithelial state
+basal_squamous_state,endocrine_epithelial_identity,LAMB3,1.0,1.0,curated_cancer_pathway_v1,basal/squamous epithelial state
+basal_squamous_state,endocrine_epithelial_identity,LAMC2,1.0,1.0,curated_cancer_pathway_v1,basal/squamous epithelial state
+unfolded_protein_response,metabolic_stress,HSPA5,1.0,1.0,curated_cancer_pathway_v1,ER stress and UPR response
+unfolded_protein_response,metabolic_stress,XBP1,1.0,1.0,curated_cancer_pathway_v1,ER stress and UPR response
+unfolded_protein_response,metabolic_stress,ATF4,1.0,1.0,curated_cancer_pathway_v1,ER stress and UPR response
+unfolded_protein_response,metabolic_stress,DDIT3,1.0,1.0,curated_cancer_pathway_v1,ER stress and UPR response
+unfolded_protein_response,metabolic_stress,HERPUD1,1.0,1.0,curated_cancer_pathway_v1,ER stress and UPR response
+unfolded_protein_response,metabolic_stress,DNAJB9,1.0,1.0,curated_cancer_pathway_v1,ER stress and UPR response
+unfolded_protein_response,metabolic_stress,HSP90B1,1.0,1.0,curated_cancer_pathway_v1,ER stress and UPR response
+oxidative_phosphorylation,metabolic_stress,NDUFA1,1.0,1.0,curated_cancer_pathway_v1,mitochondrial respiratory chain
+oxidative_phosphorylation,metabolic_stress,NDUFB5,1.0,1.0,curated_cancer_pathway_v1,mitochondrial respiratory chain
+oxidative_phosphorylation,metabolic_stress,COX5A,1.0,1.0,curated_cancer_pathway_v1,mitochondrial respiratory chain
+oxidative_phosphorylation,metabolic_stress,ATP5F1A,1.0,1.0,curated_cancer_pathway_v1,mitochondrial respiratory chain
+oxidative_phosphorylation,metabolic_stress,UQCRC1,1.0,1.0,curated_cancer_pathway_v1,mitochondrial respiratory chain
+oxidative_phosphorylation,metabolic_stress,SDHB,1.0,1.0,curated_cancer_pathway_v1,mitochondrial respiratory chain
+oxidative_phosphorylation,metabolic_stress,SLC25A5,1.0,1.0,curated_cancer_pathway_v1,mitochondrial respiratory chain
+collagen_ecm_organization,stromal_remodeling_caf_ecm,COL1A1,1.0,1.0,curated_cancer_pathway_v1,collagen and extracellular matrix organization
+collagen_ecm_organization,stromal_remodeling_caf_ecm,COL1A2,1.0,1.0,curated_cancer_pathway_v1,collagen and extracellular matrix organization
+collagen_ecm_organization,stromal_remodeling_caf_ecm,COL3A1,1.0,1.0,curated_cancer_pathway_v1,collagen and extracellular matrix organization
+collagen_ecm_organization,stromal_remodeling_caf_ecm,DCN,1.0,1.0,curated_cancer_pathway_v1,collagen and extracellular matrix organization
+collagen_ecm_organization,stromal_remodeling_caf_ecm,LUM,1.0,1.0,curated_cancer_pathway_v1,collagen and extracellular matrix organization
+collagen_ecm_organization,stromal_remodeling_caf_ecm,FN1,1.0,1.0,curated_cancer_pathway_v1,collagen and extracellular matrix organization
+collagen_ecm_organization,stromal_remodeling_caf_ecm,SPARC,1.0,1.0,curated_cancer_pathway_v1,collagen and extracellular matrix organization
+myofibroblast_caf_activation,stromal_remodeling_caf_ecm,ACTA2,1.0,1.0,curated_cancer_pathway_v1,activated fibroblast/myofibroblast state
+myofibroblast_caf_activation,stromal_remodeling_caf_ecm,TAGLN,1.0,1.0,curated_cancer_pathway_v1,activated fibroblast/myofibroblast state
+myofibroblast_caf_activation,stromal_remodeling_caf_ecm,POSTN,1.0,1.0,curated_cancer_pathway_v1,activated fibroblast/myofibroblast state
+myofibroblast_caf_activation,stromal_remodeling_caf_ecm,PDGFRB,1.0,1.0,curated_cancer_pathway_v1,activated fibroblast/myofibroblast state
+myofibroblast_caf_activation,stromal_remodeling_caf_ecm,COL11A1,1.0,1.0,curated_cancer_pathway_v1,activated fibroblast/myofibroblast state
+myofibroblast_caf_activation,stromal_remodeling_caf_ecm,FAP,1.0,1.0,curated_cancer_pathway_v1,activated fibroblast/myofibroblast state
+myofibroblast_caf_activation,stromal_remodeling_caf_ecm,MMP11,1.0,1.0,curated_cancer_pathway_v1,activated fibroblast/myofibroblast state
+immune_activation,immune_ecology,CD3D,1.0,1.0,curated_cancer_pathway_v1,T cell and interferon-linked activation
+immune_activation,immune_ecology,CD3E,1.0,1.0,curated_cancer_pathway_v1,T cell and interferon-linked activation
+immune_activation,immune_ecology,CD8A,1.0,1.0,curated_cancer_pathway_v1,T cell and interferon-linked activation
+immune_activation,immune_ecology,GZMB,1.0,1.0,curated_cancer_pathway_v1,T cell and interferon-linked activation
+immune_activation,immune_ecology,PRF1,1.0,1.0,curated_cancer_pathway_v1,T cell and interferon-linked activation
+immune_activation,immune_ecology,CCL5,1.0,1.0,curated_cancer_pathway_v1,T cell and interferon-linked activation
+immune_activation,immune_ecology,CXCL9,1.0,1.0,curated_cancer_pathway_v1,T cell and interferon-linked activation
+immune_exclusion,immune_ecology,TGFB1,1.0,1.0,curated_cancer_pathway_v1,TGF-beta/stromal barrier program
+immune_exclusion,immune_ecology,TGFBI,1.0,1.0,curated_cancer_pathway_v1,TGF-beta/stromal barrier program
+immune_exclusion,immune_ecology,CXCL12,1.0,1.0,curated_cancer_pathway_v1,TGF-beta/stromal barrier program
+immune_exclusion,immune_ecology,POSTN,1.0,1.0,curated_cancer_pathway_v1,TGF-beta/stromal barrier program
+immune_exclusion,immune_ecology,COL1A1,1.0,1.0,curated_cancer_pathway_v1,TGF-beta/stromal barrier program
+immune_exclusion,immune_ecology,COL3A1,1.0,1.0,curated_cancer_pathway_v1,TGF-beta/stromal barrier program
+immune_exclusion,immune_ecology,ACTA2,1.0,1.0,curated_cancer_pathway_v1,TGF-beta/stromal barrier program
+emt_invasive_front,invasion_boundary_emt,VIM,1.0,1.0,curated_cancer_pathway_v1,EMT/invasive-front remodeling
+emt_invasive_front,invasion_boundary_emt,SNAI2,1.0,1.0,curated_cancer_pathway_v1,EMT/invasive-front remodeling
+emt_invasive_front,invasion_boundary_emt,TWIST1,1.0,1.0,curated_cancer_pathway_v1,EMT/invasive-front remodeling
+emt_invasive_front,invasion_boundary_emt,ZEB1,1.0,1.0,curated_cancer_pathway_v1,EMT/invasive-front remodeling
+emt_invasive_front,invasion_boundary_emt,MMP2,1.0,1.0,curated_cancer_pathway_v1,EMT/invasive-front remodeling
+emt_invasive_front,invasion_boundary_emt,MMP9,1.0,1.0,curated_cancer_pathway_v1,EMT/invasive-front remodeling
+emt_invasive_front,invasion_boundary_emt,ITGA5,1.0,1.0,curated_cancer_pathway_v1,EMT/invasive-front remodeling
+emt_invasive_front,invasion_boundary_emt,FN1,1.0,1.0,curated_cancer_pathway_v1,EMT/invasive-front remodeling

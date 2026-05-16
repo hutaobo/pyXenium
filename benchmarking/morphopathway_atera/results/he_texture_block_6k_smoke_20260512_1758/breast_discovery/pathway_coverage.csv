@@ -1,0 +1,11 @@
+pathway,family,n_genes,n_present,coverage,abs_weight_sum_present,present_genes,missing_genes,passes_min_genes,passes_min_coverage,passes
+luminal_estrogen_response,endocrine_epithelial_identity,10,10,1.0,10.0,"ESR1,PGR,GATA3,FOXA1,XBP1,AGR2,KRT8,KRT18,TFF1,GREB1",,True,True,True
+epithelial_identity,endocrine_epithelial_identity,7,7,1.0,7.0,"EPCAM,KRT8,KRT18,KRT19,CDH1,CLDN4,TACSTD2",,True,True,True
+basal_squamous_state,endocrine_epithelial_identity,6,6,1.0,6.0,"KRT5,KRT14,KRT17,TP63,LAMB3,LAMC2",,True,True,True
+unfolded_protein_response,metabolic_stress,7,7,1.0,7.0,"HSPA5,XBP1,ATF4,DDIT3,HERPUD1,DNAJB9,HSP90B1",,True,True,True
+oxidative_phosphorylation,metabolic_stress,7,7,1.0,7.0,"NDUFA1,NDUFB5,COX5A,ATP5F1A,UQCRC1,SDHB,SLC25A5",,True,True,True
+collagen_ecm_organization,stromal_remodeling_caf_ecm,7,7,1.0,7.0,"COL1A1,COL1A2,COL3A1,DCN,LUM,FN1,SPARC",,True,True,True
+myofibroblast_caf_activation,stromal_remodeling_caf_ecm,7,7,1.0,7.0,"ACTA2,TAGLN,POSTN,PDGFRB,COL11A1,FAP,MMP11",,True,True,True
+immune_activation,immune_ecology,7,7,1.0,7.0,"CD3D,CD3E,CD8A,GZMB,PRF1,CCL5,CXCL9",,True,True,True
+immune_exclusion,immune_ecology,7,7,1.0,7.0,"TGFB1,TGFBI,CXCL12,POSTN,COL1A1,COL3A1,ACTA2",,True,True,True
+emt_invasive_front,invasion_boundary_emt,8,8,1.0,8.0,"VIM,SNAI2,TWIST1,ZEB1,MMP2,MMP9,ITGA5,FN1",,True,True,True

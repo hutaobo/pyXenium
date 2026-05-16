@@ -1,0 +1,153 @@
+{
+  "audit_rows": [
+    {
+      "evidence_item": "Primary claim boundary",
+      "key_numbers": "stable_core=9 pathways",
+      "next_action": "Preserve conservative wording in manuscript title, abstract, and figure captions.",
+      "residual_risk": "Claim must remain a pathway-family stress test, not direct cervical replication.",
+      "status": "pass",
+      "supporting_files": "claim_wording.md; submission_readiness_checklist.md"
+    },
+    {
+      "evidence_item": "Cross-cancer recovery gate",
+      "key_numbers": "9/10 to 10/10",
+      "next_action": "Report range and per-run source table together.",
+      "residual_risk": "Cervical result supports stress-test recovery rather than independent direct replication.",
+      "status": "pass",
+      "supporting_files": "main_figure_2_source_cross_cancer_stability_highnull32.csv; source_table_cross_cancer_validation_by_run.csv"
+    },
+    {
+      "evidence_item": "Axis-masked PLIP sensitivity",
+      "key_numbers": "9/10 to 10/10; candidate_axis_runs=2",
+      "next_action": "Keep axis-masked result adjacent to the primary gate in the figure or supplement.",
+      "residual_risk": "Two runs contain candidate generic PLIP axes; sensitivity is supportive but smoke-scale.",
+      "status": "pass",
+      "supporting_files": "supp_table_highnull32_gate_and_axis_masked_summary.csv; supp_table_plip_axis_diagnostics_by_run.csv"
+    },
+    {
+      "evidence_item": "Stable 9-pathway core definition",
+      "key_numbers": "manifest_core=9; figure2_core=9",
+      "next_action": "Use the exact stable-core list from the manifest.",
+      "residual_risk": "The core is a reproducible pathway-family set, not a ranked clinical signature.",
+      "status": "pass",
+      "supporting_files": "brief_communication_package_manifest.json; main_figure_2_source_cross_cancer_stability_highnull32.csv"
+    },
+    {
+      "evidence_item": "EMT/invasive-front exclusion",
+      "key_numbers": "emt_invasive_front_stable=False",
+      "next_action": "Mention as non-core or omit from primary claims.",
+      "residual_risk": "Tempting biological story, but current evidence is not stable enough.",
+      "status": "pass",
+      "supporting_files": "main_figure_2_source_cross_cancer_stability_highnull32.csv; claim_wording.md"
+    },
+    {
+      "evidence_item": "Matched negative-control limitation",
+      "key_numbers": "breast_min=8/10; cervical_min=9/10",
+      "next_action": "Surface this in limitations and statistical notes.",
+      "residual_risk": "Breast negative-control pass95 minimum is below 10/10; this must be called a limitation.",
+      "status": "pass",
+      "supporting_files": "package_qc_report.json; supp_table_highnull32_gate_and_axis_masked_summary.csv"
+    },
+    {
+      "evidence_item": "Figure and supplementary source tables",
+      "key_numbers": "main_figure_1_source_breast_discovery_highnull32.csv=30; main_figure_2_source_cross_cancer_stability_highnull32.csv=10; source_table_cross_cancer_validation_by_run.csv=60; supp_table_cervical_validation_best_associations.csv=30; supp_table_highnull32_gate_and_axis_masked_summary.csv=3; supp_table_plip_axis_diagnostics_by_run.csv=384; supp_table_spatial_block_and_seed_summary.csv=3",
+      "next_action": "Use source tables directly for figure construction; avoid hand-edited plot data.",
+      "residual_risk": "Large PLIP axis diagnostic table should stay supplementary.",
+      "status": "pass",
+      "supporting_files": "main_figure_1_source_breast_discovery_highnull32.csv; main_figure_2_source_cross_cancer_stability_highnull32.csv; source_table_cross_cancer_validation_by_run.csv; supp_table_cervical_validation_best_associations.csv; supp_table_highnull32_gate_and_axis_masked_summary.csv; supp_table_plip_axis_diagnostics_by_run.csv; supp_table_spatial_block_and_seed_summary.csv"
+    },
+    {
+      "evidence_item": "Methods/statistics traceability",
+      "key_numbers": "notes=3/3 present",
+      "next_action": "Copy methods notes into the draft and fill version/hardware blanks.",
+      "residual_risk": "Final manuscript still needs exact software/hardware details.",
+      "status": "pass",
+      "supporting_files": "README.md; claim_wording.md; methods_statistics_notes.md"
+    },
+    {
+      "evidence_item": "Archive reproducibility",
+      "key_numbers": "archive_sidecar_match=true",
+      "next_action": "Re-run archive generation after any package content change.",
+      "residual_risk": "Archive changes when new audit files are intentionally added.",
+      "status": "pass",
+      "supporting_files": "brief_communication_package_highnull32_20260512_2049.zip; brief_communication_package_highnull32_20260512_2049.manifest.json"
+    }
+  ],
+  "failing_items": [],
+  "file_inventory": {
+    "README.md": {
+      "exists": true,
+      "sha256": "5cd876fbf255d968f3acd0a43db73fc07c0084560c3786e9e096cf034ac4f0a4",
+      "size_bytes": 628
+    },
+    "brief_communication_package_manifest.json": {
+      "exists": true,
+      "sha256": "ab4390aede4555dcab487b7b9c85ac967bea1e179c73a7cbfe38f1c71cc02257",
+      "size_bytes": 2826
+    },
+    "claim_wording.md": {
+      "exists": true,
+      "sha256": "a53eefe0c7743129a8f52ca8bae98ae682ebf81a7d8315a1ffb781d31a168a39",
+      "size_bytes": 1164
+    },
+    "main_figure_1_source_breast_discovery_highnull32.csv": {
+      "exists": true,
+      "sha256": "a6f1c631bb125443a37fb318191485e8e8ac3c21ee14c3280fbf731188ffd2a3",
+      "size_bytes": 8129
+    },
+    "main_figure_2_source_cross_cancer_stability_highnull32.csv": {
+      "exists": true,
+      "sha256": "ea6fa8ebef231ee49360be670eb6dcb3ae824940372f5613f3e94ad9a1f5ae64",
+      "size_bytes": 2442
+    },
+    "methods_statistics_notes.md": {
+      "exists": true,
+      "sha256": "4141a205f64ad232cd75003c04052b7c680a1686e5096e24fb9844c036f517b6",
+      "size_bytes": 1198
+    },
+    "package_qc_report.json": {
+      "exists": true,
+      "sha256": "5239f487b1240c6c4cd1e5093d7509c71329abd4f91c7ceda4873a8e361b21af",
+      "size_bytes": 1139
+    },
+    "source_table_cross_cancer_validation_by_run.csv": {
+      "exists": true,
+      "sha256": "9a50c56c320066e201c616f19c0fc797b63398f7ba75573a174deee8162727b5",
+      "size_bytes": 15054
+    },
+    "supp_table_cervical_validation_best_associations.csv": {
+      "exists": true,
+      "sha256": "759063a2cc7f9574a5e7779eb730740239877167892fc44342b9c1de0d286618",
+      "size_bytes": 8393
+    },
+    "supp_table_highnull32_gate_and_axis_masked_summary.csv": {
+      "exists": true,
+      "sha256": "97d061151e9dbd790dbdaf4d23b765dab8812f7a3c163340a784bd3f1442190c",
+      "size_bytes": 1211
+    },
+    "supp_table_plip_axis_diagnostics_by_run.csv": {
+      "exists": true,
+      "sha256": "1ed6ed9820af494de09a517f53da527d4edb9c4395b5d012e4d87d222ad7528a",
+      "size_bytes": 115655
+    },
+    "supp_table_spatial_block_and_seed_summary.csv": {
+      "exists": true,
+      "sha256": "add03c3aaea2980e22a7eecb8536515c3448ded1143fe24c1b0a53eea2637d24",
+      "size_bytes": 1855
+    }
+  },
+  "metrics": {
+    "axis_masked_recovery_max": 10,
+    "axis_masked_recovery_min": 9,
+    "breast_negative_control_pass95_min": 8,
+    "cervical_negative_control_pass95_min": 9,
+    "cross_cancer_recovery_max": 10,
+    "cross_cancer_recovery_min": 9,
+    "cross_cancer_total": 10,
+    "source_table_count": 7,
+    "stable_core_count": 9
+  },
+  "package_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\brief_communication_package_highnull32_20260512_2049",
+  "readiness_excerpt_present": true,
+  "status": "pass"
+}

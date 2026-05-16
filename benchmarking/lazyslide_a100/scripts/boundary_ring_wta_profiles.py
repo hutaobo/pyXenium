@@ -21,7 +21,7 @@ from shapely.geometry.base import BaseGeometry
 from shapely.ops import transform as shapely_transform
 from shapely.strtree import STRtree
 
-from pyXenium.multimodal.histoseg_lazyslide import DEFAULT_WTA_GENE_PROGRAMS
+from pyXenium.multimodal.histoseg_lazyslide import _load_wta_gene_program_library
 
 
 RING_BINS_UM = (-100.0, -50.0, -25.0, 0.0, 25.0, 50.0, 100.0)
@@ -42,6 +42,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--output-dir", default=None, help="Defaults to <run-dir>/maz_ring_validation.")
     parser.add_argument("--top-programs", type=int, default=5)
+    parser.add_argument("--wta-program-library", default="breast_tme_wta_v1")
     parser.add_argument("--max-contours-per-structure", type=int, default=80)
     parser.add_argument("--outer-ring-um", type=float, default=100.0)
     parser.add_argument(
@@ -543,11 +544,8 @@ def main() -> None:
     cell_points = [Point(float(x), float(y)) for x, y in coords[:, :2]]
     cell_tree = STRtree(cell_points)
     selected_program_names = [str(value) for value in specs["pathway"].tolist()]
-    programs = {
-        name: DEFAULT_WTA_GENE_PROGRAMS[name]
-        for name in selected_program_names
-        if name in DEFAULT_WTA_GENE_PROGRAMS
-    }
+    program_library = _load_wta_gene_program_library(args.wta_program_library)
+    programs = {name: program_library[name] for name in selected_program_names if name in program_library}
     cell_scores = _cell_program_scores(adata, programs)
     program_columns = [column for column in specs["molecular_feature"].astype(str) if column in cell_scores.columns]
     image_feature_map = _resolve_tile_image_feature_map(specs, tile_features)

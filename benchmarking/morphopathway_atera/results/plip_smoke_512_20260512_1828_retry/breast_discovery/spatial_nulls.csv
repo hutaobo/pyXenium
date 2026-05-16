@@ -1,0 +1,9 @@
+pathway,image_feature,observed_abs_partial_spearman_rho,permutations,permutation_empirical_p,null_abs_rho_q95,null_abs_rho_q99,passes_spatial_null_95,passes_spatial_null_99
+immune_activation,embedding__plip_002,0.48151591550038897,4,0.2,0.2788404851616067,0.2832967477742416,True,True
+immune_activation,embedding__plip_012,0.3117641258511114,4,0.2,0.18417981591760227,0.20255391789469948,True,True
+basal_squamous_state,embedding__plip_004,0.23799832877798538,4,0.2,0.15879633678400892,0.163238129378034,True,True
+luminal_estrogen_response,embedding__plip_007,0.21644519216366612,4,0.2,0.12847919447926795,0.135049719439964,True,True
+myofibroblast_caf_activation,embedding__plip_004,0.2116954009292632,4,0.2,0.1870247134163225,0.20415624630500806,True,True
+basal_squamous_state,embedding__plip_002,0.21158705799306426,4,0.2,0.16250200308610172,0.16979920848454474,True,True
+unfolded_protein_response,embedding__plip_005,0.20529381064990723,4,0.2,0.13642163808461208,0.13714272468028132,True,True
+immune_activation,embedding__plip_010,0.20353113861849068,4,0.6,0.23538484420464034,0.23955223444846263,False,False

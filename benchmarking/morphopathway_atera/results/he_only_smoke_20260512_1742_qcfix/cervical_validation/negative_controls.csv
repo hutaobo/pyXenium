@@ -1,0 +1,11 @@
+pathway,image_feature,observed_abs_partial_spearman_rho,n_present_genes,n_negative_controls,negative_control_empirical_p,negative_control_abs_rho_q95,negative_control_abs_rho_q99,passes_negative_control_95,passes_negative_control_99
+immune_activation,image__he_local_contrast,0.04154089020558524,7,8,0.1111111111111111,0.03194842709584761,0.03584614640788902,True,True
+immune_activation,image__he_hematoxylin_proxy,0.03859409397392332,7,8,0.1111111111111111,0.024397911961661578,0.02464125943810652,True,True
+luminal_estrogen_response,image__he_saturation_mean,0.03337138952506109,10,8,0.2222222222222222,0.028866563371983858,0.033139738892117895,True,True
+luminal_estrogen_response,image__he_g_mean,0.03139512703262116,10,8,0.1111111111111111,0.021520553517463337,0.024650831588129155,True,True
+basal_squamous_state,image__he_local_contrast,0.03037290552525728,6,8,0.2222222222222222,0.029606854269714218,0.033349126190396365,True,False
+oxidative_phosphorylation,image__he_b_mean,0.026074965126681737,7,8,0.3333333333333333,0.037229948100308816,0.042031819719429,False,False
+luminal_estrogen_response,image__he_luma_mean,0.02591221625084882,10,8,0.2222222222222222,0.022668736139188107,0.02564267338548257,True,True
+epithelial_identity,image__he_eosin_proxy,0.02407030893133833,7,8,0.3333333333333333,0.04636202937220388,0.049947158844823474,False,False
+myofibroblast_caf_activation,image__he_hematoxylin_proxy,0.023200601888461986,7,8,0.3333333333333333,0.04290149060395335,0.046543958328494325,False,False
+unfolded_protein_response,image__he_hematoxylin_proxy,0.023025463769619635,7,8,0.4444444444444444,0.039493205903583864,0.04008479629441836,False,False

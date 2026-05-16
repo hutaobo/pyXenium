@@ -1,0 +1,11 @@
+pathway,family,n_runs,recovery_rate,recovered_runs,mean_discovery_abs_partial_rho,mean_validation_pathway_abs_partial_rho,mean_validation_family_abs_partial_rho
+immune_exclusion,immune_ecology,2,1.0,2,0.2713416347965977,0.26136857679449343,0.28169526858727373
+luminal_estrogen_response,endocrine_epithelial_identity,2,1.0,2,0.2680919366602444,0.2409664443167828,0.2841203267045849
+unfolded_protein_response,metabolic_stress,2,1.0,2,0.26756242982125167,0.19873019125028885,0.25244897459415394
+myofibroblast_caf_activation,stromal_remodeling_caf_ecm,2,1.0,2,0.2455542133050856,0.28634018764064006,0.28634018764064006
+oxidative_phosphorylation,metabolic_stress,2,1.0,2,0.23115315154227065,0.222121506912653,0.25244897459415394
+collagen_ecm_organization,stromal_remodeling_caf_ecm,2,1.0,2,0.22269517254282575,0.27372672360495154,0.28634018764064006
+basal_squamous_state,endocrine_epithelial_identity,2,1.0,2,0.1802644935129522,0.2370591218327004,0.2841203267045849
+epithelial_identity,endocrine_epithelial_identity,2,1.0,2,0.17818304600913004,0.2638815075476006,0.2841203267045849
+immune_activation,immune_ecology,2,1.0,2,0.15007333758090055,0.27705960544659786,0.28169526858727373
+emt_invasive_front,invasion_boundary_emt,2,0.0,0,0.221152664115828,0.19040622297154258,0.19040622297154258

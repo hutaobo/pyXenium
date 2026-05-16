@@ -1,0 +1,9 @@
+pathway,image_feature,observed_abs_partial_spearman_rho,permutations,permutation_empirical_p,null_abs_rho_q95,null_abs_rho_q99,passes_spatial_null_95,passes_spatial_null_99
+epithelial_identity,embedding__plip_007,0.44434627689967093,4,0.2,0.14672157573581918,0.15157942128421567,True,True
+unfolded_protein_response,embedding__plip_001,0.38716256543876854,4,0.2,0.19954892274448424,0.22026802010597166,True,True
+immune_activation,embedding__plip_005,0.32137614429605754,4,0.2,0.15434869240276672,0.15877424667018303,True,True
+collagen_ecm_organization,embedding__plip_005,0.2906889861197643,4,0.4,0.27851996474954904,0.3081216301338829,True,False
+immune_exclusion,embedding__plip_005,0.2778884967643136,4,0.4,0.25746606459068416,0.2848496831524944,True,False
+unfolded_protein_response,embedding__plip_013,0.2757149405549711,4,0.2,0.18145812690981714,0.18251775844181398,True,True
+immune_exclusion,embedding__plip_011,0.2678345143396892,4,0.2,0.2142596115100559,0.23441987634328026,True,True
+luminal_estrogen_response,embedding__plip_012,0.2649750094235558,4,0.4,0.2846648168648883,0.3050379760587987,False,False

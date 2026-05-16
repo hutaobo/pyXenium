@@ -1,0 +1,2 @@
+aggregation,input_cells,retained_cells,n_blocks,bins,min_cells_per_block,median_cells_per_block
+spatial_block,3000,2995,137,12,6,21.0

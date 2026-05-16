@@ -1,0 +1,29 @@
+{
+  "package_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\brief_communication_package_highnull32_20260512_2049",
+  "status": "pass",
+  "errors": [],
+  "warnings": [
+    "breast_negative_control_pass95 minimum is 8/10; report as limitation.",
+    "cervical_negative_control_pass95 minimum is 9/10; report as limitation."
+  ],
+  "checked_files": [
+    "README.md",
+    "brief_communication_package_manifest.json",
+    "claim_wording.md",
+    "methods_statistics_notes.md",
+    "main_figure_1_source_breast_discovery_highnull32.csv",
+    "main_figure_2_source_cross_cancer_stability_highnull32.csv",
+    "source_table_cross_cancer_validation_by_run.csv",
+    "supp_table_cervical_validation_best_associations.csv",
+    "supp_table_highnull32_gate_and_axis_masked_summary.csv",
+    "supp_table_plip_axis_diagnostics_by_run.csv",
+    "supp_table_spatial_block_and_seed_summary.csv"
+  ],
+  "reviewer_audit_checked": true,
+  "manifest_summary": {
+    "cross_cancer_recovery_min": 9,
+    "axis_masked_recovery_min": 9,
+    "stable_9_pathway_core_count": 9,
+    "candidate_axis_runs": 2
+  }
+}

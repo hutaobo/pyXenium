@@ -1,0 +1,118 @@
+{
+  "package_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\brief_communication_package_highnull32_20260512_2049",
+  "generated_utc": "2026-05-13T12:51:06.242956+00:00",
+  "payload_file_count": 22,
+  "payload_size_bytes": 189320,
+  "files": [
+    {
+      "relative_path": "README.md",
+      "size_bytes": 628,
+      "sha256": "5cd876fbf255d968f3acd0a43db73fc07c0084560c3786e9e096cf034ac4f0a4"
+    },
+    {
+      "relative_path": "brief_communication_package_manifest.json",
+      "size_bytes": 2826,
+      "sha256": "ab4390aede4555dcab487b7b9c85ac967bea1e179c73a7cbfe38f1c71cc02257"
+    },
+    {
+      "relative_path": "brief_communication_text_pack_manifest.json",
+      "size_bytes": 551,
+      "sha256": "bdac87e4d427ca65d1c3ed2fe313fe715f58293a7a834100e71d429232d26ab9"
+    },
+    {
+      "relative_path": "claim_wording.md",
+      "size_bytes": 1164,
+      "sha256": "a53eefe0c7743129a8f52ca8bae98ae682ebf81a7d8315a1ffb781d31a168a39"
+    },
+    {
+      "relative_path": "figure_captions.md",
+      "size_bytes": 2241,
+      "sha256": "b8b0dd3445448a4209b9187212ef771e57bfb71357ebe9dbfe0c04edfd81b8d3"
+    },
+    {
+      "relative_path": "handoff_scope_inventory.json",
+      "size_bytes": 5190,
+      "sha256": "90fda57cbf43b00e169d1ab9e9b6f48ed947aadd4253dc81d44741f6b83e398c"
+    },
+    {
+      "relative_path": "handoff_scope_inventory.md",
+      "size_bytes": 2391,
+      "sha256": "ddd5ebb6bb36f0e764641344b53809ac225650f3907fb869d960e4c726eeb8bc"
+    },
+    {
+      "relative_path": "main_figure_1_source_breast_discovery_highnull32.csv",
+      "size_bytes": 8129,
+      "sha256": "a6f1c631bb125443a37fb318191485e8e8ac3c21ee14c3280fbf731188ffd2a3"
+    },
+    {
+      "relative_path": "main_figure_2_source_cross_cancer_stability_highnull32.csv",
+      "size_bytes": 2442,
+      "sha256": "ea6fa8ebef231ee49360be670eb6dcb3ae824940372f5613f3e94ad9a1f5ae64"
+    },
+    {
+      "relative_path": "manuscript_skeleton.md",
+      "size_bytes": 4196,
+      "sha256": "00de34545023cd539487500b82b280803f63aa8d29864da55e9fe76ca3378a58"
+    },
+    {
+      "relative_path": "methods_statistics_notes.md",
+      "size_bytes": 1198,
+      "sha256": "4141a205f64ad232cd75003c04052b7c680a1686e5096e24fb9844c036f517b6"
+    },
+    {
+      "relative_path": "package_qc_report.json",
+      "size_bytes": 1139,
+      "sha256": "5239f487b1240c6c4cd1e5093d7509c71329abd4f91c7ceda4873a8e361b21af"
+    },
+    {
+      "relative_path": "package_qc_report.md",
+      "size_bytes": 217,
+      "sha256": "1816ad557888ad7358c099903b321400c9c7afd37a4c367cf6111621fb1afc33"
+    },
+    {
+      "relative_path": "reviewer_evidence_audit.csv",
+      "size_bytes": 3331,
+      "sha256": "9a1c5e8d28628888289d9d2627aba62ffec2605a61335682b221b74e83e843b4"
+    },
+    {
+      "relative_path": "reviewer_evidence_audit.json",
+      "size_bytes": 7686,
+      "sha256": "6f84cc04e37e213f0c81ee326c1925a2ca8b3556c75a71386095fa45022a7b39"
+    },
+    {
+      "relative_path": "reviewer_evidence_audit.md",
+      "size_bytes": 2658,
+      "sha256": "a2d836e8665e85586990a95d79e71c040a2f36f3a243e21b7fa79f7b16aefeee"
+    },
+    {
+      "relative_path": "source_table_cross_cancer_validation_by_run.csv",
+      "size_bytes": 15054,
+      "sha256": "9a50c56c320066e201c616f19c0fc797b63398f7ba75573a174deee8162727b5"
+    },
+    {
+      "relative_path": "submission_readiness_checklist.md",
+      "size_bytes": 1165,
+      "sha256": "63a1252467fde275106d827d01c55ee6fea19d16935ce79644a47510b0d2c225"
+    },
+    {
+      "relative_path": "supp_table_cervical_validation_best_associations.csv",
+      "size_bytes": 8393,
+      "sha256": "759063a2cc7f9574a5e7779eb730740239877167892fc44342b9c1de0d286618"
+    },
+    {
+      "relative_path": "supp_table_highnull32_gate_and_axis_masked_summary.csv",
+      "size_bytes": 1211,
+      "sha256": "97d061151e9dbd790dbdaf4d23b765dab8812f7a3c163340a784bd3f1442190c"
+    },
+    {
+      "relative_path": "supp_table_plip_axis_diagnostics_by_run.csv",
+      "size_bytes": 115655,
+      "sha256": "1ed6ed9820af494de09a517f53da527d4edb9c4395b5d012e4d87d222ad7528a"
+    },
+    {
+      "relative_path": "supp_table_spatial_block_and_seed_summary.csv",
+      "size_bytes": 1855,
+      "sha256": "add03c3aaea2980e22a7eecb8536515c3448ded1143fe24c1b0a53eea2637d24"
+    }
+  ]
+}

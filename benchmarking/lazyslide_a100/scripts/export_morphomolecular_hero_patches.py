@@ -25,6 +25,15 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--max-contours", type=int, default=12)
     parser.add_argument("--patch-size", type=int, default=1024)
+    parser.add_argument(
+        "--max-patch-size",
+        type=int,
+        default=4096,
+        help=(
+            "Maximum exported patch width/height at level 0. Large tissue contours are "
+            "cropped around the contour centroid so montage generation stays bounded."
+        ),
+    )
     parser.add_argument("--pad", type=int, default=192)
     parser.add_argument("--montage-tile-size", type=int, default=256)
     parser.add_argument(
@@ -69,15 +78,28 @@ def _geometry_from_row(row: pd.Series) -> BaseGeometry | None:
     return None
 
 
-def _crop_bounds(geometry: BaseGeometry, *, patch_size: int, pad: int) -> tuple[int, int, int, int]:
+def _crop_bounds(
+    geometry: BaseGeometry,
+    *,
+    patch_size: int,
+    pad: int,
+    max_patch_size: int | None,
+) -> tuple[int, int, int, int, bool]:
     minx, miny, maxx, maxy = geometry.bounds
     width = max(int(math.ceil(maxx - minx)) + 2 * pad, int(patch_size))
     height = max(int(math.ceil(maxy - miny)) + 2 * pad, int(patch_size))
+    truncated = False
+    if max_patch_size is not None and max_patch_size > 0:
+        capped_width = min(width, int(max_patch_size))
+        capped_height = min(height, int(max_patch_size))
+        truncated = capped_width != width or capped_height != height
+        width = capped_width
+        height = capped_height
     center_x = (minx + maxx) / 2.0
     center_y = (miny + maxy) / 2.0
     x0 = max(int(round(center_x - width / 2.0)), 0)
     y0 = max(int(round(center_y - height / 2.0)), 0)
-    return x0, y0, width, height
+    return x0, y0, width, height, truncated
 
 
 def _draw_geometry(image: Image.Image, geometry: BaseGeometry, *, x0: int, y0: int) -> None:
@@ -150,7 +172,12 @@ def main() -> None:
         geometry = _geometry_from_row(contour_lookup.loc[contour_id])
         if geometry is None or geometry.is_empty:
             continue
-        x0, y0, width, height = _crop_bounds(geometry, patch_size=args.patch_size, pad=args.pad)
+        x0, y0, width, height, truncated = _crop_bounds(
+            geometry,
+            patch_size=args.patch_size,
+            pad=args.pad,
+            max_patch_size=args.max_patch_size,
+        )
         patch = slide.read_region((x0, y0), 0, (width, height)).convert("RGB")
         _draw_geometry(patch, geometry, x0=x0, y0=y0)
         safe_id = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in contour_id)[:80]
@@ -169,6 +196,7 @@ def main() -> None:
             "y0": y0,
             "width": width,
             "height": height,
+            "truncated_to_max_patch_size": truncated,
             "patch_path": str(patch_path),
             "label": _label(row),
         }

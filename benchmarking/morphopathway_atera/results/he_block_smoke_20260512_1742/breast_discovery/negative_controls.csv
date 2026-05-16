@@ -1,0 +1,11 @@
+pathway,image_feature,observed_abs_partial_spearman_rho,n_present_genes,n_negative_controls,negative_control_empirical_p,negative_control_abs_rho_q95,negative_control_abs_rho_q99,passes_negative_control_95,passes_negative_control_99
+emt_invasive_front,image__he_eosin_proxy,0.23891535991562707,8,8,0.1111111111111111,0.18836330190088243,0.20362497064556895,True,True
+immune_exclusion,image__he_eosin_proxy,0.2045959986150609,7,8,0.1111111111111111,0.15471948373827937,0.16530114369410048,True,True
+collagen_ecm_organization,image__he_eosin_proxy,0.1997627155180921,7,8,0.1111111111111111,0.08731544935555044,0.11017137407203516,True,True
+epithelial_identity,image__he_eosin_proxy,0.19453649951758245,7,8,0.1111111111111111,0.163735989907833,0.17437388189102196,True,True
+emt_invasive_front,image__he_saturation_mean,0.177167499459488,8,8,0.1111111111111111,0.10363705429964781,0.10543880534383364,True,True
+emt_invasive_front,image__he_local_contrast,0.1716786450376878,8,8,0.2222222222222222,0.16863397373819478,0.17837436621956973,True,False
+unfolded_protein_response,image__he_eosin_proxy,0.1693818412199022,7,8,0.1111111111111111,0.1479463652496584,0.16092971496978942,True,True
+luminal_estrogen_response,image__he_eosin_proxy,0.16900847978566966,10,8,0.1111111111111111,0.08231335645168136,0.08477970319276723,True,True
+collagen_ecm_organization,image__he_saturation_mean,0.16181896676632934,7,8,0.1111111111111111,0.14201938242056697,0.14351157436134912,True,True
+immune_exclusion,image__he_saturation_mean,0.15427486950561722,7,8,0.1111111111111111,0.09357976568797022,0.10299652138394652,True,True

@@ -1,0 +1,19 @@
+{
+  "run_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d128_seed29_null12_20260512_1928",
+  "output_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d128_seed29_null12_20260512_1928\\evidence_pack",
+  "source_tables": [
+    "fig1_breast_discovery_he_pathway_associations.csv",
+    "fig2_cross_cancer_pathway_family_validation.csv",
+    "fig_source_top_family_associations.csv",
+    "supp_table_input_manifests.csv",
+    "supp_table_matched_random_gene_controls.csv",
+    "supp_table_pathway_coverage.csv",
+    "supp_table_spatial_nulls.csv"
+  ],
+  "notes": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d128_seed29_null12_20260512_1928\\evidence_pack\\methods_statistics_notes.md",
+  "claim_boundary": "pathway-family stress test; no direct cervical replication claim",
+  "breast_embedding_backend_status": "transformers_clip:vinid/plip",
+  "cervical_embedding_backend_status": "transformers_clip:vinid/plip",
+  "cross_cancer_recovered": 0,
+  "cross_cancer_total": 10
+}

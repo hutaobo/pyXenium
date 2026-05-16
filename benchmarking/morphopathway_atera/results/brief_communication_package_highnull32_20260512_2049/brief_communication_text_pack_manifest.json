@@ -1,0 +1,23 @@
+{
+  "package_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\brief_communication_package_highnull32_20260512_2049",
+  "generated_files": [
+    "figure_captions.md",
+    "manuscript_skeleton.md",
+    "submission_readiness_checklist.md"
+  ],
+  "stable_core_count": 9,
+  "cross_cancer_recovery_range": [
+    9,
+    10
+  ],
+  "axis_masked_recovery_range": [
+    9,
+    10
+  ],
+  "cross_cancer_total": 10,
+  "negative_control_pass95_min": {
+    "breast": 8,
+    "cervical": 9
+  },
+  "candidate_axis_runs": 2
+}

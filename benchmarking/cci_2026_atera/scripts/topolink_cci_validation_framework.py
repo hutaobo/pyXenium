@@ -126,6 +126,8 @@ def load_manifest(root: Path) -> dict[str, Any]:
 def read_scores(root: Path) -> pd.DataFrame:
     path = root / "runs" / "full_common" / "pyxenium" / "pyxenium_scores.tsv"
     scores = pd.read_csv(path, sep="\t")
+    if "CCI_score" not in scores.columns and "LR_score" in scores.columns:
+        scores = scores.rename(columns={"LR_score": "CCI_score"})
     scores = scores.sort_values("CCI_score", ascending=False, kind="mergesort").reset_index(drop=True)
     scores["global_rank"] = np.arange(1, len(scores) + 1)
     return scores

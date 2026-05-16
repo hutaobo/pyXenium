@@ -1,0 +1,14 @@
+{
+  "output_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_3000_bins12_evidence_pack_sensitivity_20260512_2016",
+  "run_dirs": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed17_bins12_null12_20260512_1934",
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed29_bins12_null32_20260512_1950",
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed43_bins12_null12_20260512_1940"
+  ],
+  "n_runs": 3,
+  "min_cross_cancer_recovered": 9,
+  "min_axis_masked_cross_cancer_recovered": 9,
+  "cross_cancer_total": 10,
+  "runs_with_candidate_generic_plip_axes": 1,
+  "candidate_generic_plip_axes": 2
+}

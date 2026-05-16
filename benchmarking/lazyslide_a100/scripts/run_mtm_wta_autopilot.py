@@ -80,7 +80,7 @@ We introduce morphomolecular translation mapping, a contour-constrained framewor
 
 ## Abstract Draft
 
-Spatial whole-transcriptome imaging now measures thousands of genes at single-cell resolution, but the relationship between routine H&E morphology and local molecular state remains difficult to quantify. We developed a contour-constrained morphomolecular translation workflow that combines HistoSeg tissue structures, direct WSI LazySlide embeddings, and Xenium WTA contour summaries. In a breast cancer WTA sample, discrete HistoSeg labels captured much of the coarse molecular variance, so H&E embeddings did not improve all cross-validated molecular prediction benchmarks beyond structure labels. However, after controlling for tissue structure, spatial position, and boundary proximity, foundation-model embedding axes remained strongly associated with residual WTA programs. The strongest Figure 2 candidates were:
+Spatial whole-transcriptome imaging now measures thousands of genes at single-cell resolution, but the relationship between routine H&E morphology and local molecular state remains difficult to quantify. We developed a contour-constrained morphomolecular translation workflow that combines HistoSeg tissue structures, direct WSI LazySlide embeddings, and Atera WTA contour summaries. In a breast cancer WTA sample, discrete HistoSeg labels captured much of the coarse molecular variance, so H&E embeddings did not improve all cross-validated molecular prediction benchmarks beyond structure labels. However, after controlling for tissue structure, spatial position, and boundary proximity, foundation-model embedding axes remained strongly associated with residual WTA programs. The strongest Figure 2 candidates were:
 
 {chr(10).join(top_rows)}
 
@@ -108,7 +108,7 @@ The MAZ lead-lag table currently uses contour-level distance-to-boundary summari
 
 ### Figure 1
 
-Overview of morphomolecular translation mapping. HistoSeg defines tissue contours, LazySlide extracts direct WSI foundation-model embeddings, and Xenium WTA profiles are aggregated within the same contours.
+Overview of morphomolecular translation mapping. HistoSeg defines tissue contours, LazySlide extracts direct WSI foundation-model embeddings, and Atera WTA profiles are aggregated within the same contours.
 
 ### Figure 2
 

@@ -1,0 +1,56 @@
+{
+  "output_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\brief_communication_package_highnull32_20260512_2049",
+  "run_dirs": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed17_bins12_null32_20260512_2029",
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed29_bins12_null32_20260512_1950",
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed43_bins12_null32_20260512_2039"
+  ],
+  "stability_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_3000_bins12_highnull32_stability_seed17_seed29_seed43_20260512_2039",
+  "sensitivity_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_3000_bins12_highnull32_evidence_pack_sensitivity_seed17_seed29_seed43_20260512_2039",
+  "n_runs": 3,
+  "cross_cancer_recovery_min": 9,
+  "cross_cancer_recovery_max": 10,
+  "axis_masked_recovery_min": 9,
+  "axis_masked_recovery_max": 10,
+  "cross_cancer_total": 10,
+  "stable_9_pathway_core": [
+    "unfolded_protein_response",
+    "immune_exclusion",
+    "luminal_estrogen_response",
+    "myofibroblast_caf_activation",
+    "oxidative_phosphorylation",
+    "basal_squamous_state",
+    "collagen_ecm_organization",
+    "immune_activation",
+    "epithelial_identity"
+  ],
+  "candidate_axis_runs": 2,
+  "source_tables": [
+    "main_figure_1_source_breast_discovery_highnull32.csv",
+    "main_figure_2_source_cross_cancer_stability_highnull32.csv",
+    "source_table_cross_cancer_validation_by_run.csv",
+    "supp_table_cervical_validation_best_associations.csv",
+    "supp_table_highnull32_gate_and_axis_masked_summary.csv",
+    "supp_table_plip_axis_diagnostics_by_run.csv",
+    "supp_table_spatial_block_and_seed_summary.csv"
+  ],
+  "notes": [
+    "README.md",
+    "claim_wording.md",
+    "methods_statistics_notes.md"
+  ],
+  "upstream_sensitivity_manifest": {
+    "output_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_3000_bins12_highnull32_evidence_pack_sensitivity_seed17_seed29_seed43_20260512_2039",
+    "run_dirs": [
+      "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed17_bins12_null32_20260512_2029",
+      "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed29_bins12_null32_20260512_1950",
+      "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed43_bins12_null32_20260512_2039"
+    ],
+    "n_runs": 3,
+    "min_cross_cancer_recovered": 9,
+    "min_axis_masked_cross_cancer_recovered": 9,
+    "cross_cancer_total": 10,
+    "runs_with_candidate_generic_plip_axes": 2,
+    "candidate_generic_plip_axes": 3
+  }
+}

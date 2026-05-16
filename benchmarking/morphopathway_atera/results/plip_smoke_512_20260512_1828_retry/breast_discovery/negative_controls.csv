@@ -1,0 +1,9 @@
+pathway,image_feature,observed_abs_partial_spearman_rho,n_present_genes,n_negative_controls,negative_control_empirical_p,negative_control_abs_rho_q95,negative_control_abs_rho_q99,passes_negative_control_95,passes_negative_control_99
+immune_activation,embedding__plip_002,0.48151591550038897,7,4,0.2,0.16038874444524034,0.16442600776421062,True,True
+immune_activation,embedding__plip_012,0.3117641258511114,7,4,0.2,0.09931748007329,0.10117378794677669,True,True
+basal_squamous_state,embedding__plip_004,0.23799832877798538,6,4,0.6,0.24820110101502926,0.24870791115829113,False,False
+luminal_estrogen_response,embedding__plip_007,0.21644519216366612,10,4,0.2,0.14639895604836267,0.15003664940135805,True,True
+myofibroblast_caf_activation,embedding__plip_004,0.2116954009292632,7,4,0.2,0.1876538125769336,0.19158493689893097,True,True
+basal_squamous_state,embedding__plip_002,0.21158705799306426,6,4,0.4,0.23985880017441755,0.25536894928969395,False,False
+unfolded_protein_response,embedding__plip_005,0.20529381064990723,7,4,0.2,0.19872295032107298,0.19899200640308212,True,True
+immune_activation,embedding__plip_010,0.20353113861849068,7,4,0.2,0.10758025953977339,0.111170042790232,True,True

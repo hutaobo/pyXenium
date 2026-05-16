@@ -405,7 +405,7 @@ def main() -> None:
             )
             _plot_contours(axes[0, 0], subset, value_column=None, title=f"{structure} HistoSeg compartment")
             _plot_contours(axes[0, 1], subset, value_column=image, title="H&E embedding axis")
-            _plot_contours(axes[1, 0], subset, value_column=target, title="Xenium WTA program")
+            _plot_contours(axes[1, 0], subset, value_column=target, title="Atera WTA program")
             _plot_scatter(
                 axes[1, 1],
                 subset,

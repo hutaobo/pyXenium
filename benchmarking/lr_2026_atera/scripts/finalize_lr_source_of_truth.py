@@ -146,6 +146,34 @@ def collect_full_inputs(root: Path, commot_path: Path | None) -> tuple[list[Path
 def discover_rescue_status(root: Path, tag: str, method: str) -> dict[str, Any]:
     base = root / "runs" / tag / "a100_rescue" / method
     summary = base / "rescue_summary.json"
+    if method == "spatalk":
+        bounded_marker = base / "bounded_success_smoke20k_after_pilot_memory_guard.json"
+        if bounded_marker.exists():
+            marker = read_json(bounded_marker)
+            smoke_summary = read_json(base / "smoke20k" / "aggregate_summary.json")
+            standardized = (
+                smoke_summary.get("output_path")
+                or smoke_summary.get("aggregate_path")
+                or str(base / "smoke20k" / "spatalk_standardized.tsv.gz")
+            )
+            return {
+                "method": method,
+                "status": "bounded_success",
+                "reason": marker.get("reason", "SpaTalk smoke20k retained after repeated pilot50k memory-guard terminations."),
+                "summary_json": str(bounded_marker),
+                "base_dir": str(base),
+                "bounded_success": {
+                    "subset_n_cells": 20000,
+                    "subset_tag": "smoke20k",
+                    "standardized_tsv_gz": standardized,
+                    "peak_rss_gb": smoke_summary.get("peak_rss_gb", ""),
+                    "elapsed_seconds": smoke_summary.get("elapsed_seconds", ""),
+                },
+                "full_failure_reason": marker.get(
+                    "reason",
+                    "Pilot50k did not complete after repeated A100 low-memory guard terminations.",
+                ),
+            }
     if summary.exists():
         return read_json(summary)
     return {"method": method, "status": "not_started", "base_dir": str(base)}

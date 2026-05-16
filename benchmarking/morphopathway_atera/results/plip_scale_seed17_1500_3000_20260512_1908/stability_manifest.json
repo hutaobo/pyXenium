@@ -1,0 +1,18 @@
+{
+  "output_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_scale_seed17_1500_3000_20260512_1908",
+  "run_dirs": [
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_1500_d64_20260512_1828",
+    "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed17_null12_20260512_1908"
+  ],
+  "n_runs": 2,
+  "min_cross_cancer_recovered": 5,
+  "median_cross_cancer_recovered": 6.0,
+  "max_cross_cancer_recovered": 7,
+  "stable_recovered_pathways": [
+    "basal_squamous_state",
+    "luminal_estrogen_response",
+    "myofibroblast_caf_activation",
+    "collagen_ecm_organization",
+    "epithelial_identity"
+  ]
+}

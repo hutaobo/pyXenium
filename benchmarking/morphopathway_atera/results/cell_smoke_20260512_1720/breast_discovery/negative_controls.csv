@@ -1,0 +1,11 @@
+pathway,image_feature,observed_abs_partial_spearman_rho,n_present_genes,n_negative_controls,negative_control_empirical_p,negative_control_abs_rho_q95,negative_control_abs_rho_q99,passes_negative_control_95,passes_negative_control_99
+immune_exclusion,morphology__cell_area_log1p,0.22814136033033383,7,8,0.1111111111111111,0.10511417258759045,0.11631639792685142,True,True
+collagen_ecm_organization,morphology__cell_area_log1p,0.2221570267530558,7,8,0.1111111111111111,0.13719379716336935,0.14636892720504308,True,True
+emt_invasive_front,morphology__cell_area_log1p,0.21550103992958808,8,8,0.1111111111111111,0.1108219928805189,0.1310853893494324,True,True
+luminal_estrogen_response,morphology__nucleus_area_log1p,0.2103473602288161,10,8,0.1111111111111111,0.11157826055137253,0.1280510825493547,True,True
+immune_exclusion,morphology__transcript_density_log1p,0.20711478452471094,7,8,0.1111111111111111,0.14551298855845934,0.14945630114419087,True,True
+collagen_ecm_organization,morphology__transcript_density_log1p,0.20549517197312334,7,8,0.1111111111111111,0.1356565568723408,0.15465036225234563,True,True
+emt_invasive_front,morphology__transcript_density_log1p,0.19922088642129734,8,8,0.1111111111111111,0.10713545366592699,0.12218399911098435,True,True
+unfolded_protein_response,morphology__nucleus_area_log1p,0.19330073606310721,7,8,0.1111111111111111,0.11051183108057921,0.1302917478004088,True,True
+epithelial_identity,morphology__nucleus_area_log1p,0.18340540587015333,7,8,0.2222222222222222,0.16347814278880474,0.1910147326147921,True,False
+luminal_estrogen_response,morphology__control_fraction,0.1735376911855019,10,8,0.1111111111111111,0.11363157103944016,0.142581739504591,True,True

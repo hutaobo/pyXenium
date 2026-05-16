@@ -21,6 +21,7 @@ ROOT = Path("/data/taobo.hu/pyxenium_lr_benchmark_2026-04")
 TAG = "final_closeout_20260511"
 CONDA = Path("/home/taobo.hu/miniconda3/bin/conda")
 MAX_ACCEPTED_RSS_GB = 900.0
+SPATALK_FULL_MIN_AVAILABLE_GB = 500
 
 STANDARDIZED_RESULT_COLUMNS = [
     "method",
@@ -120,6 +121,23 @@ def parse_elapsed(value: str) -> float | None:
         return float(value)
     except ValueError:
         return None
+
+
+def available_memory_gb() -> int | None:
+    try:
+        completed = subprocess.run(["free", "-g"], check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except OSError:
+        return None
+    if completed.returncode != 0:
+        return None
+    for line in completed.stdout.splitlines():
+        parts = line.split()
+        if parts and parts[0].startswith("Mem:") and len(parts) >= 7:
+            try:
+                return int(parts[6])
+            except ValueError:
+                return None
+    return None
 
 
 def find_standardized(output_dir: Path, method: str) -> Path | None:
@@ -438,6 +456,9 @@ def run_niches(root: Path, tag: str) -> dict[str, Any]:
     lr = load_lr_database(root)
     base = root / "runs" / tag / "a100_rescue" / method
     summary_path = base / "rescue_summary.json"
+    existing_summary = read_json(summary_path)
+    if existing_summary.get("status") in {"success_full", "success_bounded", "method_api_failure", "failed"}:
+        return existing_summary
     summary = {"method": method, "status": "running", "started_at": utc_now(), "base_dir": str(base)}
     write_json(summary_path, summary)
 
@@ -467,6 +488,9 @@ def run_spatalk(root: Path, tag: str) -> dict[str, Any]:
     lr = load_lr_database(root)
     base = root / "runs" / tag / "a100_rescue" / method
     summary_path = base / "rescue_summary.json"
+    existing_summary = read_json(summary_path)
+    if existing_summary.get("status") in {"success_full", "success_bounded", "method_api_failure", "failed"}:
+        return existing_summary
     summary = {"method": method, "status": "running", "started_at": utc_now(), "base_dir": str(base)}
     write_json(summary_path, summary)
 
@@ -480,6 +504,13 @@ def run_spatalk(root: Path, tag: str) -> dict[str, Any]:
     pilot = run_chunked_scale(root=root, method=method, lr=lr, base_dir=base, scale_tag="pilot50k", max_cells=50000, chunk_size=50)
     if pilot.get("status") != "success":
         summary.update({"status": "success_bounded", "bounded_success": smoke, "full_failure_reason": pilot.get("reason", "50k failed"), "pilot50k_failure": pilot, "updated_at": utc_now()})
+        write_json(summary_path, summary)
+        return summary
+
+    available_gb = available_memory_gb()
+    if available_gb is not None and available_gb < SPATALK_FULL_MIN_AVAILABLE_GB:
+        reason = f"Skipped full170k because A100 available memory was {available_gb} GiB, below {SPATALK_FULL_MIN_AVAILABLE_GB} GiB guard."
+        summary.update({"status": "success_bounded", "bounded_success": pilot, "full_failure_reason": reason, "memory_guard_available_gb": available_gb, "updated_at": utc_now()})
         write_json(summary_path, summary)
         return summary
 
@@ -508,7 +539,7 @@ def main() -> None:
         payload["n_lr_pairs"] = int(len(lr))
         payload["planned"] = {
             "niches": {"full_chunk_size": 100, "fallback_chunk_size": 50, "bounded_scales": ["pilot50k", "smoke20k", "subset10k", "subset5k"]},
-            "spatalk": {"chunk_size": 50, "scales": ["smoke20k", "pilot50k", "full170k"]},
+            "spatalk": {"chunk_size": 50, "scales": ["smoke20k", "pilot50k", "full170k"], "full170k_min_available_gb": SPATALK_FULL_MIN_AVAILABLE_GB},
         }
         print(json.dumps(payload, indent=2))
         return

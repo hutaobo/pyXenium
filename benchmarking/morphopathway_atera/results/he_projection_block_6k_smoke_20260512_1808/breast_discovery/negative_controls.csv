@@ -1,0 +1,11 @@
+pathway,image_feature,observed_abs_partial_spearman_rho,n_present_genes,n_negative_controls,negative_control_empirical_p,negative_control_abs_rho_q95,negative_control_abs_rho_q99,passes_negative_control_95,passes_negative_control_99
+basal_squamous_state,embedding__he_patch_projection_012,0.15190592003718914,6,8,0.1111111111111111,0.09405679385073484,0.10990583498499577,True,True
+unfolded_protein_response,image__he_hematoxylin_proxy,0.13451582044821597,7,8,0.1111111111111111,0.10106337451734988,0.12584971028802558,True,True
+basal_squamous_state,embedding__he_patch_projection_020,0.1339004500856416,6,8,0.1111111111111111,0.08967478994628647,0.10017744042243552,True,True
+basal_squamous_state,image__he_texture_energy,0.1320706696546924,6,8,0.1111111111111111,0.06173241677818926,0.07315170396314041,True,True
+immune_exclusion,image__he_saturation_mean,0.12983348678669165,7,8,0.1111111111111111,0.11746327190390494,0.11791744028191156,True,True
+basal_squamous_state,image__he_r_std,0.12968795213746495,6,8,0.1111111111111111,0.07553144260233348,0.08443045426419708,True,True
+collagen_ecm_organization,embedding__he_patch_projection_012,0.12824541923171529,7,8,0.1111111111111111,0.08139590683365078,0.10180116377330706,True,True
+basal_squamous_state,image__he_texture_entropy,0.12587582394332555,6,8,0.1111111111111111,0.0656676446036493,0.07459730360208017,True,True
+immune_exclusion,image__he_g_mean,0.12307472551057196,7,8,0.1111111111111111,0.0703197977440997,0.07529950988815279,True,True
+basal_squamous_state,embedding__he_patch_projection_016,0.12249817908605176,6,8,0.1111111111111111,0.07112924571136428,0.0789076377970653,True,True
