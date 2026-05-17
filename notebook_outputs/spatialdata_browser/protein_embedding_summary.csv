@@ -1,0 +1,3 @@
+obsm_key,n_rows,n_dims,missing_rows,columns,source_path
+protein_expression_umap_2d,465545,2,3685,"UMAP-1, UMAP-2",/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein/analysis/umap/protein_expression_2_components/projection.csv
+protein_expression_pca_10d,465545,10,3685,"PC-1, PC-2, PC-3, PC-4, PC-5, PC-6, PC-7, PC-8, PC-9, PC-10",/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein/analysis/pca/protein_expression_10_components/projection.csv

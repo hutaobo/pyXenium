@@ -1,0 +1,1 @@
+Captures ROI origin shifts when a pathology patch is extracted from the full H&E image.

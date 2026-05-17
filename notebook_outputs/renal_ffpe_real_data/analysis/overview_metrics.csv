@@ -1,0 +1,3 @@
+source_name,n_polygons,n_structures,n_nonzero_cell_polygons,median_cells_per_polygon,mean_cells_per_polygon,patch_saved,patch_too_large,patch_empty_bbox,patch_not_recorded
+protein_cluster_contour,1121,5,1042,3.0,947.0517395182873,306,12,803,0
+gene_cluster_contour,778,3,727,1.0,1269.1568123393315,263,7,508,0

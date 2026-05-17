@@ -1,0 +1,2719 @@
+{
+  "metadata": {
+    "dataset_modality": "xenium_rna_protein",
+    "canonical_space": "physical_um",
+    "export_space": "xenium_explorer_pixel",
+    "pixel_size_um": 0.2125,
+    "pixel_size_source": "default_constant",
+    "segmentation_source": "ranger_default",
+    "base_path": "/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein"
+  },
+  "table": {
+    "table_type": "AnnData",
+    "n_obs": 465545,
+    "n_rna_features": 405,
+    "rna_storage": [
+      "adata.X",
+      "adata.layers['rna']"
+    ],
+    "protein_storage": "adata.obsm['protein']",
+    "spatial_storage": "adata.obsm['spatial']"
+  },
+  "feature_catalog": [
+    {
+      "feature_id": "ENSG00000121270",
+      "feature_name": "ABCC11",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000130234",
+      "feature_name": "ACE2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000213088",
+      "feature_name": "ACKR1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000107796",
+      "feature_name": "ACTA2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000163017",
+      "feature_name": "ACTG2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000042980",
+      "feature_name": "ADAM28",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000154734",
+      "feature_name": "ADAMTS1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000174837",
+      "feature_name": "ADGRE1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000162618",
+      "feature_name": "ADGRL4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000248144",
+      "feature_name": "ADH1C",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000198099",
+      "feature_name": "ADH4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000181092",
+      "feature_name": "ADIPOQ",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000204305",
+      "feature_name": "AGER",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000173467",
+      "feature_name": "AGR3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000169877",
+      "feature_name": "AHSP",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000204472",
+      "feature_name": "AIF1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000158578",
+      "feature_name": "ALAS2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000184254",
+      "feature_name": "ALDH1A3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000243480",
+      "feature_name": "AMY2A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000091879",
+      "feature_name": "ANGPT2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000166825",
+      "feature_name": "ANPEP",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000154856",
+      "feature_name": "APCDD1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000110243",
+      "feature_name": "APOA5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000128383",
+      "feature_name": "APOBEC3A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000178878",
+      "feature_name": "APOLD1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000167580",
+      "feature_name": "AQP2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000165272",
+      "feature_name": "AQP3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000103375",
+      "feature_name": "AQP8",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000103569",
+      "feature_name": "AQP9",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000169083",
+      "feature_name": "AR",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000112379",
+      "feature_name": "ARFGEF3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000139352",
+      "feature_name": "ASCL1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000176009",
+      "feature_name": "ASCL3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000106819",
+      "feature_name": "ASPN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000163399",
+      "feature_name": "ATP1A1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000095739",
+      "feature_name": "BAMBI",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000153064",
+      "feature_name": "BANK1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000176788",
+      "feature_name": "BASP1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000129151",
+      "feature_name": "BBOX1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000171791",
+      "feature_name": "BCL2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000153094",
+      "feature_name": "BCL2L11",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000102010",
+      "feature_name": "BMX",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000165810",
+      "feature_name": "BTNL9",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000166920",
+      "feature_name": "C15orf48",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000143110",
+      "feature_name": "C1orf162",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000179902",
+      "feature_name": "C1orf194",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000124237",
+      "feature_name": "C20orf85",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000178776",
+      "feature_name": "C5orf46",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000112539",
+      "feature_name": "C6orf118",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000112936",
+      "feature_name": "C7",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000167434",
+      "feature_name": "CA4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000203697",
+      "feature_name": "CAPN8",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000105974",
+      "feature_name": "CAV1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000177469",
+      "feature_name": "CAVIN1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000168497",
+      "feature_name": "CAVIN2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000284862",
+      "feature_name": "CCDC39",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000162004",
+      "feature_name": "CCDC78",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000172724",
+      "feature_name": "CCL19",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000213927",
+      "feature_name": "CCL27",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000271503",
+      "feature_name": "CCL5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000157456",
+      "feature_name": "CCNB2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000121807",
+      "feature_name": "CCR2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000126353",
+      "feature_name": "CCR7",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000170458",
+      "feature_name": "CD14",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000177575",
+      "feature_name": "CD163",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000177455",
+      "feature_name": "CD19",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000158477",
+      "feature_name": "CD1A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000158481",
+      "feature_name": "CD1C",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000158488",
+      "feature_name": "CD1E",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000116824",
+      "feature_name": "CD2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000198821",
+      "feature_name": "CD247",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000139193",
+      "feature_name": "CD27",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000120217",
+      "feature_name": "CD274",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000178562",
+      "feature_name": "CD28",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000186407",
+      "feature_name": "CD300E",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000174059",
+      "feature_name": "CD34",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000167286",
+      "feature_name": "CD3D",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000198851",
+      "feature_name": "CD3E",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000160654",
+      "feature_name": "CD3G",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000010610",
+      "feature_name": "CD4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENST00000697631.1",
+      "feature_name": "CD45RA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENST00000348564.12",
+      "feature_name": "CD45RO",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000073754",
+      "feature_name": "CD5L",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000129226",
+      "feature_name": "CD68",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000110848",
+      "feature_name": "CD69",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000125726",
+      "feature_name": "CD70",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000105369",
+      "feature_name": "CD79A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000112149",
+      "feature_name": "CD83",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000114013",
+      "feature_name": "CD86",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000153563",
+      "feature_name": "CD8A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000125810",
+      "feature_name": "CD93",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000039068",
+      "feature_name": "CDH1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000166589",
+      "feature_name": "CDH16",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000170558",
+      "feature_name": "CDH2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000170312",
+      "feature_name": "CDK1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000117724",
+      "feature_name": "CENPF",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000172361",
+      "feature_name": "CFAP53",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000243649",
+      "feature_name": "CFB",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000244414",
+      "feature_name": "CFHR1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000116785",
+      "feature_name": "CFHR3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000001626",
+      "feature_name": "CFTR",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000100604",
+      "feature_name": "CHGA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000016490",
+      "feature_name": "CLCA1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000137975",
+      "feature_name": "CLCA2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000132514",
+      "feature_name": "CLEC10A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000176435",
+      "feature_name": "CLEC14A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000166523",
+      "feature_name": "CLEC4E",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000184293",
+      "feature_name": "CLECL1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000159212",
+      "feature_name": "CLIC6",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000130176",
+      "feature_name": "CNN1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000100473",
+      "feature_name": "COCH",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000065618",
+      "feature_name": "COL17A1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000204262",
+      "feature_name": "COL5A2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000163751",
+      "feature_name": "CPA3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000145708",
+      "feature_name": "CRHBP",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000103196",
+      "feature_name": "CRISPLD2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000198223",
+      "feature_name": "CSF2RA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000108342",
+      "feature_name": "CSF3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000163599",
+      "feature_name": "CTLA4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000168036",
+      "feature_name": "CTNNB1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000100448",
+      "feature_name": "CTSG",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000143387",
+      "feature_name": "CTSK",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000169245",
+      "feature_name": "CXCL10",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000081041",
+      "feature_name": "CXCL2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000124875",
+      "feature_name": "CXCL6",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000138755",
+      "feature_name": "CXCL9",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000121966",
+      "feature_name": "CXCR4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000140465",
+      "feature_name": "CYP1A1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000198077",
+      "feature_name": "CYP2A7",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000197408",
+      "feature_name": "CYP2B6",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000197446",
+      "feature_name": "CYP2F1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000160868",
+      "feature_name": "CYP3A4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000142973",
+      "feature_name": "CYP4B1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000115165",
+      "feature_name": "CYTIP",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000099958",
+      "feature_name": "DERL3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000175084",
+      "feature_name": "DES",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000162595",
+      "feature_name": "DIRAS3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000187908",
+      "feature_name": "DMBT1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000154099",
+      "feature_name": "DNAAF1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000163687",
+      "feature_name": "DNASE1L3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000015413",
+      "feature_name": "DPEP1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000143196",
+      "feature_name": "DPT",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000151914",
+      "feature_name": "DST",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000158050",
+      "feature_name": "DUSP2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000249751",
+      "feature_name": "ECSCR",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000078401",
+      "feature_name": "EDN1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000136160",
+      "feature_name": "EDNRB",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000172889",
+      "feature_name": "EGFL7",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000146648",
+      "feature_name": "EGFR",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000135373",
+      "feature_name": "EHF",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000135374",
+      "feature_name": "ELF5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000119888",
+      "feature_name": "EPCAM",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000141736",
+      "feature_name": "ERBB2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000157554",
+      "feature_name": "ERG",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000091831",
+      "feature_name": "ESR1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000026103",
+      "feature_name": "FAS",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000077942",
+      "feature_name": "FBLN1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000166147",
+      "feature_name": "FBN1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000179639",
+      "feature_name": "FCER1A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000150337",
+      "feature_name": "FCGR1A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000203747",
+      "feature_name": "FCGR3A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000162747",
+      "feature_name": "FCGR3B",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000085265",
+      "feature_name": "FCN1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000160339",
+      "feature_name": "FCN2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000137440",
+      "feature_name": "FGFBP1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000137441",
+      "feature_name": "FGFBP2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000127951",
+      "feature_name": "FGL2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000115641",
+      "feature_name": "FHL2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000134285",
+      "feature_name": "FKBP11",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000129514",
+      "feature_name": "FOXA1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000168269",
+      "feature_name": "FOXI1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000129654",
+      "feature_name": "FOXJ1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000049768",
+      "feature_name": "FOXP3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000070404",
+      "feature_name": "FSTL3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000137731",
+      "feature_name": "FXYD2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000179348",
+      "feature_name": "GATA2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000107485",
+      "feature_name": "GATA3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000171766",
+      "feature_name": "GATM",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000115263",
+      "feature_name": "GCG",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000130513",
+      "feature_name": "GDF15",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000164949",
+      "feature_name": "GEM",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000157017",
+      "feature_name": "GHRL",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000183607",
+      "feature_name": "GKN2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000139278",
+      "feature_name": "GLIPR1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000166840",
+      "feature_name": "GLYATL1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000127920",
+      "feature_name": "GNG11",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000115523",
+      "feature_name": "GNLY",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000063660",
+      "feature_name": "GPC1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000147257",
+      "feature_name": "GPC3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000169508",
+      "feature_name": "GPR183",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000013588",
+      "feature_name": "GPRC5A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000176153",
+      "feature_name": "GPX2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000170180",
+      "feature_name": "GYPA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000250361",
+      "feature_name": "GYPB",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000145649",
+      "feature_name": "GZMA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000100453",
+      "feature_name": "GZMB",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000113088",
+      "feature_name": "GZMK",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000105697",
+      "feature_name": "HAMP",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000135077",
+      "feature_name": "HAVCR2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000136929",
+      "feature_name": "HEMGN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000188175",
+      "feature_name": "HEPACAM2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000188290",
+      "feature_name": "HES4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000131097",
+      "feature_name": "HIGD1B",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000232629",
+      "feature_name": "HLA-DQB2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000204287",
+      "feature_name": "HLA-DRA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000196126",
+      "feature_name": "HLA-DRB1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000198502",
+      "feature_name": "HLA-DRB5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000134240",
+      "feature_name": "HMGCS2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000163106",
+      "feature_name": "HPGDS",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000110169",
+      "feature_name": "HPX",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000017427",
+      "feature_name": "IGF1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000140749",
+      "feature_name": "IGSF6",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000115590",
+      "feature_name": "IL1R2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000115602",
+      "feature_name": "IL1RL1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000134460",
+      "feature_name": "IL2RA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000185291",
+      "feature_name": "IL3RA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000168685",
+      "feature_name": "IL7R",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000241644",
+      "feature_name": "INMT",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000254647",
+      "feature_name": "INS",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000140968",
+      "feature_name": "IRF8",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000140678",
+      "feature_name": "ITGAX",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000171303",
+      "feature_name": "KCNK3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000156113",
+      "feature_name": "KCNMA1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000157404",
+      "feature_name": "KIT",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000167757",
+      "feature_name": "KLK11",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000111796",
+      "feature_name": "KLRB1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000134545",
+      "feature_name": "KLRC1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000134539",
+      "feature_name": "KLRD1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000113889",
+      "feature_name": "KNG1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000171401",
+      "feature_name": "KRT13",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000111057",
+      "feature_name": "KRT18",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000171431",
+      "feature_name": "KRT20",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000170477",
+      "feature_name": "KRT4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000186081",
+      "feature_name": "KRT5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000205420",
+      "feature_name": "KRT6A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000135480",
+      "feature_name": "KRT7",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000170421",
+      "feature_name": "KRT8",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000089692",
+      "feature_name": "LAG3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000078081",
+      "feature_name": "LAMP3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000153902",
+      "feature_name": "LGI4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000139292",
+      "feature_name": "LGR5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000128342",
+      "feature_name": "LIF",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000239961",
+      "feature_name": "LILRA4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000187116",
+      "feature_name": "LILRA5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000131042",
+      "feature_name": "LILRB2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000186818",
+      "feature_name": "LILRB4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000175445",
+      "feature_name": "LPL",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000119681",
+      "feature_name": "LTBP2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000167656",
+      "feature_name": "LY6D",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000112799",
+      "feature_name": "LY86",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000133800",
+      "feature_name": "LYVE1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000144063",
+      "feature_name": "MALL",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000165072",
+      "feature_name": "MAMDC2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000019169",
+      "feature_name": "MARCO",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000183019",
+      "feature_name": "MCEMP1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000126217",
+      "feature_name": "MCF2L",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000135679",
+      "feature_name": "MDM2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000102802",
+      "feature_name": "MEDAG",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000081189",
+      "feature_name": "MEF2C",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000106484",
+      "feature_name": "MEST",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000105976",
+      "feature_name": "MET",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000197614",
+      "feature_name": "MFAP5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000148773",
+      "feature_name": "MKI67",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000120215",
+      "feature_name": "MLANA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000115648",
+      "feature_name": "MLPH",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000138722",
+      "feature_name": "MMRN1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000173269",
+      "feature_name": "MMRN2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000163563",
+      "feature_name": "MNDA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000197629",
+      "feature_name": "MPEG1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000260314",
+      "feature_name": "MRC1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000156738",
+      "feature_name": "MS4A1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000149534",
+      "feature_name": "MS4A2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000110079",
+      "feature_name": "MS4A4A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000110077",
+      "feature_name": "MS4A6A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000270188",
+      "feature_name": "MTRNR2L11",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000185499",
+      "feature_name": "MUC1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000196091",
+      "feature_name": "MYBPC1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000136997",
+      "feature_name": "MYC",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000133392",
+      "feature_name": "MYH11",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000065534",
+      "feature_name": "MYLK",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000170476",
+      "feature_name": "MZB1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000144035",
+      "feature_name": "NAT8",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000149294",
+      "feature_name": "NCAM1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000105374",
+      "feature_name": "NKG7",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000107281",
+      "feature_name": "NPDC1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000074527",
+      "feature_name": "NTN4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000106809",
+      "feature_name": "OGN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000171199",
+      "feature_name": "OPRPN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000132646",
+      "feature_name": "PCNA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000106333",
+      "feature_name": "PCOLCE",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000183036",
+      "feature_name": "PCP4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000125851",
+      "feature_name": "PCSK2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000188389",
+      "feature_name": "PDCD1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000134853",
+      "feature_name": "PDGFRA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000113721",
+      "feature_name": "PDGFRB",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000162493",
+      "feature_name": "PDPN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000134020",
+      "feature_name": "PEBP4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000261371",
+      "feature_name": "PECAM1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000082175",
+      "feature_name": "PGR",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000146070",
+      "feature_name": "PLA2G7",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000189129",
+      "feature_name": "PLAC9",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000197943",
+      "feature_name": "PLCG2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000166428",
+      "feature_name": "PLD4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000167676",
+      "feature_name": "PLIN4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000109099",
+      "feature_name": "PMP22",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000132170",
+      "feature_name": "PPARG",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000135447",
+      "feature_name": "PPP1R1A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000131771",
+      "feature_name": "PPP1R1B",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000108849",
+      "feature_name": "PPY",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000057657",
+      "feature_name": "PRDM1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000180644",
+      "feature_name": "PRF1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000116690",
+      "feature_name": "PRG4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000117707",
+      "feature_name": "PROX1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000171862",
+      "feature_name": "PTEN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000107317",
+      "feature_name": "PTGDS",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000105894",
+      "feature_name": "PTN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000081237",
+      "feature_name": "PTPRC",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000100362",
+      "feature_name": "PVALB",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000131477",
+      "feature_name": "RAMP2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000079337",
+      "feature_name": "RAPGEF3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000139194",
+      "feature_name": "RBP5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000111404",
+      "feature_name": "RERGL",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000104918",
+      "feature_name": "RETN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000143333",
+      "feature_name": "RGS16",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000132541",
+      "feature_name": "RIDA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000172602",
+      "feature_name": "RND1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000182010",
+      "feature_name": "RTKN2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000160678",
+      "feature_name": "S100A1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000163221",
+      "feature_name": "S100A12",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000160307",
+      "feature_name": "S100B",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000124939",
+      "feature_name": "SCGB2A1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000079689",
+      "feature_name": "SCGN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000115884",
+      "feature_name": "SDC1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000007908",
+      "feature_name": "SELE",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000188404",
+      "feature_name": "SELL",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000075223",
+      "feature_name": "SEMA3C",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000197632",
+      "feature_name": "SERPINB2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000057149",
+      "feature_name": "SERPINB3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000170542",
+      "feature_name": "SERPINB9",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000145423",
+      "feature_name": "SFRP2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000106483",
+      "feature_name": "SFRP4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000196260",
+      "feature_name": "SFTA2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000095370",
+      "feature_name": "SH2D3C",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000117090",
+      "feature_name": "SLAMF1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000026751",
+      "feature_name": "SLAMF7",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000165646",
+      "feature_name": "SLC18A2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000149452",
+      "feature_name": "SLC22A8",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000155850",
+      "feature_name": "SLC26A2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000091138",
+      "feature_name": "SLC26A3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000004939",
+      "feature_name": "SLC4A1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000095932",
+      "feature_name": "SMIM24",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000143499",
+      "feature_name": "SMYD2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000124216",
+      "feature_name": "SNAI1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000145335",
+      "feature_name": "SNCA",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000173267",
+      "feature_name": "SNCG",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000188817",
+      "feature_name": "SNTN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000164736",
+      "feature_name": "SOX17",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000203883",
+      "feature_name": "SOX18",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000181449",
+      "feature_name": "SOX2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000124664",
+      "feature_name": "SPDEF",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000066336",
+      "feature_name": "SPI1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000269404",
+      "feature_name": "SPIB",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000101955",
+      "feature_name": "SRPX",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000157005",
+      "feature_name": "SST",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000159167",
+      "feature_name": "STC1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000113739",
+      "feature_name": "STC2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000127954",
+      "feature_name": "STEAP4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000006128",
+      "feature_name": "TAC1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000198650",
+      "feature_name": "TAT",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000135111",
+      "feature_name": "TBX3",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000125878",
+      "feature_name": "TCF15",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000196628",
+      "feature_name": "TCF4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000176907",
+      "feature_name": "TCIM",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000100721",
+      "feature_name": "TCL1A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000183508",
+      "feature_name": "TENT5C",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000160181",
+      "feature_name": "TFF2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000003436",
+      "feature_name": "TFPI",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000173451",
+      "feature_name": "THAP2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000186340",
+      "feature_name": "THBS2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000154096",
+      "feature_name": "THY1",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000181847",
+      "feature_name": "TIGIT",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000157150",
+      "feature_name": "TIMP4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000163762",
+      "feature_name": "TM4SF18",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000169903",
+      "feature_name": "TM4SF4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000103534",
+      "feature_name": "TMC5",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000166292",
+      "feature_name": "TMEM100",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000164325",
+      "feature_name": "TMEM174",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000165685",
+      "feature_name": "TMEM52B",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000041982",
+      "feature_name": "TNC",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000240505",
+      "feature_name": "TNFRSF13B",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000048462",
+      "feature_name": "TNFRSF17",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000049249",
+      "feature_name": "TNFRSF9",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000131747",
+      "feature_name": "TOP2A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000277734",
+      "feature_name": "TRAC",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000095970",
+      "feature_name": "TREM2",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000231738",
+      "feature_name": "TSPAN19",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000175063",
+      "feature_name": "UBE2C",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000169344",
+      "feature_name": "UMOD",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000243566",
+      "feature_name": "UPK3B",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000038427",
+      "feature_name": "VCAN",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000026025",
+      "feature_name": "VIM",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000155659",
+      "feature_name": "VSIG4",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000107738",
+      "feature_name": "VSIR",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000110002",
+      "feature_name": "VWA5A",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "ENSG00000110799",
+      "feature_name": "VWF",
+      "feature_modality": "rna",
+      "storage_location": "adata.X|adata.layers['rna']"
+    },
+    {
+      "feature_id": "PD-1",
+      "feature_name": "PD-1",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "VISTA",
+      "feature_name": "VISTA",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "PD-L1",
+      "feature_name": "PD-L1",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "LAG-3",
+      "feature_name": "LAG-3",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD16",
+      "feature_name": "CD16",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "GranzymeB",
+      "feature_name": "GranzymeB",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD163",
+      "feature_name": "CD163",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD4",
+      "feature_name": "CD4",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD20",
+      "feature_name": "CD20",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD8A",
+      "feature_name": "CD8A",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD3E",
+      "feature_name": "CD3E",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD138",
+      "feature_name": "CD138",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "HLA-DR",
+      "feature_name": "HLA-DR",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD11c",
+      "feature_name": "CD11c",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD68",
+      "feature_name": "CD68",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD45RA",
+      "feature_name": "CD45RA",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "PCNA",
+      "feature_name": "PCNA",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD45RO",
+      "feature_name": "CD45RO",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "Ki-67",
+      "feature_name": "Ki-67",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "Beta-catenin",
+      "feature_name": "Beta-catenin",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD31",
+      "feature_name": "CD31",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "PTEN",
+      "feature_name": "PTEN",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "PanCK",
+      "feature_name": "PanCK",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "Vimentin",
+      "feature_name": "Vimentin",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "alphaSMA",
+      "feature_name": "alphaSMA",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "CD45",
+      "feature_name": "CD45",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    },
+    {
+      "feature_id": "E-Cadherin",
+      "feature_name": "E-Cadherin",
+      "feature_modality": "protein",
+      "storage_location": "adata.obsm['protein']"
+    }
+  ],
+  "points": {
+    "transcripts": {
+      "path": "/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein/transcripts.parquet",
+      "space": "physical_um",
+      "transform_id": "identity_um",
+      "description": "RNA transcript points in the canonical micron space."
+    }
+  },
+  "images": {
+    "morphology_focus": {
+      "name": "morphology_focus",
+      "path": "/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein/morphology.ome.tif",
+      "native_space": "xenium_explorer_pixel",
+      "transform_id": "pixel_to_um",
+      "image_type": "morphology",
+      "metadata": {}
+    },
+    "he_image": {
+      "name": "he_image",
+      "path": "/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein/Xenium_V1_Human_Kidney_FFPE_Protein_he_image.ome.tif",
+      "native_space": "xenium_explorer_pixel",
+      "transform_id": "pixel_to_um",
+      "image_type": "he",
+      "metadata": {}
+    }
+  },
+  "labels": {
+    "cell_labels": {
+      "storage": "adata.uns['cell_boundaries']",
+      "path": "/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein/cell_boundaries.csv.gz",
+      "native_space": "xenium_explorer_pixel",
+      "transform_id": "pixel_to_um"
+    },
+    "nucleus_labels": {
+      "storage": "adata.uns['nucleus_boundaries']",
+      "path": "/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein/nucleus_boundaries.csv.gz",
+      "native_space": "xenium_explorer_pixel",
+      "transform_id": "pixel_to_um"
+    }
+  },
+  "shapes": {
+    "structure_polygons": {
+      "storage": "adata.uns['cell_boundaries']",
+      "geometry_type": "polygon",
+      "canonical_space": "physical_um"
+    },
+    "roi_polygons": {
+      "storage": "adata.uns['nucleus_boundaries']",
+      "geometry_type": "polygon",
+      "canonical_space": "physical_um"
+    }
+  },
+  "transforms": {
+    "identity_um": {
+      "transform_id": "identity_um",
+      "source_space": "physical_um",
+      "target_space": "physical_um",
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "translation_x": 0.0,
+      "translation_y": 0.0,
+      "axes": [
+        "x",
+        "y"
+      ],
+      "units": "um",
+      "metadata": {}
+    },
+    "pixel_to_um": {
+      "transform_id": "pixel_to_um",
+      "source_space": "xenium_explorer_pixel",
+      "target_space": "physical_um",
+      "scale_x": 0.2125,
+      "scale_y": 0.2125,
+      "translation_x": 0.0,
+      "translation_y": 0.0,
+      "axes": [
+        "x",
+        "y"
+      ],
+      "units": "pixel",
+      "metadata": {
+        "pixel_size_um": 0.2125
+      }
+    },
+    "um_to_pixel": {
+      "transform_id": "um_to_pixel",
+      "source_space": "physical_um",
+      "target_space": "xenium_explorer_pixel",
+      "scale_x": 4.705882352941177,
+      "scale_y": 4.705882352941177,
+      "translation_x": 0.0,
+      "translation_y": 0.0,
+      "axes": [
+        "x",
+        "y"
+      ],
+      "units": "um",
+      "metadata": {
+        "pixel_size_um": 0.2125
+      }
+    }
+  }
+}

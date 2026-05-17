@@ -1,0 +1,11 @@
+element_type,name,descriptor,coordinate_systems
+images,he_image,"(3, 60680, 24096)",global
+labels,cell_labels,"{'scale0': (27328, 54002), 'scale1': (13664, 27001), 'scale2': (6832, 13500), 'scale3': (3416, 6750), 'scale4': (1708, 3375)}",global
+labels,nucleus_labels,"{'scale0': (27328, 54002), 'scale1': (13664, 27001), 'scale2': (6832, 13500), 'scale3': (3416, 6750), 'scale4': (1708, 3375)}",global
+points,transcripts,"(Delayed('int-78e05e00-71d4-4fce-bb2b-695508dfc40c'), 13)",global
+shapes,cell_boundaries,"(465545, 1)",global
+shapes,cell_circles,"(465545, 2)",global
+shapes,gene_cluster_contours,"(778, 12)",global
+shapes,nucleus_boundaries,"(459268, 1)",global
+shapes,protein_cluster_contours,"(1121, 12)",global
+tables,table,"(465545, 432)",<unavailable>

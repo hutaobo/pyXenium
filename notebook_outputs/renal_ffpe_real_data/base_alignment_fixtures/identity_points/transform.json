@@ -1,0 +1,16 @@
+{
+  "case_id": "identity_points",
+  "description": "Transcript centroids remain unchanged inside the canonical micron space.",
+  "source_space": "physical_um",
+  "target_space": "physical_um",
+  "transform_chain": [
+    {
+      "kind": "identity"
+    }
+  ],
+  "axes": [
+    "x",
+    "y"
+  ],
+  "units": "um"
+}

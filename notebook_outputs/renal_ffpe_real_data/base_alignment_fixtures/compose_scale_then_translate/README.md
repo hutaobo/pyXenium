@@ -1,0 +1,1 @@
+Represents the composed transform used when a polygon is exported, then cropped into an H&E review patch.

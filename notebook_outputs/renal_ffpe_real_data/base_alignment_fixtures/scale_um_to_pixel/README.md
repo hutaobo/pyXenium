@@ -1,0 +1,1 @@
+Validates the explicit micron-to-pixel conversion used before Xenium Explorer export.

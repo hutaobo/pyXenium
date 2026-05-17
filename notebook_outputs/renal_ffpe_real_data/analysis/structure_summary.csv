@@ -1,0 +1,9 @@
+source_name,assigned_structure,polygon_count,total_cells,median_cells,median_bbox_area_px
+gene_cluster_contour,Structure 3,294,423572,2.0,2339.528357662366
+gene_cluster_contour,Structure 1,270,136973,2.0,4679.056625351842
+gene_cluster_contour,Structure 2,214,426859,1.0,2339.5283576623315
+protein_cluster_contour,Structure 1,395,345379,2.0,4679.056595361306
+protein_cluster_contour,Structure 3,379,462171,2.0,2339.528357662366
+protein_cluster_contour,Structure 2,214,94787,20.0,95920.66143748097
+protein_cluster_contour,Structure 5,110,123913,43.5,78374.1990219798
+protein_cluster_contour,Structure 4,23,35395,806.0,968564.7283334957

@@ -1,0 +1,15 @@
+{
+  "he_path": "/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein/Xenium_V1_Human_Kidney_FFPE_Protein_he_image.ome.tif",
+  "alignment_csv": "/Volumes/mn-moldia/long/10X_datasets/Xenium/Xenium_Renal/Xenium_V1_Human_Kidney_FFPE_Protein/Xenium_V1_Human_Kidney_FFPE_Protein_he_imagealignment.csv",
+  "pyramid_level": 5,
+  "thumbnail_path": "/Users/hutaobo/Documents/GitHub/pyXenium/notebook_outputs/renal_ffpe_real_data/analysis/he_thumbnail_level5.png",
+  "scale_x": 32.0,
+  "scale_y": 31.98734844491302,
+  "outputs": {
+    "protein_overlay": "/Users/hutaobo/Documents/GitHub/pyXenium/notebook_outputs/renal_ffpe_real_data/analysis/he_thumbnail_protein_cluster_aligned_overlay.png",
+    "gene_overlay": "/Users/hutaobo/Documents/GitHub/pyXenium/notebook_outputs/renal_ffpe_real_data/analysis/he_thumbnail_gene_cluster_aligned_overlay.png",
+    "combined_overlay": "/Users/hutaobo/Documents/GitHub/pyXenium/notebook_outputs/renal_ffpe_real_data/analysis/he_thumbnail_combined_aligned_overlay.png",
+    "protein_structure_overlay": "/Users/hutaobo/Documents/GitHub/pyXenium/notebook_outputs/renal_ffpe_real_data/analysis/he_thumbnail_protein_cluster_by_structure_aligned_overlay.png",
+    "gene_structure_overlay": "/Users/hutaobo/Documents/GitHub/pyXenium/notebook_outputs/renal_ffpe_real_data/analysis/he_thumbnail_gene_cluster_by_structure_aligned_overlay.png"
+  }
+}

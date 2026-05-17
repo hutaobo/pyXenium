@@ -1,0 +1,23 @@
+{
+  "case_id": "compose_scale_then_translate",
+  "description": "Compose a micron-to-pixel scaling step with a patch-local translation for polygon review bundles.",
+  "source_space": "physical_um",
+  "target_space": "he_patch_pixel",
+  "transform_chain": [
+    {
+      "kind": "scale",
+      "scale_x": 4.705882352941177,
+      "scale_y": 4.705882352941177
+    },
+    {
+      "kind": "translation",
+      "translation_x": -32.0,
+      "translation_y": -16.0
+    }
+  ],
+  "axes": [
+    "x",
+    "y"
+  ],
+  "units": "um_to_pixel"
+}

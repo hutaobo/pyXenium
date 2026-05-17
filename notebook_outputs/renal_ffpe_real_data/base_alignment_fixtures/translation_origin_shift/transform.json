@@ -1,0 +1,18 @@
+{
+  "case_id": "translation_origin_shift",
+  "description": "Account for origin shifts introduced by H&E subregion extraction or ROI remapping.",
+  "source_space": "xenium_explorer_pixel",
+  "target_space": "xenium_explorer_pixel_shifted",
+  "transform_chain": [
+    {
+      "kind": "translation",
+      "translation_x": 128.0,
+      "translation_y": 64.0
+    }
+  ],
+  "axes": [
+    "x",
+    "y"
+  ],
+  "units": "pixel"
+}

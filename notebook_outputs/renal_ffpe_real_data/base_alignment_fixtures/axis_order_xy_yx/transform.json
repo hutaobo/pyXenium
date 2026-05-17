@@ -1,0 +1,16 @@
+{
+  "case_id": "axis_order_xy_yx",
+  "description": "Make x/y versus row/column conventions explicit for image-linked modalities.",
+  "source_space": "physical_um",
+  "target_space": "image_row_col",
+  "transform_chain": [
+    {
+      "kind": "axis_swap"
+    }
+  ],
+  "axes": [
+    "x",
+    "y"
+  ],
+  "units": "um"
+}

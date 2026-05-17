@@ -1,0 +1,1 @@
+Checks that RNA transcript coordinates are stable when no transform is applied.

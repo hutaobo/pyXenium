@@ -1,0 +1,18 @@
+{
+  "case_id": "scale_um_to_pixel",
+  "description": "Convert transcript, protein ROI, and polygon coordinates from micron space to Xenium Explorer pixels.",
+  "source_space": "physical_um",
+  "target_space": "xenium_explorer_pixel",
+  "transform_chain": [
+    {
+      "kind": "scale",
+      "scale_x": 4.705882352941177,
+      "scale_y": 4.705882352941177
+    }
+  ],
+  "axes": [
+    "x",
+    "y"
+  ],
+  "units": "um_to_pixel"
+}
