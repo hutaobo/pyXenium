@@ -61,6 +61,10 @@ P_{\mathrm{emp}} =
 
 The permutation mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence, registration uncertainty or biological coupling induced by the original spatial-omics contour construction. Spatial block bootstrap resampled centroid x/y spatial blocks and recomputed \(\rho\) to estimate 95% confidence intervals. Additional sensitivity checks recomputed candidate associations after leaving out each spatial block, compared observed pairings with local mismatched-pair controls and jittered centroid covariates by up to 1% of slide span.
 
+For registration perturbation, existing tile-level embeddings were reassigned to contour polygons after 23 small coordinate perturbations: x/y translations of 8-32 pixels, rotations of 0.25-0.5 degrees, 0.5% scale changes and mild combined shifts. Candidate contour-level embedding means were recomputed after each reassignment and tested against the same WTA program values and covariates. This test probes whether the reported associations are brittle to small tile-to-contour registration changes without rerunning the H&E encoder.
+
+For nested spatial holdout, contours were partitioned into a 4 by 4 centroid grid. In each fold, the embedding dimension was selected using only the training spatial blocks, and the selected feature and the locked manuscript feature were then evaluated on the held-out block. This stricter check is reported as fold-level sign stability, not as a new discovery screen, because small held-out blocks can be noisy for weaker cross-cancer/model stress-test candidates.
+
 ## Boundary co-variation
 
 Boundary profiles were computed in distance rings around selected tissue interfaces. For each selected program-feature pair, WTA program values and oriented H&E feature values were summarized across signed distance bins from contour boundaries. Candidate molecularly active zones were described only as ring-level H&E-WTA co-variation. No causal, temporal or directional boundary interpretation is claimed.
@@ -71,11 +75,11 @@ HistoSeg contour-generation software is maintained at [https://github.com/hutaob
 
 ## Data availability
 
-Source data are provided for Fig. 1 panels, spatial permutation defense, block-bootstrap summaries, cross-cancer program-family summaries, MAZ quality-control table, hero-patch metadata, spatial-sensitivity summaries and component-gene audits. Raw 10x Genomics Atera WTA and H&E input files are not redistributed by this manuscript package and should be obtained from the original public/vendor example dataset source pages. No IHC or protein-validation data were generated for this study.
+Source data are provided for Fig. 1 panels, spatial permutation defense, block-bootstrap summaries, cross-cancer program-family summaries, MAZ quality-control table, hero-patch metadata, spatial-sensitivity summaries, component-gene audits, registration-perturbation tests and nested spatial holdout tests. Raw 10x Genomics Atera WTA and H&E input files are not redistributed by this manuscript package and should be obtained from the original public/vendor example dataset source pages. No IHC or protein-validation data were generated for this study.
 
 ## Code availability
 
-The mTM analysis code is available in pyXenium v0.4.6 at [https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6](https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6). The science-hardened initial-submission manuscript package is archived under the repository release `nbt-initial-submission-20260516-science-hardening` at [https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516-science-hardening](https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516-science-hardening). Manuscript-level full replication scripts are provided under `manuscript/mtm_wta_nbt_replication/`. HistoSeg contour-generation software is maintained separately in HistoSeg.
+The mTM analysis code is available in pyXenium v0.4.6 at [https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6](https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6). The registration/nested-holdout hardened initial-submission manuscript package is archived under the repository release `nbt-initial-submission-20260517-registration-nested-hardening` at [https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260517-registration-nested-hardening](https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260517-registration-nested-hardening). Manuscript-level full replication scripts are provided under `manuscript/mtm_wta_nbt_replication/`. HistoSeg contour-generation software is maintained separately in HistoSeg.
 
 ## Large language model assistance
 

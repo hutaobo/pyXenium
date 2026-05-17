@@ -32,6 +32,13 @@ EXPECTED_SOURCE_DATA = [
     "Figure_1c_BlockBootstrap_Source_Data.csv",
     "Figure_1d_MAZ_QC_Source_Data.csv",
     "Figure_1e_CrossCancer_Signature_Source_Data.csv",
+    "Supplementary_Table_5_SpatialSensitivity_Source_Data.csv",
+    "Supplementary_Table_6_GeneComponent_Summary_Source_Data.csv",
+    "Supplementary_Table_6_GeneComponent_Long_Source_Data.csv",
+    "Supplementary_Table_7_RegistrationPerturbation_Summary_Source_Data.csv",
+    "Supplementary_Table_7_RegistrationPerturbation_Long_Source_Data.csv",
+    "Supplementary_Table_8_NestedSpatialHoldout_Summary_Source_Data.csv",
+    "Supplementary_Table_8_NestedSpatialHoldout_Long_Source_Data.csv",
 ]
 
 EXPECTED_MAIN_VALUES = {
@@ -150,6 +157,21 @@ def compare_source_data_to_si(source_dir: Path, si_path: Path) -> dict[str, int]
             if cells[4] != f"{float(row['oriented_he_embedding_z']):.2f}":
                 mismatches.append(f"Table 4 H&E z mismatch for {row['contour_id']}")
 
+    gene = read_csv(source_dir / "Supplementary_Table_6_GeneComponent_Summary_Source_Data.csv")
+    t6 = table_after(si, "### Supplementary Table 6")
+    if len(t6) != len(gene):
+        mismatches.append(f"Table 6 row count {len(t6)} != gene summary CSV {len(gene)}")
+
+    registration = read_csv(source_dir / "Supplementary_Table_7_RegistrationPerturbation_Summary_Source_Data.csv")
+    t7 = table_after(si, "### Supplementary Table 7")
+    if len(t7) != len(registration):
+        mismatches.append(f"Table 7 row count {len(t7)} != registration summary CSV {len(registration)}")
+
+    nested = read_csv(source_dir / "Supplementary_Table_8_NestedSpatialHoldout_Summary_Source_Data.csv")
+    t8 = table_after(si, "### Supplementary Table 8")
+    if len(t8) != len(nested):
+        mismatches.append(f"Table 8 row count {len(t8)} != nested holdout summary CSV {len(nested)}")
+
     if mismatches:
         raise CheckError("; ".join(mismatches))
     return {
@@ -157,6 +179,9 @@ def compare_source_data_to_si(source_dir: Path, si_path: Path) -> dict[str, int]
         "supplementary_table_2_rows": len(boot),
         "supplementary_table_3_rows": len(sig),
         "supplementary_table_4_rows": len(hero),
+        "supplementary_table_6_rows": len(gene),
+        "supplementary_table_7_rows": len(registration),
+        "supplementary_table_8_rows": len(nested),
     }
 
 

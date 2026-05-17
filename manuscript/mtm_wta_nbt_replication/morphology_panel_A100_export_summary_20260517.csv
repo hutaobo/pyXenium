@@ -1,0 +1,7 @@
+program,polarity,copy_status,n_patches
+program__wta_luminal_estrogen_response,high_oriented_axis,copied,4
+program__wta_luminal_estrogen_response,low_oriented_axis,copied,4
+program__wta_oxidative_phosphorylation,high_oriented_axis,copied,4
+program__wta_oxidative_phosphorylation,low_oriented_axis,copied,4
+program__wta_unfolded_protein_response,high_oriented_axis,copied,4
+program__wta_unfolded_protein_response,low_oriented_axis,copied,4

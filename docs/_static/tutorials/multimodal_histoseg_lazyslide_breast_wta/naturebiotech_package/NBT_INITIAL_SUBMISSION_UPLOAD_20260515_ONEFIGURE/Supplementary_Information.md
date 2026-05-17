@@ -32,7 +32,7 @@ Contour-level molecular and image features were rank transformed and residualize
 
 For the spatial-null defense, molecular residuals were permuted within strata preserving contour label, centroid-position bins and boundary-distance bins. This retains coarse compartmental and spatial organization while breaking contour-wise H&E-to-WTA pairing. Empirical P values were calculated as `(1 + sum_b 1{|rho_b^null| >= |rho_obs|}) / (1 + B)`. The permutation mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence, registration uncertainty or biological coupling induced by the original spatial-omics contour construction. Spatial block bootstrap resampled centroid x/y quartile blocks to estimate confidence intervals.
 
-Additional A100 sensitivity checks were run after the locked source-data package was assembled. Candidate associations were recomputed after leaving out each of 16 spatial blocks, compared with 1,000 local mismatched-pair controls and recalculated under centroid-covariate jitter up to 1% of slide span. Component-gene audits recomputed contour-level means for genes inside the selected breast S3 WTA programs and tested whether the reported H&E embedding axis tracked these component genes under the same residual framework. These checks strengthen transcript-level consistency but do not replace independent IHC/protein validation.
+Additional A100 sensitivity checks were run after the locked source-data package was assembled. Candidate associations were recomputed after leaving out each of 16 spatial blocks, compared with 1,000 local mismatched-pair controls and recalculated under centroid-covariate jitter up to 1% of slide span. Existing tile embeddings were also reassigned under 23 small registration perturbations, including translations, rotations, scale changes and mild combined shifts, before recomputing candidate contour-level embedding means and residual associations. In a nested spatial holdout check, embedding features were selected using only training spatial blocks and evaluated on held-out blocks. Component-gene audits recomputed contour-level means for genes inside the selected breast S3 WTA programs and tested whether the reported H&E embedding axis tracked these component genes under the same residual framework. These checks strengthen transcript-level and statistical consistency but do not replace independent IHC/protein validation.
 
 ### Boundary co-variation analysis
 
@@ -50,6 +50,10 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 | `Supplementary_Table_5_SpatialSensitivity_Source_Data.csv` | A100 leave-one-block, local mismatch and centroid-jitter sensitivity summary |
 | `Supplementary_Table_6_GeneComponent_Summary_Source_Data.csv` | breast S3 PLIP component-gene audit summary |
 | `Supplementary_Table_6_GeneComponent_Long_Source_Data.csv` | per-gene component audit values for selected breast S3 PLIP programs |
+| `Supplementary_Table_7_RegistrationPerturbation_Summary_Source_Data.csv` | A100 registration-perturbation summary by candidate |
+| `Supplementary_Table_7_RegistrationPerturbation_Long_Source_Data.csv` | per-perturbation registration-sensitivity values |
+| `Supplementary_Table_8_NestedSpatialHoldout_Summary_Source_Data.csv` | nested spatial holdout summary by candidate |
+| `Supplementary_Table_8_NestedSpatialHoldout_Long_Source_Data.csv` | per-fold nested holdout values |
 
 ## Supplementary Tables
 
@@ -144,6 +148,52 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 | unfolded_protein_response | 9 | 157 | 0.515 | 0.285 | 0.78 | 1.00 | XBP1 |
 | oxidative_phosphorylation | 8 | 157 | 0.531 | 0.341 | 0.88 | 1.00 | COX6C |
 
+### Supplementary Table 7. Registration perturbation sensitivity
+
+| Dataset | Model | Program | Perturbations | Base rho | Median perturbed rho | Max abs delta rho | Sign-stable fraction | Min assignment fraction |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Breast | PLIP | luminal_estrogen_response | 23 | -0.652 | -0.652 | 0.054 | 1.000 | 0.999 |
+| Breast | PLIP | unfolded_protein_response | 23 | 0.523 | 0.520 | 0.038 | 1.000 | 0.999 |
+| Breast | PLIP | oxidative_phosphorylation | 23 | 0.536 | 0.536 | 0.041 | 1.000 | 0.999 |
+| Cervical | PLIP | myofibroblast_caf_activation | 23 | -0.555 | -0.548 | 0.077 | 1.000 | 0.999 |
+| Cervical | PLIP | emt_invasive_front | 23 | 0.552 | 0.552 | 0.031 | 1.000 | 0.999 |
+| Cervical | PLIP | tls_adjacent_activation | 23 | 0.551 | 0.546 | 0.034 | 1.000 | 0.999 |
+| Cervical | PLIP | collagen_ecm_organization | 23 | -0.546 | -0.543 | 0.066 | 1.000 | 0.999 |
+| Cervical | PLIP | immune_exclusion | 23 | 0.544 | 0.534 | 0.062 | 1.000 | 0.999 |
+| Cervical | PLIP | stromal_encapsulation | 23 | 0.541 | 0.535 | 0.060 | 1.000 | 0.999 |
+| Cervical | PLIP | epithelial_identity | 23 | 0.522 | 0.509 | 0.137 | 1.000 | 0.999 |
+| Cervical | PLIP | immune_activation | 23 | 0.505 | 0.519 | 0.045 | 1.000 | 0.999 |
+| Cervical | PLIP | oxidative_phosphorylation | 23 | -0.487 | -0.492 | 0.071 | 1.000 | 0.999 |
+| Cervical | PLIP | emt_invasion | 23 | 0.479 | 0.465 | 0.070 | 1.000 | 0.999 |
+
+### Supplementary Table 8. Nested spatial holdout
+
+| Dataset | Model | Program | Folds | Base locked rho | Median held-out selected rho | Selected sign-match fraction | Locked sign-match fraction | Locked-feature reuse fraction |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Breast | PLIP | luminal_estrogen_response | 16 | -0.652 | -0.637 | 0.938 | 0.938 | 1.000 |
+| Breast | PLIP | unfolded_protein_response | 16 | 0.523 | 0.462 | 0.750 | 0.750 | 1.000 |
+| Breast | PLIP | oxidative_phosphorylation | 16 | 0.536 | 0.367 | 0.750 | 0.812 | 0.000 |
+| Cervical | PLIP | myofibroblast_caf_activation | 16 | -0.555 | -0.486 | 0.750 | 0.812 | 0.875 |
+| Cervical | PLIP | emt_invasive_front | 16 | 0.552 | 0.626 | 0.750 | 0.750 | 1.000 |
+| Cervical | PLIP | tls_adjacent_activation | 16 | 0.551 | 0.516 | 0.625 | 0.625 | 0.688 |
+| Cervical | PLIP | collagen_ecm_organization | 16 | -0.546 | -0.531 | 0.562 | 0.625 | 0.750 |
+| Cervical | PLIP | immune_exclusion | 16 | 0.544 | 0.593 | 0.688 | 0.688 | 0.938 |
+| Cervical | PLIP | stromal_encapsulation | 16 | 0.541 | 0.430 | 0.750 | 0.750 | 0.875 |
+| Cervical | PLIP | epithelial_identity | 16 | 0.522 | 0.395 | 0.688 | 0.688 | 1.000 |
+| Cervical | PLIP | immune_activation | 16 | 0.505 | 0.383 | 0.562 | 0.562 | 0.188 |
+| Cervical | PLIP | oxidative_phosphorylation | 16 | -0.487 | -0.188 | 0.562 | 0.688 | 0.750 |
+| Cervical | PLIP | emt_invasion | 16 | 0.479 | 0.729 | 0.875 | 0.875 | 0.875 |
+| Breast | UNI | luminal_estrogen_response | 16 | -0.586 | -0.422 | 0.812 | 0.938 | 0.812 |
+| Breast | UNI | oxidative_phosphorylation | 16 | -0.456 | -0.493 | 0.938 | 0.938 | 0.938 |
+| Breast | UNI | collagen_ecm_organization | 16 | -0.377 | -0.259 | 0.750 | 0.750 | 1.000 |
+| Breast | UNI | t_cell_exhaustion_checkpoint | 16 | 0.391 | 0.442 | 0.875 | 0.875 | 1.000 |
+| Breast | UNI | emt_invasion | 16 | 0.304 | 0.157 | 0.750 | 0.750 | 1.000 |
+| Cervical | UNI | epithelial_identity | 16 | -0.527 | -0.288 | 0.688 | 0.688 | 0.938 |
+| Cervical | UNI | oxidative_phosphorylation | 16 | 0.555 | 0.562 | 0.625 | 0.625 | 0.688 |
+| Cervical | UNI | stromal_encapsulation | 16 | -0.615 | -0.412 | 0.688 | 0.750 | 0.750 |
+| Cervical | UNI | immune_exclusion | 16 | -0.633 | -0.631 | 0.750 | 0.750 | 1.000 |
+| Cervical | UNI | emt_invasion | 16 | 0.534 | -0.146 | 0.375 | 0.688 | 0.500 |
+
 ## Supplementary Figure Captions
 
 **Supplementary Fig. 1 | Spatial permutation defense.** Program residuals were permuted within compartment-aware strata defined by spatial-omics-derived contour labels, centroid-position bins and boundary-distance bins. Observed residual associations are compared with the compartment-aware spatial null; this test mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence.
@@ -154,4 +204,4 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 
 ## Source Data
 
-Source Data files accompany Fig. 1, Supplementary Figs. 1-3 and the supplementary robustness tables. The upload package names figure-panel files by the relevant Fig. 1 panel and names robustness tables by supplementary-table number to avoid stale multi-figure numbering. They include the full spatial permutation table, block-bootstrap confidence intervals, cross-cancer program-family signature table, MAZ quality-control table, hero-patch metadata, spatial-sensitivity summary and component-gene audit tables. No IHC or protein validation is claimed.
+Source Data files accompany Fig. 1, Supplementary Figs. 1-3 and the supplementary robustness tables. The upload package names figure-panel files by the relevant Fig. 1 panel and names robustness tables by supplementary-table number to avoid stale multi-figure numbering. They include the full spatial permutation table, block-bootstrap confidence intervals, cross-cancer program-family signature table, MAZ quality-control table, hero-patch metadata, spatial-sensitivity summary, component-gene audit tables, registration-perturbation tables and nested spatial holdout tables. No IHC or protein validation is claimed.

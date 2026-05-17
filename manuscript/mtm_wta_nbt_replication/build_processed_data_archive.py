@@ -43,6 +43,13 @@ SOURCE_DATA_FILES = [
     "Figure_1c_BlockBootstrap_Source_Data.csv",
     "Figure_1d_MAZ_QC_Source_Data.csv",
     "Figure_1e_CrossCancer_Signature_Source_Data.csv",
+    "Supplementary_Table_5_SpatialSensitivity_Source_Data.csv",
+    "Supplementary_Table_6_GeneComponent_Summary_Source_Data.csv",
+    "Supplementary_Table_6_GeneComponent_Long_Source_Data.csv",
+    "Supplementary_Table_7_RegistrationPerturbation_Summary_Source_Data.csv",
+    "Supplementary_Table_7_RegistrationPerturbation_Long_Source_Data.csv",
+    "Supplementary_Table_8_NestedSpatialHoldout_Summary_Source_Data.csv",
+    "Supplementary_Table_8_NestedSpatialHoldout_Long_Source_Data.csv",
 ]
 
 PROCESSED_TABLE_FILES = [

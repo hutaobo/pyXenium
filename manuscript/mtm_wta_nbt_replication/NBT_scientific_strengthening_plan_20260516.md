@@ -165,9 +165,11 @@ If Priorities 1-5 are completed with strong results:
 3. Completed for PLIP first pass: run leave-one-spatial-block-out, local mismatch and centroid-jitter analyses on A100 outputs.
 4. Completed for UNI first pass: reconstruct Figure 1e UNI candidates from A100 association tables and run the same spatial-sensitivity checks.
 5. Completed for breast S3 first pass: run component-gene sanity checks for the three locked PLIP programs.
-6. Next: generate blinded patch-review panels for pathologist/morphology review.
-7. Next: search and inventory any additional usable public 10x Atera/Xenium datasets.
-8. Update manuscript/SI only after the new results pass numeric and claim-audit checks.
+6. Completed on 2026-05-17: run registration-perturbation sensitivity on A100 for the 13 PLIP candidates; all retained association sign across 23 perturbations.
+7. Completed on 2026-05-17: run nested spatial holdout on A100 for PLIP and UNI candidate sets; primary breast PLIP signs were recovered in 75.0-93.8% of folds, while weaker cross-model/cross-cancer candidates are reported as stress tests.
+8. Completed on 2026-05-17: export blinded breast S3 patch panels for luminal estrogen-response, unfolded-protein-response and oxidative-phosphorylation axes; no pathologist scores are reported yet.
+9. Next: search and inventory any additional usable public 10x Atera/Xenium datasets.
+10. Next: update DOI-ready processed-data archive after the new source-data tables pass final package QA.
 
 ## Official-policy anchors
 

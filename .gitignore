@@ -23,6 +23,7 @@ pyxenium_gmi_modules_stage*.tar.gz
 manuscript/mtm_wta_nbt_replication/processed_data_archive_*/
 manuscript/mtm_wta_nbt_replication/*processed_data_archive*.zip
 manuscript/mtm_wta_nbt_replication/spatial_sensitivity_*/
+manuscript/mtm_wta_nbt_replication/nbt_strengthening_*/
 
 # Generated manuscript packaging outputs; keep the source scripts and selected RTD
 # evidence tables/images trackable instead.
