@@ -24,6 +24,9 @@ manuscript/mtm_wta_nbt_replication/processed_data_archive_*/
 manuscript/mtm_wta_nbt_replication/*processed_data_archive*.zip
 manuscript/mtm_wta_nbt_replication/spatial_sensitivity_*/
 manuscript/mtm_wta_nbt_replication/nbt_strengthening_*/
+manuscript/mtm_wta_nbt_replication/contour_he_review_*/
+manuscript/mtm_wta_nbt_replication/contour_he_review_*.zip
+manuscript/mtm_wta_nbt_replication/contour_qc_hero_hardening_*/
 
 # Generated manuscript packaging outputs; keep the source scripts and selected RTD
 # evidence tables/images trackable instead.

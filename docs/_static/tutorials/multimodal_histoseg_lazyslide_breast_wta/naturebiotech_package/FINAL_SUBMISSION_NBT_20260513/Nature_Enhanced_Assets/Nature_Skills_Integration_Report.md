@@ -1,13 +1,13 @@
 # Nature Skills Integration Report
 
-Generated UTC: 2026-05-16T10:17:46+00:00
+Generated UTC: 2026-05-18T20:24:15+00:00
 
 ## Installed skills
 
 - Repository: `https://github.com/Yuan1z0825/nature-skills.git`
 - Recorded HEAD commit: `2549f85aa928aa35edb757ca6b0dc66b401fa55b`
-- `nature-figure`: `C:\Users\taobo.hu\.codex\skills\nature-figure` (present)
-- `nature-reader`: `C:\Users\taobo.hu\.codex\skills\nature-reader` (present)
+- `nature-figure`: `/Users/hutaobo/.codex/skills/nature-figure` (missing)
+- `nature-reader`: `/Users/hutaobo/.codex/skills/nature-reader` (missing)
 - Restart Codex to expose newly installed skills in the session skill registry.
 
 ## Figure contract

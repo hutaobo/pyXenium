@@ -40,7 +40,7 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 
 | File | Contents |
 |---|---|
-| `Figure_1b_Hero_Patches_Source_Data.csv` | contour IDs, WTA z-scores and oriented H&E embedding z-scores for breast S3 hero patches |
+| `Figure_1b_Hero_Patches_Source_Data.csv` | contour IDs, WTA z-scores, oriented H&E embedding z-scores and contour-size metadata for QC-filtered breast S3 hero patches |
 | `Figure_1c_Spatial_Permutation_Source_Data.csv` | spatial-null permutation results for reported candidate programs |
 | `Figure_1c_BlockBootstrap_Source_Data.csv` | spatial block-bootstrap confidence intervals |
 | `Figure_1d_MAZ_QC_Source_Data.csv` | conservative boundary co-variation summaries used for the MAZ panel and Supplementary Fig. 3 |
@@ -111,22 +111,35 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 
 ### Supplementary Table 4. Final luminal estrogen-response hero patch pairs
 
-| Pair | Polarity | Contour ID | WTA program z-score | Oriented H&E embedding z-score |
-|---:|---|---|---:|---:|
-| 1 | high | S3 S3 #424.1 | 3.57 | 1.50 |
-| 1 | low | S3 S3 #550.1 | -1.14 | -1.22 |
-| 2 | high | S3 S3 #445.1 | 2.30 | 2.53 |
-| 2 | low | S3 S3 #516.1 | -1.07 | -1.30 |
-| 3 | high | S3 S3 #82.1 | 2.23 | 2.71 |
-| 3 | low | S3 S3 #533.1 | -0.93 | -1.61 |
-| 4 | high | S3 S3 #287.1 | 1.82 | 2.65 |
-| 4 | low | S3 S3 #543.1 | -0.83 | -1.81 |
+| Pair | Polarity | Contour ID | WTA program z-score | Oriented H&E embedding z-score | n_tiles | n_cells |
+|---:|---|---|---:|---:|---:|---:|
+| 1 | high | S3 S3 #417.1 | 1.03 | 0.78 | 7 | 508 |
+| 1 | low | S3 S3 #519.1 | -0.82 | -1.06 | 3 | 211 |
+| 2 | high | S3 S3 #139.1 | 0.52 | 1.28 | 6 | 328 |
+| 2 | low | S3 S3 #56.1 | -0.68 | -0.59 | 6 | 120 |
+| 3 | high | S3 S3 #351.1 | 0.82 | 0.92 | 10 | 138 |
+| 3 | low | S3 S3 #188.1 | -0.83 | -0.93 | 6 | 59 |
+| 4 | high | S3 S3 #173.1 | 1.74 | 0.43 | 5 | 566 |
+| 4 | low | S3 S3 #285.1 | -0.61 | -0.84 | 3 | 78 |
+
+### Supplementary Table 9. Contour-size sensitivity
+
+The machine-readable table contains full breast and cervical PLIP/UNI candidate results under the full set, n_tiles-only, n_cells-only and combined size filters. The compact view below shows the primary breast S3 PLIP programs under the full set and the combined n_tiles >= 3 and n_cells >= 50 filter.
+
+| Program | Filter | n contours | Recomputed partial Spearman's rho |
+|---|---|---:|---:|
+| luminal_estrogen_response | full set | 157 | -0.652 |
+| luminal_estrogen_response | n_tiles >= 3; n_cells >= 50 | 49 | -0.656 |
+| unfolded_protein_response | full set | 157 | 0.523 |
+| unfolded_protein_response | n_tiles >= 3; n_cells >= 50 | 49 | 0.672 |
+| oxidative_phosphorylation | full set | 157 | 0.536 |
+| oxidative_phosphorylation | n_tiles >= 3; n_cells >= 50 | 49 | 0.647 |
 
 ## Supplementary Figure Captions
 
 **Supplementary Fig. 1 | Spatial permutation defense.** Program residuals were permuted within compartment-aware strata defined by spatial-omics-derived contour labels, centroid-position bins and boundary-distance bins. **A,** observed residual associations after structure/spatial residualization. **B,** observed absolute partial correlations compared with the 95th percentile of the stratified spatial null. This test mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence.
 
-**Supplementary Fig. 2 | Expanded breast S3 luminal estrogen-response examples.** High- and low-program S3 contours are shown as expanded H&E examples for Fig. 1b. These patches share the same spatial-omics-derived contour label and were selected after statistical ranking; they are not a blinded visual diagnostic claim.
+**Supplementary Fig. 2 | Expanded breast S3 luminal estrogen-response examples.** High- and low-program S3 contours are shown as expanded H&E examples for Fig. 1b. All displayed patches pass n_tiles >= 3, n_cells >= 50, edge-proximity and area QC filters. They share the same spatial-omics-derived contour label and were selected as representative concordant examples after statistical ranking; they are not a blinded visual diagnostic claim.
 
 **Supplementary Fig. 3 | Expanded boundary co-variation profiles.** Ring-level profiles show H&E-WTA co-variation at selected tissue interfaces. These examples illustrate conservative boundary co-variation and do not imply causality, temporal ordering or directional boundary effects.
 
