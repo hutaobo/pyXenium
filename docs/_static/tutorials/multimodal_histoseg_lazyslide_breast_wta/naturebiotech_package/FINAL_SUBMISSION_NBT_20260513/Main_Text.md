@@ -69,7 +69,7 @@ Source data for Fig. 1 and Supplementary Figs. 1-3 are included with the submiss
 
 ### Code availability
 
-The mTM analysis and packaging code is available in pyXenium v0.4.6 at https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6. The exact initial-submission manuscript package is archived under the repository release `nbt-initial-submission-20260516` at https://github.com/hutaobo/pyXenium/releases/tag/nbt-initial-submission-20260516. Manuscript-level replication scripts are provided under `manuscript/mtm_wta_nbt_replication/`. HistoSeg contour-generation software is maintained separately at https://github.com/hutaobo/HistoSeg.
+The mTM analysis, direct WSI embedding, contour aggregation, statistical defense, figure composition and submission-package preparation code is available in the pyXenium repository at https://github.com/hutaobo/pyXenium. The fixed software release used for this submission is pyXenium v0.4.6 at https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6, and the submission-packaging hardening commit is 3c4617010bb1c76e18921958c4507f91512aa9dc at https://github.com/hutaobo/pyXenium/commit/3c4617010bb1c76e18921958c4507f91512aa9dc. Manuscript-level replication scripts are provided under `manuscript/mtm_wta_nbt_replication/`. The exact journal-upload package and individual submission files are archived at https://github.com/hutaobo/pyXenium/releases/tag/nbt-submission-upload-20260518-draft. HistoSeg contour-generation software is maintained at https://github.com/hutaobo/HistoSeg.
 
 ### Ethics and data-use statement
 
