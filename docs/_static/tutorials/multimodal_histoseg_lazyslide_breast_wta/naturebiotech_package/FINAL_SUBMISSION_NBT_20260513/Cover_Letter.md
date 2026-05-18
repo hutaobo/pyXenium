@@ -2,7 +2,7 @@
 
 Dear Nature Biotechnology Editors,
 
-Re: Submission of "Foundation-model morphology maps residual programs in spatial-omics contours" as a Brief Communication
+Subject: Submission of "Foundation-model morphology maps residual programs in spatial-omics contours" as a Brief Communication
 
 Please consider this manuscript for publication as a Brief Communication in Nature Biotechnology.
 
