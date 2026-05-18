@@ -1,4 +1,4 @@
-17 May 2026
+18 May 2026
 
 Dear Nature Biotechnology Editors,
 
@@ -6,7 +6,7 @@ Re: Submission of "Foundation-model morphology maps residual programs in spatial
 
 Please consider this manuscript for publication as a Brief Communication in Nature Biotechnology.
 
-This submission is prepared for double-anonymous peer review. The reviewer-facing manuscript, Online Methods and Supplementary Information have been anonymized; author identity, affiliation, acknowledgements, funding and code-repository identifiers are provided below for editorial use.
+This submission is prepared for double-anonymous peer review. The reviewer-facing manuscript, Online Methods and Supplementary Information omit author identity and affiliation; code-repository links are included in the manuscript Code availability section so editors and reviewers can access the software, fixed code release and released upload package.
 
 The timing of the study is important. Atera WTA is a newly introduced whole-transcriptome in situ platform for FFPE tissue that moves spatial profiling from targeted panels toward more than 18,000 genes in tissue context. The public breast and cervical cancer preview datasets used here profile 18,028 genes and, to our knowledge at submission, are the publicly available Atera WTA preview examples for epithelial cancer. This creates a timely analysis problem for the journal's readership: how should co-registered H&E foundation-model morphology be interrogated when spatial omics already defines transcriptome-scale molecular contours?
 
@@ -22,9 +22,25 @@ Author and correspondence: Taobo Hu; Science for Life Laboratory, Department of 
 
 Funding and acknowledgements: computations were enabled by resources provided by the National Academic Infrastructure for Supercomputing in Sweden (NAISS), partially funded by the Swedish Research Council through grant agreement no. 2022-06725.
 
-Code availability for editors: to support editorial assessment while preserving double-anonymous review, code identifiers are provided here rather than in reviewer-facing files. The mTM analysis and packaging code is available in the pyXenium repository at https://github.com/hutaobo/pyXenium, with fixed release v0.4.6 at https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6 and submission-packaging hardening commit 3c4617010bb1c76e18921958c4507f91512aa9dc at https://github.com/hutaobo/pyXenium/commit/3c4617010bb1c76e18921958c4507f91512aa9dc. The exact journal-upload package and individual submission files are archived at https://github.com/hutaobo/pyXenium/releases/tag/nbt-submission-upload-20260518-draft. HistoSeg contour-generation software is maintained at https://github.com/hutaobo/HistoSeg. These identifiers are for editorial use and are omitted from reviewer-facing files to preserve double-anonymous review.
+Code availability for editors: code identifiers are provided here and in the manuscript Code availability section to support editorial and reviewer assessment.
 
-There are no related manuscripts by the author under consideration or in press elsewhere. I have not had prior discussions with a Nature Biotechnology editor about the work described in this manuscript. I confirm that this manuscript has not been published elsewhere and is not under consideration by another journal. The author has approved the manuscript and agrees with its submission to Nature Biotechnology. The author declares no competing interests. Taobo Hu conceived the study, implemented the analysis workflow, performed the computational analyses, generated the figures and source data, and wrote the manuscript. The study used public/vendor example spatial WTA and H&E data and did not involve new human sample collection, intervention or generation of new identifiable participant data.
+pyXenium repository: https://github.com/hutaobo/pyXenium
+
+Fixed pyXenium release: https://github.com/hutaobo/pyXenium/releases/tag/v0.4.6
+
+Submission-packaging hardening commit: https://github.com/hutaobo/pyXenium/commit/3c4617010bb1c76e18921958c4507f91512aa9dc
+
+Journal-upload package and individual submission files: https://github.com/hutaobo/pyXenium/releases/tag/nbt-submission-upload-20260518-draft
+
+HistoSeg contour-generation software: https://github.com/hutaobo/HistoSeg
+
+Author identity and affiliation are provided in this cover letter for editorial use.
+
+Submission status: this is an initial submission to Nature Biotechnology. The manuscript has not been published elsewhere and is not under consideration by another journal.
+
+Competing interests and author responsibility: the author declares no competing interests, has approved the manuscript and agrees with its submission. Taobo Hu conceived the study, implemented the analysis workflow, performed the computational analyses, generated the figures and source data, and wrote the manuscript.
+
+Ethics and data use: the study used public/vendor example spatial WTA and H&E data and did not involve new human sample collection, intervention or generation of new identifiable participant data.
 
 Sincerely,
 
