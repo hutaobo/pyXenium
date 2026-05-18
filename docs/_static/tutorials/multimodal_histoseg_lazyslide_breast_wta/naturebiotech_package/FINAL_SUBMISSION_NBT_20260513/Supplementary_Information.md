@@ -124,7 +124,7 @@ Boundary profiles were computed in distance rings around selected tissue interfa
 
 ## Supplementary Figure Captions
 
-**Supplementary Fig. 1 | Spatial permutation defense.** Program residuals were permuted within compartment-aware strata defined by spatial-omics-derived contour labels, centroid-position bins and boundary-distance bins. Observed residual associations are compared with the compartment-aware spatial null; this test mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence.
+**Supplementary Fig. 1 | Spatial permutation defense.** Program residuals were permuted within compartment-aware strata defined by spatial-omics-derived contour labels, centroid-position bins and boundary-distance bins. **A,** observed residual associations after structure/spatial residualization. **B,** observed absolute partial correlations compared with the 95th percentile of the stratified spatial null. This test mitigates coarse spatial-autocorrelation explanations but does not exclude all fine-scale spatial dependence.
 
 **Supplementary Fig. 2 | Expanded breast S3 luminal estrogen-response examples.** High- and low-program S3 contours are shown as expanded H&E examples for Fig. 1b. These patches share the same spatial-omics-derived contour label and were selected after statistical ranking; they are not a blinded visual diagnostic claim.
 
