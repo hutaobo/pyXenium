@@ -117,7 +117,7 @@ def draw_framework(ax: plt.Axes) -> None:
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     rows = [
-        (0.72, "Atera WTA\ncells + clusters", "#F7ECC9", "HistoSeg\ncontours", "#D8E7F7"),
+        (0.72, "Atera WTA\ncells + clusters", "#F7ECC9", "Spatial-omics\ncontours", "#D8E7F7"),
         (0.40, "H&E WSI", "#F4C2CD", "LazySlide\nPLIP / UNI", "#F4D7DE"),
         (0.08, "Atera WTA", "#F7ECC9", "Program\nscores", "#F1E3A8"),
     ]
@@ -307,7 +307,7 @@ def draw_candidate_signature_summary(ax: plt.Axes) -> None:
     ax.text(
         1.0,
         1.02,
-        "Candidate program-family signatures; dot area = max |partial rho|",
+        "Cross-cancer program-family stress test; dot area = max |partial rho|",
         transform=ax.transAxes,
         ha="right",
         va="bottom",

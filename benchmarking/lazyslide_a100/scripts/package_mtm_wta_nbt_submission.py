@@ -161,8 +161,9 @@ def create_maz_summary_figure() -> None:
         lag = getattr(row, "molecular_minus_image_peak_um")
         text = f"{lag:+.0f} um" if pd.notna(lag) else "lag n/a"
         x = row.ring_profile_spearman_rho
+        label_offset = 0.065
         ax.text(
-            x + (0.045 if x >= 0 else -0.045),
+            x + (label_offset if x >= 0 else -label_offset),
             y,
             text,
             va="center",
@@ -174,7 +175,7 @@ def create_maz_summary_figure() -> None:
     ax.set_yticks(y_positions)
     ax.set_yticklabels(labels, fontsize=8.4)
     ax.invert_yaxis()
-    ax.set_xlim(-1.08, 1.08)
+    ax.set_xlim(-1.15, 1.15)
     ax.set_xlabel("Ring-level morphology-to-WTA coupling (Spearman rho)")
     ax.set_title("")
     ax.grid(axis="x", linestyle=":", linewidth=0.7, color="#D4D8DD")
