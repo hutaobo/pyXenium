@@ -49,7 +49,7 @@ METHOD_ROWS = [
     ["Breast WTA", "SCILD", "Bounded", "Bounded appendix", "smoke3k common-db", "2,880 rows", "A100", "Official source-backed ligand-diffusion bounded retry succeeded: 3000 cells x 20 CCI pairs, peak RSS about 18.9GB."],
     ["Breast WTA", "FastCCC", "Bounded", "Appendix", "smoke20k", "1,319,600", "A100", "A100 retry succeeded after PDC standardization failure; analytic non-spatial expression baseline."],
     ["Breast WTA", "Copulacci", "Bounded", "Appendix", "smoke20k", "13,981", "A100", "Official source-backed copulacci.model2.run_scc bounded retry; 50k expansion stopped for dense adjacency memory risk."],
-    ["Breast WTA", "NicheNet", "Failure card", "Terminal card", "env/API audit", "reported in artifact", "PDC/A100", "R dependency/API audit blocker; downstream support method, not direct spatial CCI ranker."],
+    ["Breast WTA", "NicheNet", "Bounded", "Appendix", "smoke20k", "215,542", "A100", "Clean R retry with official nichenetr and Zenodo v2 ligand-target prior; downstream receiver-response support, not direct spatial CCI ranking."],
     ["Cervical WTA", "TopoLink-CCI", "Full", "Cross-dataset", "full common-db", "2,404,971", "PDC", "Top hit: DSC2-DSG3 in differentiating tumor cells."],
 ]
 
@@ -263,13 +263,13 @@ def build_report() -> None:
         [
             ("当前 PDC publication queue 为 ", False, False),
             ("0", True, False),
-            ("，A100 无 active rescue process。报告口径已升级为 expanded 18-method benchmark：9 个 full success、8 个 bounded success、1 个 reproducible failure card、0 个 deferred candidate methods、0 个 pending/running。这里的 all_methods_accounted=true 表示所有提到的方法都有明确状态，不表示所有方法都成功。", False, False),
+            ("，A100 无 active rescue process。报告口径已升级为 expanded 18-method benchmark：9 个 full success、9 个 bounded success、0 个 reproducible failure card、0 个 deferred candidate methods、0 个 pending/running。这里的 all_methods_accounted=true 表示所有提到的方法都有明确终端状态。", False, False),
         ],
     )
     add_paragraph(
         doc,
         [
-            ("FastCCC、SCILD、Copulacci 和 NicheNet 现在正式计入 expanded denominator，并且均已在 PDC 与 A100 完成终端化处理。FastCCC、SCILD 和 Copulacci 经 A100 retry 升级为 bounded subset result；NicheNet 保留 reproducible failure card，原因是 R dependency/API audit blocker。", False, False),
+            ("FastCCC、SCILD、Copulacci 和 NicheNet 现在正式计入 expanded denominator，并且均已在 PDC 与 A100 完成终端化处理。FastCCC、SCILD、Copulacci 和 NicheNet 均经 A100 retry 升级为 bounded subset result。", False, False),
         ],
     )
     for p in KEY_PATHS:
@@ -357,7 +357,7 @@ def build_report() -> None:
     add_paragraph(
         doc,
         [
-            ("SCILD 已在官方 source 被重新确认后通过 A100 专用 Python 3.11 环境升级为 bounded subset result：3000 cells × 20 CCI pairs，2,880 rows，峰值内存约 18.9GB。Copulacci 已通过官方 source-backed copulacci.model2.run_scc workflow 升级为 bounded subset result：20k cells × top 200 CCI pairs × top 80 celltype groups，13,981 rows；50k 扩容因 dense spatial adjacency memory risk 停止，因此不进入 full comparison。NicheNet 是 expanded 18-method benchmark 中仍保留的 reproducible failure card；它在 PDC 和 A100 均受 R dependency/API audit 约束，并且其定位更接近 downstream receiver-response support，而不是直接 spatial CCI ranker。FastCCC 已通过 A100 retry 产生 20k bounded standardized output。", False, False),
+            ("SCILD 已在官方 source 被重新确认后通过 A100 专用 Python 3.11 环境升级为 bounded subset result：3000 cells × 20 CCI pairs，2,880 rows，峰值内存约 18.9GB。Copulacci 已通过官方 source-backed copulacci.model2.run_scc workflow 升级为 bounded subset result：20k cells × top 200 CCI pairs × top 80 celltype groups，13,981 rows；50k 扩容因 dense spatial adjacency memory risk 停止，因此不进入 full comparison。NicheNet 通过 clean A100 R retry、官方 saeyslab/nichenetr 包和 Zenodo v2 ligand-target prior 完成 20k downstream receiver-response support，产生 215,542 rows；该结果作为 downstream support appendix，不作为直接 spatial CCI ranker。FastCCC 已通过 A100 retry 产生 20k bounded standardized output。", False, False),
         ],
     )
     add_figure(doc, FIGURES[8], 9)

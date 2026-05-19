@@ -1,19 +1,19 @@
 # TopoLink-CCI Benchmark Live Status
 
-Last updated: 2026-05-19 18:39 Europe/Berlin.
+Last updated: 2026-05-19 19:57 Europe/Berlin.
 
 ## Current Summary
 
 The main breast full-common comparison is usable. Breast full/authoritative methods include TopoLink-CCI, CellPhoneDB, LARIS, LIANA+, SpatialDM, stLearn, Squidpy, CellChat LR-only, and COMMOT.
 
-The original final closeout source-of-truth was refreshed at `2026-05-13T04:40:40.460301+00:00`. The reporting denominator has now been upgraded to an expanded 18-method benchmark so every mentioned method is counted: 9 full successes, 8 bounded successes, 1 reproducible failure card, 0 deferred candidate methods, 0 pending/running methods, and `all_methods_accounted=true`.
+The original final closeout source-of-truth was refreshed at `2026-05-13T04:40:40.460301+00:00`. The reporting denominator has now been upgraded to an expanded 18-method benchmark so every mentioned method is counted: 9 full successes, 9 bounded successes, 0 reproducible failure cards, 0 deferred candidate methods, 0 pending/running methods, and `all_methods_accounted=true`.
 
 ## Expanded A100 Retry Status
 
 - `FastCCC` A100 retry succeeded after PDC failure: `20k_smoke_a100`, `1,319,600` standardized rows.
 - FastCCC output: `D:\GitHub\pyXenium\benchmarking\cci_2026_atera\results\expanded_methods_a100_20260514\a100_collected\expanded_methods_a100_20260514\fastccc\smoke20k\standardized.tsv.gz`.
 - `Copulacci` A100 real-method retry succeeded with official `copulacci.model2.run_scc`: `20k_bounded`, `13,981` standardized rows from 20k cells x top 200 CCI pairs x top 80 celltype groups. A 50k expansion was stopped because Copulacci materializes dense spatial adjacency and triggered memory risk.
-- `NicheNet` A100 retry remains a reproducible failure card: R dependency/API audit failed, and the method is treated as downstream receiver-response support rather than a direct spatial CCI ranker.
+- `NicheNet` A100 clean-environment retry succeeded after PDC failure: `20k_smoke_a100_downstream_support`, `215,542` standardized rows. It used the official `saeyslab/nichenetr` package and official Zenodo v2 ligand-target matrix, and is reported as downstream receiver-response support rather than a direct spatial CCI ranker.
 - `SCILD` was reopened after the official source was identified and now has an A100 bounded result: `3000 cells x 20 common CCI pairs`, `2,880` standardized rows, peak RSS about `18.9GB`, runtime about `116s`.
 
 ## Cervical Cross-Dataset Run
