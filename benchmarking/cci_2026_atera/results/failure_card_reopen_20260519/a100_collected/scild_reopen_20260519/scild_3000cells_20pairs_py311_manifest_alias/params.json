@@ -1,0 +1,20 @@
+{
+  "method": "scild",
+  "input_manifest": "/data/taobo.hu/pyxenium_cci_benchmark_2026-04/runs/scild_reopen_20260519/scild_3000cells_20pairs_py311_manifest_alias/input_manifest_cci_alias.json",
+  "output_dir": "/data/taobo.hu/pyxenium_cci_benchmark_2026-04/runs/scild_reopen_20260519/scild_3000cells_20pairs_py311_manifest_alias",
+  "database_mode": "common-db",
+  "phase": "smoke",
+  "max_cci_pairs": 20,
+  "n_perms": 100,
+  "benchmark_root": "/data/taobo.hu/pyxenium_lr_benchmark_2026-04",
+  "tbc_results": null,
+  "export_figures": false,
+  "rscript": null,
+  "chunk_id": null,
+  "num_chunks": null,
+  "bounded_mode": "scild_3000cells_20pairs",
+  "gpu_id": null,
+  "job_id": null,
+  "gzip_standardized": true,
+  "extra": {}
+}

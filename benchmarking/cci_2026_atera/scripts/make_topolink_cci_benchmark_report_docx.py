@@ -46,7 +46,7 @@ METHOD_ROWS = [
     ["Breast WTA", "NICHES", "Bounded", "Appendix", "pilot50k", "1,181,042", "A100", "Full stopped by memory safety gate."],
     ["Breast WTA", "CellNEST", "Bounded", "Appendix", "pilot50k", "157,553", "A100", "Bounded GPU/source workflow result."],
     ["Breast WTA", "CellAgentChat", "Bounded", "Appendix", "pilot50k", "1,143,543", "A100", "16/16 pilot chunks succeeded; full resource exceeded."],
-    ["Breast WTA", "SCILD", "Failure card", "Terminal card", "audit/bounded", "reported in artifact", "A100", "Method API/scalability blocker after 5k/10k/20k gates."],
+    ["Breast WTA", "SCILD", "Bounded", "Bounded appendix", "smoke3k common-db", "2,880 rows", "A100", "Official source-backed ligand-diffusion bounded retry succeeded: 3000 cells x 20 CCI pairs, peak RSS about 18.9GB."],
     ["Breast WTA", "FastCCC", "Bounded", "Appendix", "smoke20k", "1,319,600", "A100", "A100 retry succeeded after PDC standardization failure; analytic non-spatial expression baseline."],
     ["Breast WTA", "Copulacci", "Failure card", "Terminal card", "env/API audit", "reported in artifact", "PDC/A100", "Official source imports, but no safe common-resource bounded adapter mapping."],
     ["Breast WTA", "NicheNet", "Failure card", "Terminal card", "env/API audit", "reported in artifact", "PDC/A100", "R dependency/API audit blocker; downstream support method, not direct spatial CCI ranker."],
@@ -263,13 +263,13 @@ def build_report() -> None:
         [
             ("当前 PDC publication queue 为 ", False, False),
             ("0", True, False),
-            ("，A100 无 active rescue process。报告口径已升级为 expanded 18-method benchmark：9 个 full success、6 个 bounded success、3 个 reproducible failure cards、0 个 deferred candidate methods、0 个 pending/running。这里的 all_methods_accounted=true 表示所有提到的方法都有明确状态，不表示所有方法都成功。", False, False),
+            ("，A100 无 active rescue process。报告口径已升级为 expanded 18-method benchmark：9 个 full success、7 个 bounded success、2 个 reproducible failure cards、0 个 deferred candidate methods、0 个 pending/running。这里的 all_methods_accounted=true 表示所有提到的方法都有明确状态，不表示所有方法都成功。", False, False),
         ],
     )
     add_paragraph(
         doc,
         [
-            ("FastCCC、Copulacci 和 NicheNet 现在正式计入 expanded denominator，并且均已在 PDC 与 A100 完成终端化处理。FastCCC 经 A100 retry 升级为 bounded subset result；Copulacci 和 NicheNet 保留 reproducible failure card，原因分别是 adapter workflow mapping blocker 与 R dependency/API audit blocker。", False, False),
+            ("FastCCC、SCILD、Copulacci 和 NicheNet 现在正式计入 expanded denominator，并且均已在 PDC 与 A100 完成终端化处理。FastCCC 和 SCILD 经 A100 retry 升级为 bounded subset result；Copulacci 和 NicheNet 保留 reproducible failure card，原因分别是 adapter workflow mapping blocker 与 R dependency/API audit blocker。", False, False),
         ],
     )
     for p in KEY_PATHS:
@@ -357,7 +357,7 @@ def build_report() -> None:
     add_paragraph(
         doc,
         [
-            ("SCILD、Copulacci 和 NicheNet 是 expanded 18-method benchmark 中的 reproducible failure cards。SCILD 在 5k gate 触发 resource_exceeded，10k/20k gate 遇到 method API failure；Copulacci 官方 source 可安装和 import，但没有可安全映射到 common-resource benchmark 的 native bounded workflow；NicheNet 在 PDC 和 A100 均受 R dependency/API audit 约束，并且其定位更接近 downstream receiver-response support，而不是直接 spatial CCI ranker。FastCCC 已通过 A100 retry 产生 20k bounded standardized output。", False, False),
+            ("SCILD 已在官方 source 被重新确认后通过 A100 专用 Python 3.11 环境升级为 bounded subset result：3000 cells × 20 CCI pairs，2,880 rows，峰值内存约 18.9GB。Copulacci 和 NicheNet 是 expanded 18-method benchmark 中仍保留的 reproducible failure cards；Copulacci 官方 source 可安装和 import，但没有可安全映射到 common-resource benchmark 的 native bounded workflow；NicheNet 在 PDC 和 A100 均受 R dependency/API audit 约束，并且其定位更接近 downstream receiver-response support，而不是直接 spatial CCI ranker。FastCCC 已通过 A100 retry 产生 20k bounded standardized output。", False, False),
         ],
     )
     add_figure(doc, FIGURES[8], 9)

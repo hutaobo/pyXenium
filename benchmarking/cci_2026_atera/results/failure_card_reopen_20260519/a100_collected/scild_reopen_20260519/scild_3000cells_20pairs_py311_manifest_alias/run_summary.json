@@ -1,0 +1,36 @@
+{
+  "method": "scild",
+  "status": "success",
+  "raw_tsv": "/data/taobo.hu/pyxenium_cci_benchmark_2026-04/runs/scild_reopen_20260519/scild_3000cells_20pairs_py311_manifest_alias/raw/scild_celltype_flat.tsv",
+  "standardized_tsv": "/data/taobo.hu/pyxenium_cci_benchmark_2026-04/runs/scild_reopen_20260519/scild_3000cells_20pairs_py311_manifest_alias/scild_standardized.tsv.gz",
+  "standardized_tsv_gz": "/data/taobo.hu/pyxenium_cci_benchmark_2026-04/runs/scild_reopen_20260519/scild_3000cells_20pairs_py311_manifest_alias/scild_standardized.tsv.gz",
+  "n_rows": 2880,
+  "top_hit": [
+    {
+      "method": "scild",
+      "database_mode": "common-db",
+      "ligand": "ADAM10",
+      "receptor": "NOTCH2",
+      "sender": "11q13 Invasive Tumor Cells",
+      "receiver": "11q13 Invasive Tumor Cells",
+      "score_raw": 229.78744654017362,
+      "score_std": 1.0,
+      "rank_within_method": 1.0,
+      "rank_fraction": 1.0,
+      "fdr_or_pvalue": NaN,
+      "resolution": "celltype_pair",
+      "spatial_support_type": "scild_probability",
+      "artifact_path": "/data/taobo.hu/pyxenium_cci_benchmark_2026-04/runs/scild_reopen_20260519/scild_3000cells_20pairs_py311_manifest_alias/raw",
+      "communication_mass": 229.78744654017362,
+      "edge_count": 1386.0,
+      "spatial_coherence": 0.16579180847054373
+    }
+  ],
+  "niter_max": 5,
+  "n_cells": 3000,
+  "n_cci_pairs": 20,
+  "estimated_pair_cell2": 180000000,
+  "scild_max_cells": 3000,
+  "runtime_seconds": 115.62669062614441,
+  "bounded_mode": "scild_3000cells_20pairs"
+}
