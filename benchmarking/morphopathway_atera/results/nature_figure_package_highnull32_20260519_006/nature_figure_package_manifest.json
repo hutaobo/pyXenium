@@ -1,0 +1,64 @@
+{
+  "package_type": "pyXenium.pathway Nature figure package",
+  "generated_at": "2026-05-19 18:47:10.10516",
+  "output_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006",
+  "source_package": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\brief_communication_package_highnull32_20260512_2049",
+  "reference_run_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\plip_smoke_3000_d64_seed17_bins12_null32_20260512_2029",
+  "plotting_backend": "R",
+  "nonvisual_source_data_helper": "prepare_nature_he_source_data.py",
+  "figures": [
+    {
+      "figure": "figure1_breast_discovery_morphopathway",
+      "format": "svg",
+      "path": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/figures/figure1_breast_discovery_morphopathway.svg",
+      "bytes": 144940
+    },
+    {
+      "figure": "figure1_breast_discovery_morphopathway",
+      "format": "pdf",
+      "path": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/figures/figure1_breast_discovery_morphopathway.pdf",
+      "bytes": 49059
+    },
+    {
+      "figure": "figure1_breast_discovery_morphopathway",
+      "format": "tiff",
+      "path": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/figures/figure1_breast_discovery_morphopathway.tiff",
+      "bytes": 477268
+    },
+    {
+      "figure": "figure1_breast_discovery_morphopathway",
+      "format": "png",
+      "path": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/figures/figure1_breast_discovery_morphopathway.png",
+      "bytes": 180895
+    },
+    {
+      "figure": "figure2_cross_cancer_stability_validation",
+      "format": "svg",
+      "path": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/figures/figure2_cross_cancer_stability_validation.svg",
+      "bytes": 280464
+    },
+    {
+      "figure": "figure2_cross_cancer_stability_validation",
+      "format": "pdf",
+      "path": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/figures/figure2_cross_cancer_stability_validation.pdf",
+      "bytes": 54907
+    },
+    {
+      "figure": "figure2_cross_cancer_stability_validation",
+      "format": "tiff",
+      "path": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/figures/figure2_cross_cancer_stability_validation.tiff",
+      "bytes": 599472
+    },
+    {
+      "figure": "figure2_cross_cancer_stability_validation",
+      "format": "png",
+      "path": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/figures/figure2_cross_cancer_stability_validation.png",
+      "bytes": 225697
+    }
+  ],
+  "source_data_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/source_data",
+  "reports_dir": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/reports",
+  "a100_fallback_manifest": "D:\\GitHub\\pyXenium\\benchmarking\\morphopathway_atera\\results\\nature_figure_package_highnull32_20260519_006/a100/a100_fallback_manifest.json",
+  "he_display_adjustment": "R-only per-channel 2-98 percentile contrast stretch for H&E display; raw numeric source pixels unchanged.",
+  "evidence_boundary": "new pyXenium.pathway morphopathway suite only"
+}

@@ -1,0 +1,2 @@
+adjustment,applied_in,raw_source_pixels_unchanged
+R-only per-channel 2-98 percentile contrast stretch for H&E display; raw numeric source pixels unchanged.,make_morphopathway_nature_figures.R,TRUE

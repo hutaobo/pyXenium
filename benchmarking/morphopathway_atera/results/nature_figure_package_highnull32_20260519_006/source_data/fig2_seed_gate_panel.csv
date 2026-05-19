@@ -1,0 +1,7 @@
+seed,cross_cancer_total,axis_masked_cross_cancer_total,candidate_generic_plip_axes,breast_negative_control_pass95,cervical_negative_control_pass95,analysis,recovered
+seed17,10,10,1,8,10,Primary,9
+seed17,10,10,1,8,10,Axis-masked,9
+seed29,10,10,2,8,9,Primary,9
+seed29,10,10,2,8,9,Axis-masked,9
+seed43,10,10,0,10,10,Primary,10
+seed43,10,10,0,10,10,Axis-masked,10

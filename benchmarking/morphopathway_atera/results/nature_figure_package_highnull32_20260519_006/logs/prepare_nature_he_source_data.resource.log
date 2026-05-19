@@ -1,0 +1,6 @@
+python: C:\Users\taobo.hu\AppData\Local\MINICO~1\python.exe
+script: D:\GitHub\pyXenium/benchmarking/morphopathway_atera/scripts/prepare_nature_he_source_data.py
+status: 0
+start: 2026-05-19 18:47:02.282564
+end: 2026-05-19 18:47:04.263644
+elapsed_seconds: 1.981
