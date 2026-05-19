@@ -1,0 +1,10 @@
+{
+  "api": "copulacci.model2.run_scc",
+  "cells": 20000,
+  "input_h5ad": "/data/taobo.hu/pyxenium_lr_benchmark_2026-04/data/smoke/adata_smoke.h5ad",
+  "max_cci_pairs": 200,
+  "method": "Copulacci",
+  "source": "official github raphael-group/copulacci",
+  "stage": "20k_bounded",
+  "topolink_scores": "/data/taobo.hu/pyxenium_lr_benchmark_2026-04/runs/full_common/pyxenium/pyxenium_scores.tsv"
+}

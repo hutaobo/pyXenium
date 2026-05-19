@@ -33,7 +33,8 @@ def build_remote_script(
 ) -> str:
     pattern_expr = "|".join(kill_patterns)
     return f"""#!/usr/bin/env bash
-set -euo pipefail
+set -eu
+set -o pipefail 2>/dev/null || true
 LOG={remote_log!r}
 mkdir -p "$(dirname "$LOG")"
 echo "[$(date -Is)] watchdog start" >> "$LOG"
@@ -74,7 +75,7 @@ def run_watchdog(args: argparse.Namespace) -> int:
         min_available_gib=args.min_available_gib,
         max_target_rss_gib=args.max_target_rss_gib,
         kill_patterns=tuple(args.kill_pattern),
-    )
+    ).replace("\r\n", "\n").replace("\r", "\n")
     ssh_target = f"{args.user}@{args.host}" if args.user else args.host
     cmd = [
         "ssh",
@@ -101,8 +102,7 @@ def run_watchdog(args: argparse.Namespace) -> int:
     try:
         proc = subprocess.run(
             cmd,
-            input=remote_script,
-            text=True,
+            input=remote_script.encode("utf-8"),
             capture_output=True,
             timeout=args.timeout,
             check=False,
@@ -112,8 +112,8 @@ def run_watchdog(args: argparse.Namespace) -> int:
             {
                 "status": "ssh_timeout",
                 "returncode": None,
-                "stdout": exc.stdout or "",
-                "stderr": exc.stderr or "",
+                "stdout": (exc.stdout or b"").decode("utf-8", errors="replace"),
+                "stderr": (exc.stderr or b"").decode("utf-8", errors="replace"),
             }
         )
         local_status_path.write_text(json.dumps(status, indent=2) + "\n")
@@ -124,8 +124,8 @@ def run_watchdog(args: argparse.Namespace) -> int:
         {
             "status": "ok" if proc.returncode == 0 else "ssh_or_remote_error",
             "returncode": proc.returncode,
-            "stdout": proc.stdout[-4000:],
-            "stderr": proc.stderr[-4000:],
+            "stdout": proc.stdout[-4000:].decode("utf-8", errors="replace"),
+            "stderr": proc.stderr[-4000:].decode("utf-8", errors="replace"),
         }
     )
     local_status_path.write_text(json.dumps(status, indent=2) + "\n")

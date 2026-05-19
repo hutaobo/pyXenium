@@ -1,0 +1,18 @@
+{
+  "method": "Copulacci",
+  "n_cci_pairs": 200,
+  "n_cells": 20000,
+  "n_groups": 80,
+  "n_rows": 13981,
+  "phase": "20k_bounded",
+  "runtime_seconds": 127.90188503265381,
+  "standardized_tsv_gz": "/data/taobo.hu/pyxenium_cci_benchmark_2026-04/runs/failure_card_reopen_20260519/copulacci_real_20k_200pairs/standardized.tsv.gz",
+  "status": "success",
+  "top_hit": {
+    "ligand": "SCUBE2",
+    "receiver": "Endothelial Cells",
+    "receptor": "KDR",
+    "score_raw": 0.5770882660149005,
+    "sender": "11q13 Invasive Tumor Cells"
+  }
+}

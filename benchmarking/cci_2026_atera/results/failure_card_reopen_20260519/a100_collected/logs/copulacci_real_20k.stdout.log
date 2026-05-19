@@ -1,0 +1,98 @@
+11q13 Invasive Tumor Cells=11q13 Invasive Tumor Cells
+CAFs, DCIS Associated=CAFs, DCIS Associated
+Luminal-like Amorphous DCIS Cells=Luminal-like Amorphous DCIS Cells
+11q13 Invasive Tumor Cells=Basal-like Structured DCIS Cells
+Basal-like Structured DCIS Cells=11q13 Invasive Tumor Cells
+T Lymphocytes=T Lymphocytes
+Myoepithelial Cells=Myoepithelial Cells
+CAFs, DCIS Associated=Endothelial Cells
+Endothelial Cells=CAFs, DCIS Associated
+Pericytes=CAFs, DCIS Associated
+CAFs, DCIS Associated=Pericytes
+Myoepithelial Cells=CAFs, DCIS Associated
+CAFs, DCIS Associated=Myoepithelial Cells
+Luminal-like Amorphous DCIS Cells=CAFs, DCIS Associated
+CAFs, DCIS Associated=Luminal-like Amorphous DCIS Cells
+Basal-like Structured DCIS Cells=Basal-like Structured DCIS Cells
+11q13 Invasive Tumor Cells (G1/S)=11q13 Invasive Tumor Cells
+11q13 Invasive Tumor Cells=11q13 Invasive Tumor Cells (G1/S)
+11q13 Invasive Tumor Cells=11q13 Invasive Tumor Cells (Mitotic)
+11q13 Invasive Tumor Cells (Mitotic)=11q13 Invasive Tumor Cells
+Luminal-like Amorphous DCIS Cells=Myoepithelial Cells
+Myoepithelial Cells=Luminal-like Amorphous DCIS Cells
+Pericytes=11q13 Invasive Tumor Cells
+11q13 Invasive Tumor Cells=Pericytes
+Endothelial Cells=11q13 Invasive Tumor Cells
+11q13 Invasive Tumor Cells=Endothelial Cells
+CAFs, DCIS Associated=T Lymphocytes
+T Lymphocytes=CAFs, DCIS Associated
+11q13 Invasive Tumor Cells=CAFs, Invasive Associated
+CAFs, Invasive Associated=11q13 Invasive Tumor Cells
+CAFs, DCIS Associated=11q13 Invasive Tumor Cells
+11q13 Invasive Tumor Cells=CAFs, DCIS Associated
+CAFs, DCIS Associated=CXCL14+ Fibroblasts
+CXCL14+ Fibroblasts=CAFs, DCIS Associated
+Macrophages=CAFs, DCIS Associated
+CAFs, DCIS Associated=Macrophages
+11q13 Invasive Tumor Cells=CXCL14+ Fibroblasts
+CXCL14+ Fibroblasts=11q13 Invasive Tumor Cells
+Pericytes=Pericytes
+Pericytes=Endothelial Cells
+Endothelial Cells=Pericytes
+Endothelial Cells=Endothelial Cells
+11q13 Invasive Tumor Cells=Dendritic Cells
+Dendritic Cells=11q13 Invasive Tumor Cells
+Myoepithelial Cells=Basal-like Structured DCIS Cells
+Basal-like Structured DCIS Cells=Myoepithelial Cells
+Myoepithelial Cells=11q13 Invasive Tumor Cells
+11q13 Invasive Tumor Cells=Myoepithelial Cells
+Dendritic Cells=T Lymphocytes
+T Lymphocytes=Dendritic Cells
+T Lymphocytes=Endothelial Cells
+Endothelial Cells=T Lymphocytes
+B Cells=T Lymphocytes
+T Lymphocytes=B Cells
+CAFs, DCIS Associated=Basal-like Structured DCIS Cells
+Basal-like Structured DCIS Cells=CAFs, DCIS Associated
+11q13 Invasive Tumor Cells=Macrophages
+Macrophages=11q13 Invasive Tumor Cells
+T Lymphocytes=11q13 Invasive Tumor Cells
+11q13 Invasive Tumor Cells=T Lymphocytes
+Endothelial Cells=Luminal-like Amorphous DCIS Cells
+Luminal-like Amorphous DCIS Cells=Endothelial Cells
+CAFs, DCIS Associated=B Cells
+B Cells=CAFs, DCIS Associated
+Pericytes=T Lymphocytes
+T Lymphocytes=Pericytes
+CAFs, DCIS Associated=Dendritic Cells
+Dendritic Cells=CAFs, DCIS Associated
+Myoepithelial Cells=Endothelial Cells
+Endothelial Cells=Myoepithelial Cells
+T Lymphocytes=Macrophages
+Macrophages=T Lymphocytes
+Luminal-like Amorphous DCIS Cells=Pericytes
+Pericytes=Luminal-like Amorphous DCIS Cells
+Dendritic Cells=Dendritic Cells
+CAFs, Invasive Associated=CAFs, Invasive Associated
+Pericytes=CXCL14+ Fibroblasts
+CXCL14+ Fibroblasts=Pericytes
+Myoepithelial Cells=Pericytes
+Pericytes=Myoepithelial Cells
+{
+  "method": "Copulacci",
+  "status": "success",
+  "phase": "20k_bounded",
+  "n_rows": 13981,
+  "n_cells": 20000,
+  "n_cci_pairs": 200,
+  "n_groups": 80,
+  "runtime_seconds": 127.90188503265381,
+  "standardized_tsv_gz": "/data/taobo.hu/pyxenium_cci_benchmark_2026-04/runs/failure_card_reopen_20260519/copulacci_real_20k_200pairs/standardized.tsv.gz",
+  "top_hit": {
+    "ligand": "SCUBE2",
+    "receptor": "KDR",
+    "sender": "11q13 Invasive Tumor Cells",
+    "receiver": "Endothelial Cells",
+    "score_raw": 0.5770882660149005
+  }
+}
