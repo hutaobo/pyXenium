@@ -31,6 +31,7 @@ from .cci_atera import (
     load_method_registry,
     resolve_layout,
     run_pyxenium_smoke,
+    stratified_subset,
     standardize_result_table,
 )
 
@@ -1729,12 +1730,35 @@ def run_scild_adapter(spec: MethodRunSpec) -> dict[str, Any]:
     if cci_resource is None:
         raise NotImplementedError("SCILD native-db mode is not supported by this standardized adapter; use common-db.")
     raw_adata, _ = load_adata_from_manifest(manifest, spec.phase)
+    cell_cap = int(os.environ.get("SCILD_MAX_CELLS", "0") or "0")
+    if cell_cap > 0 and raw_adata.n_obs > cell_cap:
+        raw_adata = stratified_subset(
+            raw_adata,
+            n_cells=cell_cap,
+            stratify_key="cell_type",
+            seed=int(os.environ.get("SCILD_SUBSET_SEED", "0")),
+        )
     adata = _prepare_expression_adata(raw_adata, normalize=True)
     if not sparse.issparse(adata.X):
         adata.X = sparse.csr_matrix(adata.X)
     else:
         adata.X = adata.X.tocsr()
     cci_resource = _filter_cci_resource_to_present_genes(cci_resource, adata)
+    max_cells = int(os.environ.get("SCILD_MAX_PROBLEM_CELLS", "6000"))
+    if adata.n_obs > max_cells and os.environ.get("SCILD_ALLOW_LARGE", "0") != "1":
+        raise MemoryError(
+            "SCILD constructs a large ligand-diffusion optimization matrix; "
+            f"selected cells={adata.n_obs} exceeds SCILD_MAX_PROBLEM_CELLS={max_cells}. "
+            "Set SCILD_MAX_CELLS for a bounded run or SCILD_ALLOW_LARGE=1 to override."
+        )
+    estimated_pair_cell2 = int(len(cci_resource)) * int(adata.n_obs) * int(adata.n_obs)
+    max_pair_cell2 = int(os.environ.get("SCILD_MAX_PAIR_CELL2", "200000000"))
+    if estimated_pair_cell2 > max_pair_cell2 and os.environ.get("SCILD_ALLOW_LARGE", "0") != "1":
+        raise MemoryError(
+            "SCILD bounded run is still too large for the default safety gate: "
+            f"n_pairs*n_cells^2={estimated_pair_cell2} exceeds SCILD_MAX_PAIR_CELL2={max_pair_cell2}. "
+            "Reduce --max-cci-pairs or SCILD_MAX_CELLS, or explicitly set SCILD_ALLOW_LARGE=1."
+        )
     source_dir = _external_source_dir(spec, "scild")
     _prepend_sys_path(source_dir)
     from Models.SCILD_main import SCILD  # type: ignore
@@ -1813,6 +1837,10 @@ def run_scild_adapter(spec: MethodRunSpec) -> dict[str, Any]:
         "n_rows": int(len(standardized)),
         "top_hit": standardized.head(1).to_dict(orient="records"),
         "niter_max": niter_max,
+        "n_cells": int(adata.n_obs),
+        "n_cci_pairs": int(len(cci_resource)),
+        "estimated_pair_cell2": estimated_pair_cell2,
+        "scild_max_cells": cell_cap or None,
     }
 
 

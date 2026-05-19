@@ -8,9 +8,11 @@ from pathlib import Path
 import anndata as ad
 import numpy as np
 import pandas as pd
+import pytest
 from scipy import sparse
 from scipy.io import mmwrite
 
+from pyXenium.benchmarking import cci_adapters
 from pyXenium.benchmarking.cci_atera import (
     STANDARDIZED_RESULT_COLUMNS,
     aggregate_standardized_results,
@@ -46,6 +48,7 @@ from pyXenium.benchmarking.cci_a100 import (
     write_failed_method_card,
 )
 from pyXenium.benchmarking.cci_adapters import (
+    MethodRunSpec,
     _call_liana_bivariate,
     aggregate_commot_obsp_result,
     aggregate_liana_bivariate_result,
@@ -54,6 +57,7 @@ from pyXenium.benchmarking.cci_adapters import (
     ensure_spatial_connectivities,
     flatten_squidpy_cci_result,
     read_sparse_bundle_as_adata,
+    run_scild_adapter,
     validate_input_manifest,
 )
 
@@ -214,6 +218,40 @@ def test_resolve_dataset_entry_supports_cervical_panel(tmp_path):
     assert entry["benchmark_subdir"] == "datasets/atera_cervical_wta"
     assert entry["cell_groups_relpath"] == "WTA_Preview_FFPE_Cervical_Cancer_cell_groups.csv"
     assert "Cervical_Cancer_outs" in entry["local_xenium_root"]
+
+
+def test_scild_adapter_rejects_unsafe_pair_cell_problem(monkeypatch, tmp_path):
+    adata = ad.AnnData(
+        X=sparse.csr_matrix(np.ones((10, 4), dtype=float)),
+        obs=pd.DataFrame({"cell_type": ["A"] * 5 + ["B"] * 5}, index=[f"cell_{idx}" for idx in range(10)]),
+        var=pd.DataFrame(index=["L1", "R1", "L2", "R2"]),
+    )
+    adata.obsm["spatial"] = np.column_stack([np.arange(10, dtype=float), np.zeros(10, dtype=float)])
+    resource = pd.DataFrame(
+        {
+            "ligand": ["L1", "L2"],
+            "receptor": ["R1", "R2"],
+            "pathway": ["test", "test"],
+        }
+    )
+
+    monkeypatch.setattr(cci_adapters, "load_input_manifest", lambda path: {})
+    monkeypatch.setattr(cci_adapters, "read_cci_resource", lambda *args, **kwargs: resource.copy())
+    monkeypatch.setattr(cci_adapters, "load_adata_from_manifest", lambda *args, **kwargs: (adata.copy(), {}))
+    monkeypatch.setattr(cci_adapters, "_prepare_expression_adata", lambda value, normalize=True: value.copy())
+    monkeypatch.setenv("SCILD_MAX_PROBLEM_CELLS", "1000")
+    monkeypatch.setenv("SCILD_MAX_PAIR_CELL2", "100")
+
+    spec = MethodRunSpec(
+        method="scild",
+        input_manifest=tmp_path / "input_manifest.json",
+        output_dir=tmp_path / "scild",
+        database_mode="common-db",
+        phase="smoke",
+        max_cci_pairs=2,
+    )
+    with pytest.raises(MemoryError, match="SCILD bounded run is still too large"):
+        run_scild_adapter(spec)
 
 
 def test_read_sparse_bundle_as_adata_round_trips_bundle(tmp_path):
