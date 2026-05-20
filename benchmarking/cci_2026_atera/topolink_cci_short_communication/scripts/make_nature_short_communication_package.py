@@ -84,6 +84,11 @@ THEME = {
     "VWF-SELP": "vascular",
     "VWF-LRP1": "vascular",
     "MMRN2-CD93": "vascular",
+    "MMRN2-CLEC14A": "vascular",
+    "COL4A2-CD93": "vascular",
+    "EFNB2-PECAM1": "vascular",
+    "VWF-ITGA9": "vascular",
+    "HSPG2-LRP1": "stromal",
     "CD48-CD2": "immune",
     "DLL4-NOTCH3": "notch",
     "CXCL12-CXCR4": "stromal",
@@ -164,6 +169,8 @@ def save_figure(fig: plt.Figure, stem: str) -> dict[str, str]:
             fig.savefig(path, dpi=600, bbox_inches="tight", pil_kwargs={"compression": "tiff_lzw"})
         else:
             fig.savefig(path, dpi=600, bbox_inches="tight")
+        if ext == "svg":
+            path.write_text("\n".join(line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")
         outputs[ext] = str(path)
     return outputs
 
@@ -345,9 +352,22 @@ def draw_evidence_matrix(ax: plt.Axes, evidence: pd.DataFrame) -> pd.DataFrame:
     return df[keep]
 
 
-def draw_breast_top_axes(ax: plt.Axes, breast_top: pd.DataFrame) -> pd.DataFrame:
-    panel_label(ax, "a")
-    plot = breast_top.copy().sort_values("CCI_score").tail(8)
+def draw_breast_top_axes(ax: plt.Axes, breast_top: pd.DataFrame, label: str = "a") -> pd.DataFrame:
+    panel_label(ax, label)
+    interpretable_axes = [
+        "VWF-SELP",
+        "VWF-LRP1",
+        "EFNB2-PECAM1",
+        "MMRN2-CLEC14A",
+        "HSPG2-LRP1",
+        "COL4A2-CD93",
+        "MMRN2-CD93",
+        "VWF-ITGA9",
+    ]
+    plot = breast_top.loc[breast_top["axis"].isin(interpretable_axes)].copy()
+    if plot.empty:
+        plot = breast_top.copy().sort_values("CCI_score").tail(8)
+    plot = plot.sort_values("CCI_score")
     plot["theme"] = plot["axis"].map(THEME).fillna("tumor")
     colors = [THEME_COLORS[t] for t in plot["theme"]]
     ax.barh(plot["axis"], plot["CCI_score"], color=colors)
@@ -401,8 +421,8 @@ def draw_hotspot(ax: plt.Axes, hotspot_summary: pd.DataFrame) -> pd.DataFrame:
     return hotspot_summary.assign(image_path=str(HOTSPOT_IMAGE))
 
 
-def draw_method_status(ax: plt.Axes, method: pd.DataFrame) -> pd.DataFrame:
-    panel_label(ax, "d")
+def draw_method_status(ax: plt.Axes, method: pd.DataFrame, label: str = "d") -> pd.DataFrame:
+    panel_label(ax, label)
     breast = method.loc[method["dataset"].eq("atera_breast_wta")].copy()
     order = ["full_result", "bounded_subset_result", "reproducible_failure_card"]
     counts = breast["status"].value_counts().reindex(order).fillna(0).astype(int)
@@ -415,12 +435,21 @@ def draw_method_status(ax: plt.Axes, method: pd.DataFrame) -> pd.DataFrame:
     ax.grid(axis="y", color=COLORS["grid"], lw=0.5)
     for i, value in enumerate(counts.values):
         ax.text(i, value + 0.25, str(value), ha="center", va="bottom", fontsize=7, fontweight="bold")
-    ax.text(0.98, 0.96, "0 deferred", transform=ax.transAxes, ha="right", va="top", fontsize=6, fontweight="bold")
+    ax.text(
+        0.98,
+        0.96,
+        "18 Breast methods\n9 full + 9 bounded\n0 failure / 0 deferred",
+        transform=ax.transAxes,
+        ha="right",
+        va="top",
+        fontsize=6,
+        fontweight="bold",
+    )
     return counts.rename_axis("status").reset_index(name="n_methods")
 
 
-def draw_canonical_rank(ax: plt.Axes, canonical: pd.DataFrame) -> pd.DataFrame:
-    panel_label(ax, "e")
+def draw_canonical_rank(ax: plt.Axes, canonical: pd.DataFrame, label: str = "e") -> pd.DataFrame:
+    panel_label(ax, label)
     selected_methods = ["TopoLink-CCI", "CellPhoneDB", "LARIS", "LIANA+", "SpatialDM", "stLearn", "Squidpy"]
     canonical_ids = ["VWF|SELP", "VWF|LRP1", "MMRN2|CD93", "DLL4|NOTCH3", "CXCL12|CXCR4"]
     df = canonical.loc[canonical["method"].isin(selected_methods) & canonical["canonical_id"].isin(canonical_ids)].copy()
@@ -460,8 +489,8 @@ def draw_canonical_rank(ax: plt.Axes, canonical: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def draw_cross_dataset(ax: plt.Axes, cross: pd.DataFrame) -> pd.DataFrame:
-    panel_label(ax, "f")
+def draw_cross_dataset(ax: plt.Axes, cross: pd.DataFrame, label: str = "f") -> pd.DataFrame:
+    panel_label(ax, label)
     top = cross.groupby("dataset", group_keys=False).head(3).copy()
     top = top.sort_values(["dataset", "CCI_score"], ascending=[True, True])
     top["display"] = top["dataset"].str.title() + ": " + top["axis"]
@@ -484,6 +513,48 @@ def draw_cross_dataset(ax: plt.Axes, cross: pd.DataFrame) -> pd.DataFrame:
     return top[["dataset", "axis", "sender_receiver", "CCI_score", "local_contact", "cross_edge_count"]]
 
 
+def draw_bounded_scalability(ax: plt.Axes, method: pd.DataFrame, label: str = "e") -> pd.DataFrame:
+    panel_label(ax, label)
+    order = ["Giotto", "SpaTalk", "NICHES", "CellNEST", "CellAgentChat", "FastCCC", "SCILD", "Copulacci", "NicheNet"]
+    df = method.loc[
+        method["dataset"].eq("atera_breast_wta")
+        & method["status"].eq("bounded_subset_result")
+        & method["method"].isin(order)
+    ].copy()
+    df["method"] = pd.Categorical(df["method"], categories=order, ordered=True)
+    df = df.sort_values("method")
+    df["n_rows_numeric"] = pd.to_numeric(df["n_rows"], errors="coerce")
+    df["log10_rows"] = np.log10(df["n_rows_numeric"].clip(lower=1))
+    colors = []
+    for method_name in df["method"].astype(str):
+        if method_name in {"NicheNet"}:
+            colors.append(COLORS["purple"])
+        elif method_name in {"FastCCC", "SCILD", "Copulacci"}:
+            colors.append(COLORS["blue"])
+        else:
+            colors.append(COLORS["orange"])
+    ax.barh(df["method"].astype(str), df["log10_rows"], color=colors, edgecolor="#374151", linewidth=0.35)
+    ax.invert_yaxis()
+    ax.set_xlabel("log10 standardized rows")
+    ax.set_title("Bounded appendix scalability", loc="left", fontweight="bold")
+    ax.grid(axis="x", color=COLORS["grid"], lw=0.5)
+    for i, row in enumerate(df.itertuples()):
+        value = getattr(row, "n_rows_numeric")
+        label_text = f"{int(value):,}" if pd.notna(value) else "reported"
+        ax.text(getattr(row, "log10_rows") + 0.04, i, f"{label_text} ({row.phase})", va="center", fontsize=4.8, color=COLORS["text"])
+    ax.text(
+        0.02,
+        0.03,
+        "Bounded evidence is terminal appendix evidence,\nnot a full whole-dataset equivalence claim.",
+        transform=ax.transAxes,
+        ha="left",
+        va="bottom",
+        fontsize=5.2,
+        bbox=dict(fc="white", ec="#D1D5DB", boxstyle="round,pad=0.25"),
+    )
+    return df[["dataset", "method", "status", "evidence_level", "phase", "n_rows", "remote_or_local_path", "notes", "log10_rows"]]
+
+
 def make_figure_1(data: dict[str, pd.DataFrame]) -> dict[str, str]:
     fig = plt.figure(figsize=(7.15, 5.35), constrained_layout=False)
     gs = fig.add_gridspec(2, 3, width_ratios=[1.0, 1.0, 1.15], height_ratios=[1.0, 1.2])
@@ -504,17 +575,16 @@ def make_figure_1(data: dict[str, pd.DataFrame]) -> dict[str, str]:
 
 def make_figure_2(data: dict[str, pd.DataFrame]) -> dict[str, str]:
     fig = plt.figure(figsize=(7.15, 8.45), constrained_layout=False)
-    gs = fig.add_gridspec(3, 2, width_ratios=[1.08, 1.0], height_ratios=[1.0, 1.12, 1.0])
-    fig.subplots_adjust(left=0.10, right=0.96, bottom=0.075, top=0.94, wspace=0.62, hspace=0.78)
+    gs = fig.add_gridspec(3, 2, width_ratios=[0.95, 1.1], height_ratios=[0.88, 1.12, 1.0])
+    fig.subplots_adjust(left=0.10, right=0.96, bottom=0.075, top=0.94, wspace=0.66, hspace=0.78)
     sources = {
-        "fig2a_breast_top_axes": save_source("fig2a_breast_top_axes", draw_breast_top_axes(fig.add_subplot(gs[0, 0]), data["breast_top"])),
-        "fig2b_vwf_selp_components": save_source("fig2b_vwf_selp_components", draw_vwf_decomposition(fig.add_subplot(gs[0, 1]), data["components"])),
-        "fig2c_vwf_selp_hotspots": save_source("fig2c_vwf_selp_hotspots", draw_hotspot(fig.add_subplot(gs[1, 0]), data["hotspot_summary"])),
-        "fig2d_method_status": save_source("fig2d_method_status", draw_method_status(fig.add_subplot(gs[1, 1]), data["method"])),
-        "fig2e_canonical_rank": save_source("fig2e_canonical_rank", draw_canonical_rank(fig.add_subplot(gs[2, 0]), data["canonical_rank"])),
-        "fig2f_cross_dataset": save_source("fig2f_cross_dataset", draw_cross_dataset(fig.add_subplot(gs[2, 1]), data["cross_dataset"])),
+        "fig2a_method_status": save_source("fig2a_method_status", draw_method_status(fig.add_subplot(gs[0, 0]), data["method"], label="a")),
+        "fig2b_breast_top_axes": save_source("fig2b_breast_top_axes", draw_breast_top_axes(fig.add_subplot(gs[0, 1]), data["breast_top"], label="b")),
+        "fig2c_canonical_rank": save_source("fig2c_canonical_rank", draw_canonical_rank(fig.add_subplot(gs[1, 0]), data["canonical_rank"], label="c")),
+        "fig2d_cross_dataset": save_source("fig2d_cross_dataset", draw_cross_dataset(fig.add_subplot(gs[1, 1]), data["cross_dataset"], label="d")),
+        "fig2e_bounded_scalability": save_source("fig2e_bounded_scalability", draw_bounded_scalability(fig.add_subplot(gs[2, :]), data["method"], label="e")),
     }
-    fig.text(0.10, 0.987, "Figure 2 | Whole-dataset discovery and biological interpretation", fontsize=7.2, fontweight="bold", va="top")
+    fig.text(0.10, 0.987, "Figure 2 | Whole-dataset benchmarking and biological interpretation", fontsize=7.2, fontweight="bold", va="top")
     outputs = save_figure(fig, "figure_2_topolink_cci_discovery_benchmark")
     plt.close(fig)
     write_manifest("figure_2", outputs, sources, "Whole-dataset TopoLink-CCI outputs recover interpretable and tissue-specific CCI axes.")
@@ -529,8 +599,8 @@ def make_fallback(data: dict[str, pd.DataFrame]) -> dict[str, str]:
         "fallback_a_score": save_source("fallback_a_score_architecture", draw_score_architecture(fig.add_subplot(gs[0, 0]))),
         "fallback_b_synthetic": save_source("fallback_b_synthetic_truth", draw_synthetic(fig.add_subplot(gs[0, 1]), data["synthetic"])),
         "fallback_c_evidence": save_source("fallback_c_evidence_matrix", draw_evidence_matrix(fig.add_subplot(gs[1, :]), data["evidence"])),
-        "fallback_d_status": save_source("fallback_d_method_status", draw_method_status(fig.add_subplot(gs[2, 0]), data["method"])),
-        "fallback_e_cross_dataset": save_source("fallback_e_cross_dataset", draw_cross_dataset(fig.add_subplot(gs[2, 1]), data["cross_dataset"])),
+        "fallback_d_status": save_source("fallback_d_method_status", draw_method_status(fig.add_subplot(gs[2, 0]), data["method"], label="d")),
+        "fallback_e_cross_dataset": save_source("fallback_e_cross_dataset", draw_cross_dataset(fig.add_subplot(gs[2, 1]), data["cross_dataset"], label="e")),
     }
     fig.text(0.08, 0.987, "TopoLink-CCI prioritizes topology-supported spatial CCI hypotheses", fontsize=7.2, fontweight="bold", va="top")
     outputs = save_figure(fig, "figure_1_fallback_single_main")
@@ -561,8 +631,8 @@ def write_manuscripts() -> dict[str, Path]:
     abstract = (
         "Spatial cell-cell interaction inference is confounded by co-expression, cell abundance and incomplete molecular resources. "
         "We introduce TopoLink-CCI, a topology-guided framework that integrates tissue topology, expression specificity and local contact, "
-        "then challenges candidates with orthogonal controls. In Xenium WTA breast and cervical cancers, TopoLink-CCI scales to whole datasets "
-        "and prioritizes interpretable vascular, stromal, immune and tumor interaction axes."
+        "then challenges candidates with orthogonal controls. In Xenium WTA breast cancer, an expanded 18-method benchmark reached nine full "
+        "and nine bounded terminal results with no failure or deferred methods; cervical WTA analysis showed tissue-context-specific tumor adhesion axes."
     )
     main_text = f"""# Topology-guided prioritization of spatial cell-cell interaction axes
 
@@ -580,7 +650,7 @@ Spatial transcriptomics has made it possible to infer cell-cell interaction (CCI
 
 We developed TopoLink-CCI as a topology-guided CCI prioritization framework in pyXenium. In CCI-resource mode, each ligand, receptor, sender and receiver combination is scored by six retained components: sender topology anchor, receiver topology anchor, sender-receiver structure bridge, sender expression support, receiver expression support and local contact support. The discovery score is a prior-weighted geometric mean of these components, so a high score requires concordance across topology, expression and spatial contact rather than any single high-expression feature. Because every component is exported, users can diagnose whether an axis is topology-driven, expression-driven, contact-sensitive or potentially dominated by a resource prior. This design explicitly treats the score as a discovery statistic, not as proof of protein-level communication.
 
-We first evaluated the scoring logic in a topology-preserving Synthetic Truth benchmark. The full TopoLink-CCI model achieved AUROC 0.9919 and AUPRC 0.8333, whereas the topology-anchor-only model retained high AUROC (0.9839) but dropped to AUPRC 0.5833. We then applied TopoLink-CCI to Atera Xenium WTA breast cancer, generating 1,319,600 common-resource CCI hypotheses from 170,057 cells. The expanded breast benchmark includes 18 terminalized methods: nine full results, six bounded subset results and three reproducible failure cards, with no deferred methods. Seven representative axes were evaluated with orthogonal controls inspired by established CCI methods, including cell-label permutation, spatial nulls, matched-expression gene controls, downstream target support, received-signal association, cross-method consensus, component ablation and bootstrap stability.
+We first evaluated the scoring logic in a topology-preserving Synthetic Truth benchmark. The full TopoLink-CCI model achieved AUROC 0.9919 and AUPRC 0.8333, whereas the topology-anchor-only model retained high AUROC (0.9839) but dropped to AUPRC 0.5833. We then applied TopoLink-CCI to Atera Xenium WTA breast cancer, generating 1,319,600 common-resource CCI hypotheses from 170,057 cells. The expanded breast benchmark now includes 18 terminalized methods: nine full whole-dataset results and nine bounded subset results, with zero failure cards and zero deferred methods. Late-stage rescue runs converted FastCCC, SCILD, Copulacci and NicheNet into bounded appendix evidence, with NicheNet interpreted specifically as downstream receiver-response support rather than a direct spatial CCI ranker. Seven representative axes were evaluated with orthogonal controls inspired by established CCI methods, including cell-label permutation, spatial nulls, matched-expression gene controls, downstream target support, received-signal association, cross-method consensus, component ablation and bootstrap stability.
 
 TopoLink-CCI prioritized biologically interpretable axes spanning vascular activation, stromal matrix biology, immune adhesion, Notch signaling and tumor-intrinsic adhesion. The top breast axis, VWF-SELP from endothelial cells to endothelial cells, is best interpreted as an endothelial activation and vascular adhesion niche consistent with Weibel-Palade body biology, not as direct proof of VWF/P-selectin protein release. Cross-dataset application to Xenium WTA cervical cancer produced 2,404,971 hypotheses and a distinct top tumor-adhesion axis, DSC2-DSG3 in differentiating tumor cells, supporting tissue-context-specific prioritization. TopoLink-CCI is therefore a spatial CCI hypothesis-prioritization framework: it narrows a large molecular search space to axes consistent with tissue topology, expression specificity, local contact and independent computational controls, while leaving causal signaling and protein-level mechanism to orthogonal experimental validation.
 
@@ -588,7 +658,7 @@ TopoLink-CCI prioritized biologically interpretable axes spanning vascular activ
 
 **Figure 1 | TopoLink-CCI method and validation logic.** **a,** Spatial CCI inference is vulnerable to co-expression, cell-abundance, proximity and resource-composition false positives. **b,** TopoLink-CCI scores each candidate using sender and receiver topology anchors, structure bridging, expression support and local contact. **c,** Workflow from Xenium WTA and pyXenium topology maps to ranked CCI axes and validation controls. **d,** Synthetic Truth evaluation shows that the full model achieves AUROC 0.9919 and AUPRC 0.8333, whereas topology-anchor-only scoring loses precision-recall performance. **e,** Orthogonal evidence matrix for seven interpretable breast cancer axes.
 
-**Figure 2 | Whole-dataset discovery and biological interpretation.** **a,** Top interpretable Breast WTA axes ranked by TopoLink-CCI score. **b,** VWF-SELP component decomposition shows joint topology, expression and local-contact support. **c,** VWF-SELP endothelial hotspots are shown as RNA-level spatial evidence. **d,** The expanded breast benchmark terminalizes 18 methods into full, bounded and reproducible-failure tiers. **e,** Canonical recovery is compared by within-method rank rather than raw score. **f,** Breast and cervical WTA datasets yield tissue-context-specific top axes.
+**Figure 2 | Whole-dataset benchmarking and biological interpretation.** **a,** The expanded Breast WTA benchmark terminalizes 18 methods as nine full whole-dataset results and nine bounded subset results, with zero failure cards and zero deferred methods. **b,** Top interpretable Breast WTA axes ranked by TopoLink-CCI score are led by VWF-SELP. **c,** Canonical recovery is compared by within-method rank rather than raw score. **d,** Breast and cervical WTA datasets yield tissue-context-specific top axes, including DSC2-DSG3 in cervical differentiating tumor cells. **e,** Bounded appendix methods provide scalability-aware terminal evidence, including FastCCC, SCILD, Copulacci and NicheNet late-stage rescue results.
 
 ## Guardrails
 
@@ -617,7 +687,7 @@ Synthetic Truth data preserve tissue topology while implanting known CCI axes. A
 
 ## Benchmark status tiers
 
-Methods are classified as full result, bounded subset result or reproducible failure card. Bounded methods are not treated as equivalent to whole-dataset full methods.
+Methods were terminalized as full result or bounded subset result in the expanded Breast WTA benchmark. Reproducible failure cards remain the predefined stopping rule, but no expanded Breast method currently remains in that class. Bounded methods are not treated as equivalent to whole-dataset full methods. NicheNet is analyzed as downstream receiver-response support and is not presented as a direct spatial CCI ranker.
 """
     inquiry = """# Presubmission inquiry draft
 
@@ -628,6 +698,8 @@ We would like to ask whether you would consider a Brief Communication describing
 TopoLink-CCI addresses a central limitation of current CCI analysis: co-expression, cell abundance and spatial proximity can generate plausible but weakly controlled interaction hypotheses. The method integrates tissue topology, expression specificity and local contact into an interpretable discovery score, then evaluates candidates with orthogonal false-positive controls.
 
 In Atera Xenium WTA breast cancer, TopoLink-CCI generated 1,319,600 CCI hypotheses and prioritized vascular, stromal, immune and Notch axes with strong computational support. In a Synthetic Truth benchmark it achieved AUROC 0.9919 and AUPRC 0.8333, outperforming topology-anchor-only scoring in precision-recall ranking. Cross-dataset application to Xenium WTA cervical cancer produced 2,404,971 hypotheses and a distinct top tumor-adhesion axis, supporting tissue-context-specific prioritization.
+
+The accompanying expanded benchmark terminalizes all 18 Breast WTA methods, comprising nine full whole-dataset results and nine bounded subset results with no remaining failure or deferred methods. Bounded results are reported as scalability-aware appendix evidence and remain explicitly separated from full whole-dataset comparisons.
 
 We believe this work fits Nature Methods because it presents a concise method and validation framework for spatial omics, with broad relevance to tissue-scale CCI analysis. The proposed submission would include two main figures, online methods, source data and a complete benchmark status table.
 
@@ -646,11 +718,11 @@ Sincerely,
 
 def write_supplement_manifest(data: dict[str, pd.DataFrame]) -> Path:
     rows = [
-        ("Supplementary Table 1", "method_completion_matrix", str(METHOD_MATRIX), "Full/bounded/failure status for all benchmarked methods."),
+        ("Supplementary Table 1", "method_completion_matrix", str(METHOD_MATRIX), "Final full/bounded terminal status for all benchmarked methods."),
         ("Supplementary Table 2", "validation_evidence", str(EVIDENCE), "False-positive controls and evidence classes for seven CCI axes."),
         ("Supplementary Table 3", "synthetic_truth_metrics", str(SYNTHETIC_TRUTH), "Synthetic Truth AUROC/AUPRC and top-k metrics."),
         ("Supplementary Table 4", "breast_cervical_top_axes", str(CROSS_DATASET), "Cross-dataset TopoLink-CCI top axes."),
-        ("Source image", "vwf_selp_hotspot_overlay", str(HOTSPOT_IMAGE), "Spatial hotspot image used in Figure 2c."),
+        ("Supplementary source image", "vwf_selp_hotspot_overlay", str(HOTSPOT_IMAGE), "Spatial hotspot image retained for VWF-SELP deep-dive support."),
     ]
     manifest = pd.DataFrame(rows, columns=["item", "name", "path", "description"])
     path = MANUSCRIPT_DIR / "supplementary_data_manifest.tsv"

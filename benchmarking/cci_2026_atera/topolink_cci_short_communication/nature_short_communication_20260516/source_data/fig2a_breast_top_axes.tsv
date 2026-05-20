@@ -1,9 +1,0 @@
-dataset	axis	sender_receiver	CCI_score	local_contact	cross_edge_count	theme
-breast	CDH1-PTPRF	11q13 Invasive Tumor Cells -> 11q13 Invasive Tumor Cells	0.712640611425387	0.2113863855814468	423716	tumor
-breast	HSPG2-LRP1	Endothelial Cells -> CAFs, DCIS Associated	0.7279607350660221	0.31885311072451	13942	tumor
-breast	MMRN2-CLEC14A	Endothelial Cells -> Endothelial Cells	0.7322091602540813	0.1738559319741048	12779	tumor
-breast	CDH1-IGF1R	11q13 Invasive Tumor Cells -> 11q13 Invasive Tumor Cells	0.7406542390481928	0.2223361518692711	423716	tumor
-breast	GNAS-ADCY1	11q13 Invasive Tumor Cells -> 11q13 Invasive Tumor Cells	0.7422577389472655	0.2255335728070659	423716	tumor
-breast	EFNB2-PECAM1	Endothelial Cells -> Endothelial Cells	0.7469197326713805	0.2101050418451564	12779	tumor
-breast	VWF-LRP1	Endothelial Cells -> CAFs, DCIS Associated	0.7479758913021439	0.3461937505325735	13942	vascular
-breast	VWF-SELP	Endothelial Cells -> Endothelial Cells	0.7912892368005828	0.2912449657481761	12779	vascular

@@ -1,2 +1,0 @@
-n_cells_total	n_endothelial_cells	n_hotspot_endothelial_cells	vwf_q75_nonzero_raw	selp_q75_nonzero_raw	mean_hotspot_score_endothelial	mean_hotspot_score_hotspot	image_path
-170057	8624	433	5.0	2.0	0.1196693541254116	0.6537081049854462	D:\GitHub\pyXenium\benchmarking\cci_2026_atera\vwf_selp_deep_dive\figures\vwf_selp_hotspot_spatial_overlay.png

@@ -18,4 +18,4 @@ Synthetic Truth data preserve tissue topology while implanting known CCI axes. A
 
 ## Benchmark status tiers
 
-Methods are classified as full result, bounded subset result or reproducible failure card. Bounded methods are not treated as equivalent to whole-dataset full methods.
+Methods were terminalized as full result or bounded subset result in the expanded Breast WTA benchmark. Reproducible failure cards remain the predefined stopping rule, but no expanded Breast method currently remains in that class. Bounded methods are not treated as equivalent to whole-dataset full methods. NicheNet is analyzed as downstream receiver-response support and is not presented as a direct spatial CCI ranker.
