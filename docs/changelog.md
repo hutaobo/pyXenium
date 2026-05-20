@@ -4,8 +4,19 @@ All notable changes to pyXenium are documented here.
 
 ## Unreleased
 
+## 0.4.6 - 2026-05-20
+
 - Add `pyXenium.perturb` as the lightweight SpatialPerturb Bridge for optional Perturb-seq reference projection handoffs without adding a core runtime dependency.
 - Document AI-Driven Spatial Pathologist via the external `spatho` package as an optional workflow bridge, without adding new pyXenium runtime code or dependencies.
+- Packaging cleanup: stop shipping `_vendor/Gmi/.github/**` workflow files inside the wheel; narrow `_vendor/Gmi/*` `package-data` to the R sources actually consumed at runtime.
+- Pin `aiohttp>=3.9` (previously unpinned) to match the rest of the runtime-dependency hygiene.
+- Tighten supported Python range to `>=3.11` so classifiers, runtime, and CI matrix agree with the floor set by `zarr>=3.1` (zarr 3.x has never shipped a wheel for Python 3.10).
+- Expand CI Python matrix to `3.11`–`3.13` and remove the duplicate `test.yml` workflow.
+- Fix bare `except:` in `multimodal.analysis.differential.get_rna_expr_df` so non-`AttributeError` failures surface.
+- Plug fsspec handle leaks in `io.xenium_artifacts.open_text` (release on TextIOWrapper/GzipFile construction error) and in `read_cell_feature_matrix_h5` (close the fsspec fileobj when `h5py.File(fileobj, ...)` fails before falling back to a local re-open).
+- Seed `np.random.random` in the SCILD CCI adapter; benchmark runs are now reproducible via a `seed` kwarg.
+- Add `logger.warning(...)` / `logger.debug(...)` to 15 silent `except Exception:` sites across `multimodal/histoseg_lazyslide.py`, `multimodal/immune_resistance.py`, and `_topology_core.safe_to_parquet`.
+- README: replace the self-contradicting `pyXenium.spatho` row in the features table with the actual entry point (`build_spatho_manifest` + external `spatho` package).
 
 ## 0.4.5 - 2026-05-08
 

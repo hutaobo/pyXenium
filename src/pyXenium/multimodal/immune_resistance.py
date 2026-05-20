@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
@@ -13,6 +14,8 @@ from sklearn.metrics import roc_auc_score
 from sklearn.neighbors import NearestNeighbors
 
 from pyXenium.utils.name_resolver import resolve_protein_column
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -202,7 +205,8 @@ def _protein_vector(adata: AnnData, protein: str, *, protein_df: pd.DataFrame | 
     protein_df = _protein_frame(adata) if protein_df is None else protein_df
     try:
         resolved = resolve_protein_column(adata, protein, "protein_norm", "protein")
-    except Exception:
+    except Exception as exc:
+        logger.debug("resolve_protein_column failed for %r, falling back to raw name: %s", protein, exc)
         resolved = protein
     if resolved not in protein_df.columns:
         return None

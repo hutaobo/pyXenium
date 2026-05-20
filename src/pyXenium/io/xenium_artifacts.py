@@ -179,9 +179,16 @@ def exists(path_or_url: str) -> bool:
 
 def open_text(path_or_url: str):
     handle = fsspec.open(path_or_url, mode="rb").open()
-    if str(path_or_url).endswith(".gz"):
-        return io.TextIOWrapper(gzip.GzipFile(fileobj=handle), encoding="utf-8")
-    return io.TextIOWrapper(handle, encoding="utf-8")
+    try:
+        if str(path_or_url).endswith(".gz"):
+            return io.TextIOWrapper(gzip.GzipFile(fileobj=handle), encoding="utf-8")
+        return io.TextIOWrapper(handle, encoding="utf-8")
+    except Exception:
+        try:
+            handle.close()
+        except Exception:
+            pass
+        raise
 
 
 def ensure_local_path(
@@ -615,6 +622,12 @@ def read_cell_feature_matrix_h5(h5_path: str) -> tuple[sparse.csr_matrix, pd.Dat
             handle = h5py.File(fileobj, "r")
             managed = True
         except Exception:
+            if fileobj is not None:
+                try:
+                    fileobj.close()
+                except Exception:
+                    pass
+                fileobj = None
             handle = h5py.File(h5_path, "r")
 
         group = handle.get("X") or handle.get("matrix") or handle.get("cell_feature_matrix")
