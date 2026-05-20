@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import subprocess
 import time
 from collections.abc import Mapping, Sequence
@@ -24,6 +25,8 @@ from pyXenium.io import read_slide, read_xenium
 from pyXenium.io.slide_model import XeniumImage, XeniumSlide
 
 from .contour_boundary_ecology import score_contour_boundary_programs
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "DEFAULT_LAZYSLIDE_TEXT_TERMS",
@@ -2125,8 +2128,8 @@ def _load_lazyslide_annotations(zs: Any, wsi: Any, annotations: Any, *, key_adde
     try:
         zs.io.load_annotations(wsi, annotations=annotations, key_added=key_added)
         return
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("lazyslide load_annotations fallback (key=%s): %s", key_added, exc)
     if not hasattr(wsi, "shapes"):
         raise RuntimeError("Could not attach HistoSeg annotations to WSIData.")
     wsi.shapes[key_added] = annotations
@@ -2138,7 +2141,8 @@ def _limit_lazyslide_tiles(wsi: Any, *, tile_key: str, max_tiles: int) -> None:
     try:
         frame = wsi.shapes[tile_key]
         wsi.shapes[tile_key] = frame.iloc[:max_tiles].copy()
-    except Exception:
+    except Exception as exc:
+        logger.debug("limit_lazyslide_tiles skipped for %s: %s", tile_key, exc)
         return
 
 
@@ -2246,7 +2250,8 @@ def _try_lazyslide_spatial_domain(zs: Any, wsi: Any, *, model: str, tile_key: st
         feature_key = f"{_slug(model)}_{tile_key}"
         zs.tl.spatial_features(wsi, feature_key, tile_key=tile_key)
         zs.tl.spatial_domain(wsi, feature_key=feature_key, tile_key=tile_key)
-    except Exception:
+    except Exception as exc:
+        logger.warning("lazyslide spatial_domain skipped for model=%s tile_key=%s: %s", model, tile_key, exc)
         return
 
 
@@ -2271,7 +2276,8 @@ def _extract_lazyslide_tile_features(
 def _fetch_wsi_shape_frame(wsi: Any, key: str) -> pd.DataFrame:
     try:
         frame = wsi.shapes[key]
-    except Exception:
+    except Exception as exc:
+        logger.debug("fetch_wsi_shape_frame missing shape %s: %s", key, exc)
         return pd.DataFrame(columns=["tile_id"])
     output = pd.DataFrame(frame).copy()
     if "tile_id" not in output.columns:
@@ -2286,15 +2292,15 @@ def _fetch_wsi_table(wsi: Any, key: str) -> ad.AnnData:
         value = wsi[key]
         if isinstance(value, ad.AnnData):
             return value
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("fetch_wsi_table direct lookup failed for %s: %s", key, exc)
     if hasattr(wsi, "fetch") and hasattr(wsi.fetch, "features_anndata"):
         try:
             value = wsi.fetch.features_anndata(key)
             if isinstance(value, ad.AnnData):
                 return value
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("fetch_wsi_table features_anndata fallback failed for %s: %s", key, exc)
     raise KeyError(f"Could not fetch LazySlide feature table {key!r}.")
 
 
@@ -2322,7 +2328,8 @@ def _fetch_optional_text_similarity(
     for key in candidates:
         try:
             adata = _fetch_wsi_table(wsi, key)
-        except Exception:
+        except Exception as exc:
+            logger.debug("text similarity candidate %s not available: %s", key, exc)
             continue
         matrix = adata.X.toarray() if sparse.issparse(adata.X) else np.asarray(adata.X)
         terms = list(text_terms)
@@ -2540,10 +2547,12 @@ def _cell_indices_within_geometry(
         try:
             candidate_indices = np.asarray(point_tree.query(geometry, predicate="covers"), dtype=int)
             return np.sort(candidate_indices)
-        except Exception:
+        except Exception as exc:
+            logger.debug("STRtree predicate='covers' unsupported, falling back: %s", exc)
             try:
                 candidate_indices = np.asarray(point_tree.query(geometry), dtype=int)
-            except Exception:
+            except Exception as inner_exc:
+                logger.warning("STRtree query failed, falling back to brute force: %s", inner_exc)
                 candidate_indices = np.arange(len(cell_points), dtype=int)
     if candidate_indices.size == 0:
         return np.asarray([], dtype=int)
@@ -3460,8 +3469,8 @@ def _spatial_cv_groups(frame: pd.DataFrame) -> tuple[pd.Series | None, str]:
                 groups = (x_bin.astype(str) + "_" + y_bin.astype(str)).rename("spatial_block")
                 if groups.nunique() >= 3:
                     return groups, "spatial_block_group_kfold"
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("spatial CV grouping failed, falling back to kfold: %s", exc)
     return None, "kfold"
 
 
@@ -3477,7 +3486,8 @@ def _cross_validated_r2(
         from sklearn.model_selection import GroupKFold, KFold
         from sklearn.pipeline import make_pipeline
         from sklearn.preprocessing import StandardScaler
-    except Exception:
+    except Exception as exc:
+        logger.warning("sklearn imports unavailable for cross-validated R^2: %s", exc)
         return np.nan
 
     x_values = x.to_numpy(dtype=float)
@@ -3669,7 +3679,8 @@ def _git_commit() -> str | None:
             text=True,
             timeout=5,
         )
-    except Exception:
+    except Exception as exc:
+        logger.debug("git rev-parse HEAD unavailable: %s", exc)
         return None
     return result.stdout.strip() or None
 
@@ -3683,7 +3694,8 @@ def _gpu_summary() -> dict[str, Any]:
             text=True,
             timeout=5,
         )
-    except Exception:
+    except Exception as exc:
+        logger.debug("nvidia-smi unavailable: %s", exc)
         return {"available": False}
     lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
     return {"available": bool(lines), "devices": lines}

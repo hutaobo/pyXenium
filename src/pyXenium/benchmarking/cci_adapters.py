@@ -1763,7 +1763,9 @@ def run_scild_adapter(spec: MethodRunSpec) -> dict[str, Any]:
     _prepend_sys_path(source_dir)
     from Models.SCILD_main import SCILD  # type: ignore
 
-    np.random.seed(0)
+    seed_value = int(os.environ.get("SCILD_SEED", "0"))
+    np.random.seed(seed_value)
+    rng = np.random.default_rng(seed_value)
     cci_database = _scild_cci_database(cci_resource)
     niter_max = int(os.environ.get("SCILD_NITER_MAX", "100" if spec.phase == "full" else "20"))
     scild = SCILD(
@@ -1776,8 +1778,8 @@ def run_scild_adapter(spec: MethodRunSpec) -> dict[str, Any]:
         plot_error=False,
     )
     scild.preparing()
-    mu0 = np.random.random(scild.nl * scild.ns).reshape(-1, 1)
-    v0 = np.random.random(scild.nr * scild.ns).reshape(-1, 1)
+    mu0 = rng.random(scild.nl * scild.ns).reshape(-1, 1)
+    v0 = rng.random(scild.nr * scild.ns).reshape(-1, 1)
     scild.solving_optimization(mu0, v0)
 
     labels, _, one_hot = _celltype_one_hot(adata.obs["cell_type"].astype(str).to_numpy())

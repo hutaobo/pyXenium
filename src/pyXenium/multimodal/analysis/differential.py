@@ -11,7 +11,7 @@ def get_rna_expr_df(adata, layer_key="rna"):
         raise KeyError(f"adata.layers does not have {layer_key}")
     try:
         arr = expr.toarray()
-    except:
+    except AttributeError:
         arr = expr
     return pd.DataFrame(arr, index=adata.obs.index, columns=adata.var.index)
 

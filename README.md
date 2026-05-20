@@ -47,7 +47,7 @@ pyXenium is a Python toolkit for **10x Genomics Xenium** organized around nine m
 | Contour Geometry | `pyXenium.contour` | [Contour tutorial hub](https://pyxenium.readthedocs.io/en/latest/tutorials/contour_index.html) |
 | GMI Inference | `pyXenium.gmi` | [Contour GMI guide](https://pyxenium.readthedocs.io/en/latest/guides/gmi-contour.html) |
 | Mechanostress | `pyXenium.mechanostress` | [Mechanostress tutorial](https://pyxenium.readthedocs.io/en/latest/tutorials/mechanostress_atera_pdc.html) |
-| AI-Driven Spatial Pathologist | `pyXenium.spatho` | [RTD bridge guide](https://pyxenium.readthedocs.io/en/latest/tutorials/ai_driven_spatial_pathologist.html) |
+| AI-Driven Spatial Pathologist | external `spatho` package + `pyXenium.build_spatho_manifest` | [RTD bridge guide](https://pyxenium.readthedocs.io/en/latest/tutorials/ai_driven_spatial_pathologist.html) |
 | SpatialPerturb Bridge | `pyXenium.perturb` | [SpatialPerturb bridge guide](https://pyxenium.readthedocs.io/en/latest/tutorials/spatialperturb_bridge.html) |
 
 Legacy compatibility entry points under `pyXenium.analysis`, `pyXenium.validation`, and
@@ -57,7 +57,7 @@ and run separately; pyXenium does not vendor them or add them as core runtime de
 
 ## Release & Build
 
-- Current repository version: `0.4.5`
+- Current repository version: `0.4.6`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
 - Documentation site: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
@@ -68,7 +68,7 @@ and run separately; pyXenium does not vendor them or add them as core runtime de
 ## Install
 
 ```bash
-pip install pyXenium==0.4.5
+pip install pyXenium==0.4.6
 ```
 
 For local development:

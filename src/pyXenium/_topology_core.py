@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import math
 import warnings
 from pathlib import Path
@@ -15,6 +16,8 @@ from scipy.cluster.hierarchy import cophenet, linkage
 from scipy.spatial.distance import pdist, squareform
 from scipy.sparse import issparse
 from sklearn.neighbors import NearestNeighbors
+
+logger = logging.getLogger(__name__)
 
 
 def ensure_output_dir(output_dir: Optional[str | Path]) -> Optional[Path]:
@@ -1078,7 +1081,8 @@ def safe_to_parquet(df: pd.DataFrame, path: Path) -> bool:
     try:
         df.to_parquet(path, index=False)
         return True
-    except Exception:
+    except Exception as exc:
+        logger.warning("safe_to_parquet failed for %s: %s", path, exc)
         return False
 
 
