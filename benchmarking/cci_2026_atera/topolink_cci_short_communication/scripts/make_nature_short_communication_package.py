@@ -13,6 +13,9 @@ from __future__ import annotations
 
 import json
 import math
+import re
+import shutil
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -30,9 +33,13 @@ try:
     from docx import Document
     from docx.enum.section import WD_ORIENT
     from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
     from docx.shared import Cm, Inches, Pt
 except Exception:  # pragma: no cover
     Document = None
+    OxmlElement = None
+    qn = None
 
 
 REPO = Path(__file__).resolve().parents[4]
@@ -42,6 +49,7 @@ FIG_DIR = PACKAGE_ROOT / "figures"
 SOURCE_DIR = PACKAGE_ROOT / "source_data"
 META_DIR = PACKAGE_ROOT / "metadata"
 MANUSCRIPT_DIR = PACKAGE_ROOT / "manuscript"
+QA_DIR = PACKAGE_ROOT / "qa"
 
 METHOD_MATRIX = CCI_ROOT / "results" / "method_completion_matrix.tsv"
 SYNTHETIC_TRUTH = (
@@ -128,7 +136,7 @@ def configure_matplotlib() -> None:
 
 
 def ensure_dirs() -> None:
-    for path in [FIG_DIR, SOURCE_DIR, META_DIR, MANUSCRIPT_DIR]:
+    for path in [FIG_DIR, SOURCE_DIR, META_DIR, MANUSCRIPT_DIR, QA_DIR]:
         path.mkdir(parents=True, exist_ok=True)
 
 
@@ -171,6 +179,15 @@ def save_figure(fig: plt.Figure, stem: str) -> dict[str, str]:
             fig.savefig(path, dpi=600, bbox_inches="tight")
         if ext == "svg":
             path.write_text("\n".join(line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")
+        if ext in {"png", "tiff"}:
+            try:
+                from PIL import Image
+
+                with Image.open(path) as image:
+                    if image.mode != "RGB":
+                        image.convert("RGB").save(path, dpi=image.info.get("dpi", (600, 600)))
+            except Exception:
+                pass
         outputs[ext] = str(path)
     return outputs
 
@@ -261,7 +278,7 @@ def draw_workflow(ax: plt.Axes) -> pd.DataFrame:
     ax.set_ylim(0, 1)
     ax.axis("off")
     steps = [
-        ("Xenium\nWTA", 0.04, 0.42),
+        ("Atera\nWTA", 0.04, 0.42),
         ("topology\nmap", 0.24, 0.42),
         ("CCI\nranking", 0.44, 0.42),
         ("controls", 0.64, 0.42),
@@ -574,7 +591,7 @@ def make_figure_1(data: dict[str, pd.DataFrame]) -> dict[str, str]:
 
 
 def make_figure_2(data: dict[str, pd.DataFrame]) -> dict[str, str]:
-    fig = plt.figure(figsize=(7.15, 8.45), constrained_layout=False)
+    fig = plt.figure(figsize=(7.15, 6.65), constrained_layout=False)
     gs = fig.add_gridspec(3, 2, width_ratios=[0.95, 1.1], height_ratios=[0.88, 1.12, 1.0])
     fig.subplots_adjust(left=0.10, right=0.96, bottom=0.075, top=0.94, wspace=0.66, hspace=0.78)
     sources = {
@@ -592,7 +609,7 @@ def make_figure_2(data: dict[str, pd.DataFrame]) -> dict[str, str]:
 
 
 def make_fallback(data: dict[str, pd.DataFrame]) -> dict[str, str]:
-    fig = plt.figure(figsize=(7.15, 7.8), constrained_layout=False)
+    fig = plt.figure(figsize=(7.15, 6.65), constrained_layout=False)
     gs = fig.add_gridspec(3, 2, height_ratios=[0.9, 1.2, 1.05], width_ratios=[1.0, 1.15])
     fig.subplots_adjust(left=0.08, right=0.97, bottom=0.07, top=0.94, wspace=0.52, hspace=0.72)
     sources = {
@@ -631,8 +648,8 @@ def write_manuscripts() -> dict[str, Path]:
     abstract = (
         "Spatial cell-cell interaction inference is confounded by co-expression, cell abundance and incomplete molecular resources. "
         "We introduce TopoLink-CCI, a topology-guided framework that integrates tissue topology, expression specificity and local contact, "
-        "then challenges candidates with orthogonal controls. In Xenium WTA breast cancer, an expanded 18-method benchmark reached nine full "
-        "and nine bounded terminal results with no failure or deferred methods; cervical WTA analysis showed tissue-context-specific tumor adhesion axes."
+        "then challenges candidates with orthogonal controls. In public 10x Genomics Atera Whole Transcriptome Assay (Atera WTA) FFPE breast cancer data, an expanded 18-method benchmark reached nine full "
+        "and nine bounded terminal results with no failure or deferred methods; Atera WTA cervical cancer analysis showed tissue-context-specific tumor adhesion axes."
     )
     main_text = f"""# Topology-guided prioritization of spatial cell-cell interaction axes
 
@@ -650,13 +667,13 @@ Spatial transcriptomics has made it possible to infer cell-cell interaction (CCI
 
 We developed TopoLink-CCI as a topology-guided CCI prioritization framework in pyXenium. In CCI-resource mode, each ligand, receptor, sender and receiver combination is scored by six retained components: sender topology anchor, receiver topology anchor, sender-receiver structure bridge, sender expression support, receiver expression support and local contact support. The discovery score is a prior-weighted geometric mean of these components, so a high score requires concordance across topology, expression and spatial contact rather than any single high-expression feature. Because every component is exported, users can diagnose whether an axis is topology-driven, expression-driven, contact-sensitive or potentially dominated by a resource prior. This design explicitly treats the score as a discovery statistic, not as proof of protein-level communication.
 
-We first evaluated the scoring logic in a topology-preserving Synthetic Truth benchmark. The full TopoLink-CCI model achieved AUROC 0.9919 and AUPRC 0.8333, whereas the topology-anchor-only model retained high AUROC (0.9839) but dropped to AUPRC 0.5833. We then applied TopoLink-CCI to Atera Xenium WTA breast cancer, generating 1,319,600 common-resource CCI hypotheses from 170,057 cells. The expanded breast benchmark now includes 18 terminalized methods: nine full whole-dataset results and nine bounded subset results, with zero failure cards and zero deferred methods. Late-stage rescue runs converted FastCCC, SCILD, Copulacci and NicheNet into bounded appendix evidence, with NicheNet interpreted specifically as downstream receiver-response support rather than a direct spatial CCI ranker. Seven representative axes were evaluated with orthogonal controls inspired by established CCI methods, including cell-label permutation, spatial nulls, matched-expression gene controls, downstream target support, received-signal association, cross-method consensus, component ablation and bootstrap stability.
+We first evaluated the scoring logic in a topology-preserving Synthetic Truth benchmark. The full TopoLink-CCI model achieved AUROC 0.9919 and AUPRC 0.8333, whereas the topology-anchor-only model retained high AUROC (0.9839) but dropped to AUPRC 0.5833. We then applied TopoLink-CCI to the public 10x Genomics Preview Data: Atera In Situ Gene Expression, FFPE Human Breast Cancer dataset, generated using the pre-commercial Atera Whole Transcriptome Assay (Atera WTA) and Atera Onboard Analysis development workflow. TopoLink-CCI generated 1,319,600 common-resource CCI hypotheses from 170,057 cells in this breast cancer tissue. The expanded breast benchmark now includes 18 terminalized methods: nine full whole-dataset results and nine bounded subset results, with zero failure cards and zero deferred methods. Late-stage rescue runs converted FastCCC, SCILD, Copulacci and NicheNet into bounded appendix evidence, with NicheNet interpreted specifically as downstream receiver-response support rather than a direct spatial CCI ranker. Seven representative axes were evaluated with orthogonal controls inspired by established CCI methods, including cell-label permutation, spatial nulls, matched-expression gene controls, downstream target support, received-signal association, cross-method consensus, component ablation and bootstrap stability.
 
-TopoLink-CCI prioritized biologically interpretable axes spanning vascular activation, stromal matrix biology, immune adhesion, Notch signaling and tumor-intrinsic adhesion. The top breast axis, VWF-SELP from endothelial cells to endothelial cells, is best interpreted as an endothelial activation and vascular adhesion niche consistent with Weibel-Palade body biology, not as direct proof of VWF/P-selectin protein release. Cross-dataset application to Xenium WTA cervical cancer produced 2,404,971 hypotheses and a distinct top tumor-adhesion axis, DSC2-DSG3 in differentiating tumor cells, supporting tissue-context-specific prioritization. TopoLink-CCI is therefore a spatial CCI hypothesis-prioritization framework: it narrows a large molecular search space to axes consistent with tissue topology, expression specificity, local contact and independent computational controls, while leaving causal signaling and protein-level mechanism to orthogonal experimental validation.
+TopoLink-CCI prioritized biologically interpretable axes spanning vascular activation, stromal matrix biology, immune adhesion, Notch signaling and tumor-intrinsic adhesion. The top breast axis, VWF-SELP from endothelial cells to endothelial cells, is best interpreted as an endothelial activation and vascular adhesion niche consistent with Weibel-Palade body biology, not as direct proof of VWF/P-selectin protein release. Cross-dataset application to the corresponding public 10x Genomics Preview Data: Atera In Situ Gene Expression, FFPE Human Cervical Cancer dataset produced 2,404,971 hypotheses from 717,576 cells and a distinct top tumor-adhesion axis, DSC2-DSG3 in differentiating tumor cells, supporting tissue-context-specific prioritization. TopoLink-CCI is therefore a spatial CCI hypothesis-prioritization framework: it narrows a large molecular search space to axes consistent with tissue topology, expression specificity, local contact and independent computational controls, while leaving causal signaling and protein-level mechanism to orthogonal experimental validation.
 
 ## Figure legends
 
-**Figure 1 | TopoLink-CCI method and validation logic.** **a,** Spatial CCI inference is vulnerable to co-expression, cell-abundance, proximity and resource-composition false positives. **b,** TopoLink-CCI scores each candidate using sender and receiver topology anchors, structure bridging, expression support and local contact. **c,** Workflow from Xenium WTA and pyXenium topology maps to ranked CCI axes and validation controls. **d,** Synthetic Truth evaluation shows that the full model achieves AUROC 0.9919 and AUPRC 0.8333, whereas topology-anchor-only scoring loses precision-recall performance. **e,** Orthogonal evidence matrix for seven interpretable breast cancer axes.
+**Figure 1 | TopoLink-CCI method and validation logic.** **a,** Spatial CCI inference is vulnerable to co-expression, cell-abundance, proximity and resource-composition false positives. **b,** TopoLink-CCI scores each candidate using sender and receiver topology anchors, structure bridging, expression support and local contact. **c,** Workflow from Atera WTA preview datasets and pyXenium topology maps to ranked CCI axes and validation controls. **d,** Synthetic Truth evaluation shows that the full model achieves AUROC 0.9919 and AUPRC 0.8333, whereas topology-anchor-only scoring loses precision-recall performance. **e,** Orthogonal evidence matrix for seven interpretable breast cancer axes.
 
 **Figure 2 | Whole-dataset benchmarking and biological interpretation.** **a,** The expanded Breast WTA benchmark terminalizes 18 methods as nine full whole-dataset results and nine bounded subset results, with zero failure cards and zero deferred methods. **b,** Top interpretable Breast WTA axes ranked by TopoLink-CCI score are led by VWF-SELP. **c,** Canonical recovery is compared by within-method rank rather than raw score. **d,** Breast and cervical WTA datasets yield tissue-context-specific top axes, including DSC2-DSG3 in cervical differentiating tumor cells. **e,** Bounded appendix methods provide scalability-aware terminal evidence, including FastCCC, SCILD, Copulacci and NicheNet late-stage rescue results.
 
@@ -697,7 +714,7 @@ We would like to ask whether you would consider a Brief Communication describing
 
 TopoLink-CCI addresses a central limitation of current CCI analysis: co-expression, cell abundance and spatial proximity can generate plausible but weakly controlled interaction hypotheses. The method integrates tissue topology, expression specificity and local contact into an interpretable discovery score, then evaluates candidates with orthogonal false-positive controls.
 
-In Atera Xenium WTA breast cancer, TopoLink-CCI generated 1,319,600 CCI hypotheses and prioritized vascular, stromal, immune and Notch axes with strong computational support. In a Synthetic Truth benchmark it achieved AUROC 0.9919 and AUPRC 0.8333, outperforming topology-anchor-only scoring in precision-recall ranking. Cross-dataset application to Xenium WTA cervical cancer produced 2,404,971 hypotheses and a distinct top tumor-adhesion axis, supporting tissue-context-specific prioritization.
+In the public 10x Genomics Preview Data: Atera In Situ Gene Expression, FFPE Human Breast Cancer dataset generated using Atera Whole Transcriptome Assay (Atera WTA), TopoLink-CCI generated 1,319,600 CCI hypotheses and prioritized vascular, stromal, immune and Notch axes with strong computational support. In a Synthetic Truth benchmark it achieved AUROC 0.9919 and AUPRC 0.8333, outperforming topology-anchor-only scoring in precision-recall ranking. Cross-dataset application to the corresponding Atera WTA FFPE Human Cervical Cancer preview dataset produced 2,404,971 hypotheses and a distinct top tumor-adhesion axis, supporting tissue-context-specific prioritization.
 
 The accompanying expanded benchmark terminalizes all 18 Breast WTA methods, comprising nine full whole-dataset results and nine bounded subset results with no remaining failure or deferred methods. Bounded results are reported as scalability-aware appendix evidence and remain explicitly separated from full whole-dataset comparisons.
 
@@ -727,6 +744,346 @@ def write_supplement_manifest(data: dict[str, pd.DataFrame]) -> Path:
     manifest = pd.DataFrame(rows, columns=["item", "name", "path", "description"])
     path = MANUSCRIPT_DIR / "supplementary_data_manifest.tsv"
     manifest.to_csv(path, sep="\t", index=False)
+    return path
+
+
+def word_count(text: str) -> int:
+    return len(re.findall(r"[A-Za-z0-9]+(?:[-'][A-Za-z0-9]+)?", text))
+
+
+def add_line_numbering(section) -> None:
+    if OxmlElement is None:  # pragma: no cover
+        return
+    sect_pr = section._sectPr
+    existing = sect_pr.find(qn("w:lnNumType"))
+    if existing is None:
+        existing = OxmlElement("w:lnNumType")
+        sect_pr.append(existing)
+    existing.set(qn("w:countBy"), "1")
+    existing.set(qn("w:start"), "1")
+    existing.set(qn("w:restart"), "continuous")
+
+
+def add_page_number(section) -> None:
+    if OxmlElement is None:  # pragma: no cover
+        return
+    paragraph = section.footer.paragraphs[0]
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    paragraph.add_run("Page ")
+    run = paragraph.add_run()
+    fld_begin = OxmlElement("w:fldChar")
+    fld_begin.set(qn("w:fldCharType"), "begin")
+    instr = OxmlElement("w:instrText")
+    instr.set(qn("xml:space"), "preserve")
+    instr.text = "PAGE"
+    fld_sep = OxmlElement("w:fldChar")
+    fld_sep.set(qn("w:fldCharType"), "separate")
+    text = OxmlElement("w:t")
+    text.text = "1"
+    fld_end = OxmlElement("w:fldChar")
+    fld_end.set(qn("w:fldCharType"), "end")
+    run._r.extend([fld_begin, instr, fld_sep, text, fld_end])
+
+
+def set_submission_styles(doc: Document) -> None:
+    for style_name, size in [("Normal", 12), ("Title", 16), ("Heading 1", 12), ("Heading 2", 12)]:
+        style = doc.styles[style_name]
+        style.font.name = "Arial"
+        style.font.size = Pt(size)
+    doc.styles["Title"].font.bold = True
+    doc.styles["Heading 1"].font.bold = True
+    doc.styles["Heading 2"].font.bold = True
+
+
+def add_double_spaced_paragraph(doc: Document, text: str, style: str | None = None, bold: bool = False) -> None:
+    paragraph = doc.add_paragraph(style=style)
+    paragraph.paragraph_format.line_spacing = 2.0
+    paragraph.paragraph_format.space_after = Pt(0)
+    run = paragraph.add_run(text)
+    run.bold = bold
+
+
+def submission_text_sections() -> dict[str, str | list[str]]:
+    abstract = (
+        "Spatial cell-cell interaction inference is confounded by co-expression, cell abundance and incomplete molecular resources. "
+        "TopoLink-CCI integrates tissue topology, expression specificity and local contact, then challenges candidates with orthogonal controls. "
+        "Across public 10x Genomics Atera Whole Transcriptome Assay (Atera WTA) FFPE breast and cervical cancer preview datasets, it scales to whole tissues and prioritizes computationally supported vascular, stromal, immune and tumor interaction hypotheses."
+    )
+    body = [
+        (
+            "Spatial transcriptomics enables cell-cell interaction (CCI) inference in intact tissues, but whole-transcriptome imaging also expands false-positive risk. "
+            "Candidate axes may rank highly because both genes are abundant, because cell groups are frequent, or because curated molecular resources include extracellular-matrix, adhesion, scavenger-receptor and shared activation-state relationships that are not classical secreted signaling. "
+            "Spatial proximity improves plausibility but does not prove molecular exchange, receptor activation or causal communication."
+        ),
+        (
+            "TopoLink-CCI is a topology-guided CCI prioritization framework in pyXenium. "
+            "In CCI-resource mode, each ligand, receptor, sender and receiver combination is scored using sender topology anchor, receiver topology anchor, structure bridge, sender expression, receiver expression and local contact. "
+            "The prior-weighted geometric mean favors concordance across topology, expression and spatial contact, and every component is exported so users can diagnose topology-driven, expression-driven or contact-sensitive axes."
+        ),
+        (
+            "In a topology-preserving Synthetic Truth benchmark, the full model achieved AUROC 0.9919 and AUPRC 0.8333, whereas topology-anchor-only scoring retained high AUROC but dropped to AUPRC 0.5833. "
+            "We analyzed the public 10x Genomics Preview Data: Atera In Situ Gene Expression, FFPE Human Breast Cancer dataset, generated using the pre-commercial Atera Whole Transcriptome Assay (Atera WTA) and Atera Onboard Analysis development workflow. "
+            "TopoLink-CCI generated 1,319,600 common-resource hypotheses from 170,057 cells in this breast cancer tissue. "
+            "The expanded benchmark terminalized 18 Breast WTA methods as nine full whole-dataset results and nine bounded subset results, with zero failure cards and zero deferred methods. "
+            "Late-stage rescue runs converted FastCCC, SCILD, Copulacci and NicheNet into bounded appendix evidence, with NicheNet treated as downstream receiver-response support rather than a direct spatial ranker."
+        ),
+        (
+            "TopoLink-CCI prioritized interpretable axes spanning vascular activation, stromal matrix biology, immune adhesion, Notch signaling and tumor-intrinsic adhesion. "
+            "The top Breast WTA axis, VWF-SELP from endothelial cells to endothelial cells, is best interpreted as an endothelial activation and vascular adhesion niche consistent with Weibel-Palade body biology, not as direct proof of protein release. "
+            "Cross-dataset application to the corresponding public 10x Genomics Preview Data: Atera In Situ Gene Expression, FFPE Human Cervical Cancer dataset produced 2,404,971 hypotheses from 717,576 cells and a distinct top tumor-adhesion axis, DSC2-DSG3 in differentiating tumor cells. "
+            "TopoLink-CCI therefore prioritizes topology-supported spatial CCI hypotheses while leaving biochemical mechanism and causality to orthogonal experimental validation."
+        ),
+    ]
+    figure_legends = [
+        (
+            "Figure 1 | TopoLink-CCI method and validation logic. "
+            "a, Spatial CCI inference is vulnerable to co-expression, cell-abundance, proximity and resource-composition false positives. "
+            "b, TopoLink-CCI scores each candidate using topology anchors, structure bridging, expression support and local contact. "
+            "c, Workflow from Atera WTA preview datasets and pyXenium topology maps to ranked CCI axes and validation controls. "
+            "d, Synthetic Truth evaluation shows AUROC 0.9919 and AUPRC 0.8333 for the full model, whereas topology-anchor-only scoring loses precision-recall performance. "
+            "e, Orthogonal evidence matrix for seven interpretable breast cancer axes."
+        ),
+        (
+            "Figure 2 | Whole-dataset benchmarking and biological interpretation. "
+            "a, The expanded Breast WTA benchmark terminalizes 18 methods as nine full and nine bounded results. "
+            "b, Interpretable Breast WTA axes ranked by TopoLink-CCI score are led by VWF-SELP. "
+            "c, Canonical recovery is compared by within-method rank rather than raw score. "
+            "d, Breast and cervical WTA datasets yield tissue-context-specific top axes. "
+            "e, Bounded appendix methods provide scalability-aware terminal evidence."
+        ),
+    ]
+    online_methods = [
+        (
+            "TopoLink-CCI score",
+            "TopoLink-CCI evaluates each candidate molecular interaction axis using six retained components: sender topology anchor, receiver topology anchor, structure bridge, sender expression, receiver expression and local contact. The discovery score is computed as a prior-weighted geometric mean of these components.",
+        ),
+        (
+            "Benchmark tiers",
+            "Full results use whole-dataset common-resource outputs. Bounded results use documented cell-count, pair-count or method-specific scalability gates and are reported as appendix evidence. NicheNet is analyzed as downstream receiver-response support and is not presented as a direct spatial CCI ranker.",
+        ),
+        (
+            "Validation controls",
+            "Synthetic Truth metrics use defined positive and negative axes. Real WTA interpretation uses rank, canonical recovery, cell-label permutation, spatial nulls, matched-gene controls, downstream support, cross-method consistency, component ablation and bootstrap stability.",
+        ),
+    ]
+    return {"abstract": abstract, "body": body, "figure_legends": figure_legends, "online_methods": online_methods}
+
+
+def write_submission_docx() -> Path | None:
+    if Document is None:
+        return None
+    sections = submission_text_sections()
+    abstract = str(sections["abstract"])
+    body = list(sections["body"])
+    legends = list(sections["figure_legends"])
+    main_package_words = word_count(abstract + " " + " ".join(body) + " " + " ".join(legends))
+    if word_count(abstract) > 70:
+        raise RuntimeError(f"Abstract exceeds 70 words: {word_count(abstract)}")
+    if main_package_words > 1200:
+        raise RuntimeError(f"Brief Communication main package exceeds 1200 words: {main_package_words}")
+
+    doc = Document()
+    section = doc.sections[0]
+    section.orientation = WD_ORIENT.PORTRAIT
+    section.page_width = Cm(21.0)
+    section.page_height = Cm(29.7)
+    section.top_margin = Cm(2.54)
+    section.bottom_margin = Cm(2.54)
+    section.left_margin = Cm(2.54)
+    section.right_margin = Cm(2.54)
+    add_line_numbering(section)
+    add_page_number(section)
+    set_submission_styles(doc)
+
+    title = doc.add_paragraph(style="Title")
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    title.paragraph_format.line_spacing = 2.0
+    title.add_run("Topology-guided prioritization of spatial cell-cell interaction axes").bold = True
+    add_double_spaced_paragraph(doc, "Author list: [To be completed]", bold=False)
+    add_double_spaced_paragraph(doc, "Affiliations: [To be completed]", bold=False)
+    doc.add_heading("Abstract", level=1)
+    add_double_spaced_paragraph(doc, abstract)
+    for paragraph in body:
+        add_double_spaced_paragraph(doc, paragraph)
+
+    doc.add_page_break()
+    doc.add_heading("Figures and figure legends", level=1)
+    for idx, (figure, legend) in enumerate(
+        [
+            ("figure_1_topolink_cci_method_validation.png", legends[0]),
+            ("figure_2_topolink_cci_discovery_benchmark.png", legends[1]),
+        ],
+        start=1,
+    ):
+        path = FIG_DIR / figure
+        if path.exists():
+            doc.add_picture(str(path), width=Inches(6.2))
+        add_double_spaced_paragraph(doc, legend)
+        if idx == 1:
+            doc.add_page_break()
+
+    doc.add_page_break()
+    doc.add_heading("Online Methods", level=1)
+    for heading, text in sections["online_methods"]:
+        doc.add_heading(str(heading), level=2)
+        add_double_spaced_paragraph(doc, str(text))
+    for heading, text in [
+        ("Data availability", "The manuscript uses public 10x Genomics Preview Data: Atera In Situ Gene Expression, FFPE Human Breast Cancer and FFPE Human Cervical Cancer datasets generated using Atera Whole Transcriptome Assay (Atera WTA): https://www.10xgenomics.com/cn/datasets/atera-wta-ffpe-human-breast-cancer and https://www.10xgenomics.com/cn/datasets/atera-wta-ffpe-human-cervical-cancer. Benchmark outputs are archived in the repository artifact manifests."),
+        ("Code availability", "TopoLink-CCI code and reproducible benchmark scripts are available in the pyXenium GitHub repository."),
+        ("Acknowledgements", "[To be completed]"),
+        ("Author contributions", "[To be completed]"),
+        ("Competing interests", "The authors declare no competing interests."),
+    ]:
+        doc.add_heading(heading, level=1)
+        add_double_spaced_paragraph(doc, text)
+
+    out = MANUSCRIPT_DIR / "topolink_cci_short_communication_submission_initial.docx"
+    doc.save(out)
+    counts = pd.DataFrame(
+        [
+            {"item": "abstract", "word_count": word_count(abstract), "limit": 70, "status": "pass"},
+            {"item": "abstract_body_legends", "word_count": main_package_words, "limit": 1200, "status": "pass"},
+        ]
+    )
+    counts.to_csv(QA_DIR / "text_limit_qa.tsv", sep="\t", index=False)
+    return out
+
+
+def find_soffice() -> str | None:
+    candidates = [
+        shutil.which("soffice"),
+        str(Path.home() / "scoop" / "apps" / "libreoffice" / "current" / "LibreOffice" / "program" / "soffice.exe"),
+    ]
+    for candidate in candidates:
+        if candidate and Path(candidate).exists():
+            return candidate
+    return None
+
+
+def convert_docx_to_pdf(docx_path: Path | None) -> Path | None:
+    if docx_path is None:
+        return None
+    soffice = find_soffice()
+    if soffice is None:
+        return None
+    pdf_path = docx_path.with_suffix(".pdf")
+    if pdf_path.exists():
+        pdf_path.unlink()
+    subprocess.run(
+        [
+            soffice,
+            "--headless",
+            "--convert-to",
+            "pdf",
+            "--outdir",
+            str(docx_path.parent),
+            str(docx_path),
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    return pdf_path if pdf_path.exists() else None
+
+
+def run_pdffonts(pdf_paths: list[Path]) -> Path:
+    rows = []
+    pdffonts = shutil.which("pdffonts")
+    for pdf_path in pdf_paths:
+        if not pdf_path or not pdf_path.exists():
+            rows.append({"artifact": str(pdf_path), "status": "missing", "font_count": 0, "embedded_count": 0, "truetype_count": 0, "non_embedded_count": 0})
+            continue
+        if pdffonts is None:
+            rows.append({"artifact": str(pdf_path), "status": "pdffonts_missing", "font_count": 0, "embedded_count": 0, "truetype_count": 0, "non_embedded_count": 0})
+            continue
+        result = subprocess.run([pdffonts, str(pdf_path)], check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        font_lines = [line for line in result.stdout.splitlines()[2:] if line.strip()]
+        embedded_count = sum(1 for line in font_lines if " yes " in f" {line} ")
+        truetype_count = sum(1 for line in font_lines if "TrueType" in line or "CID TrueType" in line)
+        rows.append(
+            {
+                "artifact": str(pdf_path),
+                "status": "pass" if result.returncode == 0 and font_lines else "check",
+                "font_count": len(font_lines),
+                "embedded_count": embedded_count,
+                "truetype_count": truetype_count,
+                "non_embedded_count": max(0, len(font_lines) - embedded_count),
+                "pdffonts_stdout": result.stdout.replace("\n", "\\n"),
+            }
+        )
+    path = QA_DIR / "font_qa_report.tsv"
+    pd.DataFrame(rows).to_csv(path, sep="\t", index=False)
+    return path
+
+
+def write_figure_format_qa(outputs: dict[str, dict[str, str]]) -> Path:
+    rows = []
+    try:
+        from PIL import Image
+    except Exception:  # pragma: no cover
+        Image = None
+    for figure_id, fig_outputs in outputs.items():
+        for ext, raw_path in fig_outputs.items():
+            path = Path(raw_path)
+            row = {
+                "figure_id": figure_id,
+                "format": ext,
+                "path": str(path),
+                "exists": path.exists(),
+                "size_bytes": path.stat().st_size if path.exists() else 0,
+                "rgb_or_vector": "vector" if ext in {"pdf", "svg"} else "not_checked",
+                "dpi_x": "",
+                "dpi_y": "",
+                "width_px": "",
+                "height_px": "",
+                "nature_target": "180 mm width; max 170 mm height; text >=5 pt; RGB/300 dpi+ for raster",
+            }
+            if Image is not None and path.exists() and ext in {"png", "tiff"}:
+                with Image.open(path) as image:
+                    dpi = image.info.get("dpi", ("", ""))
+                    row.update(
+                        {
+                            "rgb_or_vector": image.mode,
+                            "dpi_x": round(float(dpi[0]), 2) if dpi and dpi[0] else "",
+                            "dpi_y": round(float(dpi[1]), 2) if dpi and dpi[1] else "",
+                            "width_px": image.width,
+                            "height_px": image.height,
+                        }
+                    )
+            rows.append(row)
+    path = QA_DIR / "figure_format_qa.tsv"
+    pd.DataFrame(rows).to_csv(path, sep="\t", index=False)
+    return path
+
+
+def render_pdf_previews(pdf_path: Path | None) -> list[Path]:
+    if pdf_path is None or not pdf_path.exists() or shutil.which("pdftoppm") is None:
+        return []
+    out_prefix = QA_DIR / pdf_path.stem
+    subprocess.run(["pdftoppm", "-png", "-r", "150", str(pdf_path), str(out_prefix)], check=True)
+    return sorted(QA_DIR.glob(f"{pdf_path.stem}-*.png"))
+
+
+def write_submission_readiness_checklist(submission_docx: Path | None, submission_pdf: Path | None, font_qa: Path, figure_qa: Path) -> Path:
+    text = f"""# Nature Methods submission readiness checklist
+
+- Target format: Nature Methods Brief Communication.
+- Abstract limit: <=70 words; see `qa/text_limit_qa.tsv`.
+- Main text package limit: <=1,200 words including abstract, references and figure legends; see `qa/text_limit_qa.tsv`.
+- Main text structure: continuous main text without Results/Discussion-style subheadings; Online Methods retains subheadings.
+- Display items: 2 main figures plus one fallback figure for editorial contingency.
+- Manuscript DOCX: `{submission_docx}`.
+- Manuscript PDF: `{submission_pdf}`.
+- Font QA: `{font_qa}`.
+- Figure format QA: `{figure_qa}`.
+- Figure fonts: Matplotlib uses `pdf.fonttype=42` and `svg.fonttype=none`; verify with `pdffonts`.
+- Figure raster exports: PNG/TIFF generated at 600 dpi; Nature minimum is 300 dpi.
+- Figure source data: every panel has a TSV entry in `source_data/` and figure manifests in `metadata/`.
+- Official checks consulted: Nature Methods content types, Nature initial submission guide and Nature figure specifications.
+"""
+    path = MANUSCRIPT_DIR / "submission_readiness_checklist.md"
+    path.write_text(text, encoding="utf-8", newline="\n")
     return path
 
 
@@ -774,7 +1131,15 @@ def write_docx(manuscript_paths: dict[str, Path]) -> Path | None:
     return out
 
 
-def write_package_manifest(outputs: dict[str, dict[str, str]], manuscripts: dict[str, Path], docx_path: Path | None, supplement: Path) -> Path:
+def write_package_manifest(
+    outputs: dict[str, dict[str, str]],
+    manuscripts: dict[str, Path],
+    docx_path: Path | None,
+    supplement: Path,
+    submission_docx: Path | None,
+    submission_pdf: Path | None,
+    qa_artifacts: dict[str, Path],
+) -> Path:
     review_pdf = docx_path.with_suffix(".pdf") if docx_path else None
     manifest = {
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -785,14 +1150,17 @@ def write_package_manifest(outputs: dict[str, dict[str, str]], manuscripts: dict
         "manuscripts": {key: str(path) for key, path in manuscripts.items()},
         "docx": str(docx_path) if docx_path else None,
         "review_pdf": str(review_pdf) if review_pdf and review_pdf.exists() else None,
+        "submission_docx": str(submission_docx) if submission_docx else None,
+        "submission_pdf": str(submission_pdf) if submission_pdf else None,
         "supplementary_manifest": str(supplement),
+        "qa": {key: str(path) for key, path in qa_artifacts.items()},
     }
     path = PACKAGE_ROOT / "package_manifest.json"
     path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     return path
 
 
-def validate_outputs(outputs: dict[str, dict[str, str]]) -> None:
+def validate_outputs(outputs: dict[str, dict[str, str]], required_paths: list[Path]) -> None:
     required = [
         ("Synthetic Truth AUROC", SYNTHETIC_TRUTH, "TopoLink-CCI"),
         ("method completion matrix", METHOD_MATRIX, "FastCCC"),
@@ -806,6 +1174,9 @@ def validate_outputs(outputs: dict[str, dict[str, str]]) -> None:
         for path in fig_outputs.values():
             if not Path(path).exists() or Path(path).stat().st_size == 0:
                 raise RuntimeError(f"Missing figure output: {path}")
+    for path in required_paths:
+        if path is None or not path.exists() or path.stat().st_size == 0:
+            raise RuntimeError(f"Missing required submission output: {path}")
 
 
 def main() -> None:
@@ -820,8 +1191,27 @@ def main() -> None:
     manuscripts = write_manuscripts()
     supplement = write_supplement_manifest(data)
     docx_path = write_docx(manuscripts)
-    package_manifest = write_package_manifest(outputs, manuscripts, docx_path, supplement)
-    validate_outputs(outputs)
+    review_pdf = convert_docx_to_pdf(docx_path)
+    submission_docx = write_submission_docx()
+    submission_pdf = convert_docx_to_pdf(submission_docx)
+    pdfs_for_fonts = [Path(paths["pdf"]) for paths in outputs.values() if "pdf" in paths]
+    for pdf_path in [review_pdf, submission_pdf]:
+        if pdf_path is not None:
+            pdfs_for_fonts.append(pdf_path)
+    font_qa = run_pdffonts(pdfs_for_fonts)
+    figure_qa = write_figure_format_qa(outputs)
+    rendered_pages = render_pdf_previews(submission_pdf)
+    checklist = write_submission_readiness_checklist(submission_docx, submission_pdf, font_qa, figure_qa)
+    qa_artifacts = {
+        "font_qa_report": font_qa,
+        "figure_format_qa": figure_qa,
+        "text_limit_qa": QA_DIR / "text_limit_qa.tsv",
+        "submission_readiness_checklist": checklist,
+    }
+    if rendered_pages:
+        qa_artifacts["submission_pdf_page_preview_1"] = rendered_pages[0]
+    package_manifest = write_package_manifest(outputs, manuscripts, docx_path, supplement, submission_docx, submission_pdf, qa_artifacts)
+    validate_outputs(outputs, [path for path in [submission_docx, submission_pdf, font_qa, figure_qa, checklist] if path is not None])
     print(json.dumps({"package": str(PACKAGE_ROOT), "manifest": str(package_manifest)}, indent=2))
 
 

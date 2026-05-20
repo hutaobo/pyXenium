@@ -1,6 +1,6 @@
 {
   "figure_id": "figure_2",
-  "created_at": "2026-05-20T11:56:15.219401+00:00",
+  "created_at": "2026-05-20T12:39:58.843874+00:00",
   "claim": "Whole-dataset TopoLink-CCI outputs recover interpretable and tissue-specific CCI axes.",
   "outputs": {
     "pdf": "D:\\GitHub\\pyXenium\\benchmarking\\cci_2026_atera\\topolink_cci_short_communication\\nature_short_communication_20260516\\figures\\figure_2_topolink_cci_discovery_benchmark.pdf",
