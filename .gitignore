@@ -35,6 +35,9 @@ docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/naturebiotech_pa
 docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/hero_patch_montage_mtm_filtered.png
 docs/_static/tutorials/multimodal_histoseg_lazyslide_breast_wta/morphomolecular_concept_tests.csv
 
+# Local release/upload bundles are reproducible packaging outputs, not source.
+release_downloads/
+
 # Ignore oversized generated PDC pilot outputs while keeping lightweight metadata trackable.
 benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/pilot_common/pyxenium/pyxenium_scores.tsv
 benchmarking/cci_2026_atera/datasets/*/pdc_collected/latest/runs/pilot_common/pyxenium/pyxenium_standardized.tsv

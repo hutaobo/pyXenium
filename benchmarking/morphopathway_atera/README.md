@@ -77,6 +77,11 @@ Latest archive SHA256:
 db731299997fbdbadab9d4eccba981dfe49330e457bdc907a93b6b3d0d1acf54
 ```
 
+## Handoff Notes
+
+- `EVIDENCE_TO_CLAIM_MAP.md` maps each conservative manuscript claim to the exact final-package source tables, QC gates, and residual risks.
+- `SAFE_COMMIT_SCOPE.md` records the intended staging boundary and verification commands for committing this morphopathway work without including unrelated local artifacts.
+
 ## Conservative Claim Boundary
 
 Supported:
