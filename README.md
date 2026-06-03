@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/pypi/v/pyXenium.svg" alt="PyPI version"></a>
+  <a href="https://anaconda.org/conda-forge/pyxenium"><img src="https://img.shields.io/conda/vn/conda-forge/pyxenium.svg" alt="Conda version"></a>
   <a href="https://pyxenium.readthedocs.io/en/latest/"><img src="https://readthedocs.org/projects/pyxenium/badge/?version=latest" alt="Read the Docs"></a>
   <a href="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml"><img src="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/pypi/pyversions/pyXenium.svg" alt="Python versions"></a>
@@ -18,6 +19,8 @@
 
 <p align="center">
   <a href="https://pypi.org/project/pyXenium/">PyPI</a>
+  ·
+  <a href="https://anaconda.org/conda-forge/pyxenium">conda-forge</a>
   ·
   <a href="https://pyxenium.readthedocs.io/en/latest/">Read the Docs</a>
   ·
@@ -59,6 +62,7 @@ and run separately; pyXenium does not vendor them or add them as core runtime de
 
 - Current repository version: `0.4.6`
 - Package index: [PyPI](https://pypi.org/project/pyXenium/)
+- Conda package: [conda-forge](https://anaconda.org/conda-forge/pyxenium)
 - Documentation site: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
 - Supported Python: `>=3.8`
@@ -69,6 +73,12 @@ and run separately; pyXenium does not vendor them or add them as core runtime de
 
 ```bash
 pip install pyXenium==0.4.6
+```
+
+Or install from conda-forge:
+
+```bash
+conda install -c conda-forge pyxenium
 ```
 
 For local development:
