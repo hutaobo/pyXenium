@@ -32,7 +32,7 @@
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/hutaobo/pyXenium/main/docs/_static/figures/pyxenium-nine-feature-overview.png" alt="pyXenium nine-feature overview figure" width="960">
+  <img src="https://raw.githubusercontent.com/hutaobo/pyXenium/main/docs/_static/figures/pyxenium-nine-feature-overview.svg" alt="pyXenium nine-feature overview figure" width="960">
 </p>
 
 <p align="center">
