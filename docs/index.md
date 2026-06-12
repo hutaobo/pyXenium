@@ -33,7 +33,7 @@ changelog
   </div>
 </div>
 
-```{figure} _static/figures/pyxenium-nine-feature-overview.png
+```{figure} _static/figures/pyxenium-nine-feature-overview.svg
 :alt: pyXenium nine-feature overview figure
 :class: pyxenium-overview-image
 :figclass: pyxenium-overview-figure
