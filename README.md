@@ -5,7 +5,7 @@
 <h1 align="center">pyXenium</h1>
 
 <p align="center">
-  nine feature areas for Xenium I/O, multimodal analysis, CCI, pathway topology, contour geometry, GMI inference, mechanostress analysis, and external workflow bridges.
+  Load, analyze, and interpret 10x Genomics Xenium spatial data in one Python toolkit.
 </p>
 
 <p align="center">
@@ -35,11 +35,7 @@
   <img src="https://raw.githubusercontent.com/hutaobo/pyXenium/main/docs/_static/figures/pyxenium-nine-feature-overview.svg" alt="pyXenium nine-feature overview figure" width="960">
 </p>
 
-<p align="center">
-  <em>Figure 1. pyXenium summarizes Xenium I/O, multimodal analysis, spatial topology, contour-aware inference, mechanostress analysis, and external workflow bridges in one submission-ready overview.</em>
-</p>
-
-pyXenium is a Python toolkit for **10x Genomics Xenium** organized around nine major sections.
+pyXenium is organized around nine major sections, each with a canonical entry point:
 
 | Section | Canonical entry | Start here |
 | --- | --- | --- |
