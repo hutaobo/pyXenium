@@ -60,7 +60,7 @@ pyxenium = "pyXenium.__main__:main"
 
 [project.optional-dependencies]
 perturb = [
-  "SpatialPerturb>=0.3; python_version >= '3.9'",
+  "SpatialPerturb>=0.3; python_version >= '3.11'",
 ]
 
 lazyslide = [
