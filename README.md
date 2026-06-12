@@ -1,12 +1,4 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/hutaobo/pyXenium/main/docs/_static/branding/pyxenium-horizontal-dark.png" alt="pyXenium horizontal logo" width="960">
-</p>
-
 <h1 align="center">pyXenium</h1>
-
-<p align="center">
-  Load, analyze, and interpret 10x Genomics Xenium spatial data in one Python toolkit.
-</p>
 
 <p align="center">
   <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/pypi/v/pyXenium.svg" alt="PyPI version"></a>
@@ -15,20 +7,6 @@
   <a href="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml"><img src="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/pypi/pyversions/pyXenium.svg" alt="Python versions"></a>
   <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-0a7f5a.svg" alt="License"></a>
-</p>
-
-<p align="center">
-  <a href="https://pypi.org/project/pyXenium/">PyPI</a>
-  ·
-  <a href="https://anaconda.org/conda-forge/pyxenium">conda-forge</a>
-  ·
-  <a href="https://pyxenium.readthedocs.io/en/latest/">Read the Docs</a>
-  ·
-  <a href="https://github.com/hutaobo/pyXenium">GitHub</a>
-  ·
-  <a href="https://pyxenium.readthedocs.io/en/latest/changelog.html">Changelog</a>
-  ·
-  <a href="https://github.com/hutaobo/pyXenium/releases">Releases</a>
 </p>
 
 <p align="center">
