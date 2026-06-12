@@ -5,7 +5,7 @@
   <a href="https://anaconda.org/conda-forge/pyxenium"><img src="https://img.shields.io/conda/vn/conda-forge/pyxenium.svg" alt="Conda version"></a>
   <a href="https://pyxenium.readthedocs.io/en/latest/"><img src="https://readthedocs.org/projects/pyxenium/badge/?version=latest" alt="Read the Docs"></a>
   <a href="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml"><img src="https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/pypi/pyversions/pyXenium.svg" alt="Python versions"></a>
+  <a href="https://pypi.org/project/pyXenium/"><img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg" alt="Python versions"></a>
   <a href="https://github.com/hutaobo/pyXenium/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-0a7f5a.svg" alt="License"></a>
 </p>
 
@@ -39,7 +39,7 @@ and run separately; pyXenium does not vendor them or add them as core runtime de
 - Conda package: [conda-forge](https://anaconda.org/conda-forge/pyxenium)
 - Documentation site: [pyxenium.readthedocs.io](https://pyxenium.readthedocs.io/en/latest/)
 - Canonical build status: [GitHub Actions CI](https://github.com/hutaobo/pyXenium/actions/workflows/ci.yml)
-- Supported Python: `>=3.8`
+- Supported Python: `>=3.11`
 - License: [GNU AGPL v3.0 only](https://github.com/hutaobo/pyXenium/blob/main/LICENSE)
 - Maintained by: `SPATHO AB`
 
@@ -69,7 +69,7 @@ For documentation work:
 pip install -e ".[docs]"
 ```
 
-For the optional SpatialPerturb Bridge runtime on Python 3.9+:
+For the optional SpatialPerturb Bridge runtime on Python 3.11+:
 
 ```bash
 pip install -e ".[perturb]"

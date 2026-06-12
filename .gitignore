@@ -3,6 +3,7 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 .codex_deps/
+.claude/
 tmp_*.log
 build/
 dist/
